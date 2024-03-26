@@ -39,6 +39,11 @@
                             <span class="ml-2"> {{ $t('Transfer Items') }} </span>
                         </button>
 
+                        <button @click="generateTaxInvoice(`${isMobile ? 'top' : 'center'}`)" 
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-ban" />
+                            <span class="ml-2">{{$t('Generate Tax Invoice')}}</span>
+                        </button>
                         <button @click="closeFolio(`${isMobile ? 'top' : 'center'}`)" v-if="selectedFolio?.status == 'Open'"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-ban" />
@@ -90,13 +95,17 @@ import { inject, ref, useToast, updateDoc,watch,onMounted,getDocList } from '@/p
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
+
 import ComNewReservationStayFolio from '@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue';
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
+import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTaxInvoice.vue";
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
+
+
 const props = defineProps({
     doctype:String,
     folio:Object,
@@ -197,6 +206,16 @@ print_menus.value.push({
         viewFolioSummaryReport()
     }
 })
+if (selectedFolio?.value?.tax_invoice_number) {
+  print_menus.value.push({
+    label: $t("Generate Tax Invoice"),
+    icon: 'pi pi-print',
+    command: () => {
+        viewFolioSummaryReport()
+    }
+})  
+}
+
 
 
 //folio detail report
@@ -339,7 +358,39 @@ function showPrintPreview(data) {
         },
     })
 }
+function generateTaxInvoice() {
+ 
+ const dialogRef = dialog.open(ComGenerateTaxInvoice, {
 
+     data: {
+         property: window.property_name,
+         name:selectedFolio.value.name,
+     },
+     props: {
+         header: "Generate Tax Invoice",
+         style: {
+             width: '30vw',
+         },
+         modal: true,
+         closeOnEscape: false,
+         position: 'top',
+         breakpoints:{
+             '960px': '50vw',
+             '640px': '100vw'
+         },
+     },
+     onClose: (options) => {
+         let data = options.data;
+         if (data != undefined) {
+       
+             window.postMessage({action:"load_reservation_folio_list"},"*")
+             window.postMessage({action:"load_reservation_stay_folio_list"},"*")
+             window.postMessage({action:"ReservationDetail"},"*")
+
+         }
+     }
+ })
+}
 function EditFolio() {
  
     const dialogRef = dialog.open(ComNewReservationStayFolio, {

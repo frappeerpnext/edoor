@@ -8,6 +8,10 @@
                         <Button class="nav-folio-btn" v-if="isMobile" icon="pi pi-bars" style="background: transparent;" @click="visible = true" /> 
                     </template>
                 </ComFolioAction>
+                <Message :closable="false" v-if="selectedFolio?.tax_invoice_number"  severity="info">
+                   This Folio has Generate Tax Invoice - {{ selectedFolio?.tax_invoice_number }}
+                </Message>
+                {{ selectedFolio?.tax_invoice_number }}
                 <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
                 <ComFolioTransactionSimpleStyle :loading="loading" v-else :folio="selectedFolio" />
             </div>
@@ -90,7 +94,7 @@ function onRefresh(){
 function loadReservationStayFolioList(selected_name=""){
         loading.value = true
         getDocList('Reservation Folio', {
-            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","business_source","doctype","total_credit","total_debit"],
+            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","business_source","doctype","total_credit","total_debit","tax_invoice_number"],
             filters: [['reservation_stay', '=', rs.reservationStay.name]],
             limit: 1000
         })

@@ -20,6 +20,7 @@
   "business_source",
   "reservation_status",
   "reservation_status_color",
+  "tax_invoice_number",
   "is_active_reservation",
   "column_break_10",
   "room_types",
@@ -253,6 +254,11 @@
    "fieldname": "is_active_reservation",
    "fieldtype": "Check",
    "label": "Is Active Reservation"
+  },
+  {
+   "fieldname": "tax_invoice_number",
+   "fieldtype": "Data",
+   "label": "Tax Invoice Number"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -263,7 +269,7 @@
    "link_fieldname": "transaction_number"
   }
  ],
- "modified": "2023-12-04 14:02:47.514311",
+ "modified": "2024-03-26 14:31:58.433578",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

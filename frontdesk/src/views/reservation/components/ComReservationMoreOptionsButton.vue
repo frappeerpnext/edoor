@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
+        <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" :label="$t('Mores')" @click="toggle"
             aria-haspopup="true" aria-controls="menu" />
 
         <Menu ref="menu" id="menu" :popup="true">

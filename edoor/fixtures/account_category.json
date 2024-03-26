@@ -198,15 +198,6 @@
   "sort_order": 300
  },
  {
-  "account_category": "POS Bill to City Ledger",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-01-26 11:29:28.533178",
-  "name": "POS Bill to City Ledger",
-  "note": null,
-  "sort_order": 2500
- },
- {
   "account_category": "Room Charge",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -232,6 +223,15 @@
   "name": "Other Charge",
   "note": null,
   "sort_order": 400
+ },
+ {
+  "account_category": "POS Bill to City Ledger",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-01-26 11:29:28.533178",
+  "name": "POS Bill to City Ledger",
+  "note": null,
+  "sort_order": 2500
  },
  {
   "account_category": "Payment",

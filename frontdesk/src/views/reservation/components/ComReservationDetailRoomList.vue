@@ -92,7 +92,7 @@
                                 <CurrencyFormat :value="slotProps.data.total_debit"/>
                             </template>
                         </Column>
-                        <Column v-if="can_view_rate"   class="text-right res__room-list-right" header="Credit">
+                        <Column v-if="can_view_rate"   class="text-right res__room-list-right" :header="$t('Credit')">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_credit"/>
                             </template>

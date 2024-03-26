@@ -34,11 +34,11 @@
                     </ComBoxStayInformation>
                 </div>
                 <div v-if="!(stay.reservationStay.reservation_type == 'FIT')" class="flex mt-2 gap-2">
-                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')"   titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')"   :titleTooltip="$t('Group Name & Group Code')" title="Group"  valueClass="grow">
                         <div class="flex align-items-center">
                         <div v-tippy="$t('Group Color')" class=" px-3 h-1rem py-2 me-3 border-round-lg inline-block group_color_reservation" :style="{background:stay.reservationStay?.group_color}">
                         </div>
-                        <button v-tippy="'Group Name & Group Code'" class="link_line_action text-left" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code" link>
+                        <button v-tippy="$t('Group Name & Group Code')" class="link_line_action text-left" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code" link>
                             <i class="pi pi-pencil"></i>
                             ...
                         </button>

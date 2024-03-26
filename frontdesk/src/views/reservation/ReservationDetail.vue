@@ -325,7 +325,7 @@ function onCheckIn() {
 function onAddRoomMore() {
     const dialogRef = dialog.open(ComReservationStayAddMore, {
         props: {
-            header: 'Add More Room',
+            header: $t('Add More Room'),
             style: {
                 width: '80vw',
             },
