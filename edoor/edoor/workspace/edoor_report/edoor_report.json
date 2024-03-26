@@ -49,54 +49,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Reservation Report",
-   "link_count": 4,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Reservation List",
-   "link_count": 0,
-   "link_to": "Reservation List Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Reservation Forecast",
-   "link_count": 0,
-   "link_to": "Reservation Forecast",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Monthly Availability Chart",
-   "link_count": 0,
-   "link_to": "Monthly Availability Chart",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Room Inventory Report",
-   "link_count": 0,
-   "link_to": "Room Inventory Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Housekeeping Report",
    "link_count": 4,
    "onboard": 0,
@@ -433,9 +385,67 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reservation Report",
+   "link_count": 5,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Reservation List",
+   "link_count": 0,
+   "link_to": "Reservation List Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Reservation Forecast",
+   "link_count": 0,
+   "link_to": "Reservation Forecast",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Monthly Availability Chart",
+   "link_count": 0,
+   "link_to": "Monthly Availability Chart",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Room Inventory Report",
+   "link_count": 0,
+   "link_to": "Room Inventory Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Group Reservation List Report",
+   "link_count": 0,
+   "link_to": "Group Reservation List Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-02-29 08:55:36.990747",
+ "modified": "2024-03-26 15:47:52.186506",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

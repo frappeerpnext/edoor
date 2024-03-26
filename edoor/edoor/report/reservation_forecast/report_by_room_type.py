@@ -295,7 +295,7 @@ def get_occupy_data(filters,report_config):
 def get_room_available(filters):
     sql = ""
     if filters.parent_row_group in ["Date","Month","Year","Room Type"]:
-        frappe.throw("u do me")
+        
         sql="""select 
             {}  as parent_row_group ,
             sum(total_room) as total_rooms 
