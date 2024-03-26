@@ -53,7 +53,7 @@
           </template>
       </Column>
 
-      <Column field="discount_amount" :header="$t('Disount Amount')" bodyStyle="text-align:right" headerStyle="text-align:right">
+      <Column field="discount_amount" :header="$t('Discount Amount')" bodyStyle="text-align:right" headerStyle="text-align:right">
         <template #body="{ data }">
           <CurrencyFormat @click="onEditRoomRate(data)" :value="data.discount_amount" class="p-0 link_line_action1"/>
         </template>
@@ -72,7 +72,7 @@
       </Column>
       <ColumnGroup type="footer">
         <Row>
-          <Column footer="Total:" :colspan="3" footerStyle="text-align:right" />
+          <Column :footer="$t('Total') + ':'" :colspan="3" footerStyle="text-align:right" />
           <Column >
             <template #footer>
               {{ rs?.room_rates?.length }} 
@@ -111,6 +111,7 @@ import ComEditReservationRoomRate from './ComEditReservationRoomRate.vue';
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 import Message from 'primevue/message';
 import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
 
 const rs = inject('$reservation_stay')
@@ -145,7 +146,7 @@ function onEditRoomRate(room_rate = null) {
         reservation_stay:rs.reservationStay,
         },
       props: {
-        header: 'Edit Room Rate ',
+        header: $t('Edit Room Rate '),
         style: {
           width: '50vw',
         },
@@ -176,7 +177,7 @@ function onEditRoomRate(room_rate = null) {
         
         },
       props: {
-        header: 'Edit Room Rate ',
+        header: $t('Edit Room Rate '),
         style: {
           width: '50vw',
         },

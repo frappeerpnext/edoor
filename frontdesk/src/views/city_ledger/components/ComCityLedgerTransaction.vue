@@ -1,4 +1,5 @@
 <template>
+
     <div>
         <ComHeader isRefresh @onRefresh="Refresh()">
             <template #end>
@@ -232,14 +233,14 @@ const rowClass = (data) => {
 function viewCityLedgerReport(){
     dialog.open(ComIFrameModal, {
             data: {
-                doctype: "Business Branch",
-                name:  window.property_name,
+                doctype: "City Ledger",
+                name:  props.name,
                 report_name:  gv.getCustomPrintFormat("City Ledger Transaction Report"),
                 fullheight: true,
-                filter_options:["start_date","end_date","guest","business_source","reservation","reservation_stay"]
+                filter_options:["start_date","end_date","guest","account_code"]
             },
             props: {
-                header: "City Ledger Accountxx",
+                header: "City Ledger Account",
                 style: {
                     width: '80vw',
                 },

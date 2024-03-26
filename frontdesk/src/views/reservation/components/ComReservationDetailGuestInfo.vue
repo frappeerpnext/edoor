@@ -25,17 +25,18 @@ const dialog = useDialog()
 const dialogConfirm = useConfirm()
 const menuMasterGuest = ref()
 const loading = ref(false)
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const menuMasterGuestList = ref([
     {
-        label: 'Change Guest',
+        label: $t('Change Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('master_guest')
         }
     },
     {
-        label: 'Edit Guest',
+        label: $t('Edit Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onEditGuest('master_guest')
@@ -48,13 +49,13 @@ const menuMasterGuestList = ref([
 const menuStayGuest = ref()
 const menuStayGuestList = ref([
     {
-        label: 'Change Guest ',
+        label: $t('Change Guest'),
         command: () =>{
             onAdvancedSearch('stay_guest')
         }
     },
     {
-        label: 'Add Additional Guest',
+        label: $t('Add Additional Guest'),
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
@@ -63,13 +64,13 @@ const menuStayGuestList = ref([
 const menuAdditionalGuest = ref()
 const menuAdditionalGuestList = ref([
 {
-        label: 'Add Additional Guest',
+        label: $t('Add Additional Guest'),
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
     },
     {
-        label: 'Delete',
+        label: $t('Delete'),
         command: ($event) =>{
             onDeleteAdditionalGuest()
         }

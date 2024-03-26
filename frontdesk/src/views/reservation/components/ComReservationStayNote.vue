@@ -24,7 +24,7 @@
                     <div v-else class="link_line_action px-3" @click="onReseravationNote($event, 'note')">
                         <div class="flex justify-center items-center my-3">
                             <ComIcon icon="iconNoteBlue" class="me-2" style="height: 16px;" />
-                            <span class="text-xl">{{$t('Add Reseravation Note')}}</span>
+                            <span class="text-xl">{{$t('Add Reservation Note')}}</span>
                         </div>
                     </div>
                 </div>

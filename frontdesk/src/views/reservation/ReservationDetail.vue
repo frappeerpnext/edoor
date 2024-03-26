@@ -12,22 +12,22 @@
                                         {{ rs.reservationStays.length }}
                                     </span>
                                 </ComTagReservation>
-                                <div v-tippy="$t(rs.reservation?.reservation_type + ' (Free Independent Travelers)')"
+                                <div v-tippy="$t('Free Independent Traveler')"
                                     v-if="rs.reservation?.reservation_type == 'FIT'"
                                     class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
                                     <span class="">
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
                                     </span>
                                 </div>
-                                <div v-tippy="$t(rs.reservation?.reservation_type + '(Group Inclusive Tour)')" v-else
+                                <div v-tippy="$t('Group Inclusive Tour')" v-else
                                     class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
                                     <span>
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
                                     </span>
                                 </div>
                                 <span class="px-2 rounded-lg me-2 text-white p-1px"
-                                    :style="{ background: rs.reservation?.status_color }">{{
-                                        rs.reservation?.reservation_status }}
+                                    :style="{ background: rs.reservation?.status_color }">
+                                    {{ $t(rs.reservation?.reservation_status || "" ) }}
                                 </span>
                             </div>
                         </div>

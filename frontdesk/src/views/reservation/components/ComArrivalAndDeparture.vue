@@ -94,7 +94,7 @@
               <div v-else class="flex justify-center mt-3">
                 <span @click="OnSetupForm()"
                   class="link_line_action text-xl line-height-3 py-2 text-center px-3 bg-white"><i
-                    class="pi pi-car text-lg me-2"></i>Setup Departure Mode</span>
+                    class="pi pi-car text-lg me-2"></i>{{ $t('Setup Departure Mode') }} </span>
               </div>
             </TabPanel>
           </TabView>
@@ -107,7 +107,7 @@
       <button class="w-full bg-orange-100 rounded-xl" @click="OnSetupForm">
         <div class="flex relative p-2">
           <span class="link_line_action text-xl line-height-3 py-2 text-center px-3 bg-white"><i
-              class="pi pi-car text-lg me-2"></i>Setup Transportation</span>
+              class="pi pi-car text-lg me-2"></i> {{ $t('Setup Transportation') }} </span>
           <!-- <span class="w-9rem" >
           <img class="icon-svg-setup-tran" src="../../../assets/svg/icon-transportation-mode.svg">
         </span>
@@ -148,7 +148,7 @@ function OnSetupForm() {
       drop_off:rs.reservationStay.require_drop_off
     },
     props: {
-      header: 'Setup Arrival & Departure Mode',
+      header: $t('Setup Arrival & Departure Mode'),
       style: {
         width: '60vw',
       },

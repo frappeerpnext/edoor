@@ -88,6 +88,11 @@
                             @onSelected="reloadIframe" doctype="Reservation Stay"
                             class="auto__Com_Cus w-full min-w-max" />
                     </div>
+                    <div v-if="hasFilter('account_code')">
+                        <ComAutoComplete v-model="filters.account_code" placeholder="Account Code"
+                            @onSelected="reloadIframe" doctype="Account Code"
+                            class="auto__Com_Cus w-full min-w-max" />
+                    </div>
                     <div v-if="hasFilter('show_room_number')" class="flex ml-2">
                         <div>
                             <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0"

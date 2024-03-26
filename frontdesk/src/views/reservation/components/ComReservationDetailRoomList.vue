@@ -15,7 +15,7 @@
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
                     <DataTable :rowClass="rowClass" class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="name" :header="$t('Res Stay') + '#'">
+                        <Column field="name" :header="$t('RES STAY #')">
                         <template #body="slotProps">
                             <button @click="showReservationStayDetail(slotProps.data.name)" class="link_line_action w-auto">
                                 {{slotProps.data.name}}
@@ -72,7 +72,7 @@
                                 </Button>
                             </template>
                         </Column>
-                        <Column :header="$t('Pax')">
+                        <Column :header="$t('Pax(A/C)')">
                             <template #body="slotProps">
                                 <span v-tippy="$t('Adults')">{{slotProps.data.adult}}</span>/<span v-tippy ="$t('Children')">{{slotProps.data.child}}</span>
                             </template>

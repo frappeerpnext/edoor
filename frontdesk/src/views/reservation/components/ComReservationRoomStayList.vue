@@ -3,7 +3,7 @@
         <template #content> 
             <div id="room_stay" class="room-stay-list text-center"> 
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
-                    <Column class="w-15rem" field="start_date" header="Stay Date" >
+                    <Column class="w-15rem" field="start_date" :header="$t('Stay Date')" >
                         <template #body="{ data }">
                             <span v-tippy ="'Arrival Date'">
                             {{gv.dateFormat(data.start_date) }}
@@ -15,7 +15,7 @@
                         </template>
                     </Column> 
                     <Column class="text-center w-10rem" field="room_nights" :header="$t('Nights')"></Column>
-                    <Column field="room_type_alias" header="Room">
+                    <Column field="room_type_alias" :header="$t('Room(s)')">
                         <template #body="{ data }">
                         <div> 
                             <span v-tippy ="data.room_type">
@@ -108,7 +108,7 @@ function onUpgradeRoom() {
             rs: rs
         },
         props: {
-            header: `Upgrade Room`,
+            header: $t(`Upgrade Room`),
             style: {
                 width: '80vw',
             },

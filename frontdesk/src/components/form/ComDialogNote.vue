@@ -1,7 +1,7 @@
 <template>
     <ComDialogContent @onOK="onOk" hideButtonClose :titleButtonOK="Ok" :hideIcon="false" :loading="loading">
         <Message v-if="data?.confirm_message">
-            <div v-html="data?.confirm_message" />
+            <div v-html="$t(data?.confirm_message)" />
         </Message>
 
         <label for="reason-text" class="mb-1 font-medium block"> {{ $t('Reason') }} </label>

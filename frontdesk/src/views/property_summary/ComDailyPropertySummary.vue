@@ -34,7 +34,7 @@
                     <ComPickUpandDropOff :data="data?.pickup_drop_off" />
                     </ComPlaceholder>
                 </TabPanel>
-                <TabPanel :header="$t('No-Show') + ',' + $t('Cancelled') + '&' + $t('Void')  "> 
+                <TabPanel :header="$t('No Show, Cancelled & Void')  "> 
                     <Accordion :multiple="true" :activeIndex="[0, 1, 2]">
                         <AccordionTab :header="'No-Show Reserved Room (' + data?.inactive_reservation.length + ')'">
                             <ComInactiveReservation :data="data?.inactive_reservation" />

@@ -52,7 +52,7 @@
                 <table>
                     <tbody>
                         <ComStayInfoNoBox label="Guest" :value="stay?.guest_name + ' (' + stay?.guest + ')'" />
-                        <ComStayInfoNoBox label="Pax" :value="stay?.adult + '/' + stay?.child" />
+                        <ComStayInfoNoBox label="Pax(A/C)" :value="stay?.adult + '/' + stay?.child" />
                         <ComStayInfoNoBox label="Phone Number" :value="stay?.guest_phone_number" />
                     </tbody>
                 </table>
@@ -134,7 +134,7 @@
                             :maxFractionDigits="10" />
                     </div>
                     <div class="col-12 lg:col-4 text-right">
-                        <label>{{ $t('Amount Discount') }}</label>
+                        <label>{{ $t('Discount Amount') }}</label>
                         <div
                             class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
                             <CurrencyFormat :value="discount_amount" />
@@ -146,7 +146,7 @@
                         v-if="tax_rule && tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
                         <div class="grid justify-end">
                             <div class="col-6 lg:col-4">
-                                <label>{{ $t('Rate Befor Tax') }}</label>
+                                <label>{{ $t('Rate Before Tax') }}</label>
                                 <div
                                     class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
                                     <CurrencyFormat :value="rate" />

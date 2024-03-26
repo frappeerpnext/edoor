@@ -23,7 +23,7 @@ const db = frappe.db();
 const items = ref([])
 //static print button
 items.value.push({
-    label: "Guest Registration Card",
+    label: $t("Guest Registration Card"),
     icon: 'pi pi-user-edit',
     command: () => {
         const dialogRef = dialog.open(ComPrintGuestRegistrationCard, {

@@ -3,7 +3,7 @@
         <template #content>
         <div class="grid">
                 <div class="col-12">
-                    <div class=""> {{ $t('Business Sources') }} </div>
+                    <div class=""> {{ $t('Business Source') }} </div>
                     <div class="grow py-2 px-3 bg-white border-round-lg">
                         <div class="flex justify-content-between align-items-center"> 
                             <span class="link_line_action" @click="onOpenChangeBusinessSource">{{ rs?.reservation?.business_source }}</span>

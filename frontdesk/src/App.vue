@@ -228,7 +228,8 @@ onMounted(() => {
 
 
     const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-    if (!working_day?.cashier_shift?.name) {
+    const edoor_property = JSON.parse(localStorage.getItem("edoor_property"))
+    if (!working_day?.cashier_shift?.name && edoor_property ) {
         dialog.open(OpenShift, {
             props: {
                 header: 'Open Shift',

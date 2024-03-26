@@ -28,7 +28,7 @@
                     v-if="(rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved') && rs.reservationStay?.arrival_date == working_day?.date_working_day"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-eye-slash" />
-                    <span class="ml-2">{{ $t('No Show') }}</span>
+                    <span class="ml-2">{{ $t('No-Show') }}</span>
                 </button>
               
                 <button @click="onReservedRoom()"

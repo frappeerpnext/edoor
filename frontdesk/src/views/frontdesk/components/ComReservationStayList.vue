@@ -118,7 +118,7 @@ function onViewReservationDetail(name) {
             name: name
         },
         props: {
-            header: 'Reservation Stay Detail',
+            header: $t('Reservation Stay Detail'),
             style: {
                 width: '80vw',
             }, 

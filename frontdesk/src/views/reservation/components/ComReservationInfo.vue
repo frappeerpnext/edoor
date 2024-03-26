@@ -64,7 +64,7 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title="Rooms" valueClass="grow">
+                    <ComBoxStayInformation title="Room(s)" valueClass="grow">
                         <div v-if="rs && rs?.reservationStays">
                             <div> 
                                 <span v-for="(i, index) in roomData" :key="index">

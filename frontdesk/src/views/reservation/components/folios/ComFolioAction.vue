@@ -352,7 +352,7 @@ function EditFolio() {
             note: selectedFolio.value.note
         },
         props: {
-            header: 'Edit Folio  ' + selectedFolio.value.name,
+            header: $t('Edit Folio') + ' ' + selectedFolio.value.name,
             style: {
                 width: '50vw',
             },
@@ -455,7 +455,7 @@ function debouncer(fn, delay) {
 
 function closeFolio(position) {
     confirm.require({
-        header: 'Close Folio ' + selectedFolio.value.name,
+        header: $t('Close Folio') + ' '  + selectedFolio.value.name,
         message: 'Are you sure you want to Close Folio ' + selectedFolio.value.name + '?',
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
@@ -492,7 +492,7 @@ function deleteFilio() {
             data: { doctype: "Reservation Folio", name: selectedFolio.value.name },
         },
         props: {
-            header: "Delete Folio Number" + " " + selectedFolio.value.name,
+            header: $t("Delete Folio") + " " + selectedFolio.value.name,
             style: {
                 width: '50vw',
             },

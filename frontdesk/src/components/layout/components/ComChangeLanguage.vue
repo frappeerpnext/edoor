@@ -61,6 +61,6 @@ function loadData() {
 }
 onMounted(() => {
     loadData()
-    loglang.value = localStorage.getItem("lang");
+    loglang.value = localStorage.getItem("lang") || "en";
 })
 </script>

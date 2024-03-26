@@ -17,12 +17,12 @@
                                 doctype="Transportation Mode" class="auto__Com_Cus w-full" />
                         </div>
                         <div class="col-6">
-                            <ComInputTime v-model="stay.pickup_time" label="Pickup Time" placeholder="Pickup Time" />
+                            <ComInputTime v-model="stay.pickup_time" :label="$t('Pickup Time')" :placeholder="$t('Pickup Time')" />
                         </div>
                         <div class="col-6">
                             <label for="arrivel_num">{{ $t('Arrival Flight Number')}}</label>
                             <InputText v-model="stay.arrival_flight_number" id="arrivel_num" type="text"
-                                class="p-inputtext-sm w-full" placeholder="Arrival Flight Number" :maxlength="50" />
+                                class="p-inputtext-sm w-full" :placeholder="$t('Arrival Flight Number')" :maxlength="50" />
                         </div>
                         <div class="col-6">
                             <label for="num">{{ $t('Pickup Location')}}</label>
@@ -63,12 +63,12 @@
                                 placeholder="Arrival Mode" doctype="Transportation Mode" class="auto__Com_Cus w-full" />
                         </div>
                         <div class="col-6">
-                            <ComInputTime v-model="stay.drop_off_time" label="Drop Off Time" placeholder="Drop Off Time" />
+                            <ComInputTime v-model="stay.drop_off_time" :label="$t('Drop Off Time')" placeholder="Drop Off Time" />
                         </div>
                         <div class="col-6">
                             <label for="departure_flight_number">{{ $t('Departure Flight Number')}}</label>
                             <InputText id="departure_flight_number" type="text" v-model="stay.departure_flight_number"
-                                class="p-inputtext-sm w-full" placeholder="Departure Flight Number" :maxlength="50" />
+                                class="p-inputtext-sm w-full" :placeholder="$t('Departure Flight Number') " :maxlength="50" />
                         </div>
                         <div class="col-6">
                             <label>{{ $t('Drop Off Location')}}</label>

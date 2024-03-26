@@ -8,19 +8,19 @@
                     <thead>
                         <tr>
                             <th class="text-left pe-2">
-                                <label>Start Date<span class="text-red-500">*</span></label>
+                                <label> {{ $t('Start Date') }} <span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left px-2">
-                                <label>End Date<span class="text-red-500">*</span></label>
+                                <label>{{ $t('End Date') }} <span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-center px-2">
-                                <label class="text-center">Nights</label>
+                                <label class="text-center"> {{ $t('Nights') }} </label>
                             </th>
                             <th class="text-left px-2">
-                                <label>Room Type<span class="text-red-500">*</span></label>
+                                <label>{{ $t('Room Type') }}<span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left ps-2">
-                                <label>Room Name<span class="text-red-500">*</span></label>
+                                <label>{{ $t('Room Name') }}<span class="text-red-500">*</span></label>
                             </th>
                         </tr>
                     </thead>
@@ -42,7 +42,7 @@
                             <td class="ps-2">
                                 <span class="p-inputtext-pt text-start border-1 border-white h-12 lg:w-full flex w-10rem">
                                     <span v-if="stay.room_number">{{ stay.room_number }}</span>
-                                    <span v-else class="text-red-400">Unassign</span>
+                                    <span v-else class="text-red-400">{{ $t('Unassign') }}</span>
                                 </span>
                             </td> 
                         </tr>
@@ -55,11 +55,11 @@
                                     <div class="flex justify-end gap-3 mt-3">
                                         <div class="flex align-items-center">
                                             <RadioButton v-model="stay.generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="stay_rate" />
-                                            <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Generate New Stay Rate from First/Last Stay Rate</label>
+                                            <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">{{ $t('Generate New Stay Rate from First/Last Stay Rate') }}</label>
                                         </div>
                                         <div class="flex align-items-center">
                                             <RadioButton v-model="stay.generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="rate_plan" />
-                                            <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">Generate New Stay Rate using Rate Plan</label>
+                                            <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">{{ $t('Generate New Stay Rate using Rate Plan') }}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -77,6 +77,8 @@
     import {inject,ref, getApi, onMounted,postApi, computed} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
     import Enumerable from 'linq'
+    import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
     const property = JSON.parse(localStorage.getItem("edoor_property"))
     const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
     const rs = inject('$reservation_stay')

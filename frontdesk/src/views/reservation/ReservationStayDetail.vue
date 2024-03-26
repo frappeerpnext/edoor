@@ -132,7 +132,7 @@
             <div
                 class="line-height-1 text-right flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
                 <div>
-                    <span class="italic">{{ $t('Created by') }} : </span>
+                    <span class="italic">{{ $t('Created By') }} : </span>
                     <span class="text-500 font-italic">
                         {{ rs.reservationStay?.owner?.split("@")[0] }}
                         <ComTimeago :date="rs.reservationStay?.creation"/>  

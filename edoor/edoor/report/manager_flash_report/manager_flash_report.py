@@ -261,7 +261,7 @@ def get_report_data(filters):
 		cancalled_pax[f] =  cancalled_adult + cancalled_child
 		house_use_pax[f] =  house_use_adult + house_use_child
 		complimentary_pax[f] =  complimentary_adult + complimentary_child
-		revpar[f] =  room_charge / (1 if available_room[f] == 0 else available_room[f])
+		
 		# frappe.throw(str( adr))
 	report_data.append(adr)
 	report_data.append(occpancy)
@@ -427,38 +427,38 @@ def get_data_fieldname(filters):
 	
 	sql="""select 
 			%(fieldname)s as fieldname,
-			sum(type='Reservation') as total_occupy,
+			sum(type='Reservation' and is_active=1) as total_occupy,
 			sum(type='Block') as total_block, 
-			sum(type='Reservation' and is_complimentary=1)  as total_complimentary ,
-			sum(type='Reservation' and is_house_use=1)  as total_house_use,
-			sum(if(type='Reservation',adult,0))  as total_in_house_adult,
-			sum(if(type='Reservation' and is_arrival=1,adult,0))  as total_arrival_adult,
+			sum(type='Reservation' and is_complimentary=1 and is_active=1)  as total_complimentary ,
+			sum(type='Reservation' and is_house_use=1 and is_active=1)  as total_house_use,
+			sum(if(type='Reservation' and is_active=1,adult,0))  as total_in_house_adult,
+			sum(if(type='Reservation' and is_arrival=1 and is_active=1,adult,0))  as total_arrival_adult,
 			sum(if(type='Reservation' and is_departure=1,adult,0))  as total_departure_adult,
-			sum(if(type='Reservation' and is_arrival=1,child,0))  as total_arrival_child,
+			sum(if(type='Reservation' and is_arrival=1 and is_active=1,child,0))  as total_arrival_child,
 			sum(if(type='Reservation' and is_departure=1,child,0))  as total_departure_child,
-			sum(if(type='Reservation',child,0))  as total_in_house_child,
-			sum(if(type='Reservation' and is_walk_in=1,adult,0))  as total_in_house_walk_in_adult,
-			sum(if(type='Reservation' and is_walk_in=1,child,0))  as total_in_house_walk_in_child,
-			sum(type='Reservation' and is_walk_in=1)  as total_walk_in_room_night,
-			sum(type='Reservation' and is_arrival=1)  as total_arrival_room_night,
+			sum(if(type='Reservation' and is_active=1,child,0))  as total_in_house_child,
+			sum(if(type='Reservation' and is_walk_in=1 and is_active=1,adult,0))  as total_in_house_walk_in_adult,
+			sum(if(type='Reservation' and is_walk_in=1 and is_active=1,child,0))  as total_in_house_walk_in_child,
+			sum(type='Reservation' and is_walk_in=1 and is_active=1)  as total_walk_in_room_night,
+			sum(type='Reservation' and is_arrival=1 and is_active=1)  as total_arrival_room_night,
 			sum(type='Reservation' and is_departure=1)  as total_departure_room_night,
-			sum(type = 'Reservation' and reservation_status='No Show') as total_no_show_room,
-			sum(if(type='Reservation' and reservation_status='No Show',adult,0)) as total_no_show_adult,
-			sum(if(type='Reservation' and reservation_status='No Show',child,0)) as total_no_show_child,
-			sum(if(type='Reservation' and is_stay_over=1 and is_departure=1,adult,0)) as total_early_checked_out_adult,
-			sum(if(type='Reservation' and is_stay_over=1 and is_departure=1,child,0)) as total_early_checked_out_child,
-			sum(type='Reservation' and is_stay_over=1 and is_departure=1) as total_early_checked_out,
-			sum(type='Reservation' and reservation_type='FIT') as total_fit_room,
-			sum(type='Reservation' and reservation_type='GIT') as total_git_room,
-			sum(if(type='Reservation' and reservation_type='FIT',adult,0)) as total_fit_adult,
-			sum(if(type='Reservation' and reservation_type='FIT',child,0)) as total_fit_child,
-			sum(if(type='Reservation' and reservation_type='GIT',adult,0)) as total_git_adult,
-			sum(if(type='Reservation' and reservation_type='GIT',child,0)) as total_git_child,
-			sum(if(type='Reservation' and  is_house_use=1,adult,0)) as total_house_use_adult,
-			sum(if(type='Reservation' and is_house_use=1,child,0)) as total_house_use_child,
-			sum(if(type='Reservation' and is_complimentary=1 ,adult,0)) as total_complimentary_adult,
-			sum(if(type='Reservation' and is_complimentary=1 ,child,0)) as total_complimentary_child
-		from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s and is_active=1"""
+			sum(type = 'Reservation' and reservation_status='No Show' and is_active=1) as total_no_show_room,
+			sum(if(type='Reservation' and reservation_status='No Show' and is_active=1,adult,0)) as total_no_show_adult,
+			sum(if(type='Reservation' and reservation_status='No Show' and is_active=1,child,0)) as total_no_show_child,
+			sum(if(type='Reservation' and is_stay_over=1 and is_departure=1 and is_active=1,adult,0)) as total_early_checked_out_adult,
+			sum(if(type='Reservation' and is_stay_over=1 and is_departure=1 and is_active=1,child,0)) as total_early_checked_out_child,
+			sum(type='Reservation' and is_stay_over=1 and is_departure=1 and is_active=1) as total_early_checked_out,
+			sum(type='Reservation' and reservation_type='FIT' and is_active=1) as total_fit_room,
+			sum(type='Reservation' and reservation_type='GIT' and is_active=1) as total_git_room,
+			sum(if(type='Reservation' and reservation_type='FIT' and is_active=1,adult,0)) as total_fit_adult,
+			sum(if(type='Reservation' and reservation_type='FIT' and is_active=1,child,0)) as total_fit_child,
+			sum(if(type='Reservation' and reservation_type='GIT' and is_active=1,adult,0)) as total_git_adult,
+			sum(if(type='Reservation' and reservation_type='GIT' and is_active=1,child,0)) as total_git_child,
+			sum(if(type='Reservation' and  is_house_use=1 and is_active=1,adult,0)) as total_house_use_adult,
+			sum(if(type='Reservation' and is_house_use=1 and is_active=1,child,0)) as total_house_use_child,
+			sum(if(type='Reservation' and is_complimentary=1 and is_active=1,adult,0)) as total_complimentary_adult,
+			sum(if(type='Reservation' and is_complimentary=1 and is_active=1,child,0)) as total_complimentary_child
+		from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s """
 
 	return frappe.db.sql(sql,filters,as_dict=1)
 
@@ -669,6 +669,7 @@ def get_forecasting_next_seven_day(filters):
 	data = []
 	fields = ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]
 	for f in fields:
+		
 		data+=get_forecasting_fieldname({ "fieldname":f,"property":filters.property,"start_date":add_days(filters.get(f)["start_date"],7),"end_date":add_days(filters.get(f)["end_date"],7)})
 	row = {
 			"seven_day_room_occupy":{"title":"Room Occupy for the Next 7 Days"}, 

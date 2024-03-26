@@ -66,7 +66,7 @@
           </template>
       </Column>
 
-      <Column field="discount_amount" :header="$t('Disount Amount')" bodyStyle="text-align:right" headerStyle="text-align:right">
+      <Column field="discount_amount" :header="$t('Discount Amount')" bodyStyle="text-align:right" headerStyle="text-align:right">
         <template #body="{ data }">
           <CurrencyFormat @click="onEditRoomRate(data)" :value="data.discount_amount" class="p-0 link_line_action1"/>
         </template>
@@ -193,7 +193,7 @@ function onEditRoomRate(room_rate = null){
         
         },
       props: {
-        header: 'Edit Room Rate ',
+        header: $t('Edit Room Rate '),
         style: {
           width: '50vw',
         },
@@ -232,7 +232,7 @@ function showReservationStayDetail(selected) {
             name: stayName
         },
         props: {
-            header: 'Reservation Stay Detail',
+            header: $t('Reservation Stay Detail'),
             contentClass: 'ex-pedd',
             style: {
                 width: '80vw',

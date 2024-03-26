@@ -207,15 +207,6 @@
   "sort_order": 2500
  },
  {
-  "account_category": "POS Bill to Room",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:05.093149",
-  "name": "POS Bill to Room",
-  "note": null,
-  "sort_order": 2300
- },
- {
   "account_category": "Room Charge",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -250,5 +241,14 @@
   "name": "Payment",
   "note": "a",
   "sort_order": 1600
+ },
+ {
+  "account_category": "POS Bill to Room",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:49:05.093149",
+  "name": "POS Bill to Room",
+  "note": null,
+  "sort_order": 2300
  }
 ]

@@ -148,6 +148,11 @@
             <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
             class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
         </div>
+        <div class="col-12 lg:col" v-if="hasFilter('rate_type')">
+            <label> {{ $t('Rate Type') }} </label><br>
+            <ComAutoComplete v-model="filter.rate_type" placeholder="Rate Type" doctype="Rate Type"
+            class="auto__Com_Cus w-full" />
+        </div>
         <div class="col-12 lg:col" v-if="hasFilter('ledger_type')">
             <label> {{ $t('Ledger Type') }} </label><br>
             <ComSelect class="w-full"   v-model="filter.ledger_type" placeholder="Ledger Type" :showClear="true"
@@ -197,6 +202,7 @@
             <ComAutoComplete v-model="filter.business_source_type" placeholder="Business Source Type" doctype="Business Source Type"
             class="auto__Com_Cus w-full" />
         </div>
+        
         <div class="col-12 lg:col mt-4"  v-if="hasFilter('is_active_reservation')">
             <div class="h-full" >
                 <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
@@ -262,6 +268,7 @@
             <ComAutoComplete v-model="filter.guest_type" placeholder="Guest Type" doctype="Customer Group"
             class="auto__Com_Cus w-full" />
         </div>
+        
         <div class="col-12 lg:col" v-if="hasFilter('nationality')">
             <label> {{ $t('Nationality') }} </label><br>
             <ComAutoComplete v-model="filter.nationality" placeholder="Nationality" doctype="Country"
