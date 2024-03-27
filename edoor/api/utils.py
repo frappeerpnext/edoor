@@ -17,6 +17,20 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 @frappe.whitelist()
+def run_me():
+    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='FN2024-0505' and transaction_type='Reservation Folio'",as_dict=1)
+    for account_code in set([x["account_code"] for x in data]):
+        acc_doc = frappe.get_doc("Account Code",account_code)
+        if acc_doc.tax_invoice_group_by_key:
+            for d in  [x for x in  data if x["account_code"] == account_code]:
+                d["group_by_key"] = frappe.render_template(acc_doc.tax_invoice_group_by_key,{"doc":d})
+                d["tax_invoice_description"] = frappe.render_template(acc_doc.tax_invoice_description_template,{"doc":d,"frappe":frappe})
+
+    
+        
+    return [{"account_code":d["account_code"], "tax_invoice_description": d["account_name"] if not "tax_invoice_description" in d else d["tax_invoice_description"] ,"group_by_key": "" if not "group_by_key" in d else  d["group_by_key"] } for d in data]
+
+@frappe.whitelist()
 def get_working_day(property = ''):
     working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}' order by creation desc limit 1".format(property),as_dict=1)
     cashier_shift = None
