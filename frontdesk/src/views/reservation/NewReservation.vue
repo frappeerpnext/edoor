@@ -13,7 +13,7 @@
                         <div class="grid">
                             <div class="col-12 md:col">
                                 
-                                <label> {{ $t('Reservation Date ') }} <span class="text-red-500">*</span></label><br />
+                                <label> {{ $t('Reservation Date') }} <span class="text-red-500">*</span></label><br />
                                 <Calendar :disabled="doc.reservation.is_walk_in" :selectOtherMonths="true" class="p-inputtext-sm w-full"
                                     v-model="doc.reservation.reservation_date" placeholder="Reservation Date"
                                     dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear"
@@ -43,7 +43,7 @@
                                     panelClass="no-btn-clear" :minDate="minDate" />
                             </div>
                             <div class="night__wfit col-fixed px-0" style="width: 150px;">
-                                <label class="hiddent">{{ $t('Night') }}<span class="text-red-500">*</span></label><br />
+                                <label class="hiddent">{{ $t('Nights') }}<span class="text-red-500">*</span></label><br />
                                 <ComReservationInputNight v-model="doc.reservation.room_night"
                                     @onUpdate="onRoomNightChanged" />
                             </div>
@@ -257,7 +257,7 @@
                                 <label class="px-2">{{ $t('Room Name') }}</label>
                             </th>
                             <th v-if="can_view_rate" class="text-right">
-                                <label class="px-2">Rate</label>
+                                <label class="px-2">{{ $t('Rate') }} </label>
                             </th>
                             <th v-if="can_view_rate" class="text-right">
                                 <label class="text-center px-2">{{ $t('Total Tax') }}</label>
@@ -280,7 +280,7 @@
                         <tr v-for="(  d, index  ) in   doc.reservation_stay" :key="index">
                             <td class="pr-2 min-w-5rem">
                                 <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
-                                    @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type"
+                                    @change="onSelectRoomType(d)" optionLabel="room_type" :placeholder="$t('Select Room Type')"
                                     class="w-full">
                                     <template #option="slotProps">
                                         <div class="flex align-items-center">
@@ -295,7 +295,7 @@
                                 <Dropdown v-model="d.room_id"
                                     :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0) || (r.room_type_id == d.room_type_id && r.name == d.room_id))"
                                     optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
-                                    placeholder="Select Room" showClear filter class="w-full" />
+                                    :placeholder="$t('Select Room')" showClear filter class="w-full" />
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-15rem text-right">
                                 <div v-tippy="!doc.allow_user_to_edit_rate ? $t('This Rate Type Not Allow to Change Rate') : ''"
@@ -357,7 +357,7 @@
                 <div>
                     <Button @click="onAddRoom" class="px-4 mt-2 conten-btn">
                         <img :src="IconAddRoom" class="btn-add_comNote__icon me-1" />
-                        {{ $t('Add Room') }}
+                        {{ $t('Add More Room') }}
                     </Button>
                 </div>
 

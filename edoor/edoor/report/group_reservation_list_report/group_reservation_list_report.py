@@ -47,7 +47,7 @@ def get_columns(filters):
 		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
 		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"guest_type", "label":"Guest Type",'align':'left',"width":90,"show_in_report":1},
-		{"fieldname":"total_reservation_stay", "label":"Total Stay",'align':'center',"width":90,"show_in_report":1},
+		{"fieldname":"total_active_reservation_stay", "label":"Total Stay",'align':'center',"width":90,"show_in_report":1},
 		{"fieldname":"rate_type", "label":"Rate Type",'align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'adr','label':'ADR','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		{'fieldname':'total_room_rate','label':'Total Room Rate','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
@@ -66,7 +66,7 @@ def get_summary(filters,data):
 	if filters.show_summary:
 		return [
 			{ "label":"Total Reservation","value":len(data),"indicator":"red"},
-			{ "label":"Total Stay","value":sum([d["total_reservation_stay"] for d in data ]),"indicator":"blue"},
+			{ "label":"Total Stay","value":sum([d["total_active_reservation_stay"] for d in data ]),"indicator":"blue"},
 			{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data ]),"indicator":"blue"},
 			{ "label":"Total Pax(A/C)","value":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data]))},
 			{ "label":"Total Debit","value": sum([d["total_debit"] for d in data ]),"datatype": "Currency","indicator":"red"},
@@ -188,7 +188,7 @@ def get_report_data(filters):
 				room_type_alias,
 				room_types,
 				owner,
-				total_reservation_stay,
+				total_active_reservation_stay,
 				business_source,
 				adult,
 				child,
