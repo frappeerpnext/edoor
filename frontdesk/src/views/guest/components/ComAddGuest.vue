@@ -87,7 +87,7 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label class="white-space-nowrap">ID/Passport Number</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number"
+                        <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('ID/Passport Number')"
                             v-model="guest.id_card_number" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">

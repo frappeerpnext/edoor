@@ -11,7 +11,6 @@
                 <Message :closable="false" v-if="selectedFolio?.tax_invoice_number"  severity="info">
                    This Folio has Generate Tax Invoice - {{ selectedFolio?.tax_invoice_number }}
                 </Message>
-                {{ selectedFolio?.tax_invoice_number }}
                 <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
                 <ComFolioTransactionSimpleStyle :loading="loading" v-else :folio="selectedFolio" />
             </div>

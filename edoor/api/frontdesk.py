@@ -1410,7 +1410,8 @@ def get_edoor_setting(property = None):
         "pos_profile":property.default_pos_profile,
         "default_letter_head":property.default_letter_head,
         "default_walk_in_business_source":property.default_walk_in_business_source,
-        "edoor_letterhead":[d.letterhead for d in property.edoor_letterhead]
+        "edoor_letterhead":[d.letterhead for d in property.edoor_letterhead],
+        "allow_generate_tax_invoice":property.allow_generate_tax_invoice
     }
 
 
@@ -2494,6 +2495,7 @@ def get_day_end_summary_report(property, date):
         {"label":"Desk Folio", "value":"Desk Folio"},
         {"label":"City Ledger", "value":"City Ledger"},
         {"label":"Payable Ledger", "value":"Payable Ledger"},
+        {"label":"F&B Revenue", "value":"Cashier Shift"},
     ]
     #get opening balance
     sql = """

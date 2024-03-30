@@ -27,7 +27,7 @@
                         <Button class="border-none bg-og-edoor" v-if="!hideButtonClose" @click="close()" :label="titleButtonClose" :disabled="loading" >
                             <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> {{ $t(titleButtonClose ?? '')}}
                         </Button>
-                        <Button class="border-none btn-ok_ss" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
+                        <Button :disabled="disabledBtnOk" class="border-none btn-ok_ss" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
                             <span v-if="!loading" class="flex align-items-center">
                                 <i class="pi pi-check-circle mr-2" v-if="!loading && !hideIcon && titleButtonOK == 'Ok'"></i>
                                 <img class="pi pi-check-circle mr-2" v-else-if="!loading && !hideIcon && titleButtonOK == 'Save'" :src="BtnOkIcon" style="height: 13px;"/>
@@ -85,6 +85,10 @@ const props = defineProps({
         default:false
     },
     maximizable: {
+        type: Boolean,
+        default:false
+    },
+    disabledBtnOk: {
         type: Boolean,
         default:false
     },

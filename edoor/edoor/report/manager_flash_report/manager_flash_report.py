@@ -208,7 +208,7 @@ def get_report_data(filters):
 		
 		room_minus_ooo_rooms[f] =  total_room - room_block
 		available_room[f] =  total_room - (room_occupy + room_block)
-		if calculate_room_occupancy_include_room_block==0:
+		if calculate_room_occupancy_include_room_block==1:
 			occpancy[f] =  room_occupy / (1 if total_room == 0 else total_room)
 		else:
 			occpancy[f] = room_occupy / (1 if (total_room - room_block) == 0 else (total_room - room_block))
@@ -431,12 +431,12 @@ def get_data_fieldname(filters):
 			sum(type='Block') as total_block, 
 			sum(type='Reservation' and is_complimentary=1 and is_active=1)  as total_complimentary ,
 			sum(type='Reservation' and is_house_use=1 and is_active=1)  as total_house_use,
-			sum(if(type='Reservation' and is_active=1,adult,0))  as total_in_house_adult,
+			sum(if(type='Reservation' and is_active=1 and reservation_status='In-house',adult,0))  as total_in_house_adult,
 			sum(if(type='Reservation' and is_arrival=1 and is_active=1,adult,0))  as total_arrival_adult,
 			sum(if(type='Reservation' and is_departure=1,adult,0))  as total_departure_adult,
 			sum(if(type='Reservation' and is_arrival=1 and is_active=1,child,0))  as total_arrival_child,
 			sum(if(type='Reservation' and is_departure=1,child,0))  as total_departure_child,
-			sum(if(type='Reservation' and is_active=1,child,0))  as total_in_house_child,
+			sum(if(type='Reservation' and is_active=1 and reservation_status='In-house',child,0))  as total_in_house_child,
 			sum(if(type='Reservation' and is_walk_in=1 and is_active=1,adult,0))  as total_in_house_walk_in_adult,
 			sum(if(type='Reservation' and is_walk_in=1 and is_active=1,child,0))  as total_in_house_walk_in_child,
 			sum(type='Reservation' and is_walk_in=1 and is_active=1)  as total_walk_in_room_night,

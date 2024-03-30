@@ -8,6 +8,8 @@ from frappe.model.document import Document
 
 class ReservationFolio(Document):
 	def validate(self):
+		if self.flags.ignore_validate:
+				return
 		#check reservation status if allow to edit
 		if self.is_new():
 			total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': self.reservation_stay})

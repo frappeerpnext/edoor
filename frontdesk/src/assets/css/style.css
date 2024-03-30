@@ -1191,6 +1191,10 @@ p.text-center.small.page-number.visible-pdf {
     height: 50px !important;
     margin-top: -17px;
 }
+.di-page .reservation_stay_sticky{
+    margin-top: 3px !important;
+    height: 40px !important;
+}
 .select-room-type-style{
     min-width: 15rem; max-width:15rem;
 }

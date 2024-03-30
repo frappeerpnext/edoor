@@ -16,19 +16,10 @@ import copy
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-@frappe.whitelist()
-def run_me():
-    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='FN2024-0505' and transaction_type='Reservation Folio'",as_dict=1)
-    for account_code in set([x["account_code"] for x in data]):
-        acc_doc = frappe.get_doc("Account Code",account_code)
-        if acc_doc.tax_invoice_group_by_key:
-            for d in  [x for x in  data if x["account_code"] == account_code]:
-                d["group_by_key"] = frappe.render_template(acc_doc.tax_invoice_group_by_key,{"doc":d})
-                d["tax_invoice_description"] = frappe.render_template(acc_doc.tax_invoice_description_template,{"doc":d,"frappe":frappe})
 
-    
-        
-    return [{"account_code":d["account_code"], "tax_invoice_description": d["account_name"] if not "tax_invoice_description" in d else d["tax_invoice_description"] ,"group_by_key": "" if not "group_by_key" in d else  d["group_by_key"] } for d in data]
+
+
+
 
 @frappe.whitelist()
 def get_working_day(property = ''):
@@ -303,7 +294,7 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
     return dates
 
 @frappe.whitelist()
-def update_reservation(name=None,doc=None, run_commit = True):
+def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=False):
     if name or doc:
         if name:
             if not frappe.db.exists("Reservation", name):
@@ -470,13 +461,14 @@ def update_reservation(name=None,doc=None, run_commit = True):
 
         doc.update_reservation_stay = False
         doc.flags.ignore_on_update= True
+        doc.flags.ignore_validate = ignore_validate
         doc.save(ignore_permissions=True)
         if run_commit:
             frappe.db.commit()
         return doc
 
 @frappe.whitelist()
-def update_reservation_folio(name=None, doc=None,run_commit=True):
+def update_reservation_folio(name=None, doc=None,run_commit=True,ignore_validate=False):
     if name:
         doc = frappe.get_doc("Reservation Folio",name)
 
@@ -496,6 +488,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+    doc.flags.ignore_validate = ignore_validate
     doc.save(  ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
@@ -592,7 +585,7 @@ def update_payable_ledger(name=None, doc=None,run_commit=True):
 
 
 @frappe.whitelist()
-def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
+def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True,ignore_validate=False):
     if name or doc:
         if name:
             if not frappe.db.exists("Reservation Stay",name ):
@@ -701,6 +694,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
 
         if is_save:
             # doc.flags.ignore_on_update= True
+            doc.flags.ignore_validate=ignore_validate
             doc.save(  ignore_permissions=True)
             
             frappe.db.commit()
@@ -908,6 +902,8 @@ def create_folio(stay):
 
 @frappe.whitelist()
 def clear_reservation():
+
+
     # pass
     # frappe.db.sql("delete from `tabReservation`")
     # frappe.db.sql("delete from `tabReservation Stay`")
@@ -1039,17 +1035,17 @@ def update_photo(data):
     frappe.msgprint("Upload photo successfully")
 
 @frappe.whitelist()
-def update_reservation_stay_and_reservation(reservation_stay, reservation, reservation_folio=None):
+def update_reservation_stay_and_reservation(reservation_stay, reservation, reservation_folio=None,ignore_validate=False):
     if reservation_folio:
-        update_reservation_folio(name=reservation_folio, doc=None, run_commit=True)
+        update_reservation_folio(name=reservation_folio, doc=None, run_commit=True,ignore_validate=ignore_validate)
     #check if user pass array
     
     if isinstance(reservation_stay, list):
         for s in list(set(reservation_stay)):
            
-            update_reservation_stay ( name=s, doc=None, run_commit=True)
+            update_reservation_stay ( name=s, doc=None, run_commit=True,ignore_validate=ignore_validate)
     else:
-        update_reservation_stay ( name=reservation_stay, doc=None, run_commit=True)
+        update_reservation_stay ( name=reservation_stay, doc=None, run_commit=True,ignore_validate=ignore_validate)
     
     if isinstance(reservation, list):
         for s in list(set(reservation)):
@@ -1475,6 +1471,204 @@ def update_room_status_by_reservation_stay(name):
 
 
 
+@frappe.whitelist()
+def get_tax_invoice_data(folio_number,date = None):
+    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio'".format(folio_number),as_dict=1)
+    tax_data = get_tax_data(data)
+    property = frappe.db.get_value("Reservation Folio", folio_number,"property")
+    exchange_rate = frappe.db.get_value("Reservation Folio",folio_number,"exchange_rate")
+    if not date:
+        working_day = get_working_day(property)
+        date = working_day["date_working_day"]
+    if (exchange_rate or 0) == 0:
+        exchange_rate = get_exchange_rate(property,date)
+    tax_summary =get_tax_summary(data)
+    total_vat = get_tax_invoice_vat_amount(data)
+    grand_total = sum(d["amount"] for d in tax_data) + sum(d["child_total"] for d in tax_summary)  + total_vat
+    
+    return_data = {
+        "data":tax_data,
+        "summary":tax_summary,
+        "taxable_amount": sum(d["amount"] for d in tax_data),
+        "vat":{
+            "description":"អាករលើតម្លៃបន្ថែម/VAT (10%)",
+            "value":total_vat
+        },
+        "grand_total":grand_total, 
+        "exchange_rate":exchange_rate ,
+        "grand_total_second_currency":grand_total*exchange_rate 
+    }
+    
+    return return_data
+
+
+def get_exchange_rate(property,date):
+    if not date:
+        working_day = get_working_day(property)
+        date = working_day["date_working_day"]
+        
+    main_currency = frappe.db.get_single_value("ePOS Settings","currency")
+    second_currency = frappe.db.get_single_value("ePOS Settings","second_currency")    
+    data=frappe.db.sql("select exchange_rate from `tabCurrency Exchange` where from_currency='{}' and to_currency='{}' and custom_business_branch='{}' and posting_date<='{}'".format(main_currency, second_currency, property,date),as_dict=1)
+    if data:
+        return data[0]["exchange_rate"] or 1 
+    else:
+        return 1
+    
+
+def get_tax_data(data):
+    from itertools import groupby
+    raw_data = []
+    for d in data:
+        tax_invoice_group_by_key , tax_invoice_description_template,show_in_tax_invoice,sort_order = frappe.db.get_value("Account Code",d["account_code"], ["tax_invoice_group_by_key ", "tax_invoice_description_template","show_in_tax_invoice","sort_order"])
+        
+        if show_in_tax_invoice:
+            record = {}
+            if tax_invoice_group_by_key:
+                record["group_by_key"] = frappe.render_template(tax_invoice_group_by_key,{"doc":d})
+            else:
+                record["group_by_key"] = d["report_description"]
+                
+            if tax_invoice_description_template:
+                record["description"] = frappe.render_template(tax_invoice_description_template,{"doc":d,"frappe":frappe})
+            else:
+                record["description"] = d["report_description"]
+                
+            record["quantity"] = d["report_quantity"] * (1 if d["type"] =="Debit" else -1) 
+            record["amount"] = (d["amount"] - d["discount"]) * (1 if d["type"] =="Debit" else -1) 
+            record["sort_order"] = sort_order 
+            
+            raw_data.append(record)
+            
+    raw_data.sort(key=lambda x: x["group_by_key"])
+    # Group the data by the group_by_key field
+    grouped_data = {key: list(group) for key, group in groupby(raw_data, key=lambda x: x["group_by_key"])}
+    
+    return_data =[]
+    for key, group in grouped_data.items():
+        record={
+            "description":group[0]["description"],
+            "sort_order":group[0]["sort_order"],
+            "quantity":sum(d["quantity"] for d in group),
+            "amount":sum(d["amount"] for d in group)
+        }
+        record["price"] =  record["amount"] /(1 if (record["quantity"] or 0 )==0 else record["quantity"])
+       
+        
+        return_data.append(record)
+        
+    return  sorted(return_data, key=lambda x: x['sort_order'])
+
+def get_tax_summary(data):
+    
+    raw_data = []
+    for d in data:
+        tax_invoice_summary_key = frappe.db.get_value("Account Code",d["account_code"],"tax_invoice_summary_key")
+        if tax_invoice_summary_key:
+            record = {"tax_invoice_summary_key":tax_invoice_summary_key}
+            record["amount"] = (d["amount"] - d["discount"]) * (1 if d["type"] =="Debit" else -1) 
+            
+            raw_data.append(record)
+    
+    tax_summary_group = frappe.db.sql("select total_label,alias,is_group, parent_tax_invoice_summary_group, name, label from `tabTax Invoice Summary Group` order by sort_order",as_dict=1)
+    # loop group
+    return_data = []
+    for g in [d for d in tax_summary_group if d["is_group"]==1]:
+        value = sum([d["amount"] for d in raw_data if d["tax_invoice_summary_key"]==g["name"]])
+        if value>0:
+            record = {
+                "label":g["label"],
+                "value":value
+            }
+            
+            
+            # get children
+            children=[]
+            children_alias=[]
+            for c in [d for d in tax_summary_group if d["parent_tax_invoice_summary_group"]==g["name"]]:
+                if c["alias"]:
+                    children_alias.append(c["alias"])
+                value = sum([d["amount"] for d in raw_data if d["tax_invoice_summary_key"]==c["name"]])
+                if value>0:
+                    children.append({
+                        "label":c["label"],
+                        "value":value
+                    })
+            if children:
+                record["children"]=children  
+                record["child_total"] =   sum([d["value"] for d in record["children"]]) 
+                record["total"] = {
+                    "label":"{} {}".format(g["total_label"], get_comma_and(children_alias)) ,
+                    "value":record["value"] +(record["child_total"] or 0)
+                }
+            else:
+                record["child_total"] = 0
+            return_data.append(record)
+    
+           
+    return return_data
+
+def get_tax_invoice_vat_amount(data):
+    amount = 0
+    for d in data:
+        if frappe.db.get_value("Account Code",d["account_code"], "is_vat")==1:
+            amount = amount + (d["amount"] * (1 if d["type"] =="Debit" else -1) )
+            
+    return amount or 0
+        
+        
+def get_comma_and(data):
+    return frappe.utils.comma_and(data, add_quotes=False).replace(" and ", " & ")
+
+
+
+@frappe.whitelist(methods="POST")
+def generate_tax_invoice(property, folio_number,tax_invoice_date):
+    # if frappe.db.get_value("Reservation Folio",folio_number,"tax_invoice_number"):
+    #     frappe.throw("This folio number is already generate tax invoice")
+    # if not frappe.db.get_value("Folio Transaction",folio_number,"transaction_number"):
+    #     frappe.throw("This folio number No Transaction") 
+
+    tax_invoice_format = frappe.db.get_value("Business Branch",property,"tax_invoice_number_format")
+    from frappe.model.naming import make_autoname
+    tax_invoice_number = make_autoname(tax_invoice_format)
+    exchange_rate  = get_exchange_rate(property, tax_invoice_date)
+    
+    
+    sql="update `tabReservation Folio` set tax_invoice_number=%(tax_invoice_number)s, tax_invoice_date=%(tax_invoice_date)s , exchange_rate=%(exchange_rate)s where name=%(name)s"
+    frappe.db.sql(sql,{ "name":folio_number,"tax_invoice_number":tax_invoice_number, "exchange_rate":exchange_rate,"tax_invoice_date":tax_invoice_date})
+    
+    frappe.db.commit()
+    frappe.msgprint(_("Generate tax invoice successfully"))
+
+
+@frappe.whitelist()
+def get_generate_tax_invoice_information(property,posting_date=None):
+    if not posting_date:
+        working_day = get_working_day(property)
+        posting_date = working_day["date_working_day"]
+        
+    from frappe.model.naming import NamingSeries,make_autoname
+    raw_prefix = frappe.db.get_value("Business Branch",property,"tax_invoice_number_format")
+    prefix = raw_prefix.replace("#","").replace(".","")
+    current_counter= NamingSeries(prefix).get_current_value()
+    second_currency=frappe.db.get_single_value("ePOS Settings","second_currency")
+    precision,custom_pos_currency_format = frappe.db.get_value("Currency",second_currency,["custom_currency_precision","custom_pos_currency_format"])
+    data = {
+        "current_counter":current_counter,
+        "next_tax_invoice_number": make_autoname(raw_prefix),
+        "exchange_rate":get_exchange_rate(property, posting_date),
+        "base_currency":frappe.db.get_single_value("ePOS Settings","currency"),
+        "second_currency":{
+            "currency":second_currency,
+            "precision": precision,
+            "pos_currency_format":custom_pos_currency_format
+        }
+    }
+    
+    return data
+    
+    
 
 @frappe.whitelist()
 def ping():

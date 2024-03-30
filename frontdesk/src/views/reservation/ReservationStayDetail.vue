@@ -3,7 +3,7 @@
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
-                <div class="overflow-auto w-full stickyReservationStatus">
+                <div class="overflow-auto w-full stickyReservationStatus reservation_stay_sticky">
                     <div class="flex justify-between overflow-scroll lg:overflow-hidden w-full lg:w-full">
                         <ComReservationStayHeaderStatus />
                         <div class="flex gap-2">

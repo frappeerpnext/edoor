@@ -5,7 +5,8 @@
                 <div class="col flex gap-2">
 
                     <div v-if="show_letter_head">
-                        <ComLetterHead v-model="letter_head" @onSelect="onSelectLetterHead" />
+                     
+                        <ComLetterHead :letterhead="letter_head" v-model="letter_head" @onSelect="onSelectLetterHead" />
                     </div>
                     <div v-if="hasFilter('keyword')">
                         <InputText type="text" class="p-inputtext-sm w-full w-16rem" @input="reloadIframe"
@@ -379,6 +380,7 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => {
+   
     if (window.isMobile) {
         let elem = document.querySelectorAll(".p-dialog");
         if (elem) {
@@ -396,6 +398,8 @@ onMounted(() => {
     }
     extra_params.value = dialogRef.value.data.extra_params
     filter_options.value = dialogRef.value.data.filter_options
+
+    letter_head.value =  dialogRef.value.data.letterhead || ""
 
     loadIframe()
 });

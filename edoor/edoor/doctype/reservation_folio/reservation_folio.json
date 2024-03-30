@@ -21,6 +21,8 @@
   "reservation_status",
   "reservation_status_color",
   "tax_invoice_number",
+  "tax_invoice_date",
+  "exchange_rate",
   "is_active_reservation",
   "column_break_10",
   "room_types",
@@ -259,6 +261,17 @@
    "fieldname": "tax_invoice_number",
    "fieldtype": "Data",
    "label": "Tax Invoice Number"
+  },
+  {
+   "fieldname": "tax_invoice_date",
+   "fieldtype": "Date",
+   "label": "Tax Invoice Date"
+  },
+  {
+   "fieldname": "exchange_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate",
+   "precision": "9"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -269,7 +282,7 @@
    "link_fieldname": "transaction_number"
   }
  ],
- "modified": "2024-03-26 14:31:58.433578",
+ "modified": "2024-03-27 17:01:09.167190",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

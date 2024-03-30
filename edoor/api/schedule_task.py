@@ -2,7 +2,7 @@ import functools
 import re
 
 import requests
-from edoor.api.utils import update_reservation, update_reservation_folio, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version
+from edoor.api.utils import update_reservation, update_reservation_folio, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
 from frappe.utils import today,add_to_date,getdate
@@ -46,9 +46,19 @@ def re_run_fail_jobs():
 
     jobs =  sorted(jobs, key=lambda j: j.modified, reverse=order_desc)
     jobs = [d for d in jobs if "exc_info" in d]
-    job_names=["edoor.api.utils.update_reservation_stay_and_reservation"]
-    jobs = [d for d in jobs  if  ( d["job_name"] in job_names or  "Deadlock found when trying"  in  d["exc_info"]  or "Lock wait timeout exceeded"  in  d["exc_info"] or "Document has been modified after you have opened it" in d["exc_info"] ) ]
+    job_names=[
+        "edoor.api.utils.update_reservation_stay_and_reservation",
+        "edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy",
+        "edoor.api.reservation.generate_room_occupies",
+        "edoor.api.utils.update_reservation",
+        "edoor.api.reservation.post_charge_to_folio_afer_check_in",
+        "edoor.api.utils.update_is_arrival_date_in_room_rate"
+    ]
+    
+    jobs = [d for d in jobs  if  (d["job_name"] in job_names) and ("Deadlock found when trying"  in  d["exc_info"]  or "Lock wait timeout exceeded"  in  d["exc_info"] or "Document has been modified after you have opened it" in d["exc_info"] ) ]
+    
     job_ids = []
+    
     for j in jobs:
         try:
             job =   json.loads(j["arguments"]) 
@@ -57,16 +67,18 @@ def re_run_fail_jobs():
             elif j["job_name"] == "edoor.api.reservation.generate_room_occupies":
                 generate_room_occupies( stay_names=job["kwargs"]["stay_names"])
             elif j["job_name"] == "edoor.api.utils.update_reservation_folio":
-                update_reservation_folio( doc=None if "doc" not in job["kwargs"] else job["kwargs"]["doc"], name=None if "name" not in job["kwargs"] else job["kwargs"]["name"], run_commit=True)     
+                update_reservation_folio( doc=None if "doc" not in job["kwargs"] else job["kwargs"]["doc"], name=None if "name" not in job["kwargs"] else job["kwargs"]["name"], run_commit=True,ignore_validate=True)     
             elif j["job_name"] == "edoor.api.utils.update_reservation":
-                update_reservation(name=job["kwargs"]["name"], run_commit=True)
+                update_reservation(name=job["kwargs"]["name"], run_commit=True,ignore_validate=True)
             elif j["job_name"] == "edoor.api.utils.update_reservation_stay_and_reservation":
-                update_reservation_stay_and_reservation(reservation=job["kwargs"]["reservation"],reservation_stay=job["kwargs"]["reservation_stay"]) 
+                update_reservation_stay_and_reservation(reservation=job["kwargs"]["reservation"],reservation_stay=job["kwargs"]["reservation_stay"],ignore_validate=True) 
             elif j["job_name"] == "edoor.api.reservation.post_charge_to_folio_afer_check_in":
                 post_charge_to_folio_afer_check_in(
                     reservation=job["kwargs"]["reservation"],
                     stays=job["kwargs"]["stays"],
                     working_day=job["kwargs"]["working_day"])
+            elif j["job_name"]  =="edoor.api.utils.update_is_arrival_date_in_room_rate":
+                update_is_arrival_date_in_room_rate(stay_name=job["kwargs"]["stay_name"])
                 
 
             job_ids.append(j["job_id"])
@@ -226,17 +238,7 @@ def five_minute_job():
             ifnull(a.account_category,'') != ifnull(b.account_category,'') """
     frappe.db.sql(sql)
     
-    # #update rate type in room occupy
-    # sql="""
-    #     update `tabRoom Occupy` a 
-    #     inner join `tabReservation Room Rate` b on a.reservation_stay = b.reservation_stay and a.date = b.date and a.room_type_id = b.room_type_id
-    #     set 
-    #         a.rate_type = b.rate_type
-    #     where 
-    #         ifnull(a.rate_type,'') != ifnull(b.rate_type,'') 
-    #     """
-    
-    # frappe.db.sql(sql)
+   
 
 
 
@@ -253,7 +255,7 @@ def ten_minute_job():
 
 @frappe.whitelist()
 def run_queue_job():
-    data = frappe.db.sql( "select distinct document_name, document_type, action from `tabQueue Job` limit 500",as_dict = 1)
+    data = frappe.db.sql( "select distinct document_name, document_type, action from `tabQueue Job` limit 100",as_dict = 1)
     
     update_fetch_from_field([d for d in data if d["action"] =="update_fetch_from_field"])
     update_keyword([d for d in data if d["action"] =="update_keyword"])

@@ -38,10 +38,10 @@
                             <i class="pi pi-arrow-right-arrow-left" />
                             <span class="ml-2"> {{ $t('Transfer Items') }} </span>
                         </button>
-
-                        <button @click="generateTaxInvoice(`${isMobile ? 'top' : 'center'}`)" 
+                        
+                        <button v-if="!selectedFolio?.tax_invoice_number" @click="generateTaxInvoice(`${isMobile ? 'top' : 'center'}`)" 
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                            <i class="pi pi-ban" />
+                            <i class="pi pi-file" />
                             <span class="ml-2">{{$t('Generate Tax Invoice')}}</span>
                         </button>
                         <button @click="closeFolio(`${isMobile ? 'top' : 'center'}`)" v-if="selectedFolio?.status == 'Open'"
@@ -130,7 +130,6 @@ const rs = inject("$reservation_stay")
 const setting =window.setting
 const folio_menu = ref();
 
-
 function showAccountGroup(account_code){
     if (selectedFolio.value.allow_post_to_city_ledger==0){
         if((account_code.is_city_ledger_account || 0) == 1){
@@ -175,7 +174,7 @@ function viewFolioSummaryReport() {
             reservation_stay: selectedFolio.value.reservation_stay,
             folio: selectedFolio.value,
             folios: docs,
-            report_name:print_format,
+            report_name:gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
             view: "print"
         },
         props: {
@@ -196,7 +195,32 @@ function viewFolioSummaryReport() {
     });
 })
 }
+function viewfoliotaxinvoicedetail() {
+     
+    dialog.open(ComIFrameModal, {
+        data: {
+            doctype: "Reservation Folio",
+            name: selectedFolio.value.name,
+            report_name: gv.getCustomPrintFormat("Folio Tax Invoice Detail"),
+            letterhead:"Tax Letterhead"
+        },
+        props: {
+            header: $t("Print Tax Invoice"),
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
 
+}
 //Folio Summary Report
 print_menus.value.push({
     label: $t("Folio Summary Report"),
@@ -206,15 +230,7 @@ print_menus.value.push({
         viewFolioSummaryReport()
     }
 })
-if (selectedFolio?.value?.tax_invoice_number) {
-  print_menus.value.push({
-    label: $t("Generate Tax Invoice"),
-    icon: 'pi pi-print',
-    command: () => {
-        viewFolioSummaryReport()
-    }
-})  
-}
+
 
 
 
@@ -260,6 +276,15 @@ print_menus.value.push({
 
 })
 
+if (selectedFolio?.value?.tax_invoice_number) {
+    print_menus.value.push({
+    label: $t("Print Tax Invoice"),
+    icon: 'pi pi-print',
+    command: () => {
+        viewfoliotaxinvoicedetail()
+    }
+})  
+}
 
 function onAddFolioTransaction(account_code) {
     if(props.newDoc){

@@ -124,7 +124,7 @@
                             <div class="col-12">
 
                       
-                                <label>{{ $t('Transfer to' + doc.target_transaction_type) }}</label>
+                                <label>{{ $t('Transfer to' + ' ' + doc.target_transaction_type) }}</label>
                                
                                 <ComAutoComplete :disabled="!canEdit" v-model="doc.target_transaction_number"
                                     :placeholder="'Select ' + doc.target_transaction_type" :doctype="doc.target_transaction_type" class="auto__Com_Cus w-full"

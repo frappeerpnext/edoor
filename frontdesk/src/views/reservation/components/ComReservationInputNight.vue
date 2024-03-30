@@ -8,7 +8,7 @@
                 <div class="text-center bg-black text-white h-full border-round-xl">
                     <div class="flex items-center justify-center w-full h-full">
                         <div>
-                            <div style="line-height:1">{{ value }} <br /> <span style="font-size:11px">Nights</span></div>
+                            <div style="line-height:1">{{ value }} <br /> <span style="font-size:11px">{{$t('Nights')}}</span></div>
                         </div>
                     </div>
                 </div>
@@ -21,6 +21,8 @@
 </template>
 <script setup>
 import { computed } from 'vue'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     modelValue: Number,
     className: String

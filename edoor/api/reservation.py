@@ -671,8 +671,12 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 
 
     if len(checked_in_stays)> 0:
-        # post_charge_to_folio_afer_check_in(working_day, reservation, checked_in_stays)
-        frappe.enqueue("edoor.api.reservation.post_charge_to_folio_afer_check_in", working_day=working_day, reservation=reservation, stays=checked_in_stays, queue='short')
+        group_check_in_stays = []
+        for i in range(0, len(checked_in_stays), 5):
+            group_check_in_stays.append(checked_in_stays[i:i + 5])
+        for stays in group_check_in_stays:
+            frappe.enqueue("edoor.api.reservation.post_charge_to_folio_afer_check_in", working_day=working_day, reservation=reservation, stays=stays, queue='short')
+        
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation=reservation,reservation_stay=[d["stay_name"] for d in checked_in_stays])
     
     if len(noshow_check_in_stays)> 0:
@@ -2040,8 +2044,8 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
             balance = balance - d.discount_amount
             folio_transactions.append({
                 "account_name": "{}-{}".format(d.discount_account, d.discount_description)  if show_account_code else d.discount_description,
-                "credit":d.discount_amount,
-                "debit":0,
+                "credit":  d.discount_amount if d.type=='Debit' else 0,
+                "debit":d.discount_amount if d.type=='Credit' else 0,
                 "balance":balance,
                 "total_amount":d.discount_amount,
                 "parent_reference": d["name"],
@@ -2049,11 +2053,11 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
             })
         
         if  d.tax_1_amount > 0:
-            balance = balance + d.tax_1_amount
+            balance = balance + (d.tax_1_amount * (1 if d.type=='Debit' else -1))
             folio_transactions.append({
                 "account_name": "{}-{}".format(d.tax_1_account, d.tax_1_description)  if show_account_code else d.tax_1_description,
-                "debit":d.tax_1_amount,
-                "credit":0,
+                "debit": d.tax_1_amount if d.type=='Debit' else 0 ,
+                "credit":d.tax_1_amount if d.type=='Credit' else 0,
                 "balance":balance,
                 "total_amount":d.tax_1_amount,
                 "parent_reference": d["name"],
@@ -2061,11 +2065,11 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
             })
 
         if  d.tax_2_amount > 0:
-            balance = balance + d.tax_2_amount
+            balance = balance + (d.tax_2_amount * (1 if d.type=='Debit' else -1) )
             folio_transactions.append({
                 "account_name": " {}-{}".format(d.tax_2_account, d.tax_2_description)  if show_account_code else d.tax_2_description,
-                "debit":d.tax_2_amount,
-                "credit":0,
+                "debit":d.tax_2_amount if d.type=='Debit' else 0,
+                "credit":d.tax_2_amount if d.type=='Credit' else 0,
                 "balance":balance,
                 "total_amount":d.tax_2_amount,
                 "parent_reference": d["name"],
@@ -2073,11 +2077,11 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
             })
 
         if  d.tax_3_amount > 0:
-            balance = balance + d.tax_3_amount
+            balance = balance + (d.tax_3_amount * (1 if d.type=='Debit' else -1))
             folio_transactions.append({
                 "account_name": "{}-{}".format(d.tax_3_account, d.tax_3_description)  if show_account_code else d.tax_3_description,
-                "debit":d.tax_3_amount,
-                "credit":0,
+                "debit":d.tax_3_amount if d.type=='Debit' else 0,
+                "credit":d.tax_3_amount if d.type=='Credit' else 0,
                 "balance":balance,
                 "total_amount":d.tax_3_amount,
                 "parent_reference": d["name"],
