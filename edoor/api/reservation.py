@@ -2223,7 +2223,7 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
         doc.discount_type = data["discount_type"] 
         doc.discount = data["discount"] 
         doc.tax_rule = data["tax_rule"]
-        doc.tax_rule_data ='' if not 'tax_rule_data' in data else  data["tax_rule_data"]
+        doc.tax_rule_data = '{}' if not 'tax_rule_data' in data else  data["tax_rule_data"]
         doc.tax_1_rate = data["tax_1_rate"]
         doc.tax_2_rate = data["tax_2_rate"]
         doc.tax_3_rate = data["tax_3_rate"]
