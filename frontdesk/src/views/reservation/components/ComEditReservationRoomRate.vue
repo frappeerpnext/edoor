@@ -524,6 +524,9 @@ function onSave() {
 
 
     isSaving.value = true;
+    if (!doc.value.tax_rule_data){
+        doc.tax_rule_data = null
+    }
     postApi('reservation.update_room_rate', {
         room_rate_names: room_rate_names,
         data: doc.value,
