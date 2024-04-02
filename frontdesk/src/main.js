@@ -4,7 +4,8 @@ window.theme = edoor_theme
 import './index.css';
 //theme
 
-import  (edoor_theme=="micro_lab"? './assets/css/micro_lab_theme.css':"./assets/css/theme.css")
+// import  (edoor_theme=="micro_lab"? './assets/css/micro_lab_theme.css':"./assets/css/theme.css")
+import  "./assets/css/theme.css"
  
 
 //core
@@ -14,7 +15,8 @@ import 'primeicons/primeicons.css';
 // flex css
 import '/node_modules/primeflex/primeflex.css'
  
-import  (edoor_theme=="micro_lab"? './assets/css/micro_lab_style.css':"./assets/css/style.css")
+// import  (edoor_theme=="micro_lab"? './assets/css/micro_lab_style.css':"./assets/css/style.css")
+import "./assets/css/style.css"
  
 
 import { createApp, reactive } from "vue";
