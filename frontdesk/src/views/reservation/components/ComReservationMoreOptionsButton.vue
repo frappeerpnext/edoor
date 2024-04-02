@@ -62,7 +62,7 @@
                     <button @click="onMarkAsPaidbyMasterroom()"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <ComIcon icon="BilltoMasterRoom" style="height:13px;"></ComIcon>
-                        <span class="ml-2">{{$t('Mark as Paid by Master Room ')}}</span>
+                        <span class="ml-2">{{$t('Mark as Paid by Master Room')}}</span>
                     </button>
 
                     <button @click="onUnMarkAsPaidbyMasterroom()"
@@ -155,7 +155,7 @@ function onChangeStatus(reservation_status) {
     if (validateSelectReservation()) {
         let confirm_message = ""
         if (reservation_status == "Cancelled") {
-            confirm_message = "You are about to cancel reservation(s).<br/> Once the cancellation is complete, you will no longer be able to make any changes to the reservation. <br/> If you have a cancellation charge, please update the folio transaction first."
+            confirm_message = "You are about to cancel reservation(s). Once the cancellation is complete, you will no longer be able to make any changes to the reservation. If you have a cancellation charge, please update the folio transaction first."
         } else if (reservation_status == "Void") {
             confirm_message = "You are about to void  reservation(s). Once the void is complete, you will no longer be able to make any changes to the reservation."
         } else {
@@ -172,7 +172,7 @@ function onChangeStatus(reservation_status) {
         }
 
         onUpdateReservationStatus(
-            "Confirm " + reservation_status + " Note",
+            $t("Confirm " + reservation_status + " Note"),
             {
                 api_url: "reservation.update_reservation_status",
                 method: "POST",
@@ -475,7 +475,7 @@ function onGroupAssignRoom() {
             reservation: rs.reservation
         },
         props: {
-            header: 'Group Assign Room - ' + rs.reservation.name,
+            header: $t('Group Assign Room') + ' - ' + rs.reservation.name,
             contentClass: 'ex-pedd',
             style: {
                 width: '80vw',

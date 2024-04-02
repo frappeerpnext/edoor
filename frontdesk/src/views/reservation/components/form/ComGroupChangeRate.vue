@@ -34,11 +34,11 @@
                 </div>
             </template>
         </ComReservationStayPanel> 
-        <ComReservationStayPanel title="Rate type" class="mt-3">
+        <ComReservationStayPanel title="Rate Type" class="mt-3">
             <template #content>
                 <div class="grid items-center">
                     <div class="col-12 md:col-5 pt-0">
-                        <label> {{ $t('Rate type') }} </label>
+                        <label> {{ $t('Rate Type') }} </label>
                         <ComSelect v-model="data.rate_type" class="w-full" placeholder="Please Select Rate Type"
                             @onSelected="onRateTypeChange" doctype="Rate Type" />
                     </div>
@@ -228,8 +228,8 @@ const reservation = ref()
 const confirm = useConfirm();
 const tax_rules = ref([])
 const discountType = ref([
-    { label: 'Percent', value: 'Percent' },
-    { label: 'Amount', value: 'Amount' },
+    { label: $t('Percent'), value: 'Percent' },
+    { label: $t('Amount'), value: 'Amount' },
 ]);
 
 const onRateTypeChange = (rate_type) => {

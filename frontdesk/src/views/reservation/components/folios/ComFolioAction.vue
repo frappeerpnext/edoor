@@ -202,7 +202,8 @@ function viewfoliotaxinvoicedetail() {
             doctype: "Reservation Folio",
             name: selectedFolio.value.name,
             report_name: gv.getCustomPrintFormat("Folio Tax Invoice Detail"),
-            letterhead:"Tax Letterhead"
+            letterhead:"Tax Letterhead",
+            filter_options:["show_vattin"]
         },
         props: {
             header: $t("Print Tax Invoice"),

@@ -133,7 +133,7 @@ import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 
 const isMobile = ref(window.isMobile)
-
+const theme =window.theme
 
 const dialog = useDialog();
 const router = useRouter()

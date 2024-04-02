@@ -1,0 +1,167 @@
+import frappe
+from edoor.edoor.report.utils import get_months
+from edoor.edoor.report.monthly_property_data_summary.utils import get_grand_total_row, get_total_row,get_total_room_group_by_month,row_group
+from frappe.utils import getdate, add_to_date
+import copy
+from itertools import groupby
+def get_report(filters,columns):
+    report_data = get_report_data(filters,columns)
+    
+    return {
+        "data":report_data
+    }
+
+def get_report_data(filters,columns):
+    report_data = []
+    months = get_months(filters)
+    room_occupy = get_room_occupy(filters)
+
+    row_group = get_row_group(filters)
+    for m in months:
+        # frappe.throw(str(m))
+        month_record = {
+			"row_group": m["str_month"],
+			"indent":0,
+			"is_group":1
+		}
+        report_data.append(month_record)
+      
+        report_data = report_data + [{**d, "month": m["month"],"year":m["year"], "total_days":m["total_days"]}  for d in copy.deepcopy(row_group)]
+        if 'Not Set' in [d["row_group"] for d in room_occupy]:
+            report_data.append({
+                "row_group":"Not Set",
+                "indent":1,
+                "month":m["month"],
+                "year":m["year"],
+                "total_days":m["total_days"]
+            })
+            
+        
+        # set blank total row 
+        # and we assign value after render data complete
+        report_data.append({
+            "row_group":"Total",
+            "indent":1,
+            "is_total_row":1,
+            "month":m["month"],
+            "year":m["year"]
+        })
+
+        
+    for r in room_occupy:
+        record = [d for d in report_data if d["row_group"] == r["row_group"] and int(d["month"])==int(r["month"])]
+        if record:
+            record[0]["col_" + str(r["day"])] = r["occupy"] 
+            
+            
+    # total column
+    room_occupy.sort(key=lambda x: (x['row_group'], x['month']))
+    grouped_data = {}
+    for key, group in groupby(room_occupy, key=lambda x: (x['row_group'], x['month'])):
+    
+        grouped_data[key] = list(group)
+    
+    for key, value in grouped_data.items():
+        record = [d for d in report_data if d["row_group"] == key[0] and int(d["month"])==int(key[1])]
+        if record:
+            record[0]["total"] = sum([d["occupy"] for d in value])
+            record[0]["total_block"] = sum([d["block"] for d in value])
+    
+
+    # calculate room occupy
+    total_rooms = get_total_room_group_by_month (filters)
+    calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block")
+    
+    for r in [d for d in report_data if "total" in d and  d["total"]>0]:
+        total_room = 0
+        if filters.row_group=="Room":
+            total_room = r["total_days"]
+            
+        elif filters.row_group=="Room Type":
+           
+            total_room = sum([d["total_room"] for d in total_rooms if d["month"] == r["month"] and d["year"] ==r["year"] and r["row_group"]== d["room_type"]] )
+        else:
+            total_room = sum([d["total_room"] for d in total_rooms if d["month"] == r["month"] and d["year"] ==r["year"]])
+        
+        if calculate_room_occupancy_include_room_block==0:
+            total_room = total_room  - (0 if not "total_block" in r else r["total_block"])
+        r["occupancy"] = 100 *( r["total"] /  (1 if  (total_room or 0)==0 else total_room) )
+    
+    
+    # update total row to the blank total row
+    for r in [d for d in report_data if "is_total_row" in d and  d["is_total_row"]==1]:
+        r = get_total_row(
+            [d for d in report_data if "month" in d and "year" in d and d["month"]==r["month"] and d["year"]==r["year"]],
+            r,
+            columns,
+            filters,
+            sum([d["total_room"] for d in total_rooms if "month" in d  and d["month"]==r["month"]])
+        )
+    
+    if len(months)>1:
+        report_data.append({"indent":0})
+        report_data.append(
+            get_grand_total_row(
+                [d for d in report_data if "is_total_row" in d  ],
+                columns,
+                filters,
+                sum([d["total_room"] for d in total_rooms])
+            ))  
+    
+    if filters.hide_empty_record==1:
+            # show hide emplty record
+        report_data = [d for d in report_data if d["indent"] == 0 or ( "is_total_row" in d and d["is_total_row"] ==1) or ("total" in d and d["total"]> 0)]
+      
+    return report_data
+
+
+def get_row_group(filters):
+    sql=""
+    if filters.row_group=="Business Source":
+        sql="select name as row_group,1 as indent  from `tabBusiness Source` where property =%(property)s order by name"
+    elif filters.row_group=="Business Source Type":
+        sql="select name as row_group,1 as indent  from `tabBusiness Source Type` order by name"
+    
+    elif filters.row_group=="Guest Type":
+        sql="select name as row_group,1 as indent  from `tabCustomer Group` order by name"
+    
+    elif filters.row_group=="Room":
+        sql="select coalesce(room_number,'Not Set') as row_group,1 as indent  from `tabRoom` where property=%(property)s order by room_number"
+    
+    elif filters.row_group=="Reservation Type":
+        return [{"row_group":"FIT", "indent":1},{"row_group":"GIT", "indent":1}]
+    
+    elif filters.row_group=="Nationality":
+         sql="select distinct coalesce(nationality,'Not Set') as row_group,1 as indent  from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s order by nationality"
+     
+    elif filters.row_group=="Room Type":
+         sql="select distinct room_type as row_group,1 as indent  from `tabRoom Type` where property=%(property)s  order by room_type"
+     
+    
+    data = frappe.db.sql(sql,filters,as_dict=1)
+    
+    return data
+
+
+def get_room_occupy(filters):
+    sql = """select 
+				day(date) as day,
+                month(date) as month, 
+				coalesce({0},'Not Set') as row_group,
+				sum(type='Reservation') as occupy, 
+				sum(type='Block') as block 
+			from `tabRoom Occupy` 
+			where 
+				property=%(property)s and 
+                date between %(start_date)s and %(end_date)s and 
+				is_active=1 
+			group by 
+				day(date) ,
+                month(date),
+				coalesce({0},'Not Set') """.format(
+                    min( [d["fieldname"] for d in row_group() if d["label"] == filters.row_group])
+                )
+    
+    
+    
+    return frappe.db.sql(sql,filters, as_dict=1)

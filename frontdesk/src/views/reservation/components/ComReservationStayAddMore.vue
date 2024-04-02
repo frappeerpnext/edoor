@@ -185,7 +185,7 @@
             <div class="mt-3 flex justify-end">
                 <Button @click="onAddRoom" class="dialog_btn_transform conten-btn py-4">
                     <img :src="IconAddRoom" class="btn-add_comNote__icon me-1" />
-                    {{ $t('Add Room') }}
+                    {{ $t('Add More Room') }}
                    
                 </Button>
             </div>

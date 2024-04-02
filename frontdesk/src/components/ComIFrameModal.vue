@@ -3,11 +3,19 @@
         <div class="p-3 ">
             <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
                 <div class="col flex gap-2">
-
+                   
                     <div v-if="show_letter_head">
                      
                         <ComLetterHead :letterhead="letter_head" v-model="letter_head" @onSelect="onSelectLetterHead" />
                     </div>
+                    <div v-if="hasFilter('show_vattin')">
+                        <div class="relative mt-2">
+            <span class="absolute w-full">
+                <Checkbox @input="reloadIframe" class="w-full" v-model="filters.show_vattin" :trueValue="1" :falseValue="0"  :binary="true" /></span>
+            <span class="pl-5">Show / Hide Vattin Number</span>
+        </div>
+                    
+                 </div>
                     <div v-if="hasFilter('keyword')">
                         <InputText type="text" class="p-inputtext-sm w-full w-16rem" @input="reloadIframe"
                             :placeholder="$t('Search')" v-model="filters.keyword" :maxlength="50" />
@@ -218,7 +226,8 @@ const filters = ref({
     show_account_code: window.setting.show_account_code_in_folio_transaction,
     show_cash_count: 1,
     show_cash_float: 1,
-    show_master_folio_only: 1
+    show_master_folio_only: 1,
+    show_vattin:0
 
 })
 const show_toolbar = ref(0)

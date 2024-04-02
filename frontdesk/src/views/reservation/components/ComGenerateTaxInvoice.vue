@@ -9,7 +9,7 @@
             
             <div class="col-12">
 <label>{{$t('Tax Invoice Date')}}</label>
- <Calendar   class="p-inputtext-sm w-full"
+ <Calendar  @date-select="onDateSelect"  class="p-inputtext-sm w-full"
                                     v-model="tax_invoice_date" :placeholder="$t('Tax Invoice Date')"
                                     dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear"
                                      />
@@ -55,6 +55,7 @@ const tax_invoice_date = ref(moment(window.current_working_date).toDate())
 const data = ref()
 const confirm = useConfirm()
 const gv = inject("$gv")
+
 function onSave() {
     confirm.require({
             message: $t('Are you sure you want to Generate Tax Invoice'),
@@ -72,7 +73,7 @@ function onSave() {
         tax_invoice_date:moment(tax_invoice_date.value).format("YYYY-MM-DD")
     }).then(result=>{
         isSaving.value = false
-        dialogRef.value.close()
+        dialogRef.value.close(result)
     }).catch(err=>{
         isSaving.value = false
     })
@@ -91,7 +92,9 @@ function viewfoliotaxinvoicedetail() {
 			],
              name: dialogRef.value.data.name,
              report_name: gv.getCustomPrintFormat("Folio Tax Invoice Detail"),
-             letterhead:"Tax Letterhead"
+             letterhead:"Tax Letterhead",
+             filter_options:["show_vattin"]
+            
          },
          props: {
              header: $t("Print Tax Invoice"),
@@ -125,7 +128,9 @@ function viewfoliotaxinvoicedetail() {
     })
 }
 
-
+function onDateSelect(event) {
+    get_tax_invoice_info()
+}
  
 
 onMounted(() => {

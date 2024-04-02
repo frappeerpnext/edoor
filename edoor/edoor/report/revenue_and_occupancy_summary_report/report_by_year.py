@@ -12,6 +12,7 @@ def get_report(filters, report_config):
         frappe.throw("There is no option available for row group <b>Year</b> and parent row group <b>Month</b>")
     
     report_data = get_report_data(filters,report_config)
+    # frappe.throw(str(report_data))
     return {
         "columns":get_report_columns(filters,report_config),
         "data": report_data["report_data"],
