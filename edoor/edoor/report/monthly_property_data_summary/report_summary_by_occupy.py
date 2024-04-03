@@ -198,7 +198,10 @@ def get_report_chart(filters,data,months):
             values.append(sum([d[col_name] for d in data if "row_group" in d and d["row_group"]==s["row_group"] and col_name in d]))
         s["values"] = values
         datasets.append({"name":s["row_group"],"values":s["values"]})
-	
+
+    if filters.hide_empty_record==1:
+            # show hide emplty record
+        datasets = [d for d in datasets if any(value > 0 for value in d["values"]) ]
     chart = {
 		'data':{
 			'labels':columns,
