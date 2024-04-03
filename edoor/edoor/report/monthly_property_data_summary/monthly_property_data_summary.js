@@ -56,6 +56,25 @@ frappe.query_reports["Monthly Property Data Summary"] = {
 			"on_change": function (query_report) { },
 			hide_in_filter: 1,
 		},
+		
+		{
+			"fieldname": "chart_type",
+			"label": __("Chart Type"),
+			"fieldtype": "Select",
+			"options": "None\nbar\nline\npie",
+			"default": "line",
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
+		},
+		
+		{
+			"fieldname": "show_summary",
+			"label": __("Show Summary"),
+			"fieldtype": "Check",
+			"default": 1,
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
+		},
 		{
 			"fieldname": "hide_empty_record",
 			"label": __("Hide Empty Record"),
@@ -64,15 +83,6 @@ frappe.query_reports["Monthly Property Data Summary"] = {
 			"on_change": function (query_report) { },
 			hide_in_filter: 1,
 		},
-		
-// 		{
-// 			"fieldname": "show_summary",
-// 			"label": __("Show Summary"),
-// 			"fieldtype": "Check",
-// 			"default": 1,
-// 			hide_in_filter: 1,
-// 			"on_change": function (query_report) { },
-// 		},
 // 		{
 // 			"fieldname": "show_summary_fields",
 // 			"label": __("Show Summary Field"),
@@ -95,15 +105,7 @@ frappe.query_reports["Monthly Property Data Summary"] = {
 
 // 		},
 		
-// 		{
-// 			"fieldname": "chart_type",
-// 			"label": __("Chart Type"),
-// 			"fieldtype": "Select",
-// 			"options": "None\nbar\nline\npie",
-// 			"default": "line",
-// 			hide_in_filter: 1,
-// 			"on_change": function (query_report) { },
-// 		},
+		
 // {
 // 			"fieldname": "show_chart_fields",
 // 			"label": __("Show chart fields"),

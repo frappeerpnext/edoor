@@ -80,7 +80,7 @@ def get_chart(filters,data):
 	
 
 	group_column = get_field(filters)
-	
+
 
 	group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
 	

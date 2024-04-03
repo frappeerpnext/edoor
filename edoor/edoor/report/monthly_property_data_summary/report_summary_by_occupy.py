@@ -5,10 +5,15 @@ from frappe.utils import getdate, add_to_date
 import copy
 from itertools import groupby
 def get_report(filters,columns):
+    months = get_months(filters)
     report_data = get_report_data(filters,columns)
+    summary = get_summary_data(filters, report_data)
+    chart = get_report_chart(filters,report_data,months)
     
     return {
-        "data":report_data
+        "data":report_data,
+        "report_summary":summary,
+        "report_chart":chart
     }
 
 def get_report_data(filters,columns):
@@ -111,10 +116,16 @@ def get_report_data(filters,columns):
     if filters.hide_empty_record==1:
             # show hide emplty record
         report_data = [d for d in report_data if d["indent"] == 0 or ( "is_total_row" in d and d["is_total_row"] ==1) or ("total" in d and d["total"]> 0)]
-      
+
     return report_data
 
-
+def get_summary_data(filters,report_data):
+    if filters.show_summary:
+        return [
+            {"label": "Total Occupy","value": sum(d["total"] for d in report_data if 'total' in d and "is_total_row" in d), "indicator":"red","datatype":"Int"},
+            {"label": "Total Occ(%)","value": sum(d["occupancy"] for d in report_data if 'occupancy' in d and "is_total_row" in d), "indicator":"green","datatype":"Percent"},
+            
+        ]
 def get_row_group(filters):
     sql=""
     if filters.row_group=="Business Source":
@@ -165,3 +176,40 @@ def get_room_occupy(filters):
     
     
     return frappe.db.sql(sql,filters, as_dict=1)
+def get_report_chart(filters,data,months):
+
+    min_day = min([d["min_date"].day for d in months])
+    max_day = max([d["max_date"].day for d in months])
+    precision = frappe.db.get_single_value("System Settings","currency_precision")
+    columns = []
+    row_group = get_row_group(filters)
+    
+    datasets = []
+    # frappe.throw(str(datasets))
+    for n in range(min_day, max_day +1):
+        columns.append(n)
+            
+    for s in row_group:
+    
+        values = []
+        for n in range(min_day, max_day +1):
+            col_name= "col_" + str(n)
+          
+            values.append(sum([d[col_name] for d in data if "row_group" in d and d["row_group"]==s["row_group"] and col_name in d]))
+        s["values"] = values
+        datasets.append({"name":s["row_group"],"values":s["values"]})
+	
+    chart = {
+		'data':{
+			'labels':columns,
+			'datasets':datasets
+		},
+		"type": filters.chart_type,
+		"lineOptions": {
+			"regionFill": 1,
+		},
+		'valuesOverPoints':1,
+		"axisOptions": {"xIsSeries": 1}
+	}
+ 
+    return chart

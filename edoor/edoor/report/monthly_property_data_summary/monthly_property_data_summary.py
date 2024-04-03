@@ -21,7 +21,7 @@ def execute(filters=None):
 	if filters.row_group == "Room":
 		message = "Note: Unassigned rooms in your reservation may affect the accuracy of the occupancy calculation."
 	
-	return columns, report_data["data"],message
+	return columns, report_data["data"],message,report_data["report_chart"],report_data["report_summary"]
 
 def get_report_columns(filters,min_max_day):
 	columns = [
