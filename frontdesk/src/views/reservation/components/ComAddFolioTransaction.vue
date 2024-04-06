@@ -94,7 +94,7 @@
                                 <label for="dis_type">{{ $t('Discount Type') }}</label>
                                 <div class="w-full">
                                     <ComSelect class="w-full min-w-full" id="dis_type" :disabled="!canEdit"
-                                        v-model="doc.discount_type" :options="['Percent', 'Amount']" :clear="false" />
+                                        v-model="doc.discount_type" optionLabel="label" optionValue="value" :options="discountType" :clear="false" />
                                 </div>
                             </div>
                             <div class="col-12 md:col-6 lg:col-4">
@@ -348,7 +348,12 @@ import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
 import {i18n} from '@/i18n';
+
 const { t: $t } = i18n.global;
+const discountType = ref([
+    { label: $t('Percent'), value: 'Percent' },
+    { label: $t('Amount'), value: 'Amount' },
+]);
 const gv = inject("$gv")
 const frappe = inject('$frappe');
 const db = frappe.db();

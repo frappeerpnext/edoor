@@ -284,7 +284,7 @@ function onCheckIn() {
             stays: rs.selecteds
         },
         props: {
-            header: 'Confirm Check In',
+            header: $t('Confirm Check In'),
             style: {
                 width: '450px',
             },

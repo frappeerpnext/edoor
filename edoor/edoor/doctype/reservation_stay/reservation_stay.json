@@ -32,6 +32,7 @@
   "status_color",
   "reservation_status",
   "is_active_reservation",
+  "is_package",
   "column_break_7",
   "arrival_date",
   "arrival_time",
@@ -891,12 +892,19 @@
   {
    "fieldname": "html_general_information",
    "fieldtype": "HTML"
+  },
+  {
+   "default": "0",
+   "fetch_from": "rate_type.is_package",
+   "fieldname": "is_package",
+   "fieldtype": "Check",
+   "label": "Is Package"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-13 11:15:46.749897",
+ "modified": "2024-04-06 08:28:00.658510",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

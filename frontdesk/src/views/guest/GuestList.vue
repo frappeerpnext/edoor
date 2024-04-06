@@ -6,7 +6,7 @@
                     <div class="text-xl md:text-2xl">{{ $t('Guest Database') }} </div>
                 </template>
                 <template #end>
-                    <Button v-tippy="'Add New Guest'" @click="onAddNewGuest" label="Add New Guest" class="d-bg-set btn-inner-set-icon border-none">
+                    <Button v-tippy="$t('Add New Guest')" @click="onAddNewGuest" label="Add New Guest" class="d-bg-set btn-inner-set-icon border-none">
                         <ComIcon class="mr-2" icon="iconAddNewGuest"></ComIcon>
                          <span v-if="!isMobile">{{ $t('Add New Guest') }} </span> 
                          <span v-else> {{ $t('Add New') }} </span>
@@ -166,7 +166,7 @@ const columns = ref([
     { fieldname: 'name', label: 'Customer Code', header_class:"text-center", fieldtype:"Link",post_message_action:"view_guest_detail" ,default:true},
     { fieldname: 'customer_name_en', label: 'Customer Name' ,default:true},
     { fieldname: 'gender', label: 'Gender' , header_class:"text-center", default:true},
-    { fieldname: 'date_of_birth', fieldtype:"Date", header_class:"text-center", label: 'Birthdate' ,default:true},
+    { fieldname: 'date_of_birth', fieldtype:"Date", header_class:"text-center", label: 'Date Of Birth' ,default:true},
     { fieldname: 'company_name', label: 'Company' ,default:true},
     { fieldname: 'country', label: 'Country' ,default:true},
     { fieldname: 'customer_group', label: 'Guest Type' ,default:true},
@@ -362,7 +362,7 @@ function onAddNewGuest(){
             // name: name.value,
         },
         props: {
-            header: `Add New Guest`,
+            header: $t(`Add New Guest`),
             style: {
                 width: '50vw',
             },

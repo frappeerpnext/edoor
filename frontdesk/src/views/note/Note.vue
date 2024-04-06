@@ -4,12 +4,12 @@
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="flex justify-between">
-                    <div class="text-2xl">Note list</div>
-                    <Button v-if="isMobile" label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
+                    <div class="text-2xl">{{$t('Note list')}} </div>
+                    <Button v-if="isMobile" :label="$t('Add Note')" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
                     </div>
                 </template>
                 <template #end>
-                    <Button v-if="!isMobile" label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
+                    <Button v-if="!isMobile" :label="$t('Add Note')" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
                     <Button :label="btnLabel" severity="warning" outlined :icon="btnIcon" @click="onChangeViewType" />
                 </template>
             </ComHeader>
@@ -36,7 +36,7 @@
                 <div v-else class="flex gap-2 col">
                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                 <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
+                    <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter') " icon="pi pi-filter-slash" @click="onClearFilter" />
                 </div>
             </div>
                 <div class="flex justify-end col">
@@ -51,7 +51,7 @@
             <Paginator v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
                 :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong> {{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             
             </Paginator>
@@ -90,7 +90,8 @@ import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import ComNoteTableView from '@/views/note/ComNoteTableView.vue';
 import ComNoteCardView from '@/views/note/ComNoteCardView.vue';
- 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 const confirm = useConfirm()
 const notes = ref([]);

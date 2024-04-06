@@ -37,7 +37,7 @@
         <div class="mt-3">
             <div>
                 <label>{{$t('Note')}} </label><br />
-                <Textarea rows="5" placeholder="Note" cols="30" class="w-full border-round-xl"  v-model="data.note"/>
+                <Textarea rows="5" :placeholder="$t('Note')" cols="30" class="w-full border-round-xl"  v-model="data.note"/>
                 
             </div>
         </div>

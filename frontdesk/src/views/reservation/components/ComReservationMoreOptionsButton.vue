@@ -322,7 +322,7 @@ function onGroupUndoCheckIn() {
                 }
             },
             props: {
-                header: "Undo Checked In",
+                header: $t("Undo Checked In"),
                 style: {
                     width: '50vw',
                 },
@@ -503,12 +503,12 @@ function onMarkAsPaidbyMasterroom() {
     }
     confirm.require({
         message: 'Are you sure you want to Mark As Paid by Master room?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             postApi("reservation.update_mark_as_paid_by_master_room", {
                 reservation:rs.reservation.name,
@@ -541,12 +541,12 @@ function onUnMarkAsPaidbyMasterroom() {
     }
     confirm.require({
         message: 'Are you sure you want to Unmark As Paid by Master room?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             postApi("reservation.update_mark_as_paid_by_master_room", {
                 reservation:rs.reservation.name,
@@ -576,12 +576,12 @@ function onAllowPostToCityLedger() {
 
     confirm.require({
         message: 'Are you sure you want to allow post to city ledger?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             postApi("reservation.update_allow_post_to_city_ledger", {
                 stays: rs.selecteds.map(x => x.name),
@@ -606,12 +606,12 @@ function onUnAllowPostToCityLedger() {
 
     confirm.require({
         message: 'Are you sure you want to un allow post to city ledger?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             postApi("reservation.update_allow_post_to_city_ledger", {
                 stays: rs.selecteds.map(x => x.name),
@@ -670,7 +670,7 @@ function onGroupChangeRate() {
         const dialogRef = dialog.open(ComGroupChangeRate, {
             data: { stays: rs.selecteds, reservation: rs.reservation.name },
             props: {
-                header: 'Group Change Rate',
+                header: $t('Group Change Rate'),
                 style: {
                     width: '50vw',
                 },
@@ -717,7 +717,7 @@ function onGroupChangeStayDate() {
             };
         }),
         props: {
-            header: 'Group Change Stay Date',
+            header: $t('Group Change Stay Date'),
             style: {
                 width: '60vw',
             },
@@ -740,12 +740,12 @@ function onGroupChangeStayDate() {
 function onMarkasGITReservation() {
     confirm.require({
         message: 'Are you sure you want to Mark as GIT Reservation',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             db.updateDoc('Reservation', rs.reservation?.name, {
                 reservation_type: "GIT",
@@ -773,12 +773,12 @@ function onMarkasGITReservation() {
 function onMarkasFITReservation() {
     confirm.require({
         message: 'Are you sure you want to Mark as FIT Reservation',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             ``
             db.updateDoc('Reservation', rs.reservation?.name, {

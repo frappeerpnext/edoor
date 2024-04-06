@@ -24,8 +24,8 @@
                                 <Button text size="small" icon="pi pi-trash" @click="onRemoveTemplatingFile(file, removeFileCallback, index)" severity="danger" />
                             </div>
                             <div>
-                                <InputText type="text" class="p-inputtext-sm w-full mb-2" placeholder="title"  v-model="file.custom_title" :maxlength="50" />
-                                <Textarea v-model="file.custom_description" rows="3"  placeholder="Description" class="w-full"/>
+                                <InputText type="text" class="p-inputtext-sm w-full mb-2" :placeholder="$t('title')"  v-model="file.custom_title" :maxlength="50" />
+                                <Textarea v-model="file.custom_description" rows="3"  :placeholder="$t('Description')" class="w-full"/>
                             </div>
                         </div>
                     </div> 

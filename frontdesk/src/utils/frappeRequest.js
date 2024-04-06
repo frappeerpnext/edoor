@@ -44,7 +44,7 @@ export function frappeRequest(options) {
             console.groupCollapsed(url)
             let warning = JSON.parse(data.exc)
             for (let text of warning) {
-              console.log(text)
+
             }
             console.groupEnd()
           } catch (e) {

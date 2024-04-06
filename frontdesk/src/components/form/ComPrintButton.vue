@@ -1,5 +1,5 @@
 <template>
-    <SplitButton :class="BtnClassPrinter ? BtnClassPrinter : 'spl__btn_cs_b sp_b'" @click="onPrint" id="btnprint" label="Print" icon="pi pi-print" :model="items" />
+    <SplitButton :class="BtnClassPrinter ? BtnClassPrinter : 'spl__btn_cs_b sp_b'" @click="onPrint" id="btnprint" :label="$t('Print')" icon="pi pi-print" :model="items" />
  
 </template>
 <script setup>
@@ -8,10 +8,11 @@ const props = defineProps({
     url:String,
     BtnClassPrinter:String
 })
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const items = [
     {
-        label: 'Export PDF (Portrait)',
+        label: $t('Export PDF (Portrait)'),
         icon: 'pi pi-file-pdf',
         command: () => {
             const url = props.url.replace("printview","api/method/frappe.utils.print_format.download_pdf") + "&orientation=Portrait" 
@@ -20,7 +21,7 @@ const items = [
         }
     },
     {
-        label: 'Export PDF (Landscape)',
+        label: $t('Export PDF (Landscape)'),
         icon: 'pi pi-file-pdf',
         command: () => {
             const url = props.url.replace("printview","api/method/frappe.utils.print_format.download_pdf") + "&orientation=Landscape" 

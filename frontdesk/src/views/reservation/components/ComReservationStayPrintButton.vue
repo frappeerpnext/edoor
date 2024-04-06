@@ -32,7 +32,7 @@ items.value.push({
                 reservation_stay: props.reservation_stay ?? "",
             },
             props: {
-                header: "Guest Registration Card",
+                header: $t("Guest Registration Card"),
                 style: {
                     width: '80vw',
                 },

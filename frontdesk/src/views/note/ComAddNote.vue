@@ -3,7 +3,7 @@
     <div class="grid">
       <div class="col-12">
         <div class="w-6">
-         <label for="Note Date">Note Date</label>
+         <label for="Note Date">{{ $t('Note Date') }} </label>
           <div class="card flex justify-content-left">
             <Calendar :selectOtherMonths="true" class="w-full p-inputtext-sm depart-arr border-round-xl" v-model="data.custom_note_date"
               dateFormat="dd-mm-yy" showIcon showButtonBar selectOtherMonths  panelClass="no-btn-clear"/>
@@ -11,14 +11,14 @@
         </div>
       </div>
       <div class="col-6"> 
-        <label for="reference_documnent">Reference Document</label>
+        <label for="reference_documnent">{{ $t('Reference Document') }} </label>
         <ComAutoComplete inputId="reference_documnent" isFull v-model="data.reference_doctype" placeholder="Reference Document" doctype="DocType" 
         :filters="{'name':['in',['Reservation','Reservation Stay','Folio Transaction','Customer','Room Block','Business Source','City Ledger Account','Room']]}"
         @onSelected="onSelectReferenceDocument"
         />
       </div>
       <div class="col-6"> 
-        <label for="reference_name">Reference Name</label>
+        <label for="reference_name"> {{ $t('Reference Name') }} </label>
         <ComAutoComplete isFull v-model="data.reference_name" placeholder="Reference Name" :doctype="data.reference_doctype"
         :filters="{ 'property' : property.property }"
         :disabled="!data.reference_doctype"
@@ -27,7 +27,7 @@
  
  
       <div class="col-12">
-        <label>Note</label>
+        <label>{{ $t('Note') }} </label>
         <div class="card flex justify-content-left">
             <Textarea v-model="data.content" rows="3" autoResize style="width: 100%;" />
         </div>
@@ -43,6 +43,8 @@ const gv = inject('$gv')
 const loading = ref(false);
 const isMobile = ref(window.isMobile) 
 const property = window.property
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const data = ref({
   custom_property : window.property_name,
   custom_posting_date: window.current_working_date,

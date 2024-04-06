@@ -1,7 +1,7 @@
 <template lang="">
     <div class="flex">
         <template v-if="route.name != 'RoomInventory'">
-            <Button class="border-y-none border-left-none border-noround-right"  v-tippy = " v-tippy == 'room_type' ? 'Room List View' : 'Room Type View'" @click="onView()">
+            <Button class="border-y-none border-left-none border-noround-right"  v-tippy = " v-tippy == 'room_type' ? $t('Room List View') : $t('Room Type View')" @click="onView()">
                 <img v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
                 <img v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
             </Button>
@@ -69,17 +69,17 @@ const props = defineProps({
 
 const selectedPeriod = computed(()=>{
     if(reservation_chart.value?.period=="week"){
-        return "Week"
+        return $t("Week")
     }else if(reservation_chart.value?.period=="month"){
-        return "Month"
+        return $t("Month")
     }else {
-        return "15 Days"
+        return $t("15 Days")
     }
 })
 
 const items = ref([
     {
-        label: 'Week',
+        label: $t('Week'),
         key: 'week',
         icon:'iconWeekCalendar',
         command: () => {
@@ -87,7 +87,7 @@ const items = ref([
         }
     },
     {
-        label: '15 Days',
+        label: $t('15 Days'),
         key: '15_days',
         icon:'icon14Day',
         command: () => {
@@ -95,7 +95,7 @@ const items = ref([
         }
     },
     {
-        label: 'Month',
+        label: $t('Month'),
         key: 'month',
         icon:'iconMonth',
         command: () => {

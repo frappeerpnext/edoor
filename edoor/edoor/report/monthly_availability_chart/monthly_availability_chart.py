@@ -93,7 +93,7 @@ def get_report_data(filters,data):
 			"indent":0,
 			"row_header": m["month_name"],
 			"header":1,
-			"occupancy": round(totol_room_sold / total_rooms * 100,2) 
+			"occupancy": round(totol_room_sold / (1 if total_rooms==0 else total_rooms) * 100,2) 
 		}
 		for n in range(1,total_day +1):
 			total_rooms = len(data) 
@@ -102,7 +102,7 @@ def get_report_data(filters,data):
 				total_rooms = total_rooms - len( [d for d in  occupy_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n   and d["type"]=="Block"])
 			
 
-			month_record[str(n)] =   round(totol_room_sold / total_rooms * 100,2) 
+			month_record[str(n)] =   round(totol_room_sold / (1 if total_rooms==0 else total_rooms) * 100,2) 
 		
 		report_data.append(month_record)
 
@@ -126,7 +126,7 @@ def get_report_data(filters,data):
 			"indent":1,
 			"row_header": rt[1],
 			"month":m["month_name"],
-			"occupancy": round(totol_room_sold / total_rooms * 100,2)
+			"occupancy": round(totol_room_sold / (1 if total_rooms==0 else total_rooms) * 100,2)
 			}
 			for n in range(1,total_day +1):
 				total_rooms = len(rooms)
@@ -134,7 +134,7 @@ def get_report_data(filters,data):
 				if calculate_room_occupancy_include_room_block == 0:
 					total_rooms = total_rooms - len( [d for d in current_month_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n   and d["room_type_id"]==rt[0] and d["type"]=="Block"])
 				
-				room_type_record[str(n)] = round(totol_room_sold / total_rooms * 100,2)
+				room_type_record[str(n)] = round(totol_room_sold / (1 if total_rooms==0 else total_rooms) * 100,2)
 
 			report_data.append(room_type_record)
 			
@@ -143,7 +143,7 @@ def get_report_data(filters,data):
 				total_rooms =  total_day
 				if calculate_room_occupancy_include_room_block ==0:
 					total_rooms = total_rooms - len( [d for d in  occupy_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["room_type_id"]==rt[0] and d["room_id"] == r["name"] and d["type"]=="Block"])
-				r["occupancy"] = round(totol_room_sold / total_rooms * 100,2)
+				r["occupancy"] = round(totol_room_sold / (1 if total_rooms==0 else total_rooms) * 100,2)
 
 			#start render room record
 			
@@ -167,7 +167,7 @@ def get_report_data(filters,data):
 	report_data.append({
 		"indent":3,
 		"row_header":"Grand Total",
-		"occupancy":round(totol_room_sold / total_rooms * 100,2),
+		"occupancy":round(totol_room_sold / (1 if total_rooms==0 else total_rooms) * 100,2),
 		"is_grand_total":1
 	})
 	return report_data

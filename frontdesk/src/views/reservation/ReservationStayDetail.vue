@@ -377,7 +377,7 @@ const onClose = () => {
 const onCheckIn = () => {
     const dialogRef = dialog.open(ComConfirmCheckIn, {
         props: {
-            header: 'Confirm Check In',
+            header: $t('Confirm Check In'),
             style: {
                 width: '650px',
             },
@@ -495,7 +495,7 @@ function onAuditTrail() {
             filter_key: "custom_reservation_stay"
         },
         props: {
-            header: 'Audit Trail',
+            header: $t('Audit Trail'),
             style: {
                 width: '80vw',
             },

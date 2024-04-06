@@ -28,6 +28,7 @@
   "is_complimentary",
   "is_house_use",
   "is_arrival",
+  "is_package",
   "input_rate",
   "rate",
   "allow_discount",
@@ -429,11 +430,18 @@
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active"
+  },
+  {
+   "default": "0",
+   "fetch_from": "rate_type.is_package",
+   "fieldname": "is_package",
+   "fieldtype": "Check",
+   "label": "Is Package"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-18 10:25:39.090278",
+ "modified": "2024-04-05 15:35:48.724556",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

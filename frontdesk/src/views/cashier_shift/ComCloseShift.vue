@@ -404,11 +404,13 @@ function getData() {
 
     })
 }
+
 function getCashCountSetting() {
-    getApi("utils.get_cash_count_setting").then(result => {
+    getApi("utils.get_cash_count_setting",{property:window.property_name}).then(result => {
         cashCountSetting.value = result.message.cash_count_setting
         exchangeRates.value = result.message.exchange_rate_data
     })
+    console.log(window.property_name);
 }
 onMounted(() => {
     getData()

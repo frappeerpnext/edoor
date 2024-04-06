@@ -51,7 +51,7 @@ function onViewReservationDetail(name) {
             delay_load_data:1500
         },
         props: {
-            header: 'Reservation Detail',
+            header: $t('Reservation Detail'),
             contentClass: 'ex-pedd',
             style: {
                 width: '80vw',

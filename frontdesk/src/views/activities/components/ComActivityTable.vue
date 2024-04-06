@@ -18,7 +18,7 @@
 								{{ moment(slotProps.data.custom_posting_date).format("DD-MM-YYYY") }}
 							</template>
 						</Column>
-						<Column :header=" $t('Reference Type') ">
+						<Column :header="$t('Reference Type')">
 							<template #body="slotProps">
 								{{ $t(slotProps.data.reference_doctype) }}
 							</template>
@@ -42,8 +42,8 @@
 								<div class="white-space-nowrap overflow-hidden text-overflow-ellipsis content-note-comment" style="width:500px" v-html="slotProps.data.content" v-tippy="slotProps.data.content"></div>
 							</template>
 						</Column>
-						<Column field="comment_by" header="By"></Column>
-						<Column field="modified" header=" Date & Time"><template #body="slotProps">
+						<Column field="comment_by" :header="$t('By')"></Column>
+						<Column field="modified" :header="$t('Date & Time')"><template #body="slotProps">
 								<ComTimeago :date="slotProps.data.modified" />
 
 							</template>

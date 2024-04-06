@@ -3,7 +3,7 @@
     <div>
       <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
         <template #start>
-          <div class="text-xl md:text-2xl"> {{ $t('Block Room') }} </div>
+          <div class="text-xl md:text-2xl"> {{ $t('Room Block List') }} </div>
         </template>
         <template #end>
           <Button class="border-none" @click="onAddNewRommBlock()"> {{ $t('Add New Room Block') }} </Button>

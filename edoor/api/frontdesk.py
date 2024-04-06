@@ -1667,7 +1667,7 @@ def get_room_inventory_resource(property = ''):
 
     resources.append({
         "id": "pax",
-        "title": "PAX (A/C)",
+        "title": "Pax(A/C)",
         "sort_order":1006
     })
     resources.append({

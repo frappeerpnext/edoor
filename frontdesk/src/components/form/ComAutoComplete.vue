@@ -286,7 +286,7 @@ function getDataByFilter(keyword){
         filter.filters.push([props.fieldSearch, 'like', '%'+keyword+'%'])
      
     getDocList(props.doctype,filter).then((r)=>{
-        console.log(options)
+ 
         // options.value = r.map((x)=>{
         //     return {
         //         label: x.name,

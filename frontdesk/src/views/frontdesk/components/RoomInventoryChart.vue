@@ -12,7 +12,8 @@ import {  inject,watch } from "vue";
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 const props = defineProps({ data: Object })
 const moment = inject("$moment")
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 watch(() => props.data, (newValue, oldValue) => {
     renderChart();
 })
@@ -25,24 +26,24 @@ function renderChart(){
         datasets: [
             {
                 chartType: 'bar',
-                name: 'Departure',
+                name: $t('Departure'),
                 values:  props.data.filter(r=>r.departure>=0).map(r=>parseFloat( r.departure))
             },
                 {
                     chartType: 'bar',
-                    name: 'Stay Over',
+                    name: $t('Stay Over'),
                    
                     values:   props.data.filter(r=>r.stay_over>=0) .map(r=>parseFloat( r.stay_over))
                 },
             {
                 chartType: 'bar',
-                name: 'Arrival',
+                name: $t('Arrival'),
                 values:   props.data.filter(r=>r.arrival>=0) .map(r=>parseFloat( r.arrival)),
                 
             },
             {
                 chartType: 'line',
-                name: 'Occupancy',
+                name: $t('Occupancy'),
                 values: props.data.filter(r=>r.occupancy) .map(r=>parseFloat( r.occupancy)),
             },
            

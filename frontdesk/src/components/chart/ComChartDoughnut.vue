@@ -10,7 +10,8 @@
 </template>
 <script setup>
 import { ref, inject,computed } from 'vue'
- 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     total_room:Number,
     data: {
@@ -67,7 +68,7 @@ const chartData = computed(()=>{
     let backgroundColors = []
     if (props.data.length > 0) {
         props.data.forEach((r) => {
-            labels.value.push(r.label)
+            labels.value.push($t(r.label))
             values.value.push(r.value)
             backgroundColors.push(r.color || 'rgba(255, 159, 64)')
             if (props.showPercentage) {
@@ -80,7 +81,7 @@ const chartData = computed(()=>{
         })
            
         return {
-            labels: labels.value,
+            labels:  labels.value,
             datasets: [
                 {
                     data: values.value,

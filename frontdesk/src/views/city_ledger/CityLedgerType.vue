@@ -12,7 +12,7 @@
             <div class="flex w-full flex-wrap gap-2">
                 <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
-                    <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                    <InputText class="w-full" v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
                 </div>
             </div>
         </div>

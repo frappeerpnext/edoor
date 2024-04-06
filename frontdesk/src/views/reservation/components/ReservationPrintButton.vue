@@ -17,6 +17,22 @@ const props = defineProps({
 const gv = inject("$gv")
 const items = ref([
     {
+        label: $t("eDoor Group Registration Card"),
+        icon: 'pi pi-check-circle',
+
+        command: () => {
+
+            openReport("eDoor Group Registration Card",
+                {
+                    "doctype": "Reservation",
+                    name: props.reservation ?? "",
+                    report_name: gv.getCustomPrintFormat("eDoor Group Registration Card"),
+                    filter_options: ["show_rate"],
+                }
+            )
+        },
+    },
+    {
         label: $t("Confirmation Voucher"),
         icon: 'pi pi-check-circle',
 
@@ -26,7 +42,7 @@ const items = ref([
                 {
                     "doctype": "Reservation",
                     name: props.reservation ?? "",
-                    report_name: ("eDoor Reservation Confirmation Voucher"),
+                    report_name: gv.getCustomPrintFormat("eDoor Reservation Confirmation Voucher"),
                 }
             )
         },

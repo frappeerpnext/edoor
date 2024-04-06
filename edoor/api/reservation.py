@@ -54,7 +54,7 @@ def get_reservation_detail(name):
 
     #start get information
     reservation= frappe.get_doc("Reservation",name)
-    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information","room_nights"])
+    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information","room_nights","is_package"])
     master_guest = frappe.get_doc("Customer",reservation.guest)
     total_folio = frappe.db.count('Reservation Folio', {'reservation': name})
 

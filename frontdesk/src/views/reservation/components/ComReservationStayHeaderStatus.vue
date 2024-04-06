@@ -89,7 +89,7 @@ function showReservationDetail(name) {
             name: name
         },
         props: {
-            header: 'Reservation Detail',
+            header: $t('Reservation Detail'),
             contentClass: 'ex-pedd',
             style: {
                 width: '80vw',

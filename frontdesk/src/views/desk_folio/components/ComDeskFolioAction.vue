@@ -41,7 +41,7 @@
             </Menu>
         </div>
         <div class="flex ms-2 md:ms-0">
-            <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
+            <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" :label="$t('Print')" icon="pi pi-print"
                 :model="print_menus" />
                 <Button   @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b btn-size2 ml-2"></Button>    
         </div>

@@ -17,14 +17,14 @@
                         valueClass="grow" :isAction="true" ></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Reference Number" :valueTooltip="$t('Add Reference Number')" title="Ref. No"
                          :isSlot="true" :isAction="true" valueClass="col-4">
                         <span>
                             <i v-if="!stay.reservationStay?.reference_number" class="pi pi-pencil"></i>
                             {{ stay.reservationStay?.reference_number ? stay.reservationStay?.reference_number : '...' }}
                         </span>
                     </ComBoxStayInformation>
-                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Internal Reference Number" valueTooltip="Add Internal Reference Number" title="Int. No"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Internal Reference Number" :valueTooltip="$t('Add Internal Reference Number')" title="Int. No"
                      :isAction="true" valueClass="grow" :isSlot="true"
                         titleClass="w-5rem leading-10">
                         <span>

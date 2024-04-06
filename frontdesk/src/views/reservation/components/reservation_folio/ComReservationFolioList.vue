@@ -155,7 +155,7 @@ function onAddNewFolio(stay) {
         },
         props: {
 
-            header: 'Create New Folio',
+            header: $t('Create New Folio'),
             style: {
                 width: '50vw',
             },

@@ -10,7 +10,7 @@
            
             <div class="col-8">
                 <label hidden>{{$t('Note')}}</label><br/>
-                <InputText placeholder="Note" class="w-full" type="text" v-model="doc.note" />
+                <InputText :placeholder="$t('Note')" class="w-full" type="text" v-model="doc.note" />
             </div>
         </div>
     </ComDialogContent>

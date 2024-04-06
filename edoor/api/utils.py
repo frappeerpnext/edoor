@@ -1386,7 +1386,7 @@ def get_cashier_shift_summary(name,property):
 
 
 @frappe.whitelist()
-def get_cash_count_setting():
+def get_cash_count_setting(property):
     base_currency = frappe.db.get_single_value("ePOS Settings", "currency")
     base_currency_doc = frappe.get_doc("Currency", base_currency)
     data =  frappe.get_doc("eDoor Setting").cash_count_setting
@@ -1398,7 +1398,7 @@ def get_cash_count_setting():
         exchange_rate_data.append({
             "base_currency": base_currency,
             "to_currency": c,
-            "exchange_rate":  get_exchange_rate(base_currency, c),
+            "exchange_rate":  get_current_exchange_rate(property=property, base_currency= base_currency,second_currency = c),
             "precision":to_currency_doc.custom_currency_precision,
             "locale": to_currency_doc.custom_locale,
             "pos_currency_format": to_currency_doc.custom_pos_currency_format
@@ -1420,9 +1420,9 @@ def get_cash_count_setting():
         "exchange_rate_data": exchange_rate_data
     }
 
-def get_exchange_rate(base_currency, second_currency):
-    sql = "select exchange_rate from `tabCurrency Exchange` where from_currency='{}' and to_currency = '{}' and docstatus=1 order by posting_date desc, modified desc limit 1"
-    data = frappe.db.sql(sql.format(base_currency, second_currency),as_dict=1)
+def get_current_exchange_rate(property, base_currency, second_currency):
+    sql = "select exchange_rate from `tabCurrency Exchange` where custom_business_branch='{}' and  from_currency='{}' and to_currency = '{}' and docstatus=1  order by posting_date desc, modified desc limit 1"
+    data = frappe.db.sql(sql.format(property, base_currency, second_currency),as_dict=1)
     if len(data)> 0:
         return data[0]["exchange_rate"]
     else:

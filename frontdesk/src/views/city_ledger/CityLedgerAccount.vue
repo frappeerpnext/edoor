@@ -3,7 +3,7 @@
         <div>
             <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-xl md:text-2xl">City Ledger Account</div>
+                    <div class="text-xl md:text-2xl"> {{ $t('City Ledger Account') }} </div>
                 </template>
                 <template #end>
                     <Button class="border-none" @click="onAddCityLedgerAccount">

@@ -353,7 +353,7 @@ function showReservationDetail(name) {
             name: name
         },
         props: {
-            header: 'Reservation Detail',
+            header: $t('Reservation Detail'),
             style: {
                 width: '80vw',
             },
@@ -694,7 +694,7 @@ function showDeskFolioDetail(name) {
             name: name,
         },
         props: {
-            header:"Desk Folio Detail - " + name,
+            header: $t("Desk Folio Detail") + ' - ' + name,
             style: {
                 width: '80vw',
             },

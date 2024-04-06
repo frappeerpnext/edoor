@@ -42,7 +42,7 @@
             </div>
             <div>
                 <label>{{ $t('Note') }}</label><br />
-                <Textarea rows="2" autoResize placeholder="Note" cols="30" class="w-full border-round-xl"
+                <Textarea rows="2" autoResize :placeholder="$t('Note')" cols="30" class="w-full border-round-xl"
                     v-model="data.note" />
             </div>
         </div>

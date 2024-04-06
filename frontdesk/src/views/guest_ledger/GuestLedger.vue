@@ -126,13 +126,13 @@
             <template #top>
                 <div class="p-input-icon-left mb-3 w-full">
                     <i class="pi pi-search" />
-                    <InputText class="w-full" v-model="filter.search_field" placeholder="Search" />
+                    <InputText class="w-full" v-model="filter.search_field" :placeholder="$t('Search')" />
                 </div>
             </template>
             <div class="grid">
                 <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label) }}</label>
                 </div>
             </div>
             <template #footer-left>

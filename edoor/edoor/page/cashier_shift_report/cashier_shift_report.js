@@ -38,7 +38,7 @@ MyPage = Class.extend({
 			options:"Business Branch",
 			change: () => {
 				const selectedProperty = this.property.get_value()
-				console.log(selectedProperty);
+
 				this.cashier_shift.df.filters.business_branch = selectedProperty;
 			},
 

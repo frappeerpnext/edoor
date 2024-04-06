@@ -897,7 +897,7 @@ function showReservationDetail(name) {
             delay_load_data: 1500
         },
         props: {
-            header: 'Reservation Detail',
+            header: $t('Reservation Detail'),
             contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
@@ -1173,13 +1173,13 @@ onMounted(() => {
 
 function setRoomTypeColor() {
     setTimeout(function () {
-        console.log(resources.value[2]);
+
         if (resources.value) {
             resources.value.forEach(r => {
-                console.log(r.id)
+
                 let room_type_el = document.querySelector('td[data-resource-id="' + r.id + '"]')?.closest("tr")
                 let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + r.id + '"]')
-                console.log(room_type_el)
+         
 
                 if (el) {
                     el.style.backgroundColor = r.room_type_color;

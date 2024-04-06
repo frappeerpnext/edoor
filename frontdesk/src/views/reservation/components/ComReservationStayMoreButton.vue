@@ -168,8 +168,8 @@ const onCheckOut = () => {
 
     confirm.require({
         message: 'Are you sure you want to check out this room?',
-        header: 'Confirmation',
-        acceptLabel: 'OK',
+        header: $t('Confirmation'),
+        acceptLabel: $t('OK'),
         rejectVisible: true,
         rejectClass: 'hidden',
         acceptClass: 'border-none',
@@ -262,12 +262,12 @@ function onUnmarkasPaidbyMasterRoom() {
 
     confirm.require({
         message: 'Are you sure you want to Unmark as Piad by Master Room?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             db.updateDoc('Reservation Stay', props.data.name, {
                 paid_by_master_room: 0,
@@ -289,12 +289,12 @@ function onUnmarkasPaidbyMasterRoom() {
 function onMarkasPaidbyMasterRoom() {
     confirm.require({
         message: 'Are you sure you want to Mark as Piad by Master Room?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             
             postApi("reservation.update_mark_as_paid_by_master_room", {
@@ -321,12 +321,12 @@ function onMarkasPaidbyMasterRoom() {
 function onAllowPosttoCityLedger() {
     confirm.require({
         message: 'Are you sure you want to Allow Post to City Ledger?',
-        header: 'Confirmation',
+        header:$t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             db.updateDoc('Reservation Stay', props.data.name, {
                 allow_post_to_city_ledger: 1,
@@ -347,12 +347,12 @@ function onAllowPosttoCityLedger() {
 function onUnallowPosttoCityLedger() {
     confirm.require({
         message: 'Are you sure you want to Unallow Post to City Ledger?',
-        header: 'Confirmation',
+        header:$t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             db.updateDoc('Reservation Stay', props.data.name, {
                 allow_post_to_city_ledger: 0,
@@ -373,12 +373,12 @@ function onUnallowPosttoCityLedger() {
 function onMarkAsMasterRoom() {
     confirm.require({
         message: 'Are you sure you want to mark this room as master room?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('OK'),
         accept: () => {
             
             postApi("reservation.mark_as_master_folio", {

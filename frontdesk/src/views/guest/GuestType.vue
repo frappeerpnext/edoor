@@ -2,7 +2,7 @@
     <div>
         <ComHeader colClass="col-6" isRefresh @onRefresh="onRefresh()">
             <template #start>
-                <div class="text-xl md:text-2xl"> Guest Type</div>
+                <div class="text-xl md:text-2xl"> {{ $t("Guest Type") }} </div>
             </template>
             <template #end>
                 <Button class="border-none" :label="isMobile ? $t('Add New') : $t('Add New Guest Type') " icon="pi pi-plus" @click="onAddNewGuestType" />
@@ -130,7 +130,7 @@ function debouncer(fn, delay) {
 function onAddNewGuestType() {
     dialog.open(ComAddGuestType, {
         props: {
-            header: `Add New Guest Type`,
+            header: $t(`Add New Guest Type`),
             style: {
                 width: '50vw',
             },

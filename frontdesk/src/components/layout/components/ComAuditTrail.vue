@@ -6,14 +6,14 @@
 					<div v-if="!isMobile">
 						<span class="p-input-icon-left">
 							<i class="pi pi-search" />
-							<InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+							<InputText v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
 						</span>
 					</div>
 					<div>
 						<Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
 					</div>
 					<div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-						<Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+						<Button class="content_btn_b" :label="$t('Clear Filter')" icon="pi pi-filter-slash" @click="onClearFilter" />
 					</div>
 				</div>
 				<div class="flex gap-2">
@@ -24,7 +24,7 @@
 				:class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
 				<i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify md:me-2" />
 				<template v-if="!isMobile">
-					Line
+					{{ $t('Line') }} 
 				</template>
 				
 			</button>
@@ -32,7 +32,7 @@
 				:class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
 				<i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table md:me-2" />
 				<template v-if="!isMobile">
-					Table
+					{{$t('Table')}}
 				</template>
 			</button>
 		</div>
@@ -50,7 +50,7 @@
 						</Button>
 					</div>
 					<div class="w-full flex">
-						<Button class="content_btn_b h-btn-cs" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
+						<Button class="content_btn_b h-btn-cs" :label="$t('Print')" icon="pi pi-print" @click="onPrint" :reservation="name" />
 						<Button   @click="Refresh()" icon="pi pi-refresh" class="content_btn_b  ml-2 max-h-3rem"></Button>
 					</div>
 					
@@ -71,13 +71,13 @@
 					v-if="!toggleView "
 					tableStyle="min-width: 50rem" 
 					@row-dblclick="onViewReservationStayDetail">
-						<Column field="custom_posting_date" header="Audit date">
+						<Column field="custom_posting_date" :header="$t('Audit date') ">
 							<template #body="slotProps">
 								{{ moment(slotProps.data.custom_posting_date).format("DD-MM-YYYY") }}
 							</template>
 						</Column>
-						<Column field="reference_doctype" header="Reference Type"></Column>
-						<Column field="reference_name" header="Reference Name">
+						<Column field="reference_doctype" :header="$t('Reference Type')"></Column>
+						<Column field="reference_name" :header="$t('Reference Name')">
 							<template #body="slotProps">
 								<Button class="p-0 link_line_action1" @click="onOpenLink(slotProps.data)" link>
 									{{ slotProps.data.reference_name }}
@@ -86,14 +86,14 @@
 							</template>
 
 						</Column>
-						<Column field="subject" header="Subject"></Column>
-						<Column field="content" header="Description">
+						<Column field="subject" :header="$t('Subject')"></Column>
+						<Column field="content" :header="$t('Description')">
 							<template #body="slotProps">
 								<div class="white-space-nowrap overflow-hidden text-overflow-ellipsis content-note-comment" style="width:500px" v-html="slotProps.data.content" v-tippy="slotProps.data.content"></div>
 							</template>
 						</Column>
-						<Column field="comment_by" header="By"></Column>
-						<Column field="modified" header=" Date & Time"><template #body="slotProps">
+						<Column field="comment_by" :header="$t('By')"></Column>
+						<Column field="modified" :header="$t('Date & Time')"><template #body="slotProps">
 								<ComTimeago :date="slotProps.data.modified" />
 
 							</template>
@@ -140,7 +140,7 @@
 				
 					<div class="col-6">
 						<Calendar class="w-full" :selectOtherMonths="true" v-model="filter.custom_posting_date"
-							placeholder="Please Select Date" dateFormat="dd-mm-yy"  @update:modelValue="loadData(false, $event)" showIcon />
+							:placeholder="$t('Please Select Date')" dateFormat="dd-mm-yy"  @update:modelValue="loadData(false, $event)" showIcon />
 					</div>
 					<ComSelect class="col-6 " v-model="filter.type" :options="ref_data?.referenceTypes" v-if="ref_data?.referenceTypes.length>1" isMultipleSelect
 						optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="3"
@@ -158,7 +158,8 @@ import Paginator from 'primevue/paginator';
 
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComActivityTimeLine from "@/views/activities/components/ComActivityTimeLine.vue";
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
@@ -174,14 +175,14 @@ function onToggleView(){
     toggleView.value  = !toggleView.value 
 }
 const actions = ref([
-	{ label: 'Creation', fieldname: 'creation' },
-	{ label: 'Last Update On', fieldname: 'modified' },
-	{ label: 'Audit Date', fieldname: 'custom_posting_date' },
-	{ label: 'Reference Document', fieldname: 'reference_doctype' },
-	{ label: 'Reference Number', fieldname: 'reference_name' },
-	{ label: 'Subject', fieldname: 'subject' },
-	{ label: 'Description', fieldname: 'content' },
-	{ label: 'Created By', fieldname: 'comment_by' }
+	{ label: $t('Creation'), fieldname: 'creation' },
+	{ label: $t('Last Update On'), fieldname: 'modified' },
+	{ label: $t('Audit Date'), fieldname: 'custom_posting_date' },
+	{ label: $t('Reference Document'), fieldname: 'reference_doctype' },
+	{ label: $t('Reference Number'), fieldname: 'reference_name' },
+	{ label: $t('Subject'), fieldname: 'subject' },
+	{ label: $t('Description'), fieldname: 'content' },
+	{ label: $t('Created By'), fieldname: 'comment_by' }
 ])
 
 const data = ref([])

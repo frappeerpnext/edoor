@@ -163,7 +163,7 @@ function onViewCustomerDetail(name) {
 }
 
 function onAssignRoom(room_name, reservation_stay){
-    console.log(room_name)
+
     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')
 }
 

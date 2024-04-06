@@ -11,42 +11,42 @@
             <template #content>
                 <div class="grid">
                     <div class="col-12 xl:col-6 pt-2">
-                        <label>Guest Name<span class="text-red-500">*</span></label><br />
-                        <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Guest Name"
+                        <label>{{ $t('Guest Name') }} <span class="text-red-500">*</span></label><br />
+                        <InputText type="text" class="p-inputtext-sm h-12 w-full" :placeholder="$t('Guest Name')"
                             v-model="guest.customer_name_en" :maxlength="50" />
                     </div>
                     <div class="col-12 xl:col-6 pt-2">
-                        <label>Company</label><br />
-                        <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Company"
+                        <label>{{ $t('Company') }} </label><br />
+                        <InputText type="text" class="p-inputtext-sm h-12 w-full" :placeholder="$t('Company')"
                             v-model="guest.company_name" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                        <label>Guest Type<span class="text-red-500">*</span></label><br />
-                        <ComAutoComplete v-model="guest.customer_group" class="w-full" placeholder="Guest Type"
+                        <label>{{$t('Guest Type')}}<span class="text-red-500">*</span></label><br />
+                        <ComAutoComplete v-model="guest.customer_group" class="w-full" :placeholder="$t('Guest Type')"
                             doctype="Customer Group" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                        <label>Province</label><br />
-                        <ComAutoComplete v-model="guest.province" class="w-full" placeholder="province" doctype="Province" />
+                        <label>{{ $t('Province') }} </label><br />
+                        <ComAutoComplete v-model="guest.province" class="w-full" :placeholder="$t('province')" doctype="Province" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                        <label>Gender</label><br />
-                        <Dropdown v-model="guest.gender" :options="optionGender" placeholder="Gender" class="w-full" />
+                        <label>{{ $t('Gender') }} </label><br />
+                        <Dropdown v-model="guest.gender" :options="optionGender" :placeholder="$t('Gender')" class="w-full" />
                     </div>
                     
                     <div class="col-12 lg:col-6  pt-2">
-                        <label>Date of birth</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"
+                        <label>{{ $t('Date of birth') }} </label><br />
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" :placeholder="$t('Date of birth')"
                             showIcon showButtonBar dateFormat="dd-mm-yy" :selectOtherMonths="true" />
                     </div>
                     
                     <!-- guest.date_of_birth -->
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                        <label class="opacity-0">Disabled</label><br />
+                        <label class="opacity-0">{{ $t('Disabled') }} </label><br />
                         <div class="flex align-items-center">
                             <Checkbox class="mr-1" v-model="guest.disabled" :binary="true" :false-value="0" :trueValue="1"
                                 inputId="disabled" />
-                            <label for="disabled"> Disabled</label>
+                            <label for="disabled"> {{ $t('Disabled') }} </label>
                         </div>
                     </div>
                 </div>
@@ -56,23 +56,23 @@
             <template #content>
                 <div class="grid">
                     <div class="col-12 lg:col-6 pt-2">
-                        <label>Phone Number 1</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
+                        <label>{{ $t('Phone Number 1') }} </label><br />
+                        <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Phone Number')"
                             v-model="guest.phone_number" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 pt-2">
-                        <label>Phone Number 2</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
+                        <label>{{ $t('Phone Number 2') }} </label><br />
+                        <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Phone Number')"
                             v-model="guest.phone_number_2" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 pt-2">
-                        <label>Email address</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="Email address"
+                        <label>{{$t('Email address')}} </label><br />
+                        <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Email address')"
                             v-model="guest.email_address" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 pt-2">
-                        <label>Country</label><br />
-                        <ComAutoComplete v-model="guest.country" class="w-full" placeholder="Country" doctype="Country" />
+                        <label>{{ $t('Country') }} </label><br />
+                        <ComAutoComplete v-model="guest.country" class="w-full" :placeholder="$t('Country')" doctype="Country" />
                     </div>
                 </div>
             </template>
@@ -81,19 +81,19 @@
             <template #content>
                 <div class="grid">
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                        <label>Identity Type</label><br />
-                        <ComAutoComplete v-model="guest.identity_type" class="w-full" placeholder="Identity Type"
+                        <label>{{$t('Identity Type')}} </label><br />
+                        <ComAutoComplete v-model="guest.identity_type" class="w-full" :placeholder="$t('Identity Type')"
                             doctype="Identity Type" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                        <label class="white-space-nowrap">ID/Passport Number</label><br />
+                        <label class="white-space-nowrap">{{ $t('ID/Passport Number') }} </label><br />
                         <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('ID/Passport Number')"
                             v-model="guest.id_card_number" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                        <label>ID Expire Date</label><br />
+                        <label>{{ $t('Expire Date') }} </label><br />
                         <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full" v-model="guest.expired_date"
-                            placeholder="ID Expire Date" dateFormat="dd-mm-yy" showButtonBar showIcon />
+                            :placeholder="$t('Expire Date')" dateFormat="dd-mm-yy" showButtonBar showIcon />
                     </div>
                 </div>
             </template>
@@ -102,12 +102,12 @@
             <template #content>
                 <div class="grid">
                     <div class="col-12 lg:col-6 pt-1">
-                        <label class="white-space-nowrap">Address</label><br />
-                        <Textarea class="p-inputtext-sm w-full" placeholder="Address" v-model="guest.address" rows="4" />
+                        <label class="white-space-nowrap">{{ $t('Address') }} </label><br />
+                        <Textarea class="p-inputtext-sm w-full" :placeholder="$t('Address')" v-model="guest.address" rows="4" />
                     </div>
                     <div class="col-12 lg:col-6 pt-1">
-                        <label class="white-space-nowrap">Note</label><br />
-                        <Textarea class="p-inputtext-sm w-full" placeholder="Note" v-model="guest.note" rows="4" />
+                        <label class="white-space-nowrap">{{$t('Note')}} </label><br />
+                        <Textarea class="p-inputtext-sm w-full" :placeholder="$t('Note')" v-model="guest.note" rows="4" />
                     </div>
                 </div>
             </template>
@@ -125,7 +125,8 @@ let loading = ref(false)
 const guest = ref({})
 const optionGender = ref()
 const moment = inject('$moment')
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 
 function onLoad() {

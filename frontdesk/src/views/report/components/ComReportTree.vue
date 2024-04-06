@@ -57,7 +57,12 @@ onMounted(() => {
         },
         limit: 1000,
     }).then((result) => {
-        data.value = result
+        const translatedResults = result.map(item => ({
+        ...item,
+        report_title: $t(item.report_title),
+      }));
+        data.value = translatedResults
+  
         loading.value = false;
     }).catch((err) => {
         loading.value = false;

@@ -494,8 +494,6 @@ function getEvents(date_range=null) {
                     
                 } else if (r.id == "occupany") {
 
-                    console.log(window.setting.calculate_room_occupancy_include_room_block)
-
                     if (window.setting.calculate_room_occupancy_include_room_block==0){
                         const room_block = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.block || 0), 0)
                         

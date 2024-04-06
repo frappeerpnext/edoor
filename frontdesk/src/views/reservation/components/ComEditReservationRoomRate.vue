@@ -125,7 +125,7 @@
                     <template v-if="doc.allow_discount==1">
                     <div class="col-12 lg:col-4">
                         <label>{{ $t('Discount Type') }}</label>
-                        <ComSelect class="w-full min-w-full" v-model="doc.discount_type" :options="['Percent', 'Amount']"
+                        <ComSelect class="w-full min-w-full" v-model="doc.discount_type" optionLabel="label" optionValue="value" :options="discountType"
                             :clear="false" />
                     </div>
                     <div class="col-12 lg:col-4">
@@ -294,7 +294,10 @@ const roomData = computed(() => {
     }
     return []
 })
-
+const discountType = ref([
+    { label: $t('Percent'), value: 'Percent' },
+    { label: $t('Amount'), value: 'Amount' },
+]);
 function getTooltip() {
     var html = ''
     var index = 0

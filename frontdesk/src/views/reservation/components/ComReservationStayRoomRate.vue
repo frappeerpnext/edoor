@@ -9,13 +9,17 @@
         ({{ rs.selectedRoomRates.length  }})
       </template>
     </Button>
- 
     <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
       <div class="absolute bottom-6 left-10">
         <strong> {{$t('Total Records') }}: <span class="ttl-column_re">{{ rs?.room_rates?.length }}</span></strong>
       </div>
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+      <Column  field="is_package" :header="$t('Package')" bodyClass="text-center" headerClass="text-center">
+        <template #body="slotProps">
+          <span><i v-if="slotProps.data?.is_package"  class="pi pi-folder-open package_room_rate"></i></span>
+        </template>
+      </Column>
       
       <Column field="date" :header="$t('Date')" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
@@ -72,7 +76,7 @@
       </Column>
       <ColumnGroup type="footer">
         <Row>
-          <Column :footer="$t('Total') + ':'" :colspan="3" footerStyle="text-align:right" />
+          <Column :footer="$t('Total') + ':'" :colspan="4" footerStyle="text-align:right" />
           <Column >
             <template #footer>
               {{ rs?.room_rates?.length }} 

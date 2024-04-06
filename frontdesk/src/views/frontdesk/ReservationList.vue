@@ -153,10 +153,10 @@
                         </span>
                     </div>
                 <ComAutoComplete class="col-6 md:col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source_type" optionValue="name"
-                    v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
+                    v-model="filter.selected_business_source_type" @onSelected="onSearch" :placeholder="$t('Business Source Type')"
                     doctype="Business Source Type" />
                 <ComAutoComplete class="col-6 md:col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source" optionValue="name"
-                    v-model="filter.selected_business_source" @onSelected="onSearch" placeholder="Business Source "
+                    v-model="filter.selected_business_source" @onSelected="onSearch" :placeholder="$t('Business Source')"
                     doctype="Business Source" />
                 <ComSelect class="col-6 md:col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
                     placeholder="Reservation Type" :options="['GIT', 'FIT']" />
@@ -220,7 +220,7 @@ const columns = ref([
     { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'email_address',  label: 'Email',  default: false },
-    { fieldname: 'guest_type', label: 'Guest Type ', default: true },
+    { fieldname: 'guest_type', label: 'Guest Type', default: true },
     { fieldname: 'group_code', label: 'Group Code', extra_field: "group_name", extra_field_separator: "<br/>", default: true },
     { fieldname: 'business_source', label: 'Business Source', default: true },
     { fieldname: 'total_reservation_stay', label: 'Total Stay #', header_class: "text-center", default: true },
@@ -262,10 +262,10 @@ const onCloseColumn = () => {
 }
 
 const dataTypeOptions = reactive([
-    { label: 'Search Date', value: '' },
-    { label: 'Arrival Date', value: 'arrival_date' },
-    { label: 'Departure Date', value: 'departure_date' },
-    { label: 'Reservation Date', value: 'reservation_date' }])
+    { label: $t('Search Date'), value: '' },
+    { label: $t('Arrival Date'), value: 'arrival_date' },
+    { label: $t('Departure Date'), value: 'departure_date' },
+    { label: $t('Reservation Date'), value: 'reservation_date' }])
 const data = ref([])
 
 const filter = ref({})

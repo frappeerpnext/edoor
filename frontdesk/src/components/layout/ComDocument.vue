@@ -81,18 +81,18 @@
             <OverlayPanel ref="opEdit">
                 <ComOverlayPanelContent :loading="saving" @onCancel="onEdit($event, {})" @onSave="onSave">
                     <div class="mb-2">
-                        <label>Title</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="Title"
+                        <label>{{ $t('Title') }} </label><br />
+                        <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Title')"
                             v-model="selected.custom_title" />
                     </div>
                     <div>
-                        <label>Description</label>
-                        <Textarea v-model="selected.custom_description" rows="5" placeholder="Descrpition" cols="30"
+                        <label>{{ $t('Description') }} </label>
+                        <Textarea v-model="selected.custom_description" rows="5" :placeholder="$t('Description')" cols="30"
                             class="w-full border-round-xl" />
                     </div>
                 </ComOverlayPanelContent>
             </OverlayPanel>
-            <Dialog v-model:visible="visible" modal header="Documents" :style="{ width: '50vw' }" :pt="{root: `${isMobile ? 'p-dialog-maximized' : ''}`}">
+            <Dialog v-model:visible="visible" modal :header="$t('Document')" :style="{ width: '50vw' }" :pt="{root: `${isMobile ? 'p-dialog-maximized' : ''}`}">
                 <ComDialogContent hideFooter>
                     <ComAttachFile :docname="docname" :doctype="doctype" @onSuccess="onSuccess" @onClose="onModal(false)" />
                 </ComDialogContent>
@@ -294,8 +294,8 @@ function onRemove(selected) {
 
     dialogConfirm.require({
 
-        message: 'Do you want to delete this record?',
-        header: 'Delete Confirmation',
+        message: $t('Do you want to delete this record?'),
+        header: $t('Delete Confirmation'),
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',

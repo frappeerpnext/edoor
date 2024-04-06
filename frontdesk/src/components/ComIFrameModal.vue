@@ -37,6 +37,15 @@
                             placeholder="Invoice Style" :options="['Simple Style', 'Debit/Credit Style']">
                         </ComSelect>
                     </div>
+                    <div v-if="hasFilter('show_rate')">
+                        <div>
+                            <Checkbox v-model="filters.show_rate" :binary="true" :trueValue="1" :falseValue="0"
+                                @input="reloadIframe" inputId="show_rate" />
+                        </div>
+                        <div>
+                            <label class="white-space-nowrap" for="show_rate">Show/Hide Rate</label>
+                        </div>
+                    </div>
                     <div v-if="hasFilter('business_source')" class="w-16rem">
                         <ComAutoComplete v-model="filters.business_source" placeholder="Business Source"
                             @onSelected="reloadIframe" doctype="Business Source" class="auto__Com_Cus w-full" />
@@ -227,7 +236,7 @@ const filters = ref({
     show_cash_count: 1,
     show_cash_float: 1,
     show_master_folio_only: 1,
-    show_vattin:0
+    show_vattin:0,
 
 })
 const show_toolbar = ref(0)

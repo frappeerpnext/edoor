@@ -666,7 +666,7 @@ function onAuditTrail() {
 
         },
         props: {
-            header: 'Audit Trail',
+            header: $t('Audit Trail'),
             style: {
                 width: '80vw',
             },
