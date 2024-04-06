@@ -74,7 +74,12 @@
                                     :value="(p.input_close_amount || 0) - p.expected_amount" />
                             </td>
                         </tr>
-
+                        <tr style='background: rgb(243, 243, 243);padding:5px;'>
+                            <td class="text-right w-auto border-1 p-2 font-semibold">Total </td>
+                            <td class="text-right w-auto border-1 p-2 font-semibold" > <CurrencyFormat :value="totalAmountCash?.expectedAmountTotal" /></td>
+                            <td class="text-right w-auto border-1 p-2 font-semibold"> <CurrencyFormat :value="totalAmountCash?.inputAmountTotal" /> </td>
+                            <td class="text-right w-auto border-1 p-2 font-semibold"> <CurrencyFormat :value="totalAmountCash?.expectedAmountTotal - totalAmountCash?.inputAmountTotal" /> </td>
+                        </tr>
                     </tbody>
                 </table>
 
@@ -166,6 +171,19 @@ const toast = useToast()
 const mainCurrency = ref(window.setting.currency)
 const secondCurrency = ref(window.setting.second_currency)
 const dialog = useDialog()
+const totalAmountCash = computed(() => {
+  return summary?.value?.expected_cash.reduce((totals, currency) => {
+    const inputAmount = currency.input_close_amount || 0;
+    const amountInUSD = inputAmount / currency.exchange_rate;
+    const expectedAmountInUSD = currency.expected_amount / currency.exchange_rate;
+    
+    return {
+      inputAmountTotal: totals.inputAmountTotal + amountInUSD,
+      expectedAmountTotal: totals.expectedAmountTotal + expectedAmountInUSD
+    };
+  }, { inputAmountTotal: 0, expectedAmountTotal: 0 });
+});
+
 
 const totalCashCountAmount = computed(() => {
 
@@ -410,7 +428,6 @@ function getCashCountSetting() {
         cashCountSetting.value = result.message.cash_count_setting
         exchangeRates.value = result.message.exchange_rate_data
     })
-    console.log(window.property_name);
 }
 onMounted(() => {
     getData()

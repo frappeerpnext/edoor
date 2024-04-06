@@ -180,7 +180,7 @@
                                         <td class="w-auto border-1 p-2 text-right"> {{ $t('Difference') }} </td>
                                     </tr>
                                     <tr class="bg-white" v-for="(p, index) in doc.cash_float" :key="index">
-                                        <td class="border-1 p-2"> {{  $T(p.payment_method)  }}</td>
+                                        <td class="border-1 p-2"> {{  $t(p.payment_method)  }}</td>
                                         <td class="border-1 p-2 text-right">
                                             <CurrencyFormat :value="p.input_amount" :currency="{precision:p.currency_precision, pos_currency_format:p.pos_currency_format}" />
                                         </td>
