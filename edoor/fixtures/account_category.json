@@ -135,15 +135,6 @@
   "sort_order": 1700
  },
  {
-  "account_category": "Folio Transfer",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 17:42:38.233705",
-  "name": "Folio Transfer",
-  "note": null,
-  "sort_order": 2700
- },
- {
   "account_category": "Tip",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -189,15 +180,6 @@
   "sort_order": 1300
  },
  {
-  "account_category": "Payment",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 16:59:46.108506",
-  "name": "Payment",
-  "note": "a",
-  "sort_order": 1600
- },
- {
   "account_category": "POS Bill to Room",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -216,15 +198,6 @@
   "sort_order": 1000
  },
  {
-  "account_category": "Other Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:48.489650",
-  "name": "Other Charge",
-  "note": null,
-  "sort_order": 400
- },
- {
   "account_category": "Package",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -232,6 +205,15 @@
   "name": "Package",
   "note": null,
   "sort_order": 0
+ },
+ {
+  "account_category": "Other Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:49:48.489650",
+  "name": "Other Charge",
+  "note": null,
+  "sort_order": 400
  },
  {
   "account_category": "Other Room Charge",
@@ -259,5 +241,23 @@
   "name": "Room Charge",
   "note": null,
   "sort_order": 100
+ },
+ {
+  "account_category": "Folio Transfer",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:42:38.233705",
+  "name": "Folio Transfer",
+  "note": null,
+  "sort_order": 2700
+ },
+ {
+  "account_category": "Payment",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 16:59:46.108506",
+  "name": "Payment",
+  "note": "a",
+  "sort_order": 1600
  }
 ]

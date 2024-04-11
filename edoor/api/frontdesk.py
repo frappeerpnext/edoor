@@ -2453,7 +2453,7 @@ def get_day_end_summary_report(property, date):
                 sum(is_active=1 and type='Reservation' and is_arrival=0 and is_departure=0) as stay_over,
                 sum(if(is_active=1 and type='Reservation' and is_arrival=0 and is_departure=0,adult,0)) as stay_over_adult,
                 sum(if(is_active=1 and type='Reservation' and is_arrival=0 and is_departure=0,child,0)) as stay_over_child,
-                sum(is_active=1 and type='Reservation' and is_departure=1) as departure,
+                sum(type='Reservation' and is_departure=1) as departure,
                 sum(if(type='Reservation' and is_departure=1,adult,0)) as departure_adult,
                 sum(if(type='Reservation' and is_departure=1,child,0)) as departure_child
             from `tabRoom Occupy` 

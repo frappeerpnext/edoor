@@ -536,7 +536,7 @@ function getEvents(date_range=null) {
                     
                 } else {
                     const current_date_occupy = result.message.room_occupy.find(x => x.room_type_id == r.id && x.date == moment(current_date).format("YYYY-MM-DD"))
-                    event.title = r.total_room - (current_date_occupy?.total || 0)  
+                    event.title = r.total_room - ((current_date_occupy?.total || 0) + (current_date_occupy?.block || 0))   
                     if((current_date_occupy?.unassign_room || 0)!=0){
                         event.title = event.title + " | "  +  (current_date_occupy?.unassign_room || 0)
                     }
@@ -612,7 +612,7 @@ const handleScroll = (event) => {
 };
 
 onMounted(() => {
-
+    
     window.socket.on("RoomInventory", (arg) => {
         if (arg == window.property_name) {
             getResources(false)

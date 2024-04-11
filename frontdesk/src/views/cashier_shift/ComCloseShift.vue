@@ -1,7 +1,7 @@
 <template>
     <ComDialogContent @close="onClose" :loading="loading" hideButtonOK :hideButtonClose="true">
         <ComOpenStatus statusAddiClass="absolute closeShiftStatus" :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
-        <h1 class="mb-2 font-semibold">Cashier Shift Information</h1>
+        <h1 class="mb-2 font-semibold">{{ $t('Cashier Shift Information') }} </h1>
         <div class="grid justify-between">
             <div class="col-12 xl:col-6 overflow-auto">
                 <table>
@@ -29,14 +29,14 @@
             </div>
         </div>
 
-        <h1 class="my-2 font-semibold">Cash Count</h1>
+        <h1 class="my-2 font-semibold">{{ $t('Cash Count') }} </h1>
 
         <div class="grid justify-between">
             <div class="col-12 xl:col-6 overflow-auto">
                 <div
                     class="p-3 border-solid border-1 surface-border border-round-md text-center h-full w-full flex justify-content-center align-content-center flex-wrap">
                     <div>
-                        <div class="text-lg">Rate Exchange</div>
+                        <div class="text-lg">{{ $t('Rate Exchange') }} </div>
                         <span v-for="(c, index) in exchangeRates" :key="index" class="text-4xl">
                             <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ c.base_currency }}) =
                             <CurrencyFormat currAddClass="font-semibold" :value="c.exchange_rate" :currency="c" /> ({{
@@ -49,10 +49,10 @@
                 <table class="w-full mb-3">
                     <thead>
                         <tr style='background: rgb(243, 243, 243);'>
-                            <th class="w-auto border-1 p-2 font-semibold">Payment Type</th>
-                            <th class="w-auto border-1 p-2 font-semibold">Expexted</th>
-                            <th class="w-auto border-1 p-2 font-semibold">Actual</th>
-                            <th class="w-auto border-1 p-2 font-semibold">Difference</th>
+                            <th class="w-auto border-1 p-2 font-semibold">{{ $t('Payment Type') }} </th>
+                            <th class="w-auto border-1 p-2 font-semibold">{{ $t('Expexted') }} </th>
+                            <th class="w-auto border-1 p-2 font-semibold">{{ $t('Actual') }} </th>
+                            <th class="w-auto border-1 p-2 font-semibold">{{ $t('Difference') }} </th>
                         </tr>
 
                     </thead>
@@ -75,7 +75,7 @@
                             </td>
                         </tr>
                         <tr style='background: rgb(243, 243, 243);padding:5px;'>
-                            <td class="text-right w-auto border-1 p-2 font-semibold">Total </td>
+                            <td class="text-right w-auto border-1 p-2 font-semibold">{{ $t('Total') }}  </td>
                             <td class="text-right w-auto border-1 p-2 font-semibold" > <CurrencyFormat :value="totalAmountCash?.expectedAmountTotal" /></td>
                             <td class="text-right w-auto border-1 p-2 font-semibold"> <CurrencyFormat :value="totalAmountCash?.inputAmountTotal" /> </td>
                             <td class="text-right w-auto border-1 p-2 font-semibold"> <CurrencyFormat :value="totalAmountCash?.expectedAmountTotal - totalAmountCash?.inputAmountTotal" /> </td>
@@ -83,20 +83,20 @@
                     </tbody>
                 </table>
 
-                <Button @click="onOpenCashCount" label="Cash Count" icon="pi pi-wallet" class="mr-2 conten-btn" />
-                <Button @click="onClearCashCount" label="Clear Cash Count" icon="pi pi-eraser" class="conten-btn" />
+                <Button @click="onOpenCashCount" :label="$t('Cash Count')" icon="pi pi-wallet" class="mr-2 conten-btn" />
+                <Button @click="onClearCashCount" :label="$t('Clear Cash Count')" icon="pi pi-eraser" class="conten-btn" />
 
             </div>
         </div>
-        <h1 class="my-2 font-semibold">Other Payment Type</h1>
+        <h1 class="my-2 font-semibold">{{ $t('Other Payment Type') }} </h1>
         <table class="w-full">
             <tr style='background: rgb(243, 243, 243);'>
-                <td class="w-auto border-1 p-2 font-semibold">Type</td>
-                <td class="w-auto border-1 p-2 font-semibold text-right">Total Debit</td>
-                <td class="w-auto border-1 p-2 font-semibold text-right">Total Credit</td>
-                <td class="w-auto border-1 p-2 font-semibold text-right">System Close Amount</td>
-                <td class="w-auto border-1 p-2 font-semibold text-right">Actual Close Amount</td>
-                <td class="w-auto border-1 p-2 font-semibold text-right">Difference Amount</td>
+                <td class="w-auto border-1 p-2 font-semibold">{{ $t('Type') }} </td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('Total Debit') }} </td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('Total Credit') }} </td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('System Close Amount') }} </td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('Actual Close Amount') }} </td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('Difference Amount') }} </td>
             </tr>
             <tr v-for="(s, index) in otherPayments" :key="index">
                 <td class="w-auto border-1 p-2" style='background: rgb(243, 243, 243);'>{{ s.payment_type }}</td>
@@ -117,7 +117,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="font-semibold text-right">Total</td>
+                <td class="font-semibold text-right">{{ $t('Total') }} </td>
                 <td class="w-auto p-2 font-semibold text-right">
                     <CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_debit || 0), 0)" />
                 </td>
@@ -138,7 +138,7 @@
         </table>
         <hr>
         <div class="w-full mt-3">
-            <label>Note:</label> <br />
+            <label>{{ $t('Note') }} :</label> <br />
             <Textarea v-model="doc.closed_note" rows="4" class="w-full" />
         </div>
         <template #footer-right v-if="doc.is_closed !== 1">
@@ -146,9 +146,9 @@
                 <span class="absolute w-full">
                     <Checkbox class="w-full" v-model="doc.is_confirm" :binary="true" />
                 </span>
-                <span class="pl-5">I have verified that my information above is correct</span>
+                <span class="pl-5">{{ $t('I have verified that my information above is correct') }} </span>
             </div>
-            <Button class="border-none" v-if="doc.is_closed == 0" :disabled="!doc.is_confirm" @click="onCloseShift">Close </Button>
+            <Button class="border-none" v-if="doc.is_closed == 0" :disabled="!doc.is_confirm" @click="onCloseShift">{{ $t('Close') }}  </Button>
         </template>
 
     </ComDialogContent>
@@ -171,6 +171,8 @@ const toast = useToast()
 const mainCurrency = ref(window.setting.currency)
 const secondCurrency = ref(window.setting.second_currency)
 const dialog = useDialog()
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const totalAmountCash = computed(() => {
   return summary?.value?.expected_cash.reduce((totals, currency) => {
     const inputAmount = currency.input_close_amount || 0;
@@ -217,7 +219,7 @@ function onOpenCashCount() {
             exchange_rates: exchangeRates.value
         },
         props: {
-            header: "Cash Count",
+            header: $t("Cash Count"),
             style: {
                 width: '50vw',
             },

@@ -905,59 +905,59 @@ def clear_reservation():
 
     if  frappe.session.user =="Administrator":
         pass
-        # frappe.db.sql("delete from `tabReservation`")
-        # frappe.db.sql("delete from `tabReservation Stay`")
-        # frappe.db.sql("delete from `tabReservation Stay Room`")
-        # frappe.db.sql("delete from `tabReservation Room Rate`")
-        # frappe.db.sql("delete from `tabTemp Room Occupy`")
-        # frappe.db.sql("delete from `tabRoom Occupy`")
-        # frappe.db.sql("delete from `tabFolio Transaction`")
-        # frappe.db.sql("delete from `tabReservation Folio`")
-        # frappe.db.sql("update `tabRoom` set housekeeping_status = 'Vacant Clean', reservation_stay='',guest='' , guest_name=''")
+        frappe.db.sql("delete from `tabReservation`")
+        frappe.db.sql("delete from `tabReservation Stay`")
+        frappe.db.sql("delete from `tabReservation Stay Room`")
+        frappe.db.sql("delete from `tabReservation Room Rate`")
+        frappe.db.sql("delete from `tabTemp Room Occupy`")
+        frappe.db.sql("delete from `tabRoom Occupy`")
+        frappe.db.sql("delete from `tabFolio Transaction`")
+        frappe.db.sql("delete from `tabReservation Folio`")
+        frappe.db.sql("update `tabRoom` set housekeeping_status = 'Vacant Clean', reservation_stay='',guest='' , guest_name=''")
         
-        # frappe.db.sql("delete from `tabSale Product`")
-        # frappe.db.sql("delete from `tabSale Payment`")
-        # frappe.db.sql("delete from `tabSale`")
-        # frappe.db.sql("delete from `tabWorking Day`")
-        # frappe.db.sql("delete from `tabCashier Shift`")
-        # frappe.db.sql("delete from `tabRoom Block`")
-        # frappe.db.sql("delete from `tabDeposit Ledger`")
-        # frappe.db.sql("delete from `tabDesk Folio`")
-        # frappe.db.sql("delete from `tabCashier Shift Cash Count`")
-        # frappe.db.sql("delete from `tabDaily Property Data`")
-        # frappe.db.sql("delete from `tabAdditional Stay Guest`")
+        frappe.db.sql("delete from `tabSale Product`")
+        frappe.db.sql("delete from `tabSale Payment`")
+        frappe.db.sql("delete from `tabSale`")
+        frappe.db.sql("delete from `tabWorking Day`")
+        frappe.db.sql("delete from `tabCashier Shift`")
+        frappe.db.sql("delete from `tabRoom Block`")
+        frappe.db.sql("delete from `tabDeposit Ledger`")
+        frappe.db.sql("delete from `tabDesk Folio`")
+        frappe.db.sql("delete from `tabCashier Shift Cash Count`")
+        frappe.db.sql("delete from `tabDaily Property Data`")
+        frappe.db.sql("delete from `tabAdditional Stay Guest`")
 
-        # frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
-        # frappe.db.sql("delete from `tabComment` where custom_is_note=1")
+        frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
+        frappe.db.sql("delete from `tabComment` where custom_is_note=1")
 
-        # frappe.db.sql("delete from `tabFile` where attached_to_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
-        # frappe.db.sql("delete from `tabVersion` where ref_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
-
-
+        frappe.db.sql("delete from `tabFile` where attached_to_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
+        frappe.db.sql("delete from `tabVersion` where ref_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
 
 
 
-        # room_list = frappe.db.get_all("Room")
 
-        # for r in room_list:
 
-        #     room_doc = frappe.get_doc("Room", r.name)
-        #     room_doc.room_status = "Vacant"
-        #     room_doc.housekeeping_status_code = "Clean"
+        room_list = frappe.db.get_all("Room")
+
+        for r in room_list:
+
+            room_doc = frappe.get_doc("Room", r.name)
+            room_doc.room_status = "Vacant"
+            room_doc.housekeeping_status_code = "Clean"
             
-        #     room_doc.save()
+            room_doc.save()
         
-        # business_branch = frappe.get_last_doc('Business Branch') 
-        # frappe.get_doc({
-        #     "posting_date":frappe.utils.today(),
-        #     "business_branch":business_branch.name,
-        #     "pos_profile": "eDoor Profile",
-        #     "is_closed": 0,
-        #     "outlet": "eDoor Outlet",
-        #     "doctype": "Working Day",
-        # }).insert()
+        business_branch = frappe.get_last_doc('Business Branch') 
+        frappe.get_doc({
+            "posting_date":frappe.utils.today(),
+            "business_branch":business_branch.name,
+            "pos_profile": "eDoor Profile",
+            "is_closed": 0,
+            "outlet": "eDoor Outlet",
+            "doctype": "Working Day",
+        }).insert()
                 
-        # frappe.db.commit()
+        frappe.db.commit()
 
     
     return "done"

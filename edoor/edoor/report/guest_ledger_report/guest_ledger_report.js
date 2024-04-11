@@ -32,6 +32,13 @@ frappe.query_reports["Guest Ledger Report"] = {
 			"on_change": function (query_report) {},
 		} ,
 		{
+			"fieldname": "reservation_status",
+			"label": __("Reservation Status"),
+			"fieldtype": "Link",
+			"options":"Reservation Status",
+			"on_change": function (query_report) {},
+		} ,
+		{
 			"fieldname": "business_source",
 			"label": __("Business Source"),
 			"fieldtype": "Link",

@@ -5,7 +5,7 @@
  
             <div class="flex w-full gap-3">
                 <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                    <span class="text-500 uppercase text-sm text-end">Open Cash Float</span><span
+                    <span class="text-500 uppercase text-sm text-end">{{ $t('Open Cash Float') }} </span><span
                         class="text-xl line-height-2 font-semibold text-end">
                         <span>
                             
@@ -13,13 +13,13 @@
                         </span></span>
                 </div>
                 <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                    <span class="text-500 uppercase text-sm text-end">Cash Debit</span><span
+                    <span class="text-500 uppercase text-sm text-end">{{$t('Cash Debit')}}</span><span
                         class="text-xl line-height-2 font-semibold text-end">
                         <span>
                             <CurrencyFormat :value="summary.cash_debit" />
                         </span></span></div>
                 <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                    <span class="text-500 uppercase text-sm text-end">Cash Credit</span><span
+                    <span class="text-500 uppercase text-sm text-end">{{ $t('Cash Credit') }} </span><span
                         class="text-xl line-height-2 font-semibold text-end">
                         <span>
                             <CurrencyFormat :value="summary.cash_credit" />
@@ -27,14 +27,14 @@
                 </div>
                 <div
                     class="bg-green-50 border-green-edoor flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                    <span class="text-500 uppercase text-sm text-end">Cash In Hand</span><span
+                    <span class="text-500 uppercase text-sm text-end">{{ $t('Cash In Hand') }} </span><span
                         class="text-xl line-height-2 font-semibold text-end">
                         <span>
                             <CurrencyFormat :value="summary.cash_in_hand" />
                         </span></span>
                 </div>
                 <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                    <span class="text-500 uppercase text-sm text-end">Actual Cash</span><span
+                    <span class="text-500 uppercase text-sm text-end">{{ $t('Actual Cash') }} </span><span
                         class="text-xl line-height-2 font-semibold text-end">
                         <span>
                             <CurrencyFormat :value="totalCashCountAmount" />
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="bg-red flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                    <span class="text-500 uppercase text-sm text-end">Difference</span><span
+                    <span class="text-500 uppercase text-sm text-end">{{ $t('Difference') }} </span><span
                         class="text-xl line-height-2 font-semibold text-end">
                         <span>
                             <CurrencyFormat :value="((totalCashCountAmount > 0 ? totalCashCountAmount : doc?.total_close_amount) - doc?.total_system_close_amount) || 0" />
@@ -52,9 +52,9 @@
             <table class="w-full mt-4">
 
                 <tr>
-                    <td class="w-auto border-1 p-2 font-semibold">Note Type</td>
-                    <td class="w-auto border-1 p-2 font-semibold">Total Note</td>
-                    <td class="w-auto border-1 p-2 font-semibold text-right">Total Amount</td>
+                    <td class="w-auto border-1 p-2 font-semibold">{{ $t('Note Type') }} </td>
+                    <td class="w-auto border-1 p-2 font-semibold">{{ $t('Total Note') }} </td>
+                    <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('Total Amount') }} </td>
                 </tr> 
                 <template v-for="(c, index) in summary.expected_cash" :key="index">
                     <tr>
@@ -75,7 +75,7 @@
 
                     </tr>
                     <tr>
-                        <td class="w-auto border-1 p-2"><strong>Total</strong></td>
+                        <td class="w-auto border-1 p-2"><strong>{{ $t('Total') }} </strong></td>
                         <td class="w-auto border-1 p-2 font-semibold">
                             <strong>
                             {{ cashCountSetting.filter(r => r.currency ==

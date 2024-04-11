@@ -20,6 +20,10 @@ def execute(filters=None):
 	filters.business_source= filters.business_source or ''
 	filters.reservation= filters.reservation or ''
 	filters.reservation_stay= filters.reservation_stay or ''
+	filters.reservation_status= filters.reservation_status or ''
+	filters.status= filters.status or ''
+	filters.posting_date_start_date= filters.posting_date_start_date or ''
+	filters.posting_date_end_date= filters.posting_date_end_date or working_day["date_working_day"]
 
 	
  
@@ -90,12 +94,13 @@ def get_report_data(filters):
 	where
 			concat(name,' ',reservation ,' ',reservation_stay , ' ' , ifnull(rooms,'') , ' ' , 'guest', ' ', guest_name, ' ',ifnull(phone_number,''), ' ' ,ifnull(email,'')) like %(keyword)s and 
 			property = %(property)s and 
-
+			ifnull(reservation_status,'') = if(%(reservation_status)s='',ifnull(reservation_status,''),%(reservation_status)s)  and 
+			ifnull(status,'') = if(%(status)s='',ifnull(status,''),%(status)s)  and 
+			posting_date BETWEEN %(posting_date_start_date)s AND %(posting_date_end_date)s and
 			business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
 			guest = if(%(guest)s='',guest,%(guest)s)  and 
 			ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
-			ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 
-			status ='Open' 
+			ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s) 
 			
 	""" 
 	
@@ -116,6 +121,7 @@ def get_report_summary(filters):
 			transaction_type='Reservation Folio' and
 			property = %(property)s and 
 			ifnull(business_source,'') = if(%(business_source)s='',ifnull(business_source,''),%(business_source)s)  and 
+			ifnull(reservation_status,'') = if(%(reservation_status)s='',ifnull(reservation_status,''),%(reservation_status)s)  and  
 			ifnull(guest,'') = if(%(guest)s='',ifnull(guest,''),%(guest)s)  and 
 			ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
 			ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 
@@ -135,10 +141,11 @@ def get_report_summary(filters):
 			transaction_type='Reservation Folio' and
 			property = %(property)s and 
 			ifnull(business_source,'') = if(%(business_source)s='',ifnull(business_source,''),%(business_source)s)  and 
+			ifnull(reservation_status,'') = if(%(reservation_status)s='',ifnull(reservation_status,''),%(reservation_status)s)  and 
 			ifnull(guest,'') = if(%(guest)s='',ifnull(guest,''),%(guest)s)  and 
 			ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
 			ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 
-	
+
 			posting_date = %(end_date)s
 	""".format(filters.start_date)
 

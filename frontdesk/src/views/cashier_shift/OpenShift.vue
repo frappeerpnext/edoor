@@ -7,8 +7,8 @@
             <table>
                 <thead>
                     <tr>
-                        <td class="pr-2"><label>Type</label></td>
-                        <td class="px-2 text-end"><label>Amount</label></td>
+                        <td class="pr-2"><label>{{ $t('Type') }} </label></td>
+                        <td class="px-2 text-end"><label>{{ $t('Amount') }} </label></td>
                         <td class="pl-2 text-end"><label>Amount {{ setting?.currency?.name }}</label></td>
                     </tr>
                 </thead>
@@ -38,7 +38,7 @@
                     <tr>
                         <td class="pr-2"></td>
                         <td class="px-2 text-end">
-                            <label>Total</label>
+                            <label>{{ $t('Total') }} </label>
                         </td>
                         <td class="pl-2">
                             <div class="p-inputtext-pt text-end border-1 border-white h-12">
@@ -51,7 +51,7 @@
             </table>
         </div>
         <div class="w-full mt-3">
-            <label>Note:</label> <br />
+            <label>{{ $t('Note') }}</label> <br />
             <Textarea v-model="shift.opened_note" rows="4" class="w-full" />
         </div>
 

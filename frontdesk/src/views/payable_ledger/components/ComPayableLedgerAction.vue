@@ -17,24 +17,24 @@
                     <button @click="closeFolio" v-if="selectedFolio?.status == 'Open'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-ban" />
-                        <span class="ml-2">Close Folio</span>
+                        <span class="ml-2">{{ $t('Close Folio') }} </span>
                     </button>
                     <button @click="EditFolio(true)"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-file-edit" />
-                        <span class="ml-2">Edit Folio </span>
+                        <span class="ml-2">{{ $t('Edit Folio') }}  </span>
                     </button>
 
                     <button @click="openFolio" v-if="selectedFolio?.status == 'Closed'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-check-circle" />
-                        <span class="ml-2">Open Folio</span>
+                        <span class="ml-2">{{ $t('Open Folio') }} </span>
                     </button>
 
                     <button @click="onDeleteFolio"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-times-circle" />
-                        <span class="ml-2">Delete Folio</span>
+                        <span class="ml-2">{{ $t('Delete Folio') }} </span>
                     </button>
 
                 </template>

@@ -140,8 +140,8 @@
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
-    <OverlayPanel ref="showAdvanceSearch" >
-        <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:80rem">
+        <ComOverlayPanelContent title="Advance Filter" onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
                 <template v-if="isMobile">
@@ -154,32 +154,51 @@
     </div>
     <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
 </div>
-<div class="col-6">
-    <ComSelect :options="['All Status','Open', 'Closed']" placeholder="All Status" v-model="filter.status"
+
+</template>
+<div class="col-6 md:col-4">
+    <label>{{ $t('Status') }}</label>
+    <ComSelect :options="statusOptions" optionLabel="label"
+                            optionValue="value" placeholder="All Status" v-model="filter.status"
         :clear="false" @onSelected="onSearch" />
 </div>
-<div class="col-6">
+<div class="col-6 md:col-4">
+    <label>{{ $t('Reservation Status') }}</label>
     <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status"
         doctype="Reservation Status" @onSelected="onSearch" />
 </div>
-</template>
-               
                 <div class="col-6 md:col-4">
+                    <label>{{ $t('Business Source') }}</label>
                     <ComAutoComplete v-model="filter.business_source" class="w-full" placeholder="Business Source"
                         doctype="Business Source" @onSelected="onSearch" />
                 </div>
                 <div class="col-6 md:col-4">
+                    <label>{{ $t('Guest') }}</label>
                     <ComAutoComplete v-model="filter.guest" class="w-full" placeholder="Guest" doctype="Customer"
                         @onSelected="onSearch" />
                 </div>
                 <div class="col-6 md:col-4">
+                    <label>{{ $t('Reservation #') }}</label>
                     <ComAutoComplete v-model="filter.reservation" class="w-full" placeholder="Reservation #"
                         doctype="Reservation" @onSelected="onSearch" :filters="{ property: property.name }" />
                 </div>
                 <div class="col-6 md:col-4">
+                    <label>{{ $t('Reservation Stay #') }}</label>
                     <ComAutoComplete v-model="filter.reservation_stay" class="w-full" placeholder="Reservation Stay #"
                         doctype="Reservation Stay" @onSelected="onSearch" :filters="{ property: property.name }" />
                 </div>
+                <div class="col-6 md:col-4">
+                    <label>{{ $t('Start Posting Date') }}</label>
+                    <Calendar panelClass="no-btn-clear" class="w-full"  showButtonBar :selectOtherMonths="true" v-model="filter.posting_date_start_date" placeholder="Start Date"
+                        dateFormat="dd-mm-yy" @date-select="onSearch" showIcon />
+                </div>
+                <div class="col-6 md:col-4">
+                    <label>{{ $t('End Posting Date') }}</label>
+                    <Calendar panelClass="no-btn-clear" showButtonBar class="w-full" :selectOtherMonths="true" v-model="filter.posting_date_end_date" placeholder="End Date"
+                        dateFormat="dd-mm-yy" showIcon @date-select="onSearch" />
+                </div>
+                
+                
             </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -203,7 +222,7 @@ const call = frappe.call();
 const columns = ref()
 const summary = ref()
 const moment = inject("$moment")
-const filter = ref({ guest: "", keyword: "" })
+const filter = ref({ guest: "", keyword: "" , status:"Open" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({ order_by: "modified", order_type: "desc" })
 
@@ -213,6 +232,11 @@ const sortOptions = ref([
     { "fieldname": "modified", label: "Last Update On" },
     { "fieldname": "creation", label: "Created On" },
     { "fieldname": "name", label: "ID" }
+])
+const statusOptions = ref([
+    { label: "All Status", value: "" },
+    { label: "Open", value:"Open" },
+    { label: "Closed", value:"Closed" },
 ])
 
 
@@ -229,7 +253,7 @@ const getColumns = computed(() => {
 
 const isFilter = computed(() => {
      
-        return gv.isNotEmpty(filter.value, 'start_date,end_date,order_by,order_type', { status: 'All Status' })
+        return gv.isNotEmpty(filter.value, 'start_date,end_date,order_by,order_type', { status: 'Open' })
 
   
 })
@@ -271,7 +295,7 @@ function onPrint() {
             name: property.name,
             report_name: gv.getCustomPrintFormat("Guest Ledger Report"),
             fullheight: true,
-            filter_options:["start_date","end_date","reservation","reservation_stay","business_source","guest","reservation_status","is_master"]
+            filter_options:["start_date","end_date","reservation","reservation_stay","business_source","guest","reservation_status","is_master","arrival_date"]
         },
         props: {
             header: "Guest Ledger",
@@ -321,17 +345,24 @@ const Refresh = debouncer(() => {
 function loadData(show_loading = true) {
     gv.loading = show_loading
     const filters = JSON.parse(JSON.stringify(filter.value))
-    filters.start_date = moment(filter.value.start_date).format("YYYY-MM-DD")
+    if (filter.value.posting_date_start_date){
+      filters.posting_date_start_date = moment(filter.value.posting_date_start_date).format("YYYY-MM-DD") 
+    } 
+    if(filter.value.posting_date_end_date){
+       filters.posting_date_end_date = moment(filter.value.posting_date_end_date).format("YYYY-MM-DD")   
+    }
     filters.end_date = moment(filter.value.end_date).format("YYYY-MM-DD")
     filters.property = property.name
     filters.order_by = order.value.order_by
     filters.order_type = order.value.order_type
     filters.keyword = gv.keyword(filter.value.keyword)
+   
     call.get("frappe.desk.query_report.run", {
         report_name: edoor_setting.guest_ledger_report_name,
         filters: filters
     }).then((result) => {
         columns.value = result.message.columns
+        console.log(result)
         if (selectedColumns.value && selectedColumns.value.length == 0) {
             selectedColumns.value = columns.value.filter(r => r.default).map(r => r.fieldname)
         }

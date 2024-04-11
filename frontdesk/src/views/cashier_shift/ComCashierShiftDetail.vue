@@ -3,8 +3,8 @@
         <TabView>
             <TabPanel header="Cashier Shift Information">
                 <Message v-if="!doc.is_edoor_shift">
-                    
-                    This shift is an ePOS shift. Please ask ePOS user to close their shift.</Message>
+                    {{$t('This shift is an ePOS shift. Please ask ePOS user to close their shift.')}}
+                    </Message>
                 <div class="grid mt-2">
                     <div class="col">
                         <ComReservationStayPanel  title="Shift Information">

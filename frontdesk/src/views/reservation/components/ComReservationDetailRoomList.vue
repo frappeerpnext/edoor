@@ -17,7 +17,7 @@
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column  field="is_package" :header="$t('Package')" bodyClass="text-center" headerClass="text-center">
                             <template #body="slotProps">
-                            <span><i v-if="slotProps.data?.is_package"  class="pi pi-folder-open package_room_rate"></i></span>
+                            <span><i v-if="slotProps.data?.is_package"  class="pi pi-gift package_room_rate"></i></span>
                             </template>
                         </Column>
                         <Column field="name" :header="$t('RES STAY #')">
