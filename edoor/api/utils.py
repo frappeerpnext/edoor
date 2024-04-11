@@ -13,9 +13,6 @@ import calendar
 import urllib.parse
 import time
 import copy
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
 
 
 

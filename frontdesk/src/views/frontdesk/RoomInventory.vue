@@ -465,7 +465,6 @@ function getEvents(date_range=null) {
 
             while (current_date < cal.view.currentEnd) {
                 let title = ""
-                
                 let event = {
                     color:"rgb(255 255 255)",
                     borderColor:"rgb(233 233 233 / 30%)",
@@ -476,7 +475,7 @@ function getEvents(date_range=null) {
                     type:"property_summary"
                 }
                 if (r.id == "vacant_room") {
-                    event.vacant_room = total_rooms -  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)
+                    event.vacant_room = total_rooms -  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0) + (d.block || 0), 0)
                     event.title = event.vacant_room 
                     if ((event.vacant_room || 0)<0){
                         event.color="red"

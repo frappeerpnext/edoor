@@ -12,6 +12,7 @@ from frappe import _
 from frappe.utils import (
 	cint
 )
+from functools import lru_cache
 
 @frappe.whitelist()
 def test():
@@ -1959,8 +1960,6 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
     else:
         show_account_code = int(show_account_code)
 
-    
-    
    
     filters={
         "parent_reference":""
@@ -2019,7 +2018,6 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
         balance = balance + (amount * (1 if d.type=="Debit" else -1))        
 
 
-        
         folio_transactions.append({ 
             "reservation":d["reservation"],
             "name":d["name"],
@@ -2091,53 +2089,10 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
         
     return folio_transactions
 
+ 
 @frappe.whitelist()
-def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None):
-    
-    if show_account_code == None:
-        show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
-    
-    data = frappe.db.sql(f"""
-                    select 
-                        account_code,
-                        {'room_number,' if show_room_number =='1' else '' }
-                        ifnull(report_description,account_name) as account_name,
-                        sum(report_quantity) as quantity,
-                        type,
-                        {sort_by_field}, 
-                        sum(amount) as amount
-                    from `tabFolio Transaction` 
-                    where 
-                        transaction_number = '{transaction_number}' and 
-                        transaction_type = '{transaction_type}'
-                    group by 
-                        account_code,
-                        ifnull(report_description,account_name),
-                        {'room_number,' if show_room_number =='1' else '' }
-                        type
-                    order by 
-                        {'room_number,' if show_room_number =='1' else '' }
-                        {sort_by_field}
-                """,as_dict=1)
-    summary_data = []
-    balance = 0
-    for d in data:
-        balance = balance + d["amount"]  * (1 if d["type"] =="Debit" else -1)
-        record = {
-            "description": (d["account_code"] + " - " if show_account_code=='1' else "")  +  d["account_name"],
-            "debit": d["amount"] if d["type"] == "Debit" else 0,
-            "credit": d["amount"] if d["type"] == "Credit" else 0,
-            "balance":balance,
-            "quantity":d["quantity"]
-        }
-        if show_room_number=='1':
-            record["room_number"] = d["room_number"]
-        summary_data.append(record)
-    return summary_data
+def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None):
 
-@frappe.whitelist()
-def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None):
-    
     if show_account_code == None:
         show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
     
@@ -2166,8 +2121,27 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         {sort_by_field},
                         account_code_sort_order
                 """,as_dict=1)
+    
+    
     summary_data = []
     balance = 0
+   
+    #  check if room show all room charge then get data from room rate include in guest invoice
+    
+    if show_all_room_rate=="1":
+        room_rates = get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,transaction_number,show_room_number) or []
+        for r in room_rates:
+            charge = [d for d in data  if d["account_code"] == r["account_code"]]
+            if charge:
+                charge=charge[0]
+                charge["quantity"] = charge["quantity"] + r["quantity"]
+                charge["amount"] = charge["amount"] + r["amount"]
+            else:
+                data.append(r)
+    data = sorted(data, key=lambda x: x['account_category_sort_order'])
+    
+ 
+             
     for d in data:
         balance = balance + d["amount"]  * (1 if d["type"] =="Debit" else -1)
         record = {
@@ -2177,12 +2151,114 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
             "balance":balance,
             "quantity":d["quantity"]
         }
+        
         if show_room_number=='1':
             record["room_number"] = d["room_number"]
         summary_data.append(record)
     return summary_data
+
+ 
+    
+def get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,folio_number,show_room_number):
+
+    sql = f"""select 
+                rrr.rate_type,
+                {'rrr.room_number,' if show_room_number =='1' else '' }
+                count(rrr.name) as quantity,
+                sum(rrr.rate) as rate,
+                sum(rrr.tax_1_amount) as tax_1_amount ,
+                sum(rrr.tax_2_amount) as tax_2_amount,
+                sum(rrr.tax_3_amount) as tax_3_amount,
+                sum(rrr.discount_amount) as discount_amount
+            from `tabReservation Room Rate` rrr 
+            where 
+                reservation_stay='{reservation_stay}' and 
+                name not in (select 
+                                reservation_room_rate 
+                            from `tabFolio Transaction` ft
+                            where 
+                                ft.transaction_type='Reservation Folio' and 
+                                transaction_number='{folio_number}' and 
+                                coalesce(reservation_room_rate,'') !=''
+                )
+            group by 
+                {'rrr.room_number,' if show_room_number =='1' else '' }
+                rrr.rate_type
+                
+        """
+    data = frappe.db.sql(sql,as_dict=1)
+    room_rates = []
+     
+
+    for d in data:
+        account_code = get_account_code_detail_by_rate_type(d["rate_type"])
+        # room  charge
+        room_rates.append(
+            {
+            "account_code": account_code["room_charge"]["code"],
+            "account_name": account_code["room_charge"]["account_name"],
+            "room_number": d["room_number"] if show_room_number =='1' else '' ,
+            "quantity": d["quantity"],
+            "type": "Debit",
+            "account_category_sort_order":  account_code["room_charge"]["account_category_sort_order"],
+            "amount": d["rate"] or 0
+        }
+        )
+        # discount
+        if d["discount_amount"]:
+            room_rates.append(
+                {
+                    "account_code": account_code["discount"]["code"],
+                    "account_name": account_code["discount"]["account_name"],
+                    "room_number": d["room_number"] if show_room_number =='1' else '' ,
+                    "quantity": 0,
+                    "type": "Credit",
+                    "account_category_sort_order":  account_code["discount"]["account_category_sort_order"],
+                    "amount": d["discount_amount"]
+                }
+            )
+        # tax 1
+        if d["tax_1_amount"]:
+            room_rates.append(
+                {
+                    "account_code": account_code["tax_1"]["code"],
+                    "account_name": account_code["tax_1"]["account_name"],
+                    "room_number": d["room_number"] if show_room_number =='1' else '' ,
+                    "quantity": 0,
+                    "type": "Debit",
+                    "account_category_sort_order":  account_code["tax_1"]["account_category_sort_order"],
+                    "amount": d["tax_1_amount"]
+                }
+            )
+        # tax 2
+        if d["tax_2_amount"]:
+            room_rates.append(
+                {
+                    "account_code": account_code["tax_2"]["code"],
+                    "account_name": account_code["tax_2"]["account_name"],
+                    "room_number": d["room_number"] if show_room_number =='1' else '' ,
+                    "quantity": 0,
+                    "type": "Debit",
+                    "account_category_sort_order":  account_code["tax_2"]["account_category_sort_order"],
+                    "amount": d["tax_2_amount"]
+                }
+            )
+        # tax 3
+        if d["tax_3_amount"]:
+            room_rates.append(
+                {
+                    "account_code": account_code["tax_3"]["code"],
+                    "account_name": account_code["tax_3"]["account_name"],
+                    "room_number": d["room_number"] if show_room_number =='1' else '' ,
+                    "quantity": 0,
+                    "type": "Debit",
+                    "account_category_sort_order":  account_code["tax_3"]["account_category_sort_order"],
+                    "amount": d["tax_3_amount"]
+                }
+            )
     
 
+    return room_rates
 @frappe.whitelist()
 def get_reservation_housekeeping_charge_summary(reservation_stay):
     data  = frappe.db.sql("""
@@ -2199,6 +2275,43 @@ def get_reservation_housekeeping_charge_summary(reservation_stay):
         
     return {"credit":0, "debit":0}
 
+@lru_cache(maxsize=128)
+def get_account_code_detail_by_rate_type(rate_type):
+    account_code_doc  = frappe.get_doc("Account Code", frappe.db.get_value("Rate Type", rate_type, "account_code"))
+    data = {
+        "room_charge":{"code":account_code_doc.name,"account_name":account_code_doc.account_name, "account_category_sort_order":get_account_cagegory_sort_order_by_account_code(account_code_doc.name)},
+        "discount":{"code":account_code_doc.discount_account,"account_name":account_code_doc.discount_account_name,"account_category_sort_order":get_account_cagegory_sort_order_by_account_code(account_code_doc.discount_account)},
+    }
+    tax_rule=None
+    if account_code_doc.tax_rule:
+        tax_rule = frappe.get_doc("Tax Rule", account_code_doc.tax_rule)
+        
+    
+    
+    if tax_rule:
+        data["tax_1"] ={"code":tax_rule.tax_1_account or "","account_category_sort_order": get_account_cagegory_sort_order_by_account_code(tax_rule.tax_1_account or "")} 
+        if data["tax_1"]["code"]:
+            data["tax_1"]["account_name"] = frappe.db.get_value("Account Code",data["tax_1"]["code"],"account_name")
+            
+        data["tax_2"] ={"code":tax_rule.tax_2_account or "","account_category_sort_order": get_account_cagegory_sort_order_by_account_code(tax_rule.tax_2_account or "")} 
+        if data["tax_2"]["code"]:
+            data["tax_2"]["account_name"] = frappe.db.get_value("Account Code",data["tax_2"]["code"],"account_name")
+            
+        data["tax_3"] ={"code":tax_rule.tax_3_account or "","account_category_sort_order": get_account_cagegory_sort_order_by_account_code(tax_rule.tax_3_account or "")} 
+        if data["tax_3"]["code"]:
+            data["tax_3"]["account_name"] = frappe.db.get_value("Account Code",data["tax_3"]["code"],"account_name")
+        
+        
+    
+    return data
+    
+    
+@lru_cache(maxsize=128)
+def get_account_cagegory_sort_order_by_account_code(account_code):
+    if not account_code:
+        return 0
+    category = frappe.db.get_value("Account Code",account_code, "account_category")
+    return frappe.db.get_value("Account Category",category,"sort_order")
 
 @frappe.whitelist(methods="POST")
 def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):

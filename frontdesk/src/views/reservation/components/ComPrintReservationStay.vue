@@ -1,4 +1,5 @@
 <template>
+
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
             <div class="grid mb-3 overflow-auto flex-nowrap	lg:flex-wrap">
@@ -36,6 +37,10 @@
                         <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_summary" />
                         <label for="show_summary" class="white-space-nowrap" >Show/Hide Summary</label>
                     </div>
+                    <div>
+                        <Checkbox v-model="filters.show_all_room_rate" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_all_room_rate" />
+                        <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate</label>
+                    </div>
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view||'')!='ui'">
@@ -70,7 +75,8 @@ const filters = ref({
     invoice_style:window.setting.folio_transaction_style_credit_debit ==1?"Debit/Credit Style":"Simple Style",
     letterHead:window.setting.property.default_letter_head ,
     show_account_code:window.setting.show_account_code_in_folio_transaction,
-    show_room_number:1
+    show_room_number:1,
+    show_all_room_rate:0,
 })
 
 function onSelectFolio(f){
@@ -89,6 +95,7 @@ const refreshReport = () => {
     url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + filters.value.selected_folio.reservation_stay + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + filters.value.letterHead + "&show_toolbar=0&show_room_number=" + filters.value.show_room_number + "&show_account_code=" + filters.value.show_account_code
     url.value = url.value + "&invoice_style=" + filters.value.invoice_style
     url.value = url.value + "&show_summary=" + filters.value.show_summary || 0
+    url.value = url.value + "&show_all_room_rate=" + filters.value.show_all_room_rate || 0
     if (filters.value.selected_folio) {
         url.value = url.value + "&folio=" + filters.value.selected_folio.name
     }
