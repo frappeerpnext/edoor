@@ -66,9 +66,9 @@
                 </template>
               </div>
               <template v-else-if="c.fieldtype == 'Status'"> 
-                <Chip class="text-white surface-400 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1"><i class="pi pi-lock-open me-2" /> Unblock</Chip>    
-                <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-else-if="slotProps.data[c.extra_field] == 1"><i class="pi pi-lock me-2" />Block</Chip>
-                <Chip class="text-white bg-orange-500 p-1px px-2" v-else-if="slotProps.data[c.extra_field] == 0"><i class="pi pi-file-edit me-2" />Draft</Chip>
+                <Chip class="text-white surface-400 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1"><i class="pi pi-lock-open me-2" /> {{$t('Unblock')}} </Chip>    
+                <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-else-if="slotProps.data[c.extra_field] == 1"><i class="pi pi-lock me-2" />{{ $t('Block') }} </Chip>
+                <Chip class="text-white bg-orange-500 p-1px px-2" v-else-if="slotProps.data[c.extra_field] == 0"><i class="pi pi-file-edit me-2" />{{$t('Draft')}}</Chip>
               </template>
               <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
               <span v-else>

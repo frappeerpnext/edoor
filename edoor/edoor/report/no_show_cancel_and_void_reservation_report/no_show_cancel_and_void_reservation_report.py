@@ -185,7 +185,7 @@ def get_report_data(filters,data,data1):
 	start_date = datetime.strptime(filters.start_date, '%Y-%m-%d').date()
 	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d').date()
 	report_data = []
-	tran_date = sorted(set([d['reservation_status'] for d in data if d['cancelled_date'] >= start_date and d['cancelled_date'] <= end_date]))
+	tran_date = sorted(set([d['reservation_status'] for d in data if 'cancelled_date' in d and d['cancelled_date'] >= start_date and d['cancelled_date'] <= end_date]))
 	if tran_date:
 		report_data.append({
 			"indent":0,

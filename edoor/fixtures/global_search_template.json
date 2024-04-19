@@ -43,7 +43,7 @@
   "docstatus": 0,
   "doctype": "Global Search Template",
   "limit_result": 20,
-  "modified": "2024-04-10 14:16:52.509491",
+  "modified": "2024-04-17 10:42:59.605218",
   "name": "Folio Transaction",
   "return_fields": "transaction_number,reference_number,reservation,parent_reference,name,transaction_type,DATE_FORMAT(creation , '%%d-%%m-%%Y %%h:%%i %%p') as creation ,owner,modified_by,DATE_FORMAT(modified, '%%d-%%m-%%Y %%h:%%i %%p') as modifiedtime,reservation_status,reservation_status_color,reservation_stay,DATE_FORMAT(posting_date, '%%d-%%m-%%Y ' ) as posting_date, CONCAT('$', FORMAT(amount, 2)) AS amount,account_code,account_name,guest,guest_name,modified,CONCAT('view_',LOWER(REPLACE(transaction_type, ' ', '_')),'_detail') AS action",
   "search_doctype": "Folio Transaction",

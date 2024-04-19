@@ -135,94 +135,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Night Audit Report",
-   "link_count": 8,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Audit Trail Report",
-   "link_count": 0,
-   "link_to": "Audit Trail Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Daily Reservation Report",
-   "link_count": 0,
-   "link_to": "Daily Reservation Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "No Show Cancel and Void Reservation Report",
-   "link_count": 0,
-   "link_to": "No Show Cancel and Void Reservation Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Room Complimentary and House Use Report",
-   "link_count": 0,
-   "link_to": "Room Complimentary and House Use Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Room Charge Posting Report",
-   "link_count": 0,
-   "link_to": "Room Charge Posting Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Housekeeping Room Status Report",
-   "link_count": 0,
-   "link_to": "Housekeeping Room Status Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "End of Day Report",
-   "link_count": 0,
-   "link_to": "end-of-day-report",
-   "link_type": "Page",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "eDoor Cashier Shift Report",
-   "link_count": 0,
-   "link_to": "cashier-shift-report",
-   "link_type": "Page",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Front Office Report",
    "link_count": 9,
    "onboard": 0,
@@ -453,9 +365,97 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Night Audit Report",
+   "link_count": 8,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Audit Trail Report",
+   "link_count": 0,
+   "link_to": "Audit Trail Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Daily Reservation Report",
+   "link_count": 0,
+   "link_to": "Daily Reservation Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "No Show Cancel and Void Reservation Report",
+   "link_count": 0,
+   "link_to": "No Show Cancel and Void Reservation Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Room Complimentary and House Use Report",
+   "link_count": 0,
+   "link_to": "Room Complimentary and House Use Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Room Charge Posting Report",
+   "link_count": 0,
+   "link_to": "Room Charge Posting Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Housekeeping Room Status Report",
+   "link_count": 0,
+   "link_to": "Housekeeping Room Status Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "End of Day Report",
+   "link_count": 0,
+   "link_to": "end-of-day-report",
+   "link_type": "Page",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "eDoor Cashier Shift Report",
+   "link_count": 0,
+   "link_to": "cashier-shift-report",
+   "link_type": "Page",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-04-02 14:29:18.667730",
+ "modified": "2024-04-19 14:24:54.239973",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

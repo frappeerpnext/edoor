@@ -31,23 +31,26 @@
         <hr class="mb-2" />
         <div class="flex items-center flex-row-reverse flex-wrap">
             <div class="md:order-0 order-1">
-                <Button class="border-none mr-2" type="button" label="Back" icon="pi pi-arrow-left" :loading="loading"
+                <Button class="border-none mr-2" type="button" :label="$t('Back')" icon="pi pi-arrow-left" :loading="loading"
                     :disabled="currentStep == 1" v-if="currentStep < 9" @click="onBack" />
-                <Button type="button" label="Next" icon="pi pi-arrow-right" class="border-none" :loading="loading"
+                <Button type="button" :label="$t('Next')" icon="pi pi-arrow-right" class="border-none" :loading="loading"
                     iconPos="right" :disabled="currentStep == steps.length" v-if="currentStep < 8" @click="onNext" />
-                <Button class="border-none" :loading="loading" v-if="currentStep == 8" @click="onFinish">Finish</Button>
-                <Button class="border-none" v-if="currentStep == 9" @click="onClose">Close</Button>
+                <Button class="border-none" :loading="loading" v-if="currentStep == 8" @click="onFinish">{{ $t('Finish') }} </Button>
+                <Button class="border-none" v-if="currentStep == 9" @click="onClose">{{ $t('Close') }} </Button>
             </div>
             <div class="md:order-1 order-0 flex items-center gap-2">
                 <template v-if="currentStep == 5">
                     <Checkbox inputId="verify-night-audit-data01" v-model="isConfirmRoomRate" :binary="true" />
-                    <label for="verify-night-audit-data01" class="mr-3 cursor-pointer">I am verifying that all room rates
-                        above are correct.</label>
+                    <label for="verify-night-audit-data01" class="mr-3 cursor-pointer">
+                        {{ $t('I am verifying that all room rates above are correct.') }}
+                    </label>
                 </template>
                 <template v-if="currentStep == 6">
                     <Checkbox inputId="verify-night-audit-data02" v-model="isConfirmFolioPosting" :binary="true" />
-                    <label for="verify-night-audit-data02" class="mr-3 cursor-pointer">I am verifying that all other charges
-                        and payments have been accurately posted to the guest folio.</label>
+                    <label for="verify-night-audit-data02" class="mr-3 cursor-pointer">
+                        {{ $t('I am verifying that all other charges and payments have been accurately posted to the guest folio.') }}
+                        
+                        </label>
                 </template>
             </div>
         </div>
@@ -70,16 +73,18 @@ const currentStep = ref(1)
 const loading = ref(false)
 const frappe = inject("$frappe")
 const call = frappe.call()
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const steps = ref([
-    { step: 1, label: "Welcome", is_selected: true },
-    { step: 2, label: "Today<br>Arrival", is_selected: false },
-    { step: 3, label: "Today<br>Departure", is_selected: false },
-    { step: 4, label: "Today<br>Reservation", is_selected: false },
-    { step: 5, label: "Posting<br>Room Charge", is_selected: false },
-    { step: 6, label: "Today<br>Posting Transaction", is_selected: false },
-    { step: 7, label: "Today<br>Shift", is_selected: false },
-    { step: 8, label: "Finish<br>Create New Day", is_selected: false },
-    { step: 9, label: "Thank You!", is_selected: false },
+    { step: 1, label: $t("Welcome"), is_selected: true },
+    { step: 2, label: $t("Today") + "<br>" + $t("Arrival"), is_selected: false },
+    { step: 3, label: $t("Today") + "<br>" + $t("Departure"), is_selected: false },
+    { step: 4, label: $t("Today") + "<br>" + $t("Reservation"), is_selected: false },
+    { step: 5, label: $t("Posting") + "<br>" + $t("Room Charge"), is_selected: false },
+    { step: 6, label: $t("Today") + "<br>" + $t("Posting Transaction"), is_selected: false },
+    { step: 7, label: $t("Today")+"<br>"+ $t("Shift"), is_selected: false },
+    { step: 8, label: $t("Finish") + "<br>" + "Create New Day", is_selected: false },
+    { step: 9, label: $t("Thank You!"), is_selected: false },
 ])
 
 const html = ref()

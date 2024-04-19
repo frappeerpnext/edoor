@@ -20,7 +20,7 @@ def get_report_columns(filters,min_max_day):
 		{"fieldname": "row_group", "label":"Room Type", "width": 200},
 	]
 	columns.append({
-		"fieldname":"total","label": "Total", "width":100, "align":"center"
+		"fieldname":"total","label": "Total", "width":100, "align":"center",
 	})
 	
 	for n in range(min_max_day["min_day"], min_max_day["max_day"]+1):

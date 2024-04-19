@@ -23,7 +23,7 @@
                 showGridlines
                 :value="data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))"
                 tableStyle="min-width: 50rem">
-                    <Column headerClass="white-space-nowrap" field="customer_group_en" :header="$t('Guest type') "></Column>
+                    <Column headerClass="white-space-nowrap" field="customer_group_en" :header="$t('Guest Type') "></Column>
                     <Column field="owner" :header="$t('Owner')"></Column>
                     <Column field="note" class="w-6" :header="$t('Note')"></Column>
                     <Column :header="$t('Action') " headerClass="text-center w-10rem">

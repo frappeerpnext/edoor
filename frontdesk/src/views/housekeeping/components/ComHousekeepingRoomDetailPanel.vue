@@ -36,38 +36,38 @@
         <div v-if="hk && hk.reservationStay && Object.keys(hk.reservationStay).length > 0">
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center"> {{ $t('Reservation') }} </div>
             <table>
-                <ComStayInfoNoBox label="Res No">
+                <ComStayInfoNoBox label="Reservation #">
                     <Button @click="onViewReservationDetail(hk?.reservationStay?.reservation)"
                         class="-ml-3 link_line_action1" text>{{ hk?.reservationStay?.reservation }}</Button>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Res Stay No">
+                <ComStayInfoNoBox label="Stay #">
                     <Button @click="onViewReservationStayDetail(hk?.reservationStay?.name)" class="-ml-3 link_line_action1"
                         text>{{ hk?.reservationStay?.name }}</Button>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Type" :value="hk?.reservationStay?.reservation_type" v-tippy="hk?.reservationStay?.reservation_type !== 'GIT' ? 'Free Independent Traveler'
-                    : (hk?.reservationStay?.reservation_type !== 'FIT' ? 'Group Inclusive Tour' : '')" />
+                <ComStayInfoNoBox label="Type" :value="$t(hk?.reservationStay?.reservation_type)" v-tippy="hk?.reservationStay?.reservation_type !== 'GIT' ? $t('Free Independent Traveler')
+                    : (hk?.reservationStay?.reservation_type !== 'FIT' ? $t('Group Inclusive Tour') : '')" />
                 <ComStayInfoNoBox v-if="hk?.reservationStay?.reservation_type != 'FIT'" label="Group">
                     <div class="w-full overflow-hidden white-space-nowrap -ml-3 text-overflow-ellipsis">
                         <div v-tippy="hk?.reservationStay?.group_code" class="inline">
                             {{ hk?.reservationStay?.group_code }}
                         </div>
                         <div v-tippy="hk?.reservationStay?.group_name" class="inline">
-                            {{ hk?.reservationStay?.group_name }}
+                            {{ $t(hk?.reservationStay?.group_name) }}
                         </div>
                     </div>
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Status">
-                    <span class="-ms-3 font-semibold" :style="{ color: hk.reservationStay?.status_color }">{{
-                        hk?.reservationStay?.reservation_status }}</span>
+                    <span class="-ms-3 font-semibold" :style="{ color: hk.reservationStay?.status_color }">
+                    {{$t(hk?.reservationStay?.reservation_status) }}</span>
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Guest Name">
                     <Button @click="onViewCustomerDetail(hk?.reservationStay?.guest)" class="-ml-3 link_line_action1"
                         text>{{ hk?.reservationStay?.guest }} - {{ hk?.reservationStay?.guest_name }}</Button>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Nationality" :value="hk?.reservationStay?.nationality" />
+                <ComStayInfoNoBox label="Country" :value="hk?.reservationStay?.nationality" />
                 <ComStayInfoNoBox label="Phone Number" :value="hk?.reservationStay?.guest_phone_number" />
                 <ComStayInfoNoBox label="Email" :value="hk?.reservationStay?.guest_email" />
-                <ComStayInfoNoBox label="PAX" :value="hk?.reservationStay?.adult + ' / ' + hk?.reservationStay?.child" />
+                <ComStayInfoNoBox label="Pax(A/C)" :value="hk?.reservationStay?.adult + ' / ' + hk?.reservationStay?.child" />
                 <ComStayInfoNoBox label="Arrival">
                     <span class="-ms-3 font-semibold">
                         {{ gv.dateFormat(hk?.reservationStay?.arrival_date) }} - {{
@@ -80,7 +80,7 @@
                             gv.timeFormat(hk?.reservationStay?.departure_time) }}
                     </span>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Night(s)" :value="hk?.reservationStay?.room_nights" />
+                <ComStayInfoNoBox label="Nights" :value="hk?.reservationStay?.room_nights" />
             </table>
             <template>
                 <div class="py-2 mt-3 border-1  bg-slate-200 font-medium text-center">Housekeeping Charge Summary</div>

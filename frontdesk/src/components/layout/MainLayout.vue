@@ -216,7 +216,7 @@ function onRunNightAudit() {
 
     dialog.open(ComRunNightAudit, {
         props: {
-            header: 'Run Night Audit [' + moment(working_day.date_working_day).format('DD-MM-YYYY') + ']',
+            header: $t('Run Night Audit') + '[' + moment(working_day.date_working_day).format('DD-MM-YYYY') + ']',
             style: {
                 width: '100vw',
             },
@@ -252,7 +252,7 @@ function onBlankGuestRegistration() {
             show_letter_head:1
         },
         props: {
-            header: "Blank Guest Registration Card",
+            header: $t("Blank Guest Registration Card"),
             style: {
                 width: '80vw',
             },
