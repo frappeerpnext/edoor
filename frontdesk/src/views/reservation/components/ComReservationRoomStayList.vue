@@ -75,7 +75,7 @@
             </DataTable>
             </div>
             <div class="flex justify-end mt-3" v-if="canNotUpgradeRoom">
-                <Button class="conten-btn" @click="onUpgradeRoom"><ComIcon icon="iconBedPurple" class="me-2" /> {{$t('Upgrade Room')}} </Button>
+                <Button class="conten-btn" @click="onUpgradeRoom"><ComIcon :icon="theme == 'estc' ? 'iconBedPurple' : 'iconBedWhite' " class="me-2" /> {{$t('Upgrade Room')}} </Button>
             </div>
         </template>
     </ComReservationStayPanel>
@@ -86,6 +86,7 @@ import ComReservationStayRoomListMoreOption from '@/views/reservation/components
 import ComReservationStayUpgradeRoom from '@/views/reservation/components/ComReservationStayUpgradeRoom.vue';
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 import {inject,ref,useDialog,computed   } from '@/plugin'
+const theme =window.theme
 import Enumerable from 'linq';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;

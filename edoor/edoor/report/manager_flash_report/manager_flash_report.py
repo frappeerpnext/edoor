@@ -134,6 +134,15 @@ def get_report_data(filters):
 	report_data.append(forecasting[0]['tmr_arrival'])
 	report_data.append(forecasting[0]['tmr_departure'])
 
+	stay_data= get_stay_data(filters)
+	report_data.append(stay_data[0]['no_show_room'])
+	report_data.append(stay_data[0]['no_show_adult'])
+	report_data.append(stay_data[0]['no_show_child'])
+	report_data.append(stay_data[0]['cancelled_room'])
+	report_data.append(stay_data[0]['cancelled_adult'])
+	report_data.append(stay_data[0]['cancelled_child'])
+
+
 	#forecating for the next 7 days
 	next_seven_day = get_forecasting_next_seven_day(filters)
 	report_data.append(next_seven_day[0]['seven_day_room_occupy'])
@@ -169,6 +178,8 @@ def get_report_data(filters):
 	git_pax = {"title":"GIT PAX"}
 	cancalled_pax = {"title":"Cancelled PAX"}
 	house_use_pax = {"title":"House Use PAX"}
+	no_show_pax = {"title":"No Show PAX"}
+	cancelled_pax = {"title":"Cancelled PAX"}
 	complimentary_pax = {"title":"Complimentary PAX"}
 	arrival_pax_for_seven_day = {"title":"Arrival PAX for the Next 7 Days"}
 	departure_pax_for_seven_day = {"title":"Departure PAX for the Next 7 Days"}
@@ -178,6 +189,7 @@ def get_report_data(filters):
 	for f in ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]:
 		total_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Total Rooms in Property']) or 0
 		room_occupy = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Rooms Occupy']) or 0
+	
 		room_block = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Out of Order Rooms']) or 0
 		house_use_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'House Use Rooms']) or 0
 		complimentary_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Complimentary Rooms']) or 0
@@ -203,21 +215,22 @@ def get_report_data(filters):
 		git_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'GIT Child']) or 0
 		fit_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'FIT Adult']) or 0
 		fit_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'FIT Child']) or 0
+		no_show_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'No Show Adult']) or 0
+		no_show_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'No Show Child']) or 0
+		cancel_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Cancelled Adult']) or 0
+		cancel_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Cancelled Child']) or 0
 		room_charge = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Room Charge']) or 0
 		# other_room_charge = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Other Room Revenue']) or 0
 		
 		room_minus_ooo_rooms[f] =  total_room - room_block
 		available_room[f] =  total_room - (room_occupy + room_block)
-		if calculate_room_occupancy_include_room_block==1:
-			occpancy[f] =  room_occupy / (1 if total_room == 0 else total_room)
-		else:
-			occpancy[f] = room_occupy / (1 if (total_room - room_block) == 0 else (total_room - room_block))
-
+		no_show_pax[f] =  no_show_adult + no_show_child
+		cancalled_pax[f] =  cancel_adult + cancel_child
 		if calculate_adr_include_all_room_occupied==1:
-			adr[f] =  (room_charge ) / (1 if room_occupy == 0 else room_occupy)
+			adr[f] =  (room_charge) / (1 if room_occupy == 0 else room_occupy)
 			
 		else:
-			adr[f] = (room_charge ) / (1 if (room_occupy - (complimentary_room + house_use_room)) == 0 else (room_occupy - (complimentary_room + house_use_room)))
+			adr[f] = (room_charge) / (1 if (room_occupy - (complimentary_room + house_use_room)) == 0 else (room_occupy - (complimentary_room + house_use_room)))
 
 		arrival_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Adult for Tomorrow']) or 0
 		arrival_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Child for Tomorrow']) or 0
@@ -261,7 +274,9 @@ def get_report_data(filters):
 		cancalled_pax[f] =  cancalled_adult + cancalled_child
 		house_use_pax[f] =  house_use_adult + house_use_child
 		complimentary_pax[f] =  complimentary_adult + complimentary_child
-		
+		if calculate_room_occupancy_include_room_block==0:
+			total_room = total_room - room_block
+		occpancy[f] =  room_occupy / (1 if total_room == 0 else total_room)
 		# frappe.throw(str( adr))
 	report_data.append(adr)
 	report_data.append(occpancy)
@@ -288,6 +303,8 @@ def get_report_data(filters):
 	report_data.append(arrival_pax_for_seven_day)
 	report_data.append(departure_pax_for_seven_day)
 	report_data.append(complimentary_pax)
+	report_data.append(no_show_pax)
+	report_data.append(cancalled_pax)
 	
 	report_data.append(revpar)
         
@@ -445,9 +462,9 @@ def get_data_fieldname(filters):
 			sum(type = 'Reservation' and reservation_status='No Show' and is_active=1) as total_no_show_room,
 			sum(if(type='Reservation' and reservation_status='No Show' and is_active=1,adult,0)) as total_no_show_adult,
 			sum(if(type='Reservation' and reservation_status='No Show' and is_active=1,child,0)) as total_no_show_child,
-			sum(if(type='Reservation' and reservation_status='Checked Out' and is_active=1,adult,0)) as total_early_checked_out_adult,
-			sum(if(type='Reservation' and reservation_status='Checked Out' and is_active=1,child,0)) as total_early_checked_out_child,
-			sum(type='Reservation' and reservation_status='Checked Out' and is_active=1) as total_early_checked_out,
+			sum(if(type='Reservation' and is_departure = 1 and is_active=1,adult,0)) as total_early_checked_out_adult,
+			sum(if(type='Reservation' and is_departure = 1 and is_active=1,child,0)) as total_early_checked_out_child,
+			sum(type='Reservation' and is_departure = 1 and is_active=1) as total_early_checked_out,
 			sum(type='Reservation' and reservation_type='FIT' and is_active=1) as total_fit_room,
 			sum(type='Reservation' and reservation_type='GIT' and is_active=1) as total_git_room,
 			sum(if(type='Reservation' and reservation_type='FIT' and is_active=1,adult,0)) as total_fit_adult,
@@ -713,6 +730,53 @@ def get_forecasting_fieldname(filters):
 			sum(type='Reservation' and is_arrival=1 and is_active=1)  as total_arrival_room_night,
 			sum(type='Reservation' and is_departure=1)  as total_departure_room_night
 		from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s 
+    """
+    return frappe.db.sql(sql,filters, as_dict=1)
+def get_stay_data(filters):
+	
+	data = []
+	fields = ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]
+	for f in fields:
+		data+=get_reservation_stay_data({ "fieldname":f,"property":filters.property,"start_date":filters.get(f)["start_date"],"end_date":filters.get(f)["end_date"]})
+	row = {
+			"no_show_room":{"title":"No Show Room"}, 
+			"no_show_adult":{"title":"No Show Adult"},
+			"no_show_child":{"title":"No Show Child"},
+			"cancelled_room":{"title":"Cancelled Room"},
+			"cancelled_adult":{"title":"Cancelled Adult"},
+			"cancelled_child":{"title":"Cancelled Child"},
+		}
+	
+	stay_data = []
+	for f in fields:
+		# frappe.throw(str(sum([y["total_occupy"] for y in data if y["fieldname"]==f ]) or 0))
+		row['no_show_room'][f] = sum([y["total_no_show"] for y in data if y["fieldname"]==f and y["total_no_show"] is not None]) or 0
+		row['no_show_adult'][f] = sum([y["total_no_show_adult"] for y in data if y["fieldname"]==f and y["total_no_show_adult"] is not None]) or 0
+		row['no_show_child'][f] = sum([y["total_no_show_child"] for y in data if y["fieldname"]==f and y["total_no_show_child"] is not None]) or 0
+		
+		row['cancelled_room'][f] = sum([y["total_cancelled"] for y in data if y["fieldname"]==f and y["total_cancelled"] is not None]) or 0
+		row['cancelled_adult'][f] = sum([y["total_cancelled_adult"] for y in data if y["fieldname"]==f and y["total_cancelled_adult"] is not None]) or 0
+		row['cancelled_child'][f] = sum([y["total_cancelled_child"] for y in data if y["fieldname"]==f and y["total_cancelled_child"] is not None]) or 0
+		
+		
+	stay_data.append(row)
+	
+	return stay_data
+
+def get_reservation_stay_data(filters):
+
+    sql="""
+		select 
+			%(fieldname)s as fieldname,
+			sum(reservation_status = 'No Show') as total_no_show,
+			sum(if(reservation_status = 'No Show' ,adult,0))  as total_no_show_adult,
+			sum(if(reservation_status = 'No Show' ,child,0))  as total_no_show_child,
+			sum(if(reservation_status = 'Cancelled' ,adult,0))  as total_cancelled_adult,
+			sum(if(reservation_status = 'Cancelled' ,child,0))  as total_cancelled_child,
+			sum(reservation_status = 'Cancelled') as total_cancelled
+		from `tabReservation Stay`
+		where
+  			property=%(property)s and cancelled_date between %(start_date)s and %(end_date)s 
     """
     return frappe.db.sql(sql,filters, as_dict=1)
     

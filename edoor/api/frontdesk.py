@@ -2483,7 +2483,7 @@ def get_day_end_summary_report(property, date):
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
 
 
-    if calculate_room_occupancy_include_room_block==1:
+    if calculate_room_occupancy_include_room_block==0:
         total_rooms = total_rooms - room_block 
 
     
@@ -2532,7 +2532,9 @@ def get_day_end_summary_report(property, date):
     for l in ledger_types:
         opening_record = [d for d in opening_data if d["transaction_type"] == l["value"]]
         if len(opening_record)>0:
-            l["opening"] =opening_record[0]["opening"]
+            l["opening"] = opening_record[0]["opening"]
+            if l["value"] == "Cashier Shift":
+                l["opening"] = 0
         else:
             l["opening"] = 0
 

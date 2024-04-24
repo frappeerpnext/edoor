@@ -130,7 +130,7 @@
   --blue-200: #abc9fb;
   --blue-300: #85b2f9;
   --blue-400: #609af8;
-  --blue-500: #3b82f6;
+  --blue-500: #16a085;
   --blue-600: #326fd1;
   --blue-700: #295bac;
   --blue-800: #204887;
@@ -150,7 +150,7 @@
   --yellow-200: #f6de95;
   --yellow-300: #f2d066;
   --yellow-400: #eec137;
-  --yellow-500: #eab308;
+  --yellow-500: #1abc9c;
   --yellow-600: #c79807;
   --yellow-700: #a47d06;
   --yellow-800: #816204;
@@ -176,11 +176,11 @@
   --pink-800: #822854;
   --pink-900: #5e1d3d;
   --indigo-50: #f7f7fe;
-  --indigo-100: #dadafc;
+  --indigo-100: #1abc9c4a;
   --indigo-200: #bcbdf9;
   --indigo-300: #9ea0f6;
   --indigo-400: #8183f4;
-  --indigo-500: #6366f1;
+  --indigo-500: #1abc9c;
   --indigo-600: #5457cd;
   --indigo-700: #4547a9;
   --indigo-800: #363885;
@@ -196,7 +196,7 @@
   --teal-800: #0b655b;
   --teal-900: #084a42;
   --orange-50: #fff8f3;
-  --orange-100: #feddc7;
+  --orange-100: #1abc9c4a;
   --orange-200: #fcc39b;
   --orange-300: #fba86f;
   --orange-400: #fa8e42;
@@ -2010,7 +2010,7 @@
 }
 
 .p-button:enabled:hover {
-  background: var(--bg-btn-color);
+  background: var(--bg-primary-cs-hover);
   color: #ffffff;
   border-color: var(--btn-border-color);
 }
@@ -2056,19 +2056,19 @@
 
 .p-button.p-button-text {
   background-color: transparent;
-  color: #6366F1;
+  color: #1abc9c;
   border-color: transparent;
 }
 
 .p-button.p-button-text:enabled:hover {
-  background: rgba(99, 102, 241, 0.04);
-  color: #6366F1;
+  background: #92f6f142;
+  color: #1abc9c;
   border-color: transparent;
 }
 
 .p-button.p-button-text:enabled:active {
-  background: rgba(99, 102, 241, 0.16);
-  color: #6366F1;
+  background: #92f6f142;
+  color: #1abc9c;
   border-color: transparent;
 }
 
@@ -6999,7 +6999,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 
 .p-badge {
-  background: #6366F1;
+  background: #1abc9c;
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
@@ -7110,7 +7110,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .p-progressbar .p-progressbar-value {
   border: 0 none;
   margin: 0;
-  background: #6366F1;
+  background: #1abc9c;
 }
 
 .p-progressbar .p-progressbar-label {

@@ -61,7 +61,9 @@ html {
 .p-1px {
     padding: 2px;
 }
-
+.bg-sysdate{
+    background: #4d40ca !important;
+}
 .bg-border-color-teal {
     border-color: var(--bg-color-teal);
 }

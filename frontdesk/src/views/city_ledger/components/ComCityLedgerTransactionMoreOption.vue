@@ -7,10 +7,16 @@
             <Menu ref="show" :popup="true" style="min-width: 180px;">
                 <template #end>
                         <button @click="onEdit" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Edit
+                            {{$t("Edit")}}
+                        </button> 
+                        <button v-if="!data.is_verify" @click="onMarkAsVerify" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            {{$t("Mark as Verify")}}
+                        </button> 
+                        <button v-else @click="onMarkAsVerify" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            {{$t("Unmark as Verify")}}
                         </button> 
                         <button @click="onDelete" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Delete
+                            {{$t("Delete")}}
                         </button> 
                         
                 </template>
@@ -21,9 +27,13 @@
 </template>
 <script setup>
 import {ref} from '@/plugin'
-
+import { i18n } from '@/i18n';
+const { t: $t } = i18n.global;
 const show = ref()
 const emit = defineEmits(['onEdit', 'onDelete'])
+const props = defineProps({
+    data:Object
+})
 
 const onEdit = () => {
     show.value.hide()
@@ -33,6 +43,11 @@ const onEdit = () => {
 const onDelete = () => {
     show.value.hide()
     emit('onDelete')
+}
+
+const onMarkAsVerify = () => {
+    show.value.hide()
+    emit('onMarkAsVerify')
 }
 
 

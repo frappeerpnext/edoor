@@ -7,14 +7,15 @@
     <img v-else-if="icon == 'checkout'" :style="{'height' : height}" :class="class" :src="BtnCheckoutIcon"/>
     <img v-else-if="icon == 'BirthdayIcon'" :style="{'height' : height}" :class="class" :src="BirthdayIcon"/>
     <img v-else-if="icon == 'ViewDetailIcon'" :style="{'height' : height}" :class="class" :src="ViewDetailIcon"/>
-    <img v-else-if="icon == 'iconOpenBrower'" :style="{'height' : height}" :class="class" :src="iconOpenBrower"/>
+    <img v-else-if="icon == 'iconOpenBrower'" :style="{'height' : height}" :class="class" :src="theme == 'estc' ? iconOpenBrower : iconOpenBrowerMicro"/>
     <img v-else-if="icon == 'iconNote'" :style="{'height' : height}" :class="class" :src="iconNote"/>
-    <img v-else-if="icon == 'iconNoteBlue'" :style="{'height' : height}" :class="class" :src="iconNoteBlue"/>
+    <img v-else-if="icon == 'iconNoteBlue'" :style="{'height' : height}" :class="class" :src="theme == 'estc' ? iconNoteBlue : iconNoteMicro"/>
     <img v-else-if="icon == 'iconCrown'" :style="{'height' : height}" :class="class" :src="iconCrown"/>
     <img v-else-if="icon == 'iconCrownBlack'" :style="{'height' : height}" :class="class" :src="iconCrownBlack"/>
     <img v-else-if="icon == 'iconFIT'" :style="{'height' : height}" :class="class" :src="iconFIT"/>
     <img v-else-if="icon == 'iconUserGroup'" :style="{'height' : height}" :class="class" :src="iconUserGroup"/>
     <img v-else-if="icon == 'iconBedPurple'" :style="{'height' : height}" :class="class" :src="iconBedPurple"/>
+    <img v-else-if="icon == 'iconBedWhite'" :style="{'height' : height}" :class="class" :src="iconBedWhite"/>
     <img v-else-if="icon == 'pushPin'" :style="{'height' : height}" :class="class" :src="pushPin"/>
     <img v-else-if="icon == 'pushPined'" :style="{'height' : height}" :class="class" :src="pushPined"/>
     <img v-else-if="icon == 'iconNoteWhite'" :style="{'height' : height}" :class="class" :src="iconNoteWhite"/>
@@ -26,7 +27,7 @@
     <img v-else-if="icon == 'City'" :style="{'height' : height}" :class="class" :src="City"/>
     <img v-else-if="icon == 'checkin-black'" :style="{'height' : height}" :class="class" :src="BtnCheckinIconBlack"/>
     <img v-else-if="icon == 'checkoutBlack'" :style="{'height' : height}" :class="class" :src="BtnCheckoutIconBlack"/>
-    <img v-else-if="icon == 'iconEditGrid'" :style="{'height' : height}" :class="class" :src="iconEditGrid"/>
+    <img v-else-if="icon == 'iconEditGrid'" :style="{'height' : height}" :class="class" :src="theme == 'estc' ? iconEditGrid : iconEditGridMicro"/>
     <img v-else-if="icon == 'iconAddNewGuest'" :style="{'height' : height}" :class="class" :src="iconAddNewGuest"/>
     <!-- default Icon -->
     <img v-else-if="icon == 'iconGeneralList'" :style="{'height' : height}" :class="class" :src="iconGeneralList"/>
@@ -47,6 +48,7 @@
     <img v-else-if="icon == 'iconWalkIn'" :style="{'height' : height}" :class="class" :src="iconWalkIn"/>
 </template>
 <script setup>
+const theme =window.theme
 const props = defineProps({
     icon: {
         type: String,
@@ -69,7 +71,9 @@ import BtnCheckoutIconBlack from '@/assets/svg/icon-check-out-black.svg'
 import BirthdayIcon from '@/assets/svg/birthday-icon.svg'
 import ViewDetailIcon from '@/assets/svg/change-room-icon.svg'
 import iconOpenBrower from '@/assets/svg/icon-open-brower.svg'
+import iconOpenBrowerMicro from '@/assets/svg/open-brower-new.svg'
 import iconNote from '@/assets/svg/icon-note-paper-pen.svg'
+import iconNoteMicro from '@/assets/svg/noted-macro-icon.svg'
 import iconNoteBlue from '@/assets/svg/icon-note-paper-pen-blue.svg'
 import iconCrown from '@/assets/svg/icon-crown.svg'
 import iconCrownBlack from '@/assets/svg/icon-crown-black.svg'
@@ -78,6 +82,7 @@ import iconUserGroup from '@/assets/svg/icon-user-group.svg'
 import pushPin from '@/assets/svg/push_pin.svg'
 import pushPined from '@/assets/svg/push_pined.svg'
 import iconBedPurple from '../assets/svg/icon-room-purple.svg'
+import iconBedWhite from '../assets/svg/bed-icon-white.svg'
 import iconNoteWhite from '@/assets/svg/icon-note-paper-white.svg'
 import userProfile from '@/assets/svg/user-icon-profile.svg'
 import userGroupWhite from '@/assets/svg/icon-user-group-white.svg'
@@ -87,6 +92,7 @@ import NotDisturb from '@/assets/svg/icon-do-not-disturb.svg'
 import City from '@/assets/svg/icon-change-property.svg'
 import iconGeneralList from '@/assets/svg/icon-general-list.svg'
 import iconEditGrid from '@/assets/svg/icon-edit-grid.svg'
+import iconEditGridMicro from '@/assets/svg/edit-grid-icon-macro.svg'
 import iconAddNewGuest from '@/assets/svg/icon-add-guest-white.svg'
 import BilltoMasterRoom from '@/assets/svg/icon-bill-to-master-room.svg'
 import IconBillToCompany from '@/assets/svg/icon-bill-to-company.svg'

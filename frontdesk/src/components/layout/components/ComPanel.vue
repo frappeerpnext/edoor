@@ -16,8 +16,3 @@ const props = defineProps({
     class: String
 })
 </script>
-<style scoped>
-.sys-date {
-    background-color: rgb(94, 27, 202) !important;
-}
-</style>

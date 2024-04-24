@@ -1,6 +1,6 @@
 <template> 
     <div class="h-full">
-        <ComPanel :title="$t('System Date')" class="sys-date bg text-white h-17rem md:h-full">
+        <ComPanel :title="$t('System Date')" class="sys-date bg-sysdate  text-white h-17rem md:h-full">
             <div class="text-center content_date">
                 <div class="padding text-4xl">{{ $t(moment(data.working_date).format("dddd")) }}</div>
                 <div class="padding day text-8xl">{{ moment(data.working_date).format("DD") }}</div>
@@ -19,9 +19,7 @@ const props = defineProps({
 })
 </script>
 <style scoped>
-.bg {
-    background: #4d40ca !important;
-}
+
 .sys-date{
     position: relative;
 }

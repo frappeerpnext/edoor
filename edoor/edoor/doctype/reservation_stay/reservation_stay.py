@@ -46,7 +46,8 @@ class ReservationStay(Document):
 			old_doc = frappe.get_doc("Reservation Stay", self.name)
 			if frappe.db.get_value("Reservation Status",old_doc.reservation_status, "allow_user_to_edit_information")==0:
 				if not hasattr(self,"is_undo_check_out"): 
-					frappe.throw("{} reservation is not allow to change information".format(old_doc.reservation_status) )
+					pass
+					# frappe.throw("{} reservation is not allow to change information".format(old_doc.reservation_status) )
 
 			#check prevent unasign room
 			

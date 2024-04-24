@@ -86,6 +86,9 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-6">
+                        <Dropdown showClear @change="onSearch"  v-model="filter.verify_status" :options="['Verified','Unverified']" placeholder="Select Verify Status" class="w-full md:w-14rem" />
+                    </div>
                 </div>
             </ComOverlayPanelContent>
         </OverlayPanel>
@@ -111,6 +114,12 @@
                 :value="data"
                 tableStyle="min-width: 50rem;" 
                 @row-dblclick="onViewReservationStayDetail">
+                <Column header="" style="width: 25px">
+                <template #body="slotProps">
+                    <i v-if="slotProps.data.is_verify" class="pi pi-verified" style="font-size: 1.25rem;color:forestgreen" ></i>
+                    <i v-else class="pi pi-verified" style="font-size: 1.25rem;color:#dbdbdb" ></i>
+                </template>
+            </Column>
                     <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"
                         :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
@@ -156,9 +165,12 @@
 
                         </template>
                     </Column>
-                    <Column>
+                    <Column  bodyClass="text-right">
                         <template #body="slotProps">
-                            <ComCityLedgerTransactionMoreOption @onEdit="onEditFolioTransaction(slotProps.data.name)" @onDelete="onDeleteCityLedgerTransaction(slotProps.data.name)"/>
+                            <i v-if="slotProps.data.loading" class="pi pi-spin pi-spinner" style="font-size: 1.5rem"></i>
+                            <ComCityLedgerTransactionMoreOption v-else @onMarkAsVerify="onMarkAsVerify(slotProps.data)" @onEdit="onEditFolioTransaction(slotProps.data.name)" @onDelete="onDeleteCityLedgerTransaction(slotProps.data.name)"
+                                :data="slotProps.data"
+                            />
                         </template>
                     </Column>
                 </DataTable>
@@ -196,7 +208,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, useConfirm, watch, getCount, getDocList, onMounted, onUnmounted, getApi, useDialog, computed, deleteDoc } from '@/plugin'
+import { inject, ref, useConfirm, watch, getCount, getDocList,postApi, onMounted, onUnmounted, getApi, useDialog, computed, deleteDoc } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
@@ -275,6 +287,7 @@ const columns = ref([
     { fieldname: 'type', default: true },
     { fieldname: 'is_auto_post' },
     { fieldname: 'reservation_status_color' },
+   
      
 ])
 
@@ -372,6 +385,19 @@ const dialogRef = dialog.open(ComIFrameModal, {
             },
     },
 })
+}
+
+function onMarkAsVerify(data){
+    data.loading = true
+    postApi("reservation.make_as_verify_folio_transaction",{
+        name:data.name
+    }).then(r=>{
+        data.is_verify = r.message.is_verify
+        data.loading = false 
+    }).catch(err=>{
+        data.loading = false 
+    })
+    
 }
 
 
@@ -498,11 +524,22 @@ function loadData() {
     if (filter.value?.selected_account_category) {
         filters.push(["account_category", '=', filter.value.selected_account_category])
     }
+    if (filter.value?.verify_status) {
+        if(filter.value.verify_status=='Verified'){
+        filters.push(["is_verify", '=', 1])
+        }else {
+            filters.push(["is_verify", '=', 0])
+        }
+    }
+
+
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
+    fields.push("is_verify")
 
     fields = [...new Set(fields.filter(x => x))]
+
     fields.push('reference_folio_transaction')
     getDocList('Folio Transaction', {
 

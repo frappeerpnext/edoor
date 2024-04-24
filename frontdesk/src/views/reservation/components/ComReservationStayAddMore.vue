@@ -184,7 +184,7 @@
             </div>
             <div class="mt-3 flex justify-end">
                 <Button @click="onAddRoom" class="dialog_btn_transform conten-btn py-4">
-                    <img :src="IconAddRoom" class="btn-add_comNote__icon me-1" />
+                    <img :src="theme == 'estc' ? IconAddRoom : iconPlusSignWhite" class="btn-add_comNote__icon me-1" />
                     {{ $t('Add More Room') }}
                    
                 </Button>
@@ -203,6 +203,8 @@
 <script setup>
 import ComReservationStayChangeRate from "./ComReservationStayChangeRate.vue"
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
+import iconPlusSignWhite from '@/assets/svg/plus-white-icon.svg'
+const theme =window.theme
 import { ref, inject, postApi, onMounted, getApi, computed} from "@/plugin"
 import ComReservationInputNight from '@/views/reservation/components/ComReservationInputNight.vue';
 import {i18n} from '@/i18n';

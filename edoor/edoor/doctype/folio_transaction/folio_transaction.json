@@ -126,6 +126,7 @@
   "is_night_audit_posting",
   "sale",
   "flash_report_revenue_group",
+  "is_verify",
   "descriptions_tab",
   "discount_account",
   "check_75",
@@ -1006,11 +1007,17 @@
    "fieldname": "is_package",
    "fieldtype": "Check",
    "label": "Is Package"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_verify",
+   "fieldtype": "Check",
+   "label": "Is Verify"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-05 15:44:43.905686",
+ "modified": "2024-04-22 17:26:15.387236",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

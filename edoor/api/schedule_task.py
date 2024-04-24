@@ -266,7 +266,8 @@ def run_queue_job():
 @frappe.whitelist()
 def update_fetch_from_field(data):
     for x in data:
-        if frappe.db.exists(x["document_type"],x["document_name"]):
+        try:
+           if frappe.db.exists(x["document_type"],x["document_name"]):
             doc = frappe.get_doc(x["document_type"],x["document_name"])
             sql = "select parent,options,fieldname from `tabDocField` where options='{}'".format(doc.doctype)
             link_fiels = frappe.db.sql(sql, as_dict=1)
@@ -278,7 +279,10 @@ def update_fetch_from_field(data):
                     sql = "update `tab{}` set {}=%(value)s where {}=%(name)s".format(d["parent"],f["fieldname"],f["fetch_from"].split(".")[0])
                     frappe.db.sql(sql,{"value":doc.get(f["fetch_from"].split(".")[1]),"name":doc.name})
                     #frappe.msgprint(sql)
-
+  
+        except:
+            pass
+        
         frappe.db.sql("delete from `tabQueue Job` where document_type='{}' and document_name=%(name)s and action='{}'".format(x["document_type"],x["action"]),{"name":x["document_name"]})
     frappe.db.commit()
             

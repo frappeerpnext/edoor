@@ -103,7 +103,7 @@ def get_report_data(filters,min_max_day):
 			if total_rooms<=0:
 				total_rooms = 1
 
-			occupancy_record[col_name] =round(occupy_record[col_name] /total_rooms * 100,2)
+			occupancy_record[col_name] =round(occupy_record[col_name] /total_rooms * 100,(2 if filters.show_decimal_place_in_room_occupy else 0) )
 		
 			#arrival
 			arrival_record[col_name] = sum(d["arrival"] for d  in  room_occupy if d["date"] == date) or 0

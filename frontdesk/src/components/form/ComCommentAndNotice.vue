@@ -28,7 +28,7 @@
         <div>
      
             <Button class="dialog_btn_transform conten-btn " :loading="saving" @click="onCreate">
-                <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">
+                <img class="btn-add_comNote__icon me-1" :src="theme == 'estc' ? iconPlusSign : iconPlusSignWhite">
                 {{$t('Add ' + ((!isMobile) ? commentType : ''))}}
             </Button>
         </div>
@@ -89,6 +89,8 @@
 </template>
 <script setup>
 import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
+import iconPlusSignWhite from '@/assets/svg/plus-white-icon.svg'
+const theme =window.theme
 import { ref, inject, getDocList, useConfirm, onMounted, deleteDoc, createUpdateDoc, onUnmounted,computed } from '@/plugin'
 import Enumerable from 'linq'
 import {i18n} from '@/i18n';

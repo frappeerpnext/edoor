@@ -6,7 +6,7 @@
                 <div class="flex justify-content-between align-items-center p-2">
                     <span>{{ $t('Room Folio') }} </span>
                     <Button class="btn-add-folio" @click="onAddCreatNewFolio"  v-tippy="$t('Create Folio')">
-                        <img :src="plus_svg" style="height: 13px;">
+                        <img  :src="theme == 'estc' ? plus_svg : iconPlusSignWhite" style="height: 13px;">
                     </Button>
                 </div>
                 <template v-if="rs.folios && rs.folios.length > 0">
@@ -86,6 +86,8 @@ import Enumerable from 'linq';
 import { inject , computed} from '@/plugin';
 import crown_svg from '@/assets/svg/icon-crown.svg'
 import plus_svg from '@/assets/svg/icon-add-plus-sign-purple.svg'
+import iconPlusSignWhite from '@/assets/svg/plus-white-icon.svg'
+const theme =window.theme
 import guest_svg from '@/assets/svg/icon-user-use-sytem.svg'
 import { useDialog } from 'primevue/usedialog';
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';

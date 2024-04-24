@@ -31,6 +31,14 @@ frappe.query_reports["Room Inventory Report"] = {
 			"reqd": 1
 		},
 		{
+			"fieldname": "show_decimal_place_in_room_occupy",
+			"label": __("Show/Hide Decimal Places in Occupancy Record"),
+			"fieldtype": "Check",
+			"default": 0,
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
+		},
+		{
 			"fieldname": "show_summary",
 			"label": __("Show Summary"),
 			"fieldtype": "Check",

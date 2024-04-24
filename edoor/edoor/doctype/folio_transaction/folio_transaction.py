@@ -12,7 +12,9 @@ from frappe import _
 
 class FolioTransaction(Document):
 	def validate(self):
-		 
+		if self.flags.ingore_validate:
+			return
+
 		if not self.account_code:
 			frappe.throw("Please select an account code")
 			

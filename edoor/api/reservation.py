@@ -637,7 +637,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 
             #validate check if current room is still have guest in house
             room_id = stay.stays[0].room_id
-            check_room_in_house = frappe.db.sql("select name from `tabRoom Occupy` where  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id,  stay.arrival_date,add_to_date( stay.departure_date,days=-1)),as_dict=1)    
+            check_room_in_house = frappe.db.sql("select name from `tabRoom Occupy` where  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house' and reservation_stay !='{}' limit 1".format(room_id,  stay.arrival_date,add_to_date( stay.departure_date,days=-1),stay.name),as_dict=1)    
             if check_room_in_house:
                 frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
 
@@ -1796,6 +1796,7 @@ def update_note(data):
     doc = frappe.get_doc(data['doctype'], data['name'])
     doc.note = note
     doc.housekeeping_note = housekeeping_note
+    doc.flags.ingore_validate = True
     doc.save()
 
     # apply reservation
@@ -2103,6 +2104,7 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         ifnull(report_description,account_name) as account_name,
                         sum(report_quantity) as quantity,
                         type,
+                        note,
                         {sort_by_field}, 
                         sum(amount) as amount
                     from `tabFolio Transaction` 
@@ -2115,7 +2117,8 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         account_code,
                         ifnull(report_description,account_name),
                         {'room_number,' if show_room_number =='1' else '' }
-                        type
+                        type,
+                        note
                     order by 
                         {'room_number,' if show_room_number =='1' else '' }
                         {sort_by_field},
@@ -2149,7 +2152,8 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
             "debit": d["amount"] if d["type"] == "Debit" else 0,
             "credit": d["amount"] if d["type"] == "Credit" else 0,
             "balance":balance,
-            "quantity":d["quantity"]
+            "quantity":d["quantity"],
+            "note":d["note"]
         }
         
         if show_room_number=='1':
@@ -3265,5 +3269,16 @@ def verify_reservation_stay(stay_name= None):
             if stay.room_nights !=  data[0]["total"]:
                 generate_room_rate(self = stay, run_commit=False)
 
-
+@frappe.whitelist(methods="POST")
+def make_as_verify_folio_transaction(name):
+    doc = frappe.get_doc("Folio Transaction",name)
+    doc.flags.ignore_validate=True
+    doc.is_verify = not doc.is_verify
+    doc.save()
+    frappe.db.commit()
+    if doc.is_verify:
+        frappe.msgprint(_("Mask as verify successfully"))
+    else:
+        frappe.msgprint(_("Unmask as verify successfully"))
     
+    return doc

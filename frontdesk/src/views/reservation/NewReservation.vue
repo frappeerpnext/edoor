@@ -356,7 +356,7 @@
             <div class="flex justify-between">
                 <div>
                     <Button @click="onAddRoom" class="px-4 mt-2 conten-btn">
-                        <img :src="IconAddRoom" class="btn-add_comNote__icon me-1" />
+                        <img :src="theme == 'estc' ? IconAddRoom : iconPlusSignWhite" class="btn-add_comNote__icon me-1" />
                         {{ $t('Add More Room') }}
                     </Button>
                 </div>
@@ -389,6 +389,8 @@
 import { ref, inject, computed, onMounted, postApi, getApi, getDoc, useDialog, getDocList } from "@/plugin"
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
+import iconPlusSignWhite from '@/assets/svg/plus-white-icon.svg'
+const theme =window.theme
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import {i18n} from '@/i18n';

@@ -10,6 +10,9 @@ from frappe.utils import now,getdate,add_to_date
 
 class Reservation(Document):
 	def validate(self):
+		if self.flags.ignore_validate:
+			return
+ 
 		if self.departure_date<=self.arrival_date:
 			frappe.throw("Departure date cannot less than or equal to arrival date")
 
