@@ -733,7 +733,7 @@
 }
 
 .p-checkbox .p-checkbox-box {
-  border: 2px solid var(--btn-border-color);
+  border: 2px solid #036666;
   background: #ffffff;
   width: 20px;
   height: 20px;

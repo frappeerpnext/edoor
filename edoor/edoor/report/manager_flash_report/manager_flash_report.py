@@ -97,9 +97,6 @@ def get_report_data(filters):
 	report_data.append(occupy_data[0]["walk_in_room_night"])
 	report_data.append(occupy_data[0]["arrival_room_night"])
 	report_data.append(occupy_data[0]["departure_room_night"])
-	report_data.append(occupy_data[0]["no_show_room"])
-	report_data.append(occupy_data[0]["no_show_adult"])
-	report_data.append(occupy_data[0]["no_show_child"])
 	report_data.append(occupy_data[0]["early_checked_out_adult"])
 	report_data.append(occupy_data[0]["early_checked_out_child"])
 	report_data.append(occupy_data[0]["early_checked_out"])
@@ -172,7 +169,6 @@ def get_report_data(filters):
 	total_inhoue_pax = {"title":"Total In-house PAX"}
 	total_departure_pax = {"title":"Total Departure PAX"}
 	walkin_inhouse_pax = {"title":"Walk-In In-house Pax"}
-	noshow_pax = {"title":"No Show PAX"}
 	early_checkout_pax = {"title":"Early Checked Out PAX"}
 	fit_pax = {"title":"FIT PAX"}
 	git_pax = {"title":"GIT PAX"}
@@ -201,8 +197,6 @@ def get_report_data(filters):
 		inhouse_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'In-house Child']) or 0
 		walkin_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Walk-In Adult']) or 0
 		walkin_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Walk-In Child']) or 0
-		noshow_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'No Show Adult']) or 0
-		noshow_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'No Show Child']) or 0
 		early_checkout_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Early Checked Out Adult']) or 0
 		early_checkout_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Early Checked Out Child']) or 0
 		cancalled_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Cancelled Adult']) or 0
@@ -266,8 +260,6 @@ def get_report_data(filters):
 		
 		walkin_inhouse_pax[f] =  walkin_adult + walkin_child
 		
-		noshow_pax[f] =  noshow_adult + noshow_child
-		
 		early_checkout_pax[f] =  early_checkout_adult + early_checkout_child
 		fit_pax[f] =  fit_adult + fit_child
 		git_pax[f] =  git_adult + git_child
@@ -294,7 +286,6 @@ def get_report_data(filters):
 	report_data.append(total_inhoue_pax)
 	report_data.append(total_departure_pax)
 	report_data.append(walkin_inhouse_pax)
-	report_data.append(noshow_pax)
 	report_data.append(early_checkout_pax)
 	report_data.append(fit_pax)
 	report_data.append(git_pax)
@@ -384,9 +375,6 @@ def get_data_from_occupy_record(filters):
 				"walk_in_room_night":{"title":"Walk-In Room"},	
 				"arrival_room_night":{"title":"Arrival Room",},	
 				"departure_room_night":{"title":"Departure Room"},	
-				"no_show_room":{"title":"No Show Room"},	
-				"no_show_adult":{"title":"No Show Adult"},	
-				"no_show_child":{"title":"No Show Child"},	
 				"early_checked_out_adult":{"title":"Early Checked Out Adult"},	
 				"early_checked_out_child":{"title":"Early Checked Out Child"},	
 				"early_checked_out":{"title":"Early Checked Out Rooms"},	
@@ -419,9 +407,6 @@ def get_data_from_occupy_record(filters):
 		row['walk_in_room_night'][f] = sum([y["total_walk_in_room_night"] for y in data if y["fieldname"]==f and y["total_walk_in_room_night"] is not None]) or 0
 		row['arrival_room_night'][f] = sum([y["total_arrival_room_night"] for y in data if y["fieldname"]==f and y["total_arrival_room_night"] is not None]) or 0
 		row['departure_room_night'][f] = sum([y["total_departure_room_night"] for y in data if y["fieldname"]==f and y["total_departure_room_night"] is not None]) or 0
-		row['no_show_room'][f] = sum([y["total_no_show_room"] for y in data if y["fieldname"]==f and y["total_no_show_room"] is not None]) or 0
-		row['no_show_adult'][f] = sum([y["total_no_show_adult"] for y in data if y["fieldname"]==f and y["total_no_show_adult"] is not None]) or 0
-		row['no_show_child'][f] = sum([y["total_no_show_child"] for y in data if y["fieldname"]==f and y["total_no_show_child"] is not None]) or 0
 		row['early_checked_out_adult'][f] = sum([y["total_early_checked_out_adult"] for y in data if y["fieldname"]==f and y["total_early_checked_out_adult"] is not None]) or 0
 		row['early_checked_out_child'][f] = sum([y["total_early_checked_out_child"] for y in data if y["fieldname"]==f and y["total_early_checked_out_child"] is not None]) or 0
 		row['early_checked_out'][f] = sum([y["total_early_checked_out"] for y in data if y["fieldname"]==f and y["total_early_checked_out"] is not None]) or 0
