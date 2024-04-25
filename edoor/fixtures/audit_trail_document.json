@@ -475,7 +475,7 @@
   "doctype": "Audit Trail Document",
   "doctype_name": "Folio Transaction",
   "is_epos_audit_trail": 0,
-  "modified": "2023-11-17 20:33:47.785483",
+  "modified": "2024-04-22 18:11:57.210928",
   "name": "Folio Transaction",
   "tracking_field": [
    {
@@ -600,6 +600,15 @@
     "field_type": "Data",
     "hide_old_value": 0,
     "label": "Paid by Phone Number",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "is_verify",
+    "field_type": "Check",
+    "hide_old_value": 0,
+    "label": "Verify",
     "parent": "Folio Transaction",
     "parentfield": "tracking_field",
     "parenttype": "Audit Trail Document"

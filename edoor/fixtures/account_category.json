@@ -72,15 +72,6 @@
   "sort_order": 2600
  },
  {
-  "account_category": "F&B Tax",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-02-07 08:57:43.023166",
-  "name": "F&B Tax",
-  "note": null,
-  "sort_order": 1400
- },
- {
   "account_category": "Other Service Charge",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -108,6 +99,15 @@
   "sort_order": 2200
  },
  {
+  "account_category": "F&B Tax",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-02-07 08:57:43.023166",
+  "name": "F&B Tax",
+  "note": null,
+  "sort_order": 1400
+ },
+ {
   "account_category": "Other Charge Discount",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -124,15 +124,6 @@
   "name": "F&B Payment",
   "note": null,
   "sort_order": 1700
- },
- {
-  "account_category": "Ticketing",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-04-17 10:58:06.909654",
-  "name": "Ticketing",
-  "note": null,
-  "sort_order": 0
  },
  {
   "account_category": "POS Bill to Desk Folio",
@@ -162,6 +153,15 @@
   "sort_order": 1500
  },
  {
+  "account_category": "Ticketing",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-04-17 10:58:06.909654",
+  "name": "Ticketing",
+  "note": null,
+  "sort_order": 0
+ },
+ {
   "account_category": "Service Charge",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -169,15 +169,6 @@
   "name": "Service Charge",
   "note": null,
   "sort_order": 500
- },
- {
-  "account_category": "POS Bill to Room",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:05.093149",
-  "name": "POS Bill to Room",
-  "note": null,
-  "sort_order": 2300
  },
  {
   "account_category": "Room Discount",
@@ -198,13 +189,13 @@
   "sort_order": 0
  },
  {
-  "account_category": "Deposit",
+  "account_category": "POS Bill to Room",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 17:43:44.960236",
-  "name": "Deposit",
+  "modified": "2023-08-27 15:49:05.093149",
+  "name": "POS Bill to Room",
   "note": null,
-  "sort_order": 1800
+  "sort_order": 2300
  },
  {
   "account_category": "Room Tax",
@@ -225,13 +216,13 @@
   "sort_order": 200
  },
  {
-  "account_category": "Other Charge",
+  "account_category": "Deposit",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:48.489650",
-  "name": "Other Charge",
+  "modified": "2023-08-27 17:43:44.960236",
+  "name": "Deposit",
   "note": null,
-  "sort_order": 400
+  "sort_order": 1800
  },
  {
   "account_category": "Room Charge Adjustment",
@@ -243,13 +234,22 @@
   "sort_order": 300
  },
  {
-  "account_category": "Folio Transfer",
+  "account_category": "Other Charge",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 17:42:38.233705",
-  "name": "Folio Transfer",
+  "modified": "2023-08-27 15:49:48.489650",
+  "name": "Other Charge",
   "note": null,
-  "sort_order": 2700
+  "sort_order": 400
+ },
+ {
+  "account_category": "Room Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:11:54.619116",
+  "name": "Room Charge",
+  "note": null,
+  "sort_order": 100
  },
  {
   "account_category": "Payment",
@@ -261,12 +261,12 @@
   "sort_order": 1600
  },
  {
-  "account_category": "Room Charge",
+  "account_category": "Folio Transfer",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:54.619116",
-  "name": "Room Charge",
+  "modified": "2023-08-27 17:42:38.233705",
+  "name": "Folio Transfer",
   "note": null,
-  "sort_order": 100
+  "sort_order": 2700
  }
 ]
