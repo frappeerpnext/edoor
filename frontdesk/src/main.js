@@ -1,5 +1,5 @@
 
-window.theme = "miro_lab"
+window.theme = "estc"
 
 import './index.css';
 
@@ -12,11 +12,11 @@ import 'primeicons/primeicons.css';
 import '/node_modules/primeflex/primeflex.css'
  
  // estc theme
-// import  './assets/css/theme.css'
-// import "./assets/css/style.css"
+import  './assets/css/theme.css'
+import "./assets/css/style.css"
 // micro lab theme
-import  './assets/css/micro_lab_theme.css'
-import "./assets/css/micro_lab_style.css"
+// import  './assets/css/micro_lab_theme.css'
+// import "./assets/css/micro_lab_style.css"
 
 import { createApp, reactive } from "vue";
 import App from "./App.vue";
