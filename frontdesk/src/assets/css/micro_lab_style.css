@@ -50,13 +50,8 @@ html {
 .current_day{
     background-color: var(--bg-primary-color) !important ;
 }
-/* .fc-timeline-lane .fc-timeline-lane-frame .fc-timeline-event-harness .fc-event-future{
-    border: var(--bg-primary-color) !important;
-    background-color: var(--bg-primary-color) !important;
-} */
-span.p-badge.p-component.p-badge-no-gutter.p-badge-warning.badge-rs.bg-white.text-500 {
-    padding-top: 4px;
-    padding-bottom: 16px;
+.bgsummaryday{
+    background-color: red !important ;
 }
 .border-gray-edoor-100 {
     border-color: var(--color-gray-100)
@@ -797,15 +792,24 @@ span.p-button-icon.pi.pi-ellipsis-v{
     object-fit: cover;
     height: 100%;
 }
+/* .wrapper-report .col.flex.gap-2.mt-2{
+background-color: var(--bg-primary-color);
+} */
+.print-format-gutter{
+    background-color: var(--bg-primary-color) !important;
+}
 .conten-btn, .conten-btn.tl{
     padding: 0.45rem .65rem 0.45rem !important;
     line-height: 1.5;
-    background: #92f6f148;
+    background: var(--bg-primary-color);
     border-color:var(--bg-primary-color);
-    color: var(--bg-primary-color);
+    color: white !important;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     transition: all 0.3s;
+}
+.conten-btn .pi.pi-refresh.font-semibold.text-lg.m-auto {
+    color: white !important;
 }
 .btn-size2{
     padding: 0.45rem .65rem 0.45rem !important;
@@ -885,7 +889,7 @@ span.p-button-icon.pi.pi-ellipsis-v{
 .spl__btn_cs_b.sp_b button:enabled:hover,
 .conten-btn.tl:enabled:hover
 {
-    background: #1abc9c14;
+    background: #1abc9c96;
     color: var(--bg-primary-cs-hover);
     border-color:var(--bg-primary-cs-hover);
 }
@@ -1289,11 +1293,14 @@ ul.res__hideshow{
     -webkit-columns: 2;
     -moz-columns: 2;
 }
+.content_btn_b .p-button-icon ,.content_btn_b .pi-sort-alpha-down-alt{
+    color: white !important;
+}
 .content_btn_b {
     line-height: 1.5;
-    background: var(--bg-btn-dialog-inside);
+    background: var(--bg-primary-color);
     border-color: var(--bg-primary-color);
-    color: var(--bg-primary-color);
+    color: white !important;
     transition: all 0.3s;
 }
 .content_btn_b:hover{

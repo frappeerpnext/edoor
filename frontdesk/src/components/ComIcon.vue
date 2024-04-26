@@ -1,5 +1,4 @@
 <template>
-    {{ theme }}
     <img v-if="icon == 'edoor'" :style="{'height' : height}" :class="class" :src="iconEdoorReservation"/>
     <img v-else-if="icon == 'frontdesk'" :style="{'height' : height}" :class="class" :src="frontdesk"/>
     <img v-else-if="icon == 'reservation'" :style="{'height' : height}" :class="class" :src="reservation"/>

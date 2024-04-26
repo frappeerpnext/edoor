@@ -46,6 +46,9 @@ html {
     padding: 0;
     overflow: hidden;
 }
+.bgsummaryday{
+    background-color: #3b82f6 ;
+}
 .border-gray-edoor-100 {
     border-color: var(--color-gray-100)
 }

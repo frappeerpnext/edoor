@@ -817,6 +817,7 @@ function generateEventForRoomType(data) {
     } else {
         //when calender view by room 
         //code below is generate event for current propert event display in first row of calendar
+        const theme =window.theme
         resources.value.filter(r => r.id == "property_summary").forEach(r => {
             while (current_date <= cal.view.currentEnd) {
                 occupy_data = data.find(c => c.date == moment(current_date).format("YYYY-MM-DD"))
@@ -824,7 +825,7 @@ function generateEventForRoomType(data) {
                 room_type_event.push(
                     {
 
-                        color: (r.total_room - (occupy_data?.total || 0)) < 0 ? "red" : "#3b82f6",
+                        color: (r.total_room - (occupy_data?.total || 0)) < 0 ? "red" : theme == 'estc' ? "#3b82f6" : "#1abc9c",
                         resourceId: r.id,
                         start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
                         end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
