@@ -16,6 +16,10 @@ import copy
 
 
 
+@frappe.whitelist(allow_guest=True)
+def get_theme():
+    return frappe.db.get_single_value("ePOS Settings","app_theme")
+
 
 
 @frappe.whitelist()
@@ -981,7 +985,8 @@ def get_rate_type_info(name):
         "allow_user_to_change_tax": account_doc.allow_user_to_change_tax,
         "allow_user_to_edit_rate": doc.allow_user_to_edit_rate,
         "is_house_use":doc.is_house_use,
-        "is_complimentary":doc.is_complimentary
+        "is_complimentary":doc.is_complimentary,
+        "is_package":doc.is_package
     }
 
 
@@ -1676,6 +1681,15 @@ def get_generate_tax_invoice_information(property,posting_date=None):
     
     
 
+@frappe.whitelist()
+def get_package_detail(rate_type=None,property=None, business_source=None,date=None):
+    rate_type_doc = frappe.get_doc("Rate Type", rate_type)
+    package_account_code_doc = frappe.get_doc("Account Code",rate_type_doc.account_code)
+    return {
+        "rate_type":rate_type_doc,
+        "account_code":package_account_code_doc
+    }
+    
 @frappe.whitelist()
 def ping():
     return "pong"

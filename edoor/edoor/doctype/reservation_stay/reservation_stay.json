@@ -66,6 +66,8 @@
   "rooms_section",
   "stays",
   "keyword",
+  "package_and_inclusion_tab",
+  "inclusion_items",
   "room_rate_section",
   "html_room_rate",
   "section_break_phst",
@@ -899,12 +901,23 @@
    "fieldname": "is_package",
    "fieldtype": "Check",
    "label": "Is Package"
+  },
+  {
+   "fieldname": "package_and_inclusion_tab",
+   "fieldtype": "Tab Break",
+   "label": "Package and Inclusion"
+  },
+  {
+   "fieldname": "inclusion_items",
+   "fieldtype": "Table",
+   "label": "Package and Inclusion Items",
+   "options": "Reservation Stay Package Items"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-06 08:28:00.658510",
+ "modified": "2024-04-25 18:04:19.426192",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

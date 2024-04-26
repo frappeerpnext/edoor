@@ -1,11 +1,8 @@
-import { edoor_theme } from "../../../../sites/common_site_config.json"
-window.theme = edoor_theme
+
+window.theme = "estc"
 
 import './index.css';
-//theme
 
-// import  (edoor_theme=="estc"? './assets/css/theme.css':"./assets/css/micro_lab_theme.css")
-import  './assets/css/theme.css'
 
 //core
 import "./assets/css/primevue.css";
@@ -14,8 +11,12 @@ import 'primeicons/primeicons.css';
 // flex css
 import '/node_modules/primeflex/primeflex.css'
  
-// import  (edoor_theme=="estc"? './assets/css/style.css':"./assets/css/micro_lab_style.css")
+ // estc theme
+import  './assets/css/theme.css'
 import "./assets/css/style.css"
+// micro lab theme
+// import  './assets/css/micro_lab_theme.css'
+// import "./assets/css/micro_lab_style.css"
 
 import { createApp, reactive } from "vue";
 import App from "./App.vue";

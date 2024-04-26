@@ -89,7 +89,7 @@
       </Column>
       <ColumnGroup type="footer">
         <Row>
-          <Column :footer="$t('Total') + ':'" :colspan="5" footerStyle="text-align:right" />
+          <Column :footer="$t('Total') + ':'" :colspan="6" footerStyle="text-align:right" />
           <Column footerStyle="text-align:center">
             <template #footer>
               {{ rs?.room_rates?.length }} {{$t('Room Night(s)')}}

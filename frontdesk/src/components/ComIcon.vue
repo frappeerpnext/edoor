@@ -1,4 +1,5 @@
 <template>
+    {{ theme }}
     <img v-if="icon == 'edoor'" :style="{'height' : height}" :class="class" :src="iconEdoorReservation"/>
     <img v-else-if="icon == 'frontdesk'" :style="{'height' : height}" :class="class" :src="frontdesk"/>
     <img v-else-if="icon == 'reservation'" :style="{'height' : height}" :class="class" :src="reservation"/>
@@ -48,7 +49,13 @@
     <img v-else-if="icon == 'iconWalkIn'" :style="{'height' : height}" :class="class" :src="iconWalkIn"/>
 </template>
 <script setup>
+
 const theme =window.theme
+import { onMounted } from 'vue';
+ 
+onMounted(() => {
+      console.log(theme);
+    });
 const props = defineProps({
     icon: {
         type: String,
@@ -109,5 +116,7 @@ import iconConflictRoom from '@/assets/svg/icon-conflict-room.svg'
 import iconCamera from '@/assets/svg/icon-camera.svg'
 import iconMoveStay from '@/assets/svg/icon-move_stay.svg'
 import iconWalkIn from '@/assets/svg/walk-in-icon.svg'
+
+
 </script>
  

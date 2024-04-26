@@ -1,5 +1,4 @@
 <template>
-    
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
@@ -105,6 +104,9 @@
                     </TabPanel>
                     <TabPanel :header="$t('Room Rate')" v-if="can_view_rate">
                         <ComReservationStayRoomRate />
+                    </TabPanel>
+                    <TabPanel :header="$t('Package & Inclusion')">
+                        Package and Inclusion
                     </TabPanel>
                     <TabPanel>
                         <template #header>
@@ -234,6 +236,7 @@ const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
 
+const tabs = ["General Information","Room Rate","Package & Inclusion","Folio","Document"]
 
 const onRefresh = debouncer(() => {
     loadData()
@@ -250,11 +253,15 @@ function loadData(show_loading=true,delay_load_reservation_stay=0){
     rs.selectedRoomRates = []
     //load comment  
     window.postMessage({ action: "load_comment" }, "*") 
-    if (activeTab.value == 1) {
+    if (tabs[activeTab.value] == "Room Rate") {
         rs.getRoomRate(name.value)
-    } else if (activeTab.value == 2) {  
+    } else if (tabs[activeTab.value] == "Folio") {
+    
         window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
-    } else if (activeTab.value == 3) { 
+    } else if (tabs[activeTab.value] == "Package & Inclusion") {
+        alert("Package and inclusion")
+    } 
+    else if (tabs[activeTab.value] == "Document") { 
         window.postMessage({ action: "refresh_document", docname: name.value })
         window.postMessage({ action: "refresh_document_count", docname: name.value })
     }

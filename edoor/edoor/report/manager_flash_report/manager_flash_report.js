@@ -44,7 +44,7 @@ frappe.query_reports["Manager Flash Report"] = {
 			((column.fieldtype || "") == "Percent") ||
 			((column.fieldtype || "") == "Currency")
 		) {
-			if (origninal_value == 0) {
+			if (origninal_value == 0 || origninal_value == '') {
 				return "-"
 			}
 		}

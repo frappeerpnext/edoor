@@ -264,6 +264,7 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
         t["total_vacant_room"] = (t["total_room"] or 0) - ( t["occupy"] or 0)
     
         t["rate"] = get_room_rate(property, rate_type, t["name"], business_source, start_date)
+        # return get_room_rate(property, rate_type, t["name"], business_source, start_date)
         t["new_rate"] = t["rate"]
 
     #return  [d for d in room_type if ((d['total_room'] or 0) - (d["occupy"] or 0) > 0)]
@@ -1202,7 +1203,7 @@ def get_reservation_folio(reservation=None, reservation_stay=None):
 def get_room_rate(property, rate_type, room_type, business_source, date,include_tax_rule=False):
     sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)
     season = frappe.db.sql (sql, as_dict=1)
-
+    
     room_type_rate  = frappe.get_value("Room Type", room_type,"rate")
     
     rate = 0
@@ -1216,8 +1217,9 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
                 where 
                     property='{}' and
                     season = '{}' and 
+                    room_type_id = '{}' and 
                     rate_type = '{}' 
-                """.format(property, season_id, rate_type)
+                """.format(property, season_id,room_type, rate_type)
  
         if business_source:
             sql_with_business_source = "{} and business_source = '{}'".format(sql, business_source)
@@ -1230,6 +1232,7 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
             sql = "{} and ifnull(business_source,'') = '' ".format(sql) 
            
             data = frappe.db.sql(sql, as_dict=1)
+           
             rate = data[0]["rate"] or 0
 
   

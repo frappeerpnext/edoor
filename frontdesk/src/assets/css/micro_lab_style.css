@@ -48,8 +48,12 @@ html {
     overflow: hidden;
 }
 .current_day{
-    background-color: var(--bg-primary-color) ;
+    background-color: var(--bg-primary-color) !important ;
 }
+/* .fc-timeline-lane .fc-timeline-lane-frame .fc-timeline-event-harness .fc-event-future{
+    border: var(--bg-primary-color) !important;
+    background-color: var(--bg-primary-color) !important;
+} */
 span.p-badge.p-component.p-badge-no-gutter.p-badge-warning.badge-rs.bg-white.text-500 {
     padding-top: 4px;
     padding-bottom: 16px;

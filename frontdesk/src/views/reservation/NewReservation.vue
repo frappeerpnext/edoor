@@ -75,6 +75,12 @@
                                         class="auto__Com_Cus w-full" />
                                 </div>
                             </div>
+                            <Message severity="info" v-if="doc.is_package"> 
+                                {{ $t("This rate type is package rate.") }} 
+                                <Button @click="onViewPackageDetail" :label="$t('View Package Detail')" severity="Danger" text />
+            
+                            </Message>
+                            
                         </div>
                         <div class="pt-2 flex justify-end">
                             <div>
@@ -392,6 +398,7 @@ import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import iconPlusSignWhite from '@/assets/svg/plus-white-icon.svg'
 const theme =window.theme
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
+import ComPackageDetail from "@/views/frontdesk/components/ComPackageDetail.vue"
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
@@ -414,15 +421,12 @@ const minDate = ref()
 const hasFutureResertion = ref(false)
 const checkFutureReservationInfo = ref({})
 
-
-
-
-
 const onOpenChangeRate = (event, stay) => {
     selectedStay.value = stay
     rate.value = JSON.parse(JSON.stringify(stay)).rate
     op.value.toggle(event);
 }
+
 const doc = ref({
     reservation: {
         doctype: "Reservation",
@@ -621,6 +625,7 @@ const getRoomType = () => {
         end_date: moment(doc.value.reservation.departure_date).format("yyyy-MM-DD"),
         rate_type: doc.value.reservation.rate_type,
         business_source: doc.value.reservation.business_source
+
     })
         .then((result) => {
             room_types.value = result.message;
@@ -786,6 +791,31 @@ function onNewGuestName(v) {
 
 const onViewGuestDetail = (name) => {
     window.postMessage('view_guest_detail|' + name, '*');
+}
+
+const onViewPackageDetail = () => {
+    
+    dialog.open(ComPackageDetail, {
+        data: {
+            rate_type:doc.value.reservation.rate_type,
+            business_source:doc.value.reservation.business_source,
+            date:moment(doc.value.reservation.arrival_date).format("YYYY-MM-DD"),
+            room_type_rate:room_types.value
+        },
+        props: {
+            header: $t("View Package Detail"),
+            style: {
+                width: '50vw',
+            },
+            position: "top",
+            modal: true,
+            closeOnEscape: true,
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        }
+    });
 }
 
 function onViewFutureReservation() {
@@ -976,6 +1006,7 @@ const onRateTypeChange = (rate_type) => {
                 room_tax.value = tax_rule
                 doc.value.reservation.rate_type = rate_type
                 doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
+                doc.value.is_package = result.message.is_package || 0
                 //check if stay have not manully rate update
                 if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {
                     getRoomType()
