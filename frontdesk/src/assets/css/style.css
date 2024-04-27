@@ -412,8 +412,10 @@ label {
     padding-top: unset !important;
     padding-bottom: unset !important;
 }
-
-
+.p-checkbox.p-component.p-highlight.p-variant-filled .p-checkbox-box{
+border:2px solid #6063fc !important;
+background: #6366F1;
+}
 .n__re-custom .p-inputnumber-buttons-stacked .p-inputnumber-input {
     border-right: 0 !important;
 }

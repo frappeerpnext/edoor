@@ -684,8 +684,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     if len(noshow_check_in_stays)> 0:
         update_room_occupy_information_after_no_show_check_in(noshow_check_in_stays)
 
-        # frappe.enqueue("edoor.api.reservation.update_room_occupy_information_after_no_show_check_in", queue='long', stay_names = noshow_check_in_stays)
-        
+
 
     frappe.msgprint(_("Check in successfully"))
 
@@ -699,7 +698,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
         "reservation":doc
     }
 
-
+ 
+    
 def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
     # check if master_folio is already created 
     master_folio = {}
