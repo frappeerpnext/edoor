@@ -708,8 +708,8 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
         master_stay_name = master_stay[0]["name"]
         master_folios = frappe.db.get_list("Reservation Folio",{"reservation_stay":master_stay_name,"is_master":1})
         if len (master_folios) ==0:
-            stay_doc = frappe.get_doc("Reservation Stay", master_stay_name)
-            master_folio  =create_folio(stay_doc)
+            master_stay = frappe.get_doc("Reservation Stay", master_stay_name)
+            master_folio  =create_folio(master_stay)
         else:
           
             #try to reopen master folio if the master folio is close
