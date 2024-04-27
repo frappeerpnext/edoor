@@ -5,7 +5,9 @@ import './index.css';
 
 
 //core
+import "primevue/resources/themes/lara-dark-teal/theme.css";
 import "./assets/css/primevue.css";
+
 //icon 
 import 'primeicons/primeicons.css';
 // flex css
@@ -332,7 +334,7 @@ if (setting) {
 	//attach permission
 	window.can_view_rate = setting.user.can_view_rate
 	 
-	let whitelist_route = ["NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder","AccountCategorySortOrder","RoomSortOrder"]
+	let whitelist_route = ["OwnerDashboard","NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder","AccountCategorySortOrder","RoomSortOrder"]
 	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]
 	const router = getRoutes(whitelist_route, setting.edoor_setting.edoor_menu)
 

@@ -48,13 +48,7 @@
     <img v-else-if="icon == 'iconWalkIn'" :style="{'height' : height}" :class="class" :src="iconWalkIn"/>
 </template>
 <script setup>
-
 const theme =window.theme
-import { onMounted } from 'vue';
- 
-onMounted(() => {
-      console.log(theme);
-    });
 const props = defineProps({
     icon: {
         type: String,

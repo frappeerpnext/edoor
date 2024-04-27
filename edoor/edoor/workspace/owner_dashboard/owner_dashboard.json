@@ -1,0 +1,38 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"x-8FgiPO2T\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h1\\\" style=\\\"\\\">Owner Dashboard</span>\",\"col\":12}},{\"id\":\"gvbj19iNMS\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Owner Dashboard\",\"col\":12}}]",
+ "creation": "2024-04-26 14:24:53.310574",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Owner Dashboard",
+   "label": "Owner Dashboard"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "money-coins-1",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Owner Dashboard",
+ "links": [],
+ "modified": "2024-04-27 08:04:28.486165",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Owner Dashboard",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Owner"
+  }
+ ],
+ "sequence_id": 2.0,
+ "shortcuts": [],
+ "title": "Owner Dashboard"
+}

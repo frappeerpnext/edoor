@@ -1,5 +1,6 @@
 <template>
     <template v-if="hasProperty">
+        
         <main-layout v-if="$route.meta.layout!='blank_layout' && ui=='main_layout'" />
         <BlankLayout v-else />
     </template>
@@ -50,11 +51,20 @@ import ComPayableLedgerDetail from "@/views/payable_ledger/components/ComPayable
 import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
 import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
 const urlParams = new URLSearchParams(window.location.search);
+const route = useRoute();
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const ui = ref(urlParams.get('layout') || "main_layout")
 
 window.isMobile = (/mobile/i.test(navigator.userAgent));
+ 
+const layout = computed(()=>{
+    if (route.query.layout){
+        return route.query.layout
+    }else {
+        return route.meta.layout
+    }
+})
 
 const isMobile = ref(window.isMobile)
 const gv = inject("$gv")

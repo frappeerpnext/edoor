@@ -172,7 +172,6 @@ def get_report_data(filters):
 	cancalled_pax = {"title":"Cancelled PAX"}
 	house_use_pax = {"title":"House Use PAX"}
 	no_show_pax = {"title":"No Show PAX"}
-	cancelled_pax = {"title":"Cancelled PAX"}
 	complimentary_pax = {"title":"Complimentary PAX"}
 	arrival_pax_for_seven_day = {"title":"Arrival PAX for the Next 7 Days"}
 	departure_pax_for_seven_day = {"title":"Departure PAX for the Next 7 Days"}

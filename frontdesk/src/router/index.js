@@ -2,6 +2,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import Dashboard from "../views/dashboard/Dashboard.vue";
+import OwnerDashboard from "../views/dashboard/OwnerDashboard.vue";
 import Frontdesk from "../views/frontdesk/Frontdesk.vue"
 import FloorPlanView from "../views/frontdesk/FloorPlanView.vue"
 import ReservationList from "../views/frontdesk/ReservationList.vue";
@@ -47,6 +48,7 @@ import authRoutes from './auth';
 
 let routes = [
   { path: "/frontdesk/dashboard", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
+  { path: "/frontdesk/owner-dashboard", name: "OwnerDashboard", component: OwnerDashboard, meta: { layout: 'main_layout',title: 'Owner Dashboard' } },
   { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Front Desk - Room Chart' } },
   { path: "/frontdesk/floorplan", name: "FloorPlanView", component: FloorPlanView, meta: { layout: 'main_layout', title: 'Front Desk - Floor Plan' } },
   { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
