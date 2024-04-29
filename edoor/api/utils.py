@@ -882,13 +882,23 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_
     
 
 
-def get_master_folio(reservation):
-    master_stay = frappe.db.get_list("Reservation Stay", filters={"reservation":reservation, "is_master":"1"})
+def get_master_folio(reservation,create_if_not_exists = False,reopen_folio_if_closed=False):
+    master_stay = frappe.db.get_list("Reservation Stay",  filters={"reservation":reservation, "is_master":"1"})
     if master_stay:
-        master_folio = frappe.db.get_list("Reservation Folio", fields=["*"], filters={"reservation_stay":master_stay[0].name, "is_master":1})
+        master_folio = frappe.db.get_list("Reservation Folio", filters={"reservation_stay":master_stay[0].name, "is_master":1})
         if master_folio:
-            return master_folio[0]
+            folio_doc = frappe.get_doc("Reservation Folio", master_folio[0].name)
+            if reopen_folio_if_closed:
+                folio_doc.status="Open"
+                folio_doc.flags.ignore_validate = True
+                folio_doc.save(ignore_permissions=True)
+            return folio_doc
+    
+    if create_if_not_exists:
+        return create_folio(frappe.get_doc("Reservation Stay",master_stay))
+    
     return None
+
 
 def create_folio(stay):
     doc = frappe.get_doc({

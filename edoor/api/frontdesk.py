@@ -398,6 +398,39 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         "total_in_house":stay[0]["total_in_house"] or 0,
     }
 
+@frappe.whitelist()
+def get_owner_dashboard_current_revenue_data(property = None, date = None):
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    working_date =  frappe.utils.today() 
+
+    if data:
+        working_date = data[0]["date"]
+
+    if not date:
+        date = working_date
+    revenue_sql = """select 
+                sum(amount * if(type='Debit',1,-1)) as today_revenue 
+            from `tabFolio Transaction` 
+            where 
+            property='{}' and posting_date = '{}' and
+            account_group_name in ('Charge','Tax','Discount')
+        """.format(property, date)
+    today_revenue = frappe.db.sql(revenue_sql, as_dict=1)
+
+    payment_sql = """select 
+                sum(amount * if(type='Debit',1,-1)) as today_payment 
+            from `tabFolio Transaction` 
+            where 
+            property='{}' and posting_date = '{}' and
+            account_group_name in ('Payment')
+        """.format(property, date)
+    today_payment = frappe.db.sql(payment_sql, as_dict=1)
+
+    return {
+        "working_date":working_date,
+        "today_revenue": today_revenue[0]["today_revenue"] or 0,
+        "today_payment": today_payment[0]["today_payment"] or 0,
+    }
 
 def get_total_reservation_by_business_source(property = None ,date =None,room_type=None):
  

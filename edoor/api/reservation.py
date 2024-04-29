@@ -675,8 +675,10 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
         for i in range(0, len(checked_in_stays), 5):
             group_check_in_stays.append(checked_in_stays[i:i + 5])
         # create master folio and post master post change to master folio first   
+        master_folio = get_master_folio(reservation=reservation,create_if_not_exists=True, reopen_folio_if_closed=True)
+        
         for stays in group_check_in_stays:
-            frappe.enqueue("edoor.api.reservation.post_charge_to_folio_afer_check_in", working_day=working_day, reservation=reservation, stays=stays, queue='short')
+            frappe.enqueue("edoor.api.reservation.post_charge_to_folio_afer_check_in", working_day=working_day, reservation=reservation, stays=stays,master_folio=master_folio, queue='short')
         
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation=reservation,reservation_stay=[d["stay_name"] for d in checked_in_stays])
     
@@ -699,27 +701,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 
  
     
-def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
-    # check if master_folio is already created 
-    master_folio = {}
-    if len([d for d in stays if d["paid_by_master_room"] ==1]) > 0:
-        master_stay = frappe.db.sql("select name from `tabReservation Stay` where reservation='{}' and is_active_reservation=1 and is_master=1".format(reservation), as_dict=1)
-        master_stay_name = master_stay[0]["name"]
-        master_folios = frappe.db.get_list("Reservation Folio",{"reservation_stay":master_stay_name,"is_master":1})
-        if len (master_folios) ==0:
-            master_stay = frappe.get_doc("Reservation Stay", master_stay_name)
-            master_folio  =create_folio(master_stay)
-        else:
-          
-            #try to reopen master folio if the master folio is close
-            master_folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
-            master_folio.status="Open"
-            master_folio.save()
+def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_folio):
 
-    
-
-    #loop throw stay and add room charge to folio transaction
-    
     for s in stays:
         stay_doc = frappe.get_doc("Reservation Stay", s["stay_name"])
         folio = {}
