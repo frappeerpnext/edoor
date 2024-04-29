@@ -795,6 +795,10 @@ span.p-button-icon.pi.pi-ellipsis-v{
 /* .wrapper-report .col.flex.gap-2.mt-2{
 background-color: var(--bg-primary-color);
 } */
+.p-checkbox.p-component.p-highlight.p-variant-filled .p-checkbox-box{
+    border:2px solid var(--bg-primary-color) !important;
+    background: var(--bg-primary-color);
+    }
 .print-format-gutter{
     background-color: var(--bg-primary-color) !important;
 }

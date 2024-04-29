@@ -643,8 +643,6 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
                 frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
 
             
-            
-            
             stay.checked_in_by = frappe.session.user
             stay.checked_in_date = frappe.utils.now()
             if stay.reservation_status == 'No Show':
@@ -676,6 +674,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
         group_check_in_stays = []
         for i in range(0, len(checked_in_stays), 5):
             group_check_in_stays.append(checked_in_stays[i:i + 5])
+        # create master folio and post master post change to master folio first   
         for stays in group_check_in_stays:
             frappe.enqueue("edoor.api.reservation.post_charge_to_folio_afer_check_in", working_day=working_day, reservation=reservation, stays=stays, queue='short')
         
@@ -725,7 +724,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
         stay_doc = frappe.get_doc("Reservation Stay", s["stay_name"])
         folio = {}
        
-        if s["paid_by_master_room"] ==1 or (stay_doc.is_master ==1 and master_folio) :
+        if s["paid_by_master_room"] ==1 or (stay_doc.is_master==1 and master_folio):
             folio = master_folio
         else:
             #create stay folio 
