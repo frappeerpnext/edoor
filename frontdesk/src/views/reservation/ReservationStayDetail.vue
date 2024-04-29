@@ -2,7 +2,7 @@
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
-                <div class="overflow-auto w-full stickyReservationStatus reservation_stay_sticky">
+                <div class="overflow-hide w-full stickyReservationStatus reservation_stay_sticky">
                     <div class="flex justify-between overflow-scroll lg:overflow-hidden w-full lg:w-full">
                         <ComReservationStayHeaderStatus />
                         <div class="flex gap-2">
@@ -106,7 +106,8 @@
                         <ComReservationStayRoomRate />
                     </TabPanel>
                     <TabPanel :header="$t('Package & Inclusion')">
-                        This feature is comming soon
+                        <!-- <ComReservationStayPackageItems/> -->
+                        This feature is comming soon.
                     </TabPanel>
                     <TabPanel>
                         <template #header>
@@ -216,6 +217,7 @@ import ComReservationStayFolio from '@/views/reservation/components/ComReservati
 import ComReservationStayHeaderStatus from '@/views/reservation/components/ComReservationStayHeaderStatus.vue'
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
+import ComReservationStayPackageItems from '@/views/reservation/components/ComReservationStayPackageItems.vue'
 import Message from 'primevue/message';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;

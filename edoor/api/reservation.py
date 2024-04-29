@@ -437,6 +437,11 @@ def add_new_reservation(doc):
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation.name, reservation_stay=stay_names)
     
     frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='default', stay_names=stay_names )
+    
+    if frappe.db.get_value("Rate Type",reservation.rate_type,"is_package")==1:
+        frappe.enqueue("edoor.api.reservation.update_package_data_to_reservation_stay",queue='default', reservation=reservation.name, stay_names=stay_names,rate_type=reservation.rate_type )
+        # update is package to reservation stay and reservation room rate
+        
 
 	
     frappe.db.commit()
@@ -445,9 +450,9 @@ def add_new_reservation(doc):
     frappe.msgprint("Add new reservation successfully")
     return reservation
 
-def update_package_data_to_reservation_stay(reservation=None, stays=None,rate_type=None):
-    if reservation and not stays:
-        stays = frappe.db.sql("select name from `tabReservation Stay` where is_active_reservation=1 and reservation='{}'".format(reservation),as_dict=1)
+def update_package_data_to_reservation_stay(reservation=None, stay_names=None,rate_type=None):
+    if reservation and not stay_names:
+        stay_names = frappe.db.sql("select name from `tabReservation Stay` where is_active_reservation=1 and reservation='{}'".format(reservation),as_dict=1)
     account_code=None
     if rate_type:
         rate_type_doc = frappe.get_doc("Rate Type",rate_type,ignore_permissions=True)
@@ -456,17 +461,28 @@ def update_package_data_to_reservation_stay(reservation=None, stays=None,rate_ty
             
     if account_code:
         if account_code.packages:
-            for s in stays:
+            for s in stay_names:
                 stay_doc = frappe.get_doc("Reservation Stay",s)
                 for p in  account_code.packages:
                     stay_doc.append("inclusion_items", {
                         "account_code": p.account_code ,
                         "posting_rule": p.posting_rule,
                         "charge_rule": p.charge_rule,
+                        "rate":p.rate,
+                        "adult_rate":p.adult_rate,
+                        "child_rate":p.child_rate,
+                        "allow_user_to_edit_information":rate_type_doc.allow_user_to_edit_rate,
+                        "is_rate_type_package":1
                         
                     })
+                stay_doc.flags.ignore_validate = True
+                stay_doc.flags.ignoreignore_on_update_validate = True
+                stay_doc.save(ignore_permissions=True)
+                
+                
                 
 
+    frappe.db.commit()
     
     
 def generate_room_room_rates(stay_names):
