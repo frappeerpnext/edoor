@@ -409,27 +409,48 @@ def get_owner_dashboard_current_revenue_data(property = None, date = None):
     if not date:
         date = working_date
     revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as today_revenue 
+                sum(amount * if(type='Debit',1,-1)) as room_revenue 
             from `tabFolio Transaction` 
             where 
             property='{}' and posting_date = '{}' and
-            account_group_name in ('Charge','Tax','Discount')
+            flash_report_revenue_group in ('Room Charge','Other Room Revenue')
         """.format(property, date)
     today_revenue = frappe.db.sql(revenue_sql, as_dict=1)
-
-    payment_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as today_payment 
+    other_revenue_sql = """select 
+                sum(amount * if(type='Debit',1,-1)) as other_revenue 
             from `tabFolio Transaction` 
             where 
             property='{}' and posting_date = '{}' and
-            account_group_name in ('Payment')
+            flash_report_revenue_group in ('Other Revenue')
+        """.format(property, date)
+    today_other_revenue = frappe.db.sql(other_revenue_sql, as_dict=1)
+
+    payment_sql = """select 
+                sum(amount * if(type='Debit',1,-1)) as payment 
+            from `tabFolio Transaction` 
+            where 
+            property='{}' and posting_date = '{}' and
+            account_group_name in ('Payment & Refund')
         """.format(property, date)
     today_payment = frappe.db.sql(payment_sql, as_dict=1)
 
+    exp_revenue_sql = "select sum(total_rate) as expected_revenue from `tabReservation Room Rate` where property = '{}' and date = '{}' and is_active = 1".format(property,date)
+    today_exp_revenue = frappe.db.sql(exp_revenue_sql, as_dict=1)
+    expense_sql = """select 
+                sum(amount * if(type='Debit',1,-1)) as expense 
+            from `tabFolio Transaction` 
+            where 
+            property='{}' and posting_date = '{}' and
+            transaction_type = 'Payable Ledger'
+        """.format(property, date)
+    today_expense = frappe.db.sql(expense_sql, as_dict=1)
     return {
         "working_date":working_date,
-        "today_revenue": today_revenue[0]["today_revenue"] or 0,
-        "today_payment": today_payment[0]["today_payment"] or 0,
+        "room_revenue": today_revenue[0]["room_revenue"] or 0,
+        "other_revenue": today_other_revenue[0]["other_revenue"] or 0,
+        "today_payment": today_payment[0]["payment"] or 0,
+        "today_exp_revenue": today_exp_revenue[0]["expected_revenue"] or 0,
+        "today_expense": today_expense[0]["expense"] or 0,
     }
 
 def get_total_reservation_by_business_source(property = None ,date =None,room_type=None):

@@ -5179,7 +5179,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 @media (min-width: 1024px) {
   .p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
-  max-height: calc(90vh - 118px) !important;
+  max-height: calc(90vh - 100px) !important;
 }
 @media (max-width: 1024px) {
   .p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {

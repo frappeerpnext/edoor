@@ -1,6 +1,3 @@
 <template>
-    dashboard
+    ownder 
 </template>
-<script setup>
-
-</script>

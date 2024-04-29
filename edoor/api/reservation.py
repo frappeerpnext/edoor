@@ -445,6 +445,30 @@ def add_new_reservation(doc):
     frappe.msgprint("Add new reservation successfully")
     return reservation
 
+def update_package_data_to_reservation_stay(reservation=None, stays=None,rate_type=None):
+    if reservation and not stays:
+        stays = frappe.db.sql("select name from `tabReservation Stay` where is_active_reservation=1 and reservation='{}'".format(reservation),as_dict=1)
+    account_code=None
+    if rate_type:
+        rate_type_doc = frappe.get_doc("Rate Type",rate_type,ignore_permissions=True)
+        if rate_type_doc.is_package ==1:
+            account_code = frappe.get_doc("Account Code",rate_type_doc.account_code,ignore_permissions=True)
+            
+    if account_code:
+        if account_code.packages:
+            for s in stays:
+                stay_doc = frappe.get_doc("Reservation Stay",s)
+                for p in  account_code.packages:
+                    stay_doc.append("inclusion_items", {
+                        "account_code": p.account_code ,
+                        "posting_rule": p.posting_rule,
+                        "charge_rule": p.charge_rule,
+                        
+                    })
+                
+
+    
+    
 def generate_room_room_rates(stay_names):
     for s in stay_names:
         generate_room_rate(self= frappe.get_doc("Reservation Stay",s))
