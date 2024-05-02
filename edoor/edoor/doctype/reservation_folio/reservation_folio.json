@@ -24,6 +24,7 @@
   "tax_invoice_date",
   "exchange_rate",
   "is_active_reservation",
+  "is_generate_tax_invoice",
   "column_break_10",
   "room_types",
   "room_types_alias",
@@ -272,6 +273,12 @@
    "fieldtype": "Float",
    "label": "Exchange Rate",
    "precision": "9"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_generate_tax_invoice",
+   "fieldtype": "Check",
+   "label": "Is Generate Tax Invoice"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -282,7 +289,7 @@
    "link_fieldname": "transaction_number"
   }
  ],
- "modified": "2024-03-27 17:01:09.167190",
+ "modified": "2024-05-02 17:49:16.514428",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

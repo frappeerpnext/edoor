@@ -15,13 +15,13 @@
         <strong> {{$t('Total Records') }}: <span class="ttl-column_re">{{ rs?.room_rates?.length }}</span></strong>
       </div>
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-      <Column  field="is_package" header="" bodyClass="text-center" headerClass="text-center">
+      <Column  headerStyle="width: 3rem" field="is_package" header="" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
           <span><i v-if="slotProps.data?.is_package"  class="pi pi-gift package_room_rate"></i></span>
         </template>
       </Column>
       
-      <Column field="date" :header="$t('Date')" bodyClass="text-center" headerClass="text-center">
+      <Column  headerStyle="width: 3rem" field="date" :header="$t('Date')" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
         </template>

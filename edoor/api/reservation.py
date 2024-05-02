@@ -2129,7 +2129,6 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         ifnull(report_description,account_name) as account_name,
                         sum(report_quantity) as quantity,
                         type,
-                        note,
                         {sort_by_field}, 
                         sum(amount) as amount
                     from `tabFolio Transaction` 
@@ -2178,7 +2177,6 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
             "credit": d["amount"] if d["type"] == "Credit" else 0,
             "balance":balance,
             "quantity":d["quantity"],
-            "note":d["note"]
         }
         
         if show_room_number=='1':

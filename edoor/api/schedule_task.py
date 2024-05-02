@@ -30,6 +30,23 @@ JOB_STATUSES = ["queued", "started", "failed", "finished", "deferred", "schedule
 
 
 @frappe.whitelist()
+def get_job_by_job_name(job_name):
+    args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 'filters': [['RQ Job', 'status', '=', 'queued']], 'order_by': '`tabRQ Job`.`modified` desc', 'start': '0', 'page_length': '20', 'group_by': '`tabRQ Job`.`name`', 'with_comment_count': '1', 'save_user_settings': True, 'strict': None}
+    start = cint(args.get("start"))
+    page_length = cint(args.get("page_length")) or 20
+
+
+
+    matched_job_ids = get_matching_job_ids(args)[start : start + page_length]
+
+    conn = get_redis_conn()
+    jobs = [
+        serialize_job(job) for job in Job.fetch_many(job_ids=matched_job_ids, connection=conn) if job
+    ]
+    
+    return  [d for d in jobs if d["job_name"]==job_name]
+
+@frappe.whitelist()
 def re_run_fail_jobs():
     args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 'filters': [['RQ Job', 'status', '=', 'failed']], 'order_by': '`tabRQ Job`.`modified` desc', 'start': '0', 'page_length': '20', 'group_by': '`tabRQ Job`.`name`', 'with_comment_count': '1', 'save_user_settings': True, 'strict': None}
     start = cint(args.get("start"))
@@ -251,7 +268,23 @@ def five_minute_job():
 
 @frappe.whitelist()
 def ten_minute_job():
-    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
+    if not get_job_by_job_name("edoor.api.schedule_task.run_queue_job"):
+        frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
+
+    if not get_job_by_job_name("edoor.api.schedule_task.validate_opening_folio_balance"):
+        frappe.enqueue("edoor.api.schedule_task.validate_opening_folio_balance",queue='default')
+    
+    
+    if not get_job_by_job_name("edoor.api.schedule_task.validate_reservation_stay_balance"):
+        frappe.enqueue("edoor.api.schedule_task.validate_reservation_stay_balance",queue='default')
+    
+    if not get_job_by_job_name("edoor.api.schedule_task.validate_reservation_balance"):
+        frappe.enqueue("edoor.api.schedule_task.validate_reservation_balance",queue='default')
+    
+    
+    
+    
+    
 
 @frappe.whitelist()
 def run_queue_job():

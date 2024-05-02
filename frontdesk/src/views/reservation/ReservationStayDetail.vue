@@ -106,8 +106,8 @@
                         <ComReservationStayRoomRate />
                     </TabPanel>
                     <TabPanel :header="$t('Package & Inclusion')">
-                        <!-- <ComReservationStayPackageItems/> -->
-                        This feature is comming soon.
+                        <ComReservationStayPackageItems/>
+                        <!-- This feature is comming soon. -->
                     </TabPanel>
                     <TabPanel>
                         <template #header>

@@ -15,10 +15,15 @@
                                      />
             </div>
             <div class="col-12">
-                <table class="w-full">
+                <!-- <table class="w-full">
                     <ComStayInfoNoBox label="Current Tax Invoice" :value="data?.current_counter" />
                     <ComStayInfoNoBox label="Next Tax Invoice" :value="data?.next_tax_invoice_number" /> 
-                </table>
+                </table> -->
+                <div class="col-12">
+                    <label>{{$t('Tax Invoice Type')}}</label>
+                    <ComSelect class="w-full min-w-full" id="dis_type" 
+                     v-model="data.tax_invoice_type"  :options="['Tax Invoice','Commercial Invoice']" :clear="false" />
+                </div>
                 <div class="text-center shadow-1 p-3 mt-3 border-round-xl">
                         <div class="text-2xl">Rate Exchange</div>
                         <span class="text-2xl">
@@ -52,7 +57,7 @@ const dialogRef = inject("dialogRef");
 const isSaving = ref(false)
 const exchangeRates = ref()
 const tax_invoice_date = ref(moment(window.current_working_date).toDate())
-const data = ref()
+const data = ref({tax_invoice_type:""})
 const confirm = useConfirm()
 const gv = inject("$gv")
 
@@ -70,7 +75,8 @@ function onSave() {
     postApi("utils.generate_tax_invoice",{
         property:dialogRef.value.data.property,
         folio_number:dialogRef.value.data.name,
-        tax_invoice_date:moment(tax_invoice_date.value).format("YYYY-MM-DD")
+        tax_invoice_date:moment(tax_invoice_date.value).format("YYYY-MM-DD"),
+        tax_invoice_type:data.value.tax_invoice_type || ""
     }).then(result=>{
         isSaving.value = false
         dialogRef.value.close(result)
@@ -117,7 +123,8 @@ function viewfoliotaxinvoicedetail() {
     isSaving.value = true 
     getApi("utils.get_generate_tax_invoice_information",{
         property:window.property_name,
-        posting_date:moment(tax_invoice_date.value).format("YYYY-MM-DD")
+        posting_date:moment(tax_invoice_date.value).format("YYYY-MM-DD"),
+       
     }).then(result => {
         
         data.value = result.message

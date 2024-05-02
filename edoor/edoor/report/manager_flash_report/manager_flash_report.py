@@ -210,7 +210,7 @@ def get_report_data(filters):
 		cancel_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Cancelled Adult']) or 0
 		cancel_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Cancelled Child']) or 0
 		room_charge = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Room Charge']) or 0
-		# other_room_charge = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Other Room Revenue']) or 0
+		other_room_charge = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Other Room Revenue']) or 0
 		
 		room_minus_ooo_rooms[f] =  total_room - room_block
 		available_room[f] =  total_room - (room_occupy + room_block)
@@ -265,6 +265,7 @@ def get_report_data(filters):
 		if calculate_room_occupancy_include_room_block==0:
 			total_room = total_room - room_block
 		occpancy[f] =  room_occupy / (1 if total_room == 0 else total_room)
+		revpar[f] = (room_charge + other_room_charge)/(1 if total_room == 0 else total_room)
 		# frappe.throw(str( adr))
 	report_data.append(adr or 0)
 	report_data.append(occpancy or 0)
@@ -292,8 +293,7 @@ def get_report_data(filters):
 	report_data.append(complimentary_pax or 0)
 	report_data.append(no_show_pax or 0)
 	report_data.append(cancalled_pax or 0)
-	
-	report_data.append(revpar)
+	report_data.append(revpar or 0)
         
 	return_report_data = []
 	#get group list
@@ -308,7 +308,7 @@ def get_report_data(filters):
 			"indent":0
 		})
 		for r in [d for d in report_config.row_configs if d.group == g and d.show_in_report==1]:
-			row = [d for d in report_data if d.get('title', 'No Title') == r.field_name]
+			row = [d for d in report_data if isinstance(d, dict) and d.get('title', 'No Title') == r.field_name]
 			if r.formula:
 				row=[get_row_calculate_filed(r,report_data)]
 			
@@ -780,4 +780,4 @@ def get_row_calculate_filed(row,data):
 	return result
 
 def get_value_field_title(report_data, title,field):
-	return sum([d[field] for d in report_data if d["title"] == title]) or 0
+	return sum([d[field] for d in report_data if isinstance(d, dict) and d.get("title") == title]) or 0

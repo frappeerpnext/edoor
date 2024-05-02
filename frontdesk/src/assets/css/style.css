@@ -1518,6 +1518,9 @@ align-items: center;
 .stickyReservationStatus button.p-button:not(.p-0):not(.btn-choose__pro){
     padding: 0.5rem 0.65rem;
 }
+.bg-og-edoor:hover , .bg-og-edoor:active{
+    background-color: var(--bg-og-color);
+}
 .d-bg-edoor a{
     cursor: pointer;
 }
@@ -1821,4 +1824,7 @@ flex-direction: column;
 .package_room_rate:hover{
     background: rgb(124, 113, 252);
     color: #e9e7ff;
+}
+.bg-kpi-owner-db{
+    background-color: #2100A6;
 }

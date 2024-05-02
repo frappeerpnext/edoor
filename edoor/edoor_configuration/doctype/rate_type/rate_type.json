@@ -11,6 +11,8 @@
   "rate_type",
   "account_code",
   "is_package",
+  "package_code",
+  "is_rate_include_package_charge",
   "column_break_npno",
   "is_complimentary",
   "is_house_use",
@@ -82,7 +84,7 @@
   },
   {
    "default": "0",
-   "fetch_from": "account_code.is_package",
+   "fetch_from": ".",
    "fieldname": "is_package",
    "fieldtype": "Check",
    "label": "Is Package"
@@ -90,11 +92,24 @@
   {
    "fieldname": "section_break_uutq",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "package_code",
+   "fieldtype": "Link",
+   "label": "Package Code",
+   "link_filters": "[[{\"fieldname\":\"\",\"field_option\":\"Account Code\"},\"is_package\",\"=\",1]]",
+   "options": "Account Code"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_rate_include_package_charge",
+   "fieldtype": "Check",
+   "label": "Is Rate Include Package Charge"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-18 08:15:46.109024",
+ "modified": "2024-05-02 12:16:13.713839",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type",

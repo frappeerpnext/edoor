@@ -146,9 +146,6 @@ scheduler_events = {
 			],
 			"*/10 * * * *": [
 				"edoor.api.schedule_task.ten_minute_job",
-				"edoor.api.schedule_task.validate_opening_folio_balance",
-				"edoor.api.schedule_task.validate_reservation_stay_balance",
-				"edoor.api.schedule_task.validate_reservation_balance",
 			]
 	},
 	# "all": [

@@ -152,17 +152,20 @@ html {
     background-color: rgba(var(--bg-warning-color-rgb), .8);
 }
 .bg-og-edoor{
-    background-color: rgba(var(--bg-og-color-rgb)) !important;
+    background-color: rgba(var(--bg-primary-color)) !important;
+}
+.bg-og-btn-color{
+    background-color: rgba(var(--bg-primary-color)) !important; 
 }
 .bg-og-edoor:hover{
-    background-color: rgba(var(--bg-og-color-rgb), .8) !important;
+    background-color: var(--bg-primary-cs-hover) !important;
 }
 .border-color-edoor {
     border-color: var(--btn-border-color);
 }
 
 .bg-og-edoor,.btn-close,.btn-close:hover,.btn-close:active {
-    background-color: var(--bg-og-color) !important;
+    background-color: var(--bg-primary-color) !important;
 }
 
 .primary-btn-edoor {

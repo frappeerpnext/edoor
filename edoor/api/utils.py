@@ -1644,24 +1644,42 @@ def get_comma_and(data):
 
 
 @frappe.whitelist(methods="POST")
-def generate_tax_invoice(property, folio_number,tax_invoice_date):
+def generate_tax_invoice(property, folio_number,tax_invoice_date,tax_invoice_type):
     # if frappe.db.get_value("Reservation Folio",folio_number,"tax_invoice_number"):
     #     frappe.throw("This folio number is already generate tax invoice")
     # if not frappe.db.get_value("Folio Transaction",folio_number,"transaction_number"):
     #     frappe.throw("This folio number No Transaction") 
 
-    tax_invoice_format = frappe.db.get_value("Business Branch",property,"tax_invoice_number_format")
-    from frappe.model.naming import make_autoname
-    tax_invoice_number = make_autoname(tax_invoice_format)
+    # tax_invoice_format = frappe.db.get_value("Business Branch",property,"tax_invoice_number_format")
+    # from frappe.model.naming import make_autoname
+    # tax_invoice_number = make_autoname(tax_invoice_format)
+    if not tax_invoice_type:
+        frappe.throw("Please enter tax invoice type.")
+        
     exchange_rate  = get_exchange_rate(property, tax_invoice_date)
+    doc = frappe.get_doc("Reservation Folio",folio_number)
+    if frappe.db.exists("Tax Invoice",{"document_type":"Reservation Folio","document_name":folio_number}):
+        frappe.throw("This folio number # {} is already generate tax invoice.".format(folio_number))
+        
+    tax_invoice_doc = frappe.get_doc({
+        "doctype":"Tax Invoice",
+        "property":property,
+        "tax_invoice_type":tax_invoice_type,
+        "tax_invoice_date":tax_invoice_date,
+        "exchange_rate":exchange_rate,
+        "document_type":"Reservation Folio",
+        "document_name":folio_number,
+        "guest":doc.guest
+    })
+    
+    tax_invoice_doc.insert()
     
     
-    sql="update `tabReservation Folio` set tax_invoice_number=%(tax_invoice_number)s, tax_invoice_date=%(tax_invoice_date)s , exchange_rate=%(exchange_rate)s where name=%(name)s"
-    frappe.db.sql(sql,{ "name":folio_number,"tax_invoice_number":tax_invoice_number, "exchange_rate":exchange_rate,"tax_invoice_date":tax_invoice_date})
+    sql="update `tabReservation Folio` set is_generate_tax_invoice=1, tax_invoice_number=%(tax_invoice_number)s, tax_invoice_date=%(tax_invoice_date)s , exchange_rate=%(exchange_rate)s where name=%(name)s"
+    frappe.db.sql(sql,{ "name":folio_number,"tax_invoice_number":tax_invoice_doc.name, "exchange_rate":exchange_rate,"tax_invoice_date":tax_invoice_date})
     
     frappe.db.commit()
     frappe.msgprint(_("Generate tax invoice successfully"))
-
 
 @frappe.whitelist()
 def get_generate_tax_invoice_information(property,posting_date=None):
