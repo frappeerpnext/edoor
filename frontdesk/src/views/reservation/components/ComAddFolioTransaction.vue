@@ -173,7 +173,7 @@
                         <div class="flex flex-col">
                             <div class="flex justify-end text-end">
                                 <label for="include-tax" class="col-6 font-medium cursor-pointer">Rate Include Tax</label>
-                                <Checkbox input-id="include-tax" class="col-6 px-3" :disabled="!canEdit"
+                                <Checkbox input-id="include-tax" style="min-width: 50px;" class="col-6 px-3" :disabled="!canEdit"
                                     v-model="doc.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
                             </div>
                         </div>

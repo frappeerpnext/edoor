@@ -16,15 +16,18 @@ import '/node_modules/primeflex/primeflex.css'
  // estc theme
 import  './assets/css/theme.css'
 import "./assets/css/style.css"
+//style Vue3DraggableResizable
+import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css'
 // micro lab theme
 // import  './assets/css/micro_lab_theme.css'
 // import "./assets/css/micro_lab_style.css"
 
 import { createApp, reactive } from "vue";
+
 import App from "./App.vue";
 
 import Error from "./components/Error.vue";
- 
+import Vue3DraggableResizable from 'vue3-draggable-resizable'
 
 
 import Auth from "./utils/auth";
@@ -253,6 +256,7 @@ app.use(DialogService);
 app.use(ConfirmationService);
 app.use(VueSortable);
 app.use(shortkey)
+app.use(Vue3DraggableResizable)
  
 
 app.use(

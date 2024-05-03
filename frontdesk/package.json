@@ -42,6 +42,7 @@
     "vue-tippy": "v6",
     "vue-web-cam": "^1.9.0",
     "vue2-timeago": "^3.0.2",
+    "vue3-draggable-resizable": "^1.6.5",
     "vue3-shortkey": "^4.0.0",
     "vue3-sortablejs": "^1.0.7"
   },
