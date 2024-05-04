@@ -1496,8 +1496,8 @@ def update_room_status_by_reservation_stay(name):
 def get_tax_invoice_data(folio_number,date = None):
     data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio'".format(folio_number),as_dict=1)
     tax_data = get_tax_data(data)
-    property = frappe.db.get_value("Reservation Folio", folio_number,"property")
-    exchange_rate = frappe.db.get_value("Reservation Folio",folio_number,"exchange_rate")
+    property = frappe.db.get_value("Tax Invoice", folio_number,"property")
+    exchange_rate = frappe.db.get_value("Tax Invoice",folio_number,"exchange_rate")
     if not date:
         working_day = get_working_day(property)
         date = working_day["date_working_day"]

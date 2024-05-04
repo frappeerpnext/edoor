@@ -9,7 +9,18 @@
                     </template>
                 </ComFolioAction>
                 <Message :closable="false" v-if="selectedFolio?.tax_invoice_number"  severity="info">
-                   This Folio has Generate Tax Invoice - {{ selectedFolio?.tax_invoice_number }}
+                    <div class="flex justify-content-between align-items-center w-full">
+                        <div>
+                             This Folio has Generate Tax Invoice - {{ selectedFolio?.tax_invoice_number }}
+                        </div>
+                        <div class="ms-5">
+                            <Button class="conten-btn" style="background: transparent;">
+<i class="pi pi-print me-2" />
+                            Print Tax Invoice
+                            </Button>   
+                        </div>
+                    </div>
+                  
                 </Message>
                 <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
                 <ComFolioTransactionSimpleStyle :loading="loading" v-else :folio="selectedFolio" />

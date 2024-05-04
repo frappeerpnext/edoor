@@ -43,6 +43,8 @@
             </div>
             <div class="col flex justify-content-end">
                 <ComRoomChartFilter :hideRefresh="true" :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)"/>
+                <Button type="button" icon="pi pi-ellipsis-v" @click="onToggleSettingMenu" aria-haspopup="true" aria-controls="overlay_menu" />
+        <Menu ref="setting_menu" id="setting_overlay_menu" :model="settingMenu" :popup="true" />
             </div>
         </div>
         <div style="max-width: 100%;">
@@ -126,6 +128,8 @@ import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComC
 import RoomInventoryChart from '@/views/frontdesk/components/RoomInventoryChart.vue'
 import FullCalendar from '@fullcalendar/vue3'
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
+import ComRoomInventorySetting from "@/views/frontdesk/components/ComRoomInventorySetting.vue"
+
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const resources = ref([])
@@ -155,7 +159,7 @@ const showSummary = ref(true)
 const showNote = ref(false)
 const loading = ref(false)
 const totalNotes = ref(0)
-
+const setting_menu = ref()
 let advanceFilter = ref({
     room_type: "",
     room_number: "",
@@ -172,7 +176,10 @@ provide('get_count_note', {
     getTotalNote
 })
 
-
+ 
+const onToggleSettingMenu = (event) => {
+    setting_menu.value.toggle(event);
+};
 
 if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
@@ -182,6 +189,44 @@ let roomChartResourceFilter = reactive({
     property: window.property_name,
     view_type: filter.value.view_type // room_type = true or room = false
 })
+let dateIncrement = ref(3)
+const room_inventory_setting = localStorage.getItem("room_inventory_setting")
+if (room_inventory_setting){
+    dateIncrement.value = JSON.parse(room_inventory_setting).increasement_day
+}
+
+const settingMenu = ref([
+    {
+           
+                label: $t('Setting'),
+                icon: 'pi pi-cog',
+                command:function(){
+                    dialog.open(ComRoomInventorySetting, {
+                        props: {
+                            header: $t("Setting"),
+                            style: {
+                                width: '30vw',
+                            },
+                            modal: true,
+                            position:"top",
+                            closeOnEscape: false,
+                            breakpoints:{
+                                '960px': '30vw',
+                                '640px': '100vw'
+                            },
+                        },
+                        onClose: (options) => {
+                            const room_inventory_setting = localStorage.getItem("room_inventory_setting")
+                            if (room_inventory_setting){
+                                dateIncrement.value = JSON.parse(room_inventory_setting).increasement_day
+                            }
+                        }
+                    });
+                }
+            },
+           
+     
+]);
 
 
 
@@ -194,7 +239,7 @@ const calendarOptions = reactive({
     timeZone: 'UTC',
     initialView: 'resourceTimeline',
     resourceOrder: 'sort_order',
-    dateIncrement: { days: 3 },
+    dateIncrement: { days: dateIncrement },
     nowIndicator: false,
     stickyHeaderDates: false,
     headerToolbar: false,

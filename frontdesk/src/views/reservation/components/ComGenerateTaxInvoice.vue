@@ -92,7 +92,7 @@ function viewfoliotaxinvoicedetail() {
      
      dialog.open(ComIFrameModal, {
          data: {
-             doctype: "Reservation Folio",
+             doctype: "Tax Invoice",
              extra_params:[
 				{key:'date',value: moment(tax_invoice_date.value).format("YYYY-MM-DD")},
 			],

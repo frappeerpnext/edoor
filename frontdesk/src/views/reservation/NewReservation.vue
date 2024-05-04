@@ -1,4 +1,5 @@
 <template>
+
     <ComDialogContent dialogClass="max-h-screen-newres overflow-auto" @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="ms_message_cs_edoor">
             <Message v-if="hasFutureResertion">
@@ -475,13 +476,7 @@ const gender_list = ref([
     { label: $t('Female'), value: 'Female' },
 ]);
 
-const useTax = computed(() => {
-    return {
-        use_tax_1: (room_tax.value?.tax_1_rate || 0) > 0,
-        use_tax_2: (room_tax.value?.tax_2_rate || 0) > 0,
-        use_tax_3: (room_tax.value?.tax_3_rate || 0) > 0
-    }
-})
+const useTax = ref({})
 
 
 const roomRateTax = ref((d) => {
@@ -684,14 +679,14 @@ const onRoomNightChanged = (event) => {
     getRooms()
 }
 
-const onUseTax1Change = (value) => {
-    doc.value.tax_rule.tax_1_rate = value ? room_tax.value.tax_1_rate : 0
+function onUseTax1Change(){
+    doc.value.tax_rule.tax_1_rate = useTax.value.use_tax_1 ? 0 : room_tax.value.tax_1_rate
 }
-const onUseTax2Change = (value) => {
-    doc.value.tax_rule.tax_2_rate = value ? room_tax.value.tax_2_rate : 0
+function onUseTax2Change(){
+    doc.value.tax_rule.tax_2_rate = useTax.value.use_tax_2 ? 0 : room_tax.value.tax_2_rate
 }
-const onUseTax3Change = (value) => {
-    doc.value.tax_rule.tax_3_rate = value ? room_tax.value.tax_3_rate : 0
+function onUseTax3Change(){
+    doc.value.tax_rule.tax_3_rate = useTax.value.use_tax_3 ? 0 : room_tax.value.tax_3_rate
 }
 
 
@@ -855,7 +850,7 @@ const onSave = () => {
 
     if (data.guest_info.expired_date) data.guest_info.expired_date = moment(data.guest_info.expired_date).format("yyyy-MM-DD")
 
-    data.reservation.tax_1_rate = doc.value.tax_rule.tax_1_rate
+    data.reservation.tax_1_rate = doc.value.txa_rule.tax_1_rate
     data.reservation.tax_2_rate = doc.value.tax_rule.tax_2_rate
     data.reservation.tax_3_rate = doc.value.tax_rule.tax_3_rate
     data.reservation.rate_include_tax = doc.value.tax_rule.rate_include_tax
@@ -1002,8 +997,13 @@ const onRateTypeChange = (rate_type) => {
                     tax_1_rate: tax_rule?.tax_1_rate || 0,
                     tax_2_rate: tax_rule?.tax_2_rate || 0,
                     tax_3_rate: tax_rule?.tax_3_rate || 0,
+                    
                 }
+                
                 room_tax.value = tax_rule
+                useTax.value.use_tax_1 = tax_rule?.tax_1_rate > 0
+                useTax.value.use_tax_2 = tax_rule?.tax_2_rate > 0
+                useTax.value.use_tax_3 = tax_rule?.tax_3_rate > 0
                 doc.value.reservation.rate_type = rate_type
                 doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
                 doc.value.is_package = result.message.is_package || 0

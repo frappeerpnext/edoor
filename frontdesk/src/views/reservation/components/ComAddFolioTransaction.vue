@@ -1,4 +1,5 @@
 <template>
+
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
@@ -435,17 +436,17 @@ const targetTransactionNumberFilter = computed(()=>{
 })
 
 const folioNumberFilter = ref()
-function onUseTax1Change(value) {
-    doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
+function onUseTax1Change() {
+    doc.value.tax_1_rate = use_tax.value.use_tax_1 ?  0 : tax_rule.value.tax_1_rate
 } 
-function onUseTax2Change(value) {
+function onUseTax2Change() {
 
-    doc.value.tax_2_rate = value ? tax_rule.value.tax_2_rate : 0
+    doc.value.tax_2_rate = use_tax.value.use_tax_2 ?  0 : tax_rule.value.tax_2_rate
 
 }
-function onUseTax3Change(value) {
+function onUseTax3Change() {
 
-    doc.value.tax_3_rate = value ? tax_rule.value.tax_3_rate : 0
+    doc.value.tax_3_rate = use_tax.value.use_tax_3 ?  0 : tax_rule.value.tax_3_rate
 
 } 
 const canEdit = computed(() => {

@@ -1,4 +1,5 @@
 <template>
+
     <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
         <div class="p-3 ">
             <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
@@ -144,7 +145,7 @@
                     <div v-if="hasFilter('group_by_ledger_type')" class="flex ml-2">
                         <div>
                             <Checkbox v-model="filters.group_by_ledger_type" :binary="true" :trueValue="1"
-                                :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                                :falseValue="0" @input="reloadIframe" inputId="group_by_ledger_type" />
                         </div>
                         <div>
                             <label for="group_by_ledger_type">Group by Ledger Type</label>
@@ -154,7 +155,7 @@
                     <div v-if="hasFilter('show_cash_float')" class="flex ml-2">
                         <div>
                             <Checkbox v-model="filters.show_cash_float" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_summary" />
+                                @input="reloadIframe" inputId="show_cash_float" />
                         </div>
                         <div>
                             <label for="show_cash_float">Show/Hide Cash Float</label>
@@ -164,7 +165,7 @@
                     <div v-if="hasFilter('show_cash_count')" class="flex ml-2">
                         <div>
                             <Checkbox v-model="filters.show_cash_count" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_summary" />
+                                @input="reloadIframe" inputId="show_cash_count" />
                         </div>
                         <div>
                             <label for="show_cash_count">Show/Hide Cash Count</label>
@@ -237,6 +238,7 @@ const filters = ref({
     show_cash_float: 1,
     show_master_folio_only: 1,
     show_vattin:0,
+    show_summary:0,
 
 })
 const show_toolbar = ref(0)

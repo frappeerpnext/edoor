@@ -1,5 +1,4 @@
 <template>
-
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
             <div class="grid mb-3 overflow-auto flex-nowrap	lg:flex-wrap">
@@ -24,21 +23,21 @@
                 </div>
                 <div class="col flex gap-2">
                     <div >
-                        <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_room_number" />
+                        <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_room_number" />
                         <label for="show_room_number" class="white-space-nowrap" >Show/Hide Room Number</label>
                     </div>
                     
                     <div>
-                        <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_account_code" />
+                        <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_account_code" />
                         <label for="show_account_code" class="white-space-nowrap" >Show/Hide Account Code</label>
                     </div>
 
                     <div>
-                        <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_summary" />
+                        <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_summary" />
                         <label for="show_summary" class="white-space-nowrap" >Show/Hide Summary</label>
                     </div>
                     <div>
-                        <Checkbox v-model="filters.show_all_room_rate" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_all_room_rate" />
+                        <Checkbox v-model="filters.show_all_room_rate" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_all_room_rate" />
                         <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate</label>
                     </div>
                 </div>
@@ -77,6 +76,7 @@ const filters = ref({
     show_account_code:window.setting.show_account_code_in_folio_transaction,
     show_room_number:1,
     show_all_room_rate:0,
+    show_summary:0
 })
 
 function onSelectFolio(f){

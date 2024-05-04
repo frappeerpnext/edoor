@@ -199,8 +199,8 @@ function viewfoliotaxinvoicedetail() {
      
     dialog.open(ComIFrameModal, {
         data: {
-            doctype: "Reservation Folio",
-            name: selectedFolio.value.name,
+            doctype: "Tax Invoice",
+            name: selectedFolio.value.tax_invoice_number,
             report_name: gv.getCustomPrintFormat("Folio Tax Invoice Detail"),
             letterhead:"Tax Letterhead",
             filter_options:["show_vattin"]

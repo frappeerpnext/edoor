@@ -17,7 +17,7 @@
  
  
     <div class="card">
-        <div id="occupancy_chart"></div>
+        <!-- <div id="occupancy_chart"></div> -->
         <Chart v-if="!loading" :type="view_chart_type"  :data="chartData" :options="chartOptions"  :plugins="plugins" class="h-30rem"  />
     </div>
 </template>
