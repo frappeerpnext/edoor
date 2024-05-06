@@ -1538,7 +1538,7 @@ def get_tax_invoice_data(folio_number,document_type,date = None):
     
     return return_data
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_exchange_rate(property,date=None):
     if not date:
         working_day = get_working_day(property)
@@ -1723,31 +1723,34 @@ def get_tax_invoice_data_from_pos_bill_to_room(transaction_type,transaction_numb
 
 
 def get_sale_data_group_by_revenue_group(sale_numbers):
-    sql="""
-        select 
-            sp.revenue_group, 
-            s.outlet,
-            s.shift_name,
-            sum(sp.sub_total) as price, 
-            sum(sp.total_discount) as discount,
-            1 as quantity ,
-            sum(sp.sub_total) as amount,
-            sum(sp.tax_1_amount) as tax_1_amount,
-            sum(sp.tax_2_amount) as tax_2_amount,
-            sum(sp.tax_3_amount) as tax_3_amount,
-            9999999 as sort_order
-        from `tabSale Product`  sp
-            inner join `tabSale` s on s.name = sp.parent
-        where 
-            sp.parent in %(sale_numbers)s and 
-            coalesce(sp.total_tax,0)>0 
-        group by 
-            revenue_group,
-            outlet,
-            shift_name
-    """
-    data = frappe.db.sql(sql,{"sale_numbers":sale_numbers},as_dict=1)
-    return data
+    if sale_numbers:
+        sql="""
+            select 
+                sp.revenue_group, 
+                s.outlet,
+                s.shift_name,
+                sum(sp.sub_total) as price, 
+                sum(sp.total_discount) as discount,
+                1 as quantity ,
+                sum(sp.sub_total) as amount,
+                sum(sp.tax_1_amount) as tax_1_amount,
+                sum(sp.tax_2_amount) as tax_2_amount,
+                sum(sp.tax_3_amount) as tax_3_amount,
+                9999999 as sort_order
+            from `tabSale Product`  sp
+                inner join `tabSale` s on s.name = sp.parent
+            where 
+                sp.parent in %(sale_numbers)s and 
+                coalesce(sp.total_tax,0)>0 
+            group by 
+                revenue_group,
+                outlet,
+                shift_name
+        """
+        data = frappe.db.sql(sql,{"sale_numbers":sale_numbers},as_dict=1)
+        return data
+    else:
+        return []
 
  
 

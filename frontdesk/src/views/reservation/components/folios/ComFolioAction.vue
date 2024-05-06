@@ -340,7 +340,8 @@ function onAddFolioTransaction(account_code) {
                     balance: selectedFolio.value.balance,
                     business_source: selectedFolio.value.business_source,
                     account_code_filter:props.accountCodeFilter,
-                    show_room:true
+                    show_room:true,
+                    show_source_reservation_stay:true
             },
             props: {
                 header: $t('Post ' + account_code.account_name + ' to Folio') + ' ' + props.folio.name,

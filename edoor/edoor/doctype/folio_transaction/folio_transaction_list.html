@@ -3,8 +3,7 @@
         <div class="grid-heading-row" style="height: auto !important;">
             <div class="grid-row">
                 <div class="data-row row"> 
-                    <div class="col" >Account Code</div>
-                    <div class="col" >Account Name</div>
+                    <div class="col" >Account Code</div> 
                     <div class="col text-center" >Type</div>
                     <div class="col text-center" style="max-width: 3%;">Qty</div>
                     <div class="col text-right" >Amount</div>
@@ -15,8 +14,7 @@
             <div class="rows">  
                 <div class="grid-row">
                     <div class="data-row row">
-                        <div class="col">{{account_code}}</div>
-                        <div class="col">{{account_name}}</div>
+                        <div class="col">{{account_code}} - {{account_name}}</div> 
                         <div class="col text-center">{{type}}</div>
                         <div class="col text-center" style="max-width: 3%;">{{quantity}}</div>
                         <div class="col text-right">{{frappe.format(input_amount,{"fieldtype":"Currency"})}}</div>

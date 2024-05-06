@@ -850,7 +850,7 @@ const onSave = () => {
 
     if (data.guest_info.expired_date) data.guest_info.expired_date = moment(data.guest_info.expired_date).format("yyyy-MM-DD")
 
-    data.reservation.tax_1_rate = doc.value.txa_rule.tax_1_rate
+    data.reservation.tax_1_rate = doc.value.tax_rule.tax_1_rate
     data.reservation.tax_2_rate = doc.value.tax_rule.tax_2_rate
     data.reservation.tax_3_rate = doc.value.tax_rule.tax_3_rate
     data.reservation.rate_include_tax = doc.value.tax_rule.rate_include_tax

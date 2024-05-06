@@ -16,6 +16,13 @@ frappe.ui.form.on("Folio Transaction", {
       );
     }
 
+    // if(frm.doc.vendor){
+    //   frm.set_intro(
+    //     "This folio transaction is from " + "<strong>Payable Ledger</strong> transaction. View transaction " + "<a href=" + '/app/payable-ledger/' + frm.doc.transaction_number + "><strong>" + frm.doc.parent_reference + "</strong></a>",  
+    //     "blue"
+    //   );
+    // }
+
     if (frm.doc.reservation_stay) {
       frm.add_custom_button(
         __("View Reservation Stay"),
