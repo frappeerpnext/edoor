@@ -94,27 +94,12 @@
                     <hr class="left-0 fixed w-full">
                     <ComNoteGlobal v-if="showNote" />
                 </Sidebar>
-                position:{{position}}
-                size:{{size}}
-                screen {{wrapperWidth}}
-                {{roomList}}
-                {{gv.loading}}
-               <div id="floor-plan-wrapper">
-                <Vue3DraggableResizable
-                    :initW="110"
-                    :initH="120"
-                    v-model:x="position.x"
-                    v-model:y="position.y"
-                    v-model:w="size.width"
-                    v-model:h="size.height"
-                    v-model:active="active"
-                    :draggable="true"
-                    :resizable="true"
-                    @drag-end="dragEndHandle"
-                    @resizing="handleResizing"
-                >
-                    This is a test example
-                </Vue3DraggableResizable>
+                <div id="floor-plan-wrapper">
+                    <template v-for="r in roomList" v-if="roomList.length > 0" >
+                        <ComRenderRoom :room="r" :wrapper-width="wrapperWidth"/>
+                    </template>
+               
+                
                </div>
             </div>
         </div>
@@ -138,10 +123,12 @@ import ComReservationColorCodeDetail from '@/views/frontdesk/components/ComReser
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from '@/views/frontdesk/components/ComTodaySummary.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
+import ComRenderRoom from '@/views/floor_plan_view/components/ComRenderRoom.vue'
 
 import ComWalkInReservation from '@/views/reservation/components/ComWalkInReservation.vue';
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
+import { onMounted } from "vue";
 const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
 const frappe = inject('$frappe')
@@ -151,16 +138,19 @@ const db = frappe.db();
 const showSummary = ref(true)
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const position = ref({})
-const size = ref({})
-const text = ref(0)
-const active = ref(true)
+const wrapperWidth = ref(0)
+
 const buildingList = ref([])
 const floorList = ref([])
 const roomList = ref([])
-const wrapperWidth = ref(true)
+
 const selectFilters =ref({})
 const toast = useToast();
+
+onMounted(()=>{
+    const wrapperWidth = ref(document.getElementById("floor-plan-wrapper").clientWidth);
+})
+
 gv.loading=true;
 db.getDocList("Building",{
     filters: [['property', '=', property.name]],
@@ -201,18 +191,7 @@ function onFloorSelected(selected){
     })
 }
 
-function dragEndHandle(t) {
-    wrapperWidth.value = document.getElementById("floor-plan-wrapper").clientWidth;
-    const height = document.getElementById("floor-plan-wrapper").clientHeight;
 
-    if (position.value.x < 0){
-        position.value.x=0
-    }
-    if (position.value.y < 0){
-        position.value.y=0
-    }
-
-}
 
 
 </script>

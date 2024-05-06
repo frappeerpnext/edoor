@@ -726,7 +726,7 @@ def get_business_source_chart_data(property=None,date=None):
             where 
                 property = '{}' and
                 posting_date = '{}' and
-                business_source != ''
+                coalesce(business_source,'') !=''
             group by
                 business_source
         """.format(property,date)
@@ -739,7 +739,7 @@ def get_business_source_chart_data(property=None,date=None):
             where 
                 property = '{}' and
                 date = '{}' and
-                business_source != ''
+                coalesce(business_source,'') !=''
             group by
                 business_source
         """.format(property,date)
@@ -766,6 +766,99 @@ def get_business_source_chart_data(property=None,date=None):
             "type": 'pie',
             "name": d['business_source'],
             "values": d['amount'],
+            "color": colors[i % len(colors)]
+        }
+        chart_data["datasets_expected"].append(datasets_expected)
+  
+    return chart_data
+@frappe.whitelist()
+def get_room_type_chart_data(property=None,date=None):
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    working_date =  frappe.utils.today() 
+
+    if data:
+        working_date = data[0]["date"]
+
+    if not date :
+        date = working_date
+    sql="""
+            select 
+                sum(amount * if(type='Debit',1,-1)) as amount,
+                room_type
+            from `tabFolio Transaction`
+            where 
+                property = '{}' and
+                posting_date = '{}' and
+                room_type != ''
+            group by
+                room_type
+        """.format(property,date)
+    data = frappe.db.sql(sql, as_dict=1)
+    epx_sql="""
+            select 
+                sum(total_rate) as amount,
+                room_type
+            from `tabReservation Room Rate`
+            where 
+                property = '{}' and
+                date = '{}' and
+                room_type != ''
+            group by
+                room_type
+        """.format(property,date)
+    epx_data = frappe.db.sql(epx_sql, as_dict=1)
+
+    #get total room in each room type
+    sql = """
+            select 
+            count(name) as total_room, 
+            room_type 
+        from `tabRoom` 
+        where 
+            property = '{}' and
+            disabled != 1 
+        group by room_type        
+        """.format(property)
+    room_type = frappe.db.sql(sql, as_dict=1)
+    sql = """
+            select 
+                count(room_id) as total_room_sold,
+                room_type 
+            from `tabRoom Occupy` 
+            where 
+                property = '{}' and
+                date='{}' and 
+                is_departure = 0 
+            group by room_type      
+        """.format(property,date)
+    room_sold = frappe.db.sql(sql, as_dict=1)
+    chart_data = {
+            "labels":[d['room_type'] for d in data]
+            # "colors": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
+    }
+    colors = ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
+    chart_data["datasets_actual"] = []
+  
+    for i, d in enumerate(data):
+        total_room = [g['total_room'] for g in room_type if g['room_type'] == d['room_type']][0]
+        total_room_sold = [g['total_room_sold'] for g in room_sold if g['room_type'] == d['room_type']][0]
+        datasets_actual = {
+            "name": d['room_type'],
+            "values": d['amount'],
+            "total_room":total_room,
+            "room_sold":total_room_sold,
+            "color": colors[i % len(colors)]
+        }
+        chart_data["datasets_actual"].append(datasets_actual)
+
+    chart_data["datasets_expected"] = []
+    for i, d in enumerate(epx_data):
+        total_room = [g['total_room'] for g in room_type if g['room_type'] == d['room_type']][0]
+        datasets_expected = {
+            "type": 'pie',
+            "name": d['room_type'],
+            "values": d['amount'],
+            "total_room":total_room,
             "color": colors[i % len(colors)]
         }
         chart_data["datasets_expected"].append(datasets_expected)

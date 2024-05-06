@@ -8,6 +8,12 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "guest",
+  "guest_name",
+  "phone_number",
+  "email",
+  "photo",
+  "column_break_fufn",
   "naming_series",
   "property",
   "posting_date",
@@ -18,36 +24,35 @@
   "reservation",
   "reservation_stay",
   "business_source",
-  "reservation_status",
-  "reservation_status_color",
-  "tax_invoice_number",
-  "tax_invoice_date",
-  "exchange_rate",
-  "is_active_reservation",
-  "is_generate_tax_invoice",
-  "column_break_10",
+  "room_type",
   "room_types",
   "room_types_alias",
   "rooms",
+  "section_break_droe",
+  "item_list",
+  "section_break_hlom",
+  "column_break_gzay",
+  "note",
+  "column_break_ahvi",
+  "folio_summary",
+  "other_infoadmin_only_tab",
   "status",
+  "deleted_note",
+  "reservation_status",
+  "room_data",
+  "tax_invoice_number",
+  "reservation_status_color",
+  "is_active_reservation",
+  "exchange_rate",
+  "is_generate_tax_invoice",
   "is_master",
-  "guest_information_section",
-  "guest",
-  "guest_name",
-  "column_break_17",
-  "phone_number",
-  "email",
-  "photo",
+  "tax_invoice_date",
   "summary_section",
   "total_debit",
   "column_break_24",
   "total_credit",
   "column_break_26",
-  "balance",
-  "section_break_28",
-  "note",
-  "deleted_note",
-  "room_data"
+  "balance"
  ],
  "fields": [
   {
@@ -77,6 +82,8 @@
   {
    "fieldname": "posting_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Posting Date"
   },
   {
@@ -98,6 +105,7 @@
    "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Status",
    "options": "Open\nClosed"
   },
@@ -130,15 +138,11 @@
    "label": "Balance"
   },
   {
-   "fieldname": "guest_information_section",
-   "fieldtype": "Section Break",
-   "label": "Guest Information"
-  },
-  {
    "fetch_from": "reservation_stay.guest",
    "fetch_if_empty": 1,
    "fieldname": "guest",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Guest",
    "options": "Customer"
   },
@@ -146,11 +150,8 @@
    "fetch_from": "guest.customer_name_en",
    "fieldname": "guest_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Guest Name"
-  },
-  {
-   "fieldname": "column_break_17",
-   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "guest.phone_number",
@@ -168,12 +169,14 @@
    "fetch_from": "guest.photo",
    "fieldname": "photo",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Photo"
   },
   {
    "fetch_from": "reservation_stay.room_types",
    "fieldname": "room_types",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Room Types",
    "length": 500
   },
@@ -181,6 +184,7 @@
    "fetch_from": "reservation_stay.rooms",
    "fieldname": "rooms",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Rooms",
    "length": 500
   },
@@ -189,12 +193,9 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_10",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "summary_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Summary"
   },
   {
@@ -204,10 +205,6 @@
   {
    "fieldname": "column_break_26",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_28",
-   "fieldtype": "Section Break"
   },
   {
    "fieldname": "note",
@@ -235,6 +232,7 @@
    "fetch_from": "reservation.business_source",
    "fieldname": "business_source",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Business Source",
    "options": "Business Source"
   },
@@ -248,6 +246,7 @@
    "fetch_from": "reservation_stay.room_type_alias",
    "fieldname": "room_types_alias",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Room Types Alias",
    "length": 500
   },
@@ -279,17 +278,51 @@
    "fieldname": "is_generate_tax_invoice",
    "fieldtype": "Check",
    "label": "Is Generate Tax Invoice"
+  },
+  {
+   "fieldname": "section_break_droe",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "section_break_hlom",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "folio_summary",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "column_break_gzay",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ahvi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_fufn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
+   "fieldname": "other_infoadmin_only_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other Info(Admin Only)"
+  },
+  {
+   "fieldname": "room_type",
+   "fieldtype": "HTML",
+   "label": "Room Type",
+   "options": "<div class=\"frappe-control input-max-width custom_control\" data-fieldtype=\"Data\" data-fieldname=\"rooms\">\n\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t<div class=\"clearfix\">\n\t\t\t\t\t\t<label class=\"control-label\" style=\"padding-right: 0px;\">Room Types</label>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"control-input-wrapper\">\n\t\t\t\t\t\t<div class=\"control-input\" style=\"display: none;\"></div>\n\t\t\t\t\t\t<div class=\"control-value like-disabled-input\" style=\"\">{{doc.room_types}} ({{doc.room_types_alias}})</div>\n\t\t\t\t\t\t<p class=\"help-box small text-muted\"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t</div>"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [
-  {
-   "group": "Folio Transaction",
-   "link_doctype": "Folio Transaction",
-   "link_fieldname": "transaction_number"
-  }
- ],
- "modified": "2024-05-02 17:49:16.514428",
+ "links": [],
+ "modified": "2024-05-05 10:29:06.953110",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

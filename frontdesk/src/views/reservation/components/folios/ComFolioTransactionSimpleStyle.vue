@@ -28,7 +28,8 @@
                 <template #body="slotProps">
                     <span v-if="setting?.show_account_code_in_folio_transaction == 1">{{ slotProps.data.account_code }} -
                     </span>
-                    <span>{{ slotProps.data.report_description }} </span>
+                    <span>{{ slotProps.data.report_description }} </span> <span v-if="slotProps.data.sale">({{slotProps.data.sale}}/{{slotProps.data.tbl_number}})</span>
+                    
                     
                 </template>
             </Column>
@@ -255,7 +256,9 @@ function LoadFolioTransaction(){
                         "target_transaction_number",
                         "city_ledger_name",
                         "source_transaction_number",
-                        "report_description"
+                        "report_description",
+                        "sale",
+                        "tbl_number"
 					],
 					filters: [["transaction_number", "=", selectedFolio.value.name],["transaction_type", "=", props.doctype]],
 					limit: 1000,

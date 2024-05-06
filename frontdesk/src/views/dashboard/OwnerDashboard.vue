@@ -1,9 +1,9 @@
 <template>
-        <div class="w-full mt-1">
+        <div class="w-full mt-2">
             <ComOwnerDashboardKPI/>
         </div>    
-    <div class="grid px-2 mt-2">
-        <div class="col-12 bg-green-500">
+        <div class="grid px-2 mt-2">
+        <div class="col-12 p-1">
             <ComOwnerCurrentMonthChart/>
         </div>        
         <div class="col-6 p-0">
@@ -22,18 +22,18 @@
         <div class="col-12 p-1">
             <ComOwnerBusinessSourceChart />
         </div> 
-<div class="col-6 bg-black">
-    FB
-</div> 
-<div class="col-6 bg-pink-500">
-    FBpayment
-</div> 
-<div class="col-12 bg-red-500">
-    city
-</div> 
-<div class="col-12 bg-green-500">
-    <ComRecentFolioTransaction/>
-</div> 
+    <div class="col-6 p-1">
+        <ComOwnerFBList />
+    </div> 
+    <div class="col-6 p-1">
+        <ComOwnerFBPaymentList />
+    </div> 
+    <div class="col-12 p-1">
+        <ComOwnerTodayLedgerSummaryList />
+    </div> 
+    <div class="col-12 p-1">
+        <ComRecentFolioTransaction/>
+    </div> 
 </div>
 </template>
 <script setup>
@@ -46,4 +46,6 @@ import ComOwnerChargeChart from '@/views/dashboard/components/ComOwnerChargeChar
 import ComOwnerRoomTypeChart from '@/views/dashboard/components/ComOwnerRoomTypeChart.vue'
 import ComOwnerBusinessSourceChart from '@/views/dashboard/components/ComOwnerBusinessSourceChart.vue'
 import ComOwnerFBList from '@/views/dashboard/components/ComOwnerFBList.vue'
+import ComOwnerFBPaymentList from '@/views/dashboard/components/ComOwnerFBPaymentList.vue'
+import ComOwnerTodayLedgerSummaryList from '@/views/dashboard/components/ComOwnerTodayLedgerSummaryList.vue'
 </script>

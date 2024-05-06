@@ -13,7 +13,7 @@ import calendar
 import urllib.parse
 import time
 import copy
-
+from functools import lru_cache
 
 
 @frappe.whitelist(allow_guest=True)
@@ -1493,21 +1493,32 @@ def update_room_status_by_reservation_stay(name):
 
 
 @frappe.whitelist()
-def get_tax_invoice_data(folio_number,date = None):
+def get_tax_invoice_data(folio_number,document_type,date = None):
     data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio'".format(folio_number),as_dict=1)
-    tax_data = get_tax_data(data)
-    property = frappe.db.get_value("Tax Invoice", folio_number,"property")
-    exchange_rate = frappe.db.get_value("Tax Invoice",folio_number,"exchange_rate")
+    sale=frappe.db.sql("select * from `tabSale` where name='{}'".format(folio_number),as_dict=1)
+    
+    tax_data = []
+    pos_tax_data = get_tax_invoice_data_from_pos_bill_to_room(document_type, folio_number)
+    if document_type == 'Reservation Folio':
+        tax_data = get_tax_data(data)
+        tax_data = tax_data + pos_tax_data["revenue_data"]
+    elif document_type == 'Sale':
+        tax_data = get_tax_from_sale(sale)
+    property = frappe.db.get_value("Tax Invoice", {'document_name':folio_number},"property")
+    exchange_rate = frappe.db.get_value("Tax Invoice",{'document_name':folio_number},"exchange_rate")
     if not date:
         working_day = get_working_day(property)
         date = working_day["date_working_day"]
     if (exchange_rate or 0) == 0:
         exchange_rate = get_exchange_rate(property,date)
+# xxxxxxx
     tax_summary =get_tax_summary(data)
     total_vat = get_tax_invoice_vat_amount(data)
     grand_total = sum(d["amount"] for d in tax_data) + sum(d["child_total"] for d in tax_summary)  + total_vat
     
     return_data = {
+        "property":property,
+        "document_type":document_type,
         "data":tax_data,
         "summary":tax_summary,
         "taxable_amount": sum(d["amount"] for d in tax_data),
@@ -1515,6 +1526,7 @@ def get_tax_invoice_data(folio_number,date = None):
             "description":"អាករលើតម្លៃបន្ថែម/VAT (10%)",
             "value":total_vat
         },
+
         "grand_total":grand_total, 
         "exchange_rate":exchange_rate ,
         "grand_total_second_currency":grand_total*exchange_rate 
@@ -1522,8 +1534,8 @@ def get_tax_invoice_data(folio_number,date = None):
     
     return return_data
 
-
-def get_exchange_rate(property,date):
+@frappe.whitelist()
+def get_exchange_rate(property,date=None):
     if not date:
         working_day = get_working_day(property)
         date = working_day["date_working_day"]
@@ -1536,6 +1548,39 @@ def get_exchange_rate(property,date):
     else:
         return 1
     
+def get_tax_from_sale(data):
+    sql ="""
+            select 
+                product_name,
+                product_name_kh as description ,
+                `portion`,
+                is_free,
+                modifiers,
+                discount,
+                discount_amount,
+                discount_type,
+                sum(quantity) as quantity,
+                price,
+                sum(amount) as amount  
+            from `tabSale Product` 
+            where 
+                parent='{}' and
+                total_tax > 0
+            group by 
+                product_name,
+                product_name_kh,
+                `portion`,
+                is_free,
+                modifiers,
+                discount,
+                discount_amount,
+                discount_type, 
+                price 
+        
+            """.format(data[0]['name'])
+    
+    sale_products = frappe.db.sql(sql, as_dict=1)
+    return sale_products
 
 def get_tax_data(data):
     from itertools import groupby
@@ -1579,6 +1624,7 @@ def get_tax_data(data):
         return_data.append(record)
         
     return  sorted(return_data, key=lambda x: x['sort_order'])
+
 
 def get_tax_summary(data):
     
@@ -1629,6 +1675,7 @@ def get_tax_summary(data):
            
     return return_data
 
+
 def get_tax_invoice_vat_amount(data):
     amount = 0
     for d in data:
@@ -1641,10 +1688,75 @@ def get_tax_invoice_vat_amount(data):
 def get_comma_and(data):
     return frappe.utils.comma_and(data, add_quotes=False).replace(" and ", " & ")
 
+@frappe.whitelist()
+def get_tax_invoice_data_from_pos_bill_to_room(transaction_type,transaction_number):
+    
+    sale_numbers = frappe.db.sql("select sale from `tabFolio Transaction` where transaction_type='{}' and transaction_number='{}'  and coalesce(sale,'')!=''".format(transaction_type,transaction_number),as_dict=1)
+    
+    revenue_data = get_sale_data_group_by_revenue_group([d["sale"] for d in sale_numbers])
+    tax_raw_data = []
+    
+    for r in revenue_data:
+        pos_account_code_config = get_pos_account_code_config(r["outlet"],r["shift_name"])
+        #  get account  for charge revenue group
+        account_codes = [d.account_code for d in pos_account_code_config.pos_revenue_account_codes if d.revenue==r["revenue_group"]]
+        
+        if account_codes:
+            r["description"] = frappe.db.get_value("Account Code", account_codes[0],"account_name")
+        
+        if r["tax_1_amount"]:
+            tax_raw_data.append({"account_code":pos_account_code_config.tax_1_account,"amount":r["tax_1_amount"],"discount":0,"type":"Debit" })
+            
+        if r["tax_2_amount"]:
+            tax_raw_data.append({"account_code":pos_account_code_config.tax_2_account,"amount":r["tax_2_amount"],"discount":0,"type":"Debit" })
+            
+        if r["tax_3_amount"]:
+            tax_raw_data.append({"account_code":pos_account_code_config.tax_3_account,"amount":r["tax_3_amount"],"discount":0,"type":"Debit" })
+            
+    return {"revenue_data":revenue_data,"tax_summary_raw_data":tax_raw_data}
+
+
+def get_sale_data_group_by_revenue_group(sale_numbers):
+    sql="""
+        select 
+            sp.revenue_group, 
+            s.outlet,
+            s.shift_name,
+            sum(sp.sub_total) as price, 
+            1 as quantity ,
+            sum(sp.sub_total) as amount,
+            sum(sp.tax_1_amount) as tax_1_amount,
+            sum(sp.tax_2_amount) as tax_2_amount,
+            sum(sp.tax_3_amount) as tax_3_amount,
+            9999999 as sort_order
+        from `tabSale Product`  sp
+            inner join `tabSale` s on s.name = sp.parent
+        where 
+            sp.parent in %(sale_numbers)s and 
+            coalesce(sp.total_tax,0)>0 
+        group by 
+            revenue_group,
+            outlet,
+            shift_name
+    """
+    data = frappe.db.sql(sql,{"sale_numbers":sale_numbers},as_dict=1)
+    return data
+
+ 
+
+
+@lru_cache(maxsize=128)
+def get_pos_account_code_config(outlet, shift_name):
+    data = frappe.db.get_list("POS Account Code Config", filters={"outlet":outlet, "shift_name":shift_name})
+    if data:
+        return frappe.get_doc("POS Account Code Config", data[0].name)
+    return None
+    
+
 
 
 @frappe.whitelist(methods="POST")
-def generate_tax_invoice(property, folio_number,tax_invoice_date,tax_invoice_type):
+def generate_tax_invoice(property,document_type, folio_number,tax_invoice_date,tax_invoice_type):
     # if frappe.db.get_value("Reservation Folio",folio_number,"tax_invoice_number"):
     #     frappe.throw("This folio number is already generate tax invoice")
     # if not frappe.db.get_value("Folio Transaction",folio_number,"transaction_number"):
@@ -1657,8 +1769,9 @@ def generate_tax_invoice(property, folio_number,tax_invoice_date,tax_invoice_typ
         frappe.throw("Please enter tax invoice type.")
         
     exchange_rate  = get_exchange_rate(property, tax_invoice_date)
-    doc = frappe.get_doc("Reservation Folio",folio_number)
-    if frappe.db.exists("Tax Invoice",{"document_type":"Reservation Folio","document_name":folio_number}):
+    
+    doc =frappe.get_doc(document_type,folio_number)
+    if frappe.db.exists("Tax Invoice",{"document_type":document_type,"document_name":folio_number}):
         frappe.throw("This folio number # {} is already generate tax invoice.".format(folio_number))
         
     tax_invoice_doc = frappe.get_doc({
@@ -1667,7 +1780,7 @@ def generate_tax_invoice(property, folio_number,tax_invoice_date,tax_invoice_typ
         "tax_invoice_type":tax_invoice_type,
         "tax_invoice_date":tax_invoice_date,
         "exchange_rate":exchange_rate,
-        "document_type":"Reservation Folio",
+        "document_type":document_type,
         "document_name":folio_number,
         "guest":doc.guest
     })
@@ -1675,11 +1788,12 @@ def generate_tax_invoice(property, folio_number,tax_invoice_date,tax_invoice_typ
     tax_invoice_doc.insert()
     
     
-    sql="update `tabReservation Folio` set is_generate_tax_invoice=1, tax_invoice_number=%(tax_invoice_number)s, tax_invoice_date=%(tax_invoice_date)s , exchange_rate=%(exchange_rate)s where name=%(name)s"
+    sql="update `tab{}` set is_generate_tax_invoice=1, tax_invoice_number=%(tax_invoice_number)s, tax_invoice_date=%(tax_invoice_date)s , exchange_rate=%(exchange_rate)s where name=%(name)s".format(document_type)
     frappe.db.sql(sql,{ "name":folio_number,"tax_invoice_number":tax_invoice_doc.name, "exchange_rate":exchange_rate,"tax_invoice_date":tax_invoice_date})
     
     frappe.db.commit()
     frappe.msgprint(_("Generate tax invoice successfully"))
+    return tax_invoice_doc
 
 @frappe.whitelist()
 def get_generate_tax_invoice_information(property,posting_date=None):

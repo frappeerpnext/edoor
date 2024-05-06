@@ -2061,7 +2061,9 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
             "show_print_preview":d.show_print_preview,
             "print_format":d.print_format,
              "is_auto_post":d["is_auto_post"],
-             "total_amount":d["total_amount"]
+             "total_amount":d["total_amount"],
+              "sale":d.sale,
+              "tbl_number":d.tbl_number
         })
         
         if  d.discount_amount > 0:
@@ -2130,7 +2132,9 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         sum(report_quantity) as quantity,
                         type,
                         {sort_by_field}, 
-                        sum(amount) as amount
+                        sum(amount) as amount,
+                        sale,
+                        tbl_number
                     from `tabFolio Transaction` 
                     where 
                         transaction_number =if('{transaction_number}'='',transaction_number,'{transaction_number}')   and 
@@ -2142,7 +2146,9 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         ifnull(report_description,account_name),
                         {'room_number,' if show_room_number =='1' else '' }
                         type,
-                        note
+                        note,
+                        sale,
+                        tbl_number
                     order by 
                         {'room_number,' if show_room_number =='1' else '' }
                         {sort_by_field},
@@ -2173,6 +2179,8 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
         balance = balance + d["amount"]  * (1 if d["type"] =="Debit" else -1)
         record = {
             "description": (d["account_code"] + " - " if show_account_code=='1' else "")  +  d["account_name"],
+            "sale":d['sale'] or '',
+            "tbl_number":d['tbl_number'] or '',
             "debit": d["amount"] if d["type"] == "Debit" else 0,
             "credit": d["amount"] if d["type"] == "Credit" else 0,
             "balance":balance,

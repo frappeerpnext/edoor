@@ -30,7 +30,11 @@
                         <i class="pi pi-check-circle" />
                         <span class="ml-2">{{ $t('Open Folio') }} </span>
                     </button>
-
+                    <button v-if="!selectedFolio?.tax_invoice_number" @click="generateTaxInvoice(`${isMobile ? 'top' : 'center'}`)" 
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-file" />
+                            <span class="ml-2">{{$t('Generate Tax Invoice')}}</span>
+                        </button>
                     <button @click="onDeleteFolio"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-times-circle" />
@@ -45,15 +49,31 @@
                 :model="print_menus" />
                 <Button   @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b btn-size2 ml-2"></Button>    
         </div>
-    </div>
 
+    </div>
+    <!-- show tax invoice info -->
+    
+        <Message  v-if="selectedFolio?.tax_invoice_number"  severity="info">
+                    <div class="flex justify-content-between align-items-center w-full">
+                        <div>
+                             This Folio has Generate {{selectedFolio.tax_invoice_type}} - {{ selectedFolio?.tax_invoice_number }}
+                        </div>
+                        <div class="ms-5">
+                            <Button class="conten-btn" style="background: transparent;" @click="viewfoliotaxinvoicedetail">
+<i class="pi pi-print me-2" />
+                            Print Tax Invoice
+                            </Button>   
+                        </div>
+                    </div>
+                  
+                </Message>
 </template>
 <script setup>
 
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc,watch } from '@/plugin';
+import { inject, ref, useToast, updateDoc,watch,onMounted,getDoc  } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
@@ -61,7 +81,10 @@ import Menu from 'primevue/menu';
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAddDeskFolio from "@/views/desk_folio/components/ComAddDeskFolio.vue";
+import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTaxInvoice.vue";
 import {i18n} from '@/i18n';
+
+const isMobile = ref(window.isMobile)
 const { t: $t } = i18n.global; 
 const props = defineProps({
     folio:Object,
@@ -121,6 +144,52 @@ function viewFolioSummaryReport() {
 
 }
 
+
+function getTaxInvoice(){
+    if(selectedFolio.value.tax_invoice_number){
+        getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
+            selectedFolio.value.tax_invoice_type = r.tax_invoice_type
+        })
+    }
+    
+}
+
+function generateTaxInvoice() {
+ 
+ const dialogRef = dialog.open(ComGenerateTaxInvoice, {
+
+     data: {
+         property: window.property_name,
+         name:selectedFolio.value.name,
+         document_type:"Desk Folio"
+     },
+     props: {
+         header: "Generate Tax Invoice",
+         style: {
+             width: '30vw',
+         },
+         modal: true,
+         closeOnEscape: false,
+         position: 'top',
+         breakpoints:{
+             '960px': '50vw',
+             '640px': '100vw'
+         },
+     },
+     onClose: (options) => {
+         let data = options.data;
+         if (data != undefined) {
+       
+             selectedFolio.value.tax_invoice_number = data.message.name
+             selectedFolio.value.tax_invoice_type = data.message.tax_invoice_type
+
+
+         }
+     }
+ })
+}
+
+
 //Folio Summary Report
 print_menus.value.push({
     label: "Desk Folio Summary Report",
@@ -161,6 +230,17 @@ print_menus.value.push({
         });
     }
 })
+
+if (selectedFolio?.value?.tax_invoice_number) {
+    print_menus.value.push({
+    label: $t("Print Tax Invoice"),
+    icon: 'pi pi-print',
+    command: () => {
+        viewfoliotaxinvoicedetail()
+    }
+})  
+}
+
 
 function onAddFolioTransaction(account_code) {
     if(props.newDoc){
@@ -267,6 +347,37 @@ function showPrintPreview(data) {
         },
     })
 }
+
+function viewfoliotaxinvoicedetail() {
+    getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
+        dialog.open(ComIFrameModal, {
+        data: {
+            doctype: "Tax Invoice",
+            name: selectedFolio.value.tax_invoice_number,
+            report_name: r.default_print_format?gv.getCustomPrintFormat(r.default_print_format) :  gv.getCustomPrintFormat("Folio Tax Invoice Detail"),
+            letterhead: r.default_letterhead || "Tax Letterhead",
+            filter_options:["show_vattin"]
+        },
+        props: {
+            header: $t("Print Tax Invoice"),
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+    })
+    
+
+}
+
 
 function EditFolio() {
  
@@ -388,6 +499,10 @@ function onDeleteFolio() {
 
 
 }
+
+onMounted(()=>{
+    getTaxInvoice()
+})
 
 </script>
  

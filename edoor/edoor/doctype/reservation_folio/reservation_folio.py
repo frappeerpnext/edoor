@@ -113,3 +113,7 @@ class ReservationFolio(Document):
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
 
+	def get_print(self, format=None, doc=None, no_letterhead=False):
+		if self.default_print_format:
+			format = self.default_print_format
+		return super().get_print(format=format, doc=doc, no_letterhead=no_letterhead)

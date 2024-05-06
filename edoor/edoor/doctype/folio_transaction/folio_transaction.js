@@ -3,48 +3,25 @@
 
 frappe.ui.form.on("Folio Transaction", {
 	onload(frm) {
-        frm.set_query("discount_account", function() {
-            return {
-                filters: [["is_group","=",0]]
-            }
-        });
-
-        frm.set_query("bank_fee_account", function() {
-            return {
-                filters: [["is_group","=",0]]
-            }
-        });
         
-        frm.set_query("account_group", function() {
-            return {
-                filters: [["is_group","=",0]]
-            }
-        });
-        frm.set_query("tax_1_account", function() {
-            return {
-                filters: [["is_group","=",0]]
-            }
-        });
-        frm.set_query("tax_2_account", function() {
-            return {
-                filters: [["is_group","=",0]]
-            }
-        });
-        frm.set_query("tax_3_account", function() {
-            return {
-                filters: [["is_group","=",0]]
-            }
-        });
-        frm.set_query("account_code", function() {
-            return {
-                filters: [["is_group","=",0]]
-            }
-        });
-        frm.set_query("parent_account_code", function() {
-            return {
-                filters: [["is_group","=",0]]
-            }
-        });
         
 	},
+    setup(frm) {
+        for (const key in frm.fields_dict) {
+          if (
+            [
+              "Currency",
+              "Data",
+              "Int",
+              "Link",
+              "Date",
+              "Datetime",
+              "Float",
+              "Select",
+            ].includes(frm.fields_dict[key].df.fieldtype)
+          ) {
+            frm.fields_dict[key].$wrapper.addClass("custom_control");
+          }
+        }
+      },
 });

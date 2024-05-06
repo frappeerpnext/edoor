@@ -6,34 +6,31 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "vendor",
+  "vendor_name",
+  "phone_number",
+  "column_break_lupt",
   "naming_series",
   "posting_date",
   "working_day",
   "cashier_shift",
-  "column_break_oubl",
   "property",
   "room_id",
   "room_number",
   "room_type_id",
   "room_type",
-  "column_break_lupt",
   "total_debit",
   "total_credit",
   "balance",
   "status",
-  "vendor_information_section",
-  "vendor",
-  "vendor_name",
-  "column_break_opue",
-  "phone_number",
+  "section_break_pnby",
+  "item_list",
   "note_section",
-  "note"
+  "note",
+  "column_break_yfoj",
+  "item_summary"
  ],
  "fields": [
-  {
-   "fieldname": "column_break_oubl",
-   "fieldtype": "Column Break"
-  },
   {
    "fieldname": "property",
    "fieldtype": "Link",
@@ -45,6 +42,7 @@
   {
    "fieldname": "room_id",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Room ID",
    "options": "Room"
   },
@@ -61,22 +59,26 @@
   {
    "fieldname": "total_debit",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Debit"
   },
   {
    "fieldname": "total_credit",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Credit"
   },
   {
    "fieldname": "balance",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Balance"
   },
   {
    "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Status",
    "options": "Open\nClosed"
   },
@@ -111,6 +113,7 @@
    "fetch_from": "room_id.room_type_id",
    "fieldname": "room_type_id",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Room Type ID",
    "options": "Room Type"
   },
@@ -119,11 +122,6 @@
    "fieldname": "room_type",
    "fieldtype": "Data",
    "label": "Room Type"
-  },
-  {
-   "fieldname": "vendor_information_section",
-   "fieldtype": "Section Break",
-   "label": "Vendor Information"
   },
   {
    "fieldname": "vendor",
@@ -137,10 +135,6 @@
    "fieldname": "vendor_name",
    "fieldtype": "Data",
    "label": "Vendor Name"
-  },
-  {
-   "fieldname": "column_break_opue",
-   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "vendor.phone_number",
@@ -157,11 +151,27 @@
    "fieldname": "note",
    "fieldtype": "Small Text",
    "label": "Note"
+  },
+  {
+   "fieldname": "section_break_pnby",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "column_break_yfoj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_summary",
+   "fieldtype": "HTML"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-29 15:04:49.480639",
+ "modified": "2024-05-06 09:32:40.784804",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Payable Ledger",

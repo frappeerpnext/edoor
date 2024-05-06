@@ -8,30 +8,35 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "guest",
+  "guest_name",
+  "phone_number",
+  "email",
+  "column_break_lblr",
   "naming_series",
   "posting_date",
   "working_day",
   "cashier_shift",
-  "column_break_ioxz",
   "property",
   "room_id",
   "room_number",
   "room_type_id",
   "room_type",
-  "column_break_lblr",
   "total_debit",
   "total_credit",
   "balance",
   "status",
-  "guest_information_section",
-  "guest",
-  "guest_name",
-  "column_break_cjab",
-  "phone_number",
-  "email",
+  "section_break_bgad",
+  "item_list",
   "section_break_tkzs",
   "note",
-  "column_break_teoc"
+  "column_break_teoc",
+  "summary_list",
+  "other_infoadmin_only_tab",
+  "tax_invoice_number",
+  "is_generate_tax_invoice",
+  "tax_invoice_date",
+  "exchange_rate"
  ],
  "fields": [
   {
@@ -41,20 +46,12 @@
    "options": "DF.YYYY.-.####"
   },
   {
-   "fieldname": "column_break_ioxz",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "property",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_standard_filter": 1,
    "label": "Property",
    "options": "Business Branch"
-  },
-  {
-   "fieldname": "guest_information_section",
-   "fieldtype": "Section Break",
-   "label": "Guest Information"
   },
   {
    "fieldname": "guest",
@@ -69,10 +66,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Guest Name"
-  },
-  {
-   "fieldname": "column_break_cjab",
-   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "guest.phone_number",
@@ -95,6 +88,7 @@
   {
    "fieldname": "working_day",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Working Day"
   },
   {
@@ -105,6 +99,7 @@
   {
    "fieldname": "room_id",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_standard_filter": 1,
    "label": "Room ID",
    "options": "Room"
@@ -123,18 +118,21 @@
   {
    "fieldname": "total_debit",
    "fieldtype": "Currency",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Total Debit"
   },
   {
    "fieldname": "total_credit",
    "fieldtype": "Currency",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Total Credit"
   },
   {
    "fieldname": "balance",
    "fieldtype": "Currency",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Balance"
   },
@@ -155,6 +153,7 @@
    "fetch_from": "room_id.room_type_id",
    "fieldname": "room_type_id",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_standard_filter": 1,
    "label": "Room Type ID",
    "options": "Room Type"
@@ -170,13 +169,53 @@
    "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Status",
    "options": "Open\nClosed"
+  },
+  {
+   "fieldname": "section_break_bgad",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "summary_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
+   "fieldname": "other_infoadmin_only_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other Info(Admin Only)"
+  },
+  {
+   "fieldname": "tax_invoice_number",
+   "fieldtype": "Data",
+   "label": "Tax Invoice Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_generate_tax_invoice",
+   "fieldtype": "Check",
+   "label": "Is Generate Tax Invoice"
+  },
+  {
+   "fieldname": "tax_invoice_date",
+   "fieldtype": "Date",
+   "label": "Tax Invoice Date"
+  },
+  {
+   "fieldname": "exchange_rate",
+   "fieldtype": "Currency",
+   "label": "Exchange Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-18 21:46:15.147841",
+ "modified": "2024-05-06 08:55:45.264911",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Desk Folio",

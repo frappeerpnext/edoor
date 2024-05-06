@@ -1,6 +1,6 @@
 <template>
+  <ComOwnerContentTitle label="Recent Transaction">  
     <div class="flex-col flex" >
-  <h1>Recent Transaction</h1>
   
   <Button @click="onFilterFolioTransaction(btn)" v-for="(btn, index) in ['All','Reservation Folio','Desk Folio','Deposit Ledger']" :key="index">
     {{$t(btn)}}
@@ -57,10 +57,11 @@
         </ComPlaceholder>
     </div>
 
-  
+  </ComOwnerContentTitle>  
    
   </template>
   <script setup>
+  import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
   import { inject, ref, getCount, getDocList, onMounted, getApi, computed, onUnmounted } from '@/plugin'
   import { Timeago } from 'vue2-timeago'
   import {i18n} from '@/i18n';

@@ -73,6 +73,7 @@ function onSave() {
             accept: () => {
                 isSaving.value = true
     postApi("utils.generate_tax_invoice",{
+        document_type:dialogRef.value.data.document_type || "Reservation Folio",
         property:dialogRef.value.data.property,
         folio_number:dialogRef.value.data.name,
         tax_invoice_date:moment(tax_invoice_date.value).format("YYYY-MM-DD"),

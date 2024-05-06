@@ -8,31 +8,31 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
+  "guest",
+  "guest_name",
+  "phone_number",
+  "email",
+  "column_break_yqkr",
   "posting_date",
+  "naming_series",
   "working_day",
   "cashier_shift",
   "working_date",
-  "column_break_ioxz",
   "property",
   "room_id",
   "room_number",
   "room_type_id",
   "room_type",
-  "column_break_lblr",
   "total_debit",
   "total_credit",
   "balance",
   "status",
-  "guest_information_section",
-  "guest",
-  "guest_name",
-  "column_break_cjab",
-  "phone_number",
-  "email",
+  "section_break_veus",
+  "item_list",
   "section_break_tkzs",
   "note",
-  "column_break_teoc"
+  "column_break_teoc",
+  "item_summary"
  ],
  "fields": [
   {
@@ -58,12 +58,9 @@
    "label": "Cashier Shift"
   },
   {
-   "fieldname": "column_break_ioxz",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "property",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_standard_filter": 1,
    "label": "Property",
    "options": "Business Branch"
@@ -71,6 +68,7 @@
   {
    "fieldname": "room_id",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_standard_filter": 1,
    "label": "Room ID",
    "options": "Room"
@@ -86,6 +84,7 @@
    "fetch_from": "room_id.room_type_id",
    "fieldname": "room_type_id",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_standard_filter": 1,
    "label": "Room Type ID",
    "options": "Room Type"
@@ -98,24 +97,23 @@
    "label": "Room Type"
   },
   {
-   "fieldname": "column_break_lblr",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "total_debit",
    "fieldtype": "Currency",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Total Debit"
   },
   {
    "fieldname": "total_credit",
    "fieldtype": "Currency",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Total Credit"
   },
   {
    "fieldname": "balance",
    "fieldtype": "Currency",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Balance"
   },
@@ -123,13 +121,9 @@
    "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Status",
    "options": "Open\nClosed"
-  },
-  {
-   "fieldname": "guest_information_section",
-   "fieldtype": "Section Break",
-   "label": "Guest Information"
   },
   {
    "fieldname": "guest",
@@ -145,10 +139,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Guest Name"
-  },
-  {
-   "fieldname": "column_break_cjab",
-   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "guest.phone_number",
@@ -179,11 +169,27 @@
    "fieldname": "working_date",
    "fieldtype": "Date",
    "label": "Working Date"
+  },
+  {
+   "fieldname": "section_break_veus",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "item_summary",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "column_break_yqkr",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-02 11:25:32.449711",
+ "modified": "2024-05-06 09:36:28.767996",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Deposit Ledger",

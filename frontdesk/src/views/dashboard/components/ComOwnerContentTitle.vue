@@ -4,9 +4,7 @@
         {{label}}  
     </div>      
     <hr class="mt-1 pb-1 mb-2">
-    <div class="grid"> 
         <slot></slot>
-    </div>
 </div> 
  </template>
    

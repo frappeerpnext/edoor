@@ -1,4 +1,5 @@
 <template>
+    
     <div class="overflow-x-auto overflow-y-hidden lg:overflow-y-hidden">
         <div class="flex gap-1 justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2 overflow-x-auto lg:overflow-x-hidden w-max lg:w-full">
             <slot name="button"></slot>
@@ -84,6 +85,20 @@
             </div>
             
         </div>
+        <Message  v-if="selectedFolio?.tax_invoice_number"  severity="info">
+                    <div class="flex justify-content-between align-items-center w-full">
+                        <div>
+                             This Folio has Generate {{selectedFolio.tax_invoice_type}} - {{ selectedFolio?.tax_invoice_number }}
+                        </div>
+                        <div class="ms-5">
+                            <Button class="conten-btn" style="background: transparent;" @click="viewfoliotaxinvoicedetail">
+<i class="pi pi-print me-2" />
+                            Print Tax Invoice
+                            </Button>   
+                        </div>
+                    </div>
+                  
+                </Message>
     </div>
 </template>
 <script setup>
@@ -91,7 +106,7 @@
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc,watch,onMounted,getDocList } from '@/plugin';
+import { inject, ref, useToast, updateDoc,watch,onMounted,getDocList,getDoc } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
@@ -196,13 +211,13 @@ function viewFolioSummaryReport() {
 })
 }
 function viewfoliotaxinvoicedetail() {
-     
-    dialog.open(ComIFrameModal, {
+    getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
+        dialog.open(ComIFrameModal, {
         data: {
             doctype: "Tax Invoice",
             name: selectedFolio.value.tax_invoice_number,
-            report_name: gv.getCustomPrintFormat("Folio Tax Invoice Detail"),
-            letterhead:"Tax Letterhead",
+            report_name: r.default_print_format?gv.getCustomPrintFormat(r.default_print_format) :  gv.getCustomPrintFormat("Folio Tax Invoice Detail"),
+            letterhead: r.default_letterhead || "Tax Letterhead",
             filter_options:["show_vattin"]
         },
         props: {
@@ -220,7 +235,18 @@ function viewfoliotaxinvoicedetail() {
             },
         },
     });
+    })
+    
 
+}
+
+function getTaxInvoice(){
+    if(selectedFolio.value.tax_invoice_number){
+        getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
+            selectedFolio.value.tax_invoice_type = r.tax_invoice_type
+        })
+    }
+    
 }
 //Folio Summary Report
 print_menus.value.push({
@@ -384,6 +410,8 @@ function showPrintPreview(data) {
         },
     })
 }
+
+
 function generateTaxInvoice() {
  
  const dialogRef = dialog.open(ComGenerateTaxInvoice, {
@@ -391,6 +419,7 @@ function generateTaxInvoice() {
      data: {
          property: window.property_name,
          name:selectedFolio.value.name,
+         document_type:"Reservation Folio"
      },
      props: {
          header: "Generate Tax Invoice",
@@ -409,14 +438,15 @@ function generateTaxInvoice() {
          let data = options.data;
          if (data != undefined) {
        
-             window.postMessage({action:"load_reservation_folio_list"},"*")
-             window.postMessage({action:"load_reservation_stay_folio_list"},"*")
-             window.postMessage({action:"ReservationDetail"},"*")
+             selectedFolio.value.tax_invoice_number = data.message.name
+             selectedFolio.value.tax_invoice_type = data.message.tax_invoice_type
+
 
          }
      }
  })
 }
+
 function EditFolio() {
  
     const dialogRef = dialog.open(ComNewReservationStayFolio, {
@@ -735,6 +765,8 @@ getDocList ('Custom Print Format', {
              })
          });
      }) 
+
+     getTaxInvoice()
 })
 </script>
  

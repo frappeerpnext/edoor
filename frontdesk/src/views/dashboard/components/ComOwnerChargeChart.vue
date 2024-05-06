@@ -1,10 +1,12 @@
 <template>
-    <ComOwnerContentTitle label="Charge">    
+    <ComOwnerContentTitle label="Charge"> 
+        {{data.length}}
+        <ComPlaceholder text="No Data"  :is-not-empty="data" >   
         <div class="col-12">
             <div id="chartCharge"></div>
         </div>
 <div class="col-12 h-full">
-<div class="surface-ground rounded-lg p-2 h-full">
+<div class="surface-ground rounded-lg p-2" style="min-height:53%;max-height:53%;">
     <table class="w-full border-bottom-1">
   <tr class="border-bottom-1">
     <th class="text-center ">Charge List</th>
@@ -21,7 +23,9 @@
 </table>
 </div>
 </div>  
+</ComPlaceholder>
 </ComOwnerContentTitle>    
+
 </template>
 <script setup>
 import {  ref, onMounted,getApi } from '@/plugin'

@@ -25,7 +25,16 @@
                 </template>
             </Column>
 
-            <Column field="account_name" :header="$t('Account Name')" style="min-width: 160px;" />
+            <Column field="account_name" :header="$t('Account Name')" style="min-width: 160px;">
+                <template #body="slotProps">
+                   {{$t(slotProps.data.account_name)}}  
+                   
+                   <span v-if="slotProps.data.sale">({{slotProps.data.sale}}/{{slotProps.data.tbl_number}})</span>
+                     
+                   
+                </template>
+            </Column>
+
             <Column field="quantity" :header="$t('QTY')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span v-if="slotProps.data.quantity > 0">{{ slotProps.data.quantity }}</span>

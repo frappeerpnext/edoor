@@ -1,5 +1,4 @@
 <template>
-    {{data}}
     <ComOwnerContentTitle label="Business Source">    
         <div class="col-12">
             <div id="chartbs"></div>

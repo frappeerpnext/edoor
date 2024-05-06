@@ -8,37 +8,44 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
-  "transaction_type",
-  "transaction_number",
-  "reference_number",
-  "is_package",
+  "guest",
+  "guest_name",
+  "guest_type",
+  "nationality",
+  "vendor",
+  "vendor_name",
   "column_break_7",
+  "property",
   "posting_date",
   "working_day",
   "cashier_shift",
   "working_date",
   "column_break_8",
+  "transaction_type",
+  "transaction_number",
+  "reference_number",
+  "naming_series",
+  "section_break_ciha",
+  "column_break_upli",
+  "is_package",
   "account_code",
   "account_name",
   "type",
-  "parent_reference",
-  "column_break_modh",
-  "input_amount",
-  "quantity",
-  "report_quantity",
-  "price",
-  "amount",
-  "section_break_ciha",
-  "property",
   "column_break_kwtq",
   "reservation",
   "reservation_type",
   "column_break_zhod",
   "reservation_stay",
+  "parent_reference",
   "column_break_fwos",
+  "quantity",
+  "input_amount",
   "reservation_status_color",
   "reservation_status",
+  "column_break_qhzn",
+  "price",
+  "report_quantity",
+  "amount",
   "stay_information_section",
   "room_type_id",
   "room_type",
@@ -46,17 +53,6 @@
   "column_break_23",
   "room_id",
   "room_number",
-  "guest_profile_section",
-  "guest",
-  "column_break_31",
-  "guest_name",
-  "column_break_vbcw",
-  "guest_type",
-  "nationality",
-  "vendor_profile_section",
-  "vendor",
-  "column_break_rqcj",
-  "vendor_name",
   "discount_section",
   "discount_type",
   "column_break_15",
@@ -125,6 +121,7 @@
   "print_format",
   "is_night_audit_posting",
   "sale",
+  "tbl_number",
   "flash_report_revenue_group",
   "is_verify",
   "descriptions_tab",
@@ -202,6 +199,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Account Code",
+   "link_filters": "[[{\"fieldname\":\"account_code\",\"field_option\":\"Account Code\"},\"is_group\",\"=\",0]]",
    "options": "Account Code",
    "reqd": 1
   },
@@ -454,6 +452,7 @@
    "label": "Tax 3 Rate"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "other_tab",
    "fieldtype": "Tab Break",
    "label": "Other"
@@ -473,6 +472,7 @@
    "options": "Account Code"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "city_ledger_tab",
    "fieldtype": "Tab Break",
    "label": "System Transfer"
@@ -494,6 +494,7 @@
    "label": "Account Group Name"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "payment_information_section",
    "fieldtype": "Tab Break",
    "label": "Payment Information"
@@ -546,6 +547,7 @@
    "label": "Price"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "descriptions_tab",
    "fieldtype": "Tab Break",
    "label": "Descriptions"
@@ -710,11 +712,7 @@
    "label": "Is Auto Post"
   },
   {
-   "fieldname": "guest_profile_section",
-   "fieldtype": "Section Break",
-   "label": "Guest Profile"
-  },
-  {
+   "depends_on": "eval:doc.guest",
    "fetch_from": ".",
    "fieldname": "guest",
    "fieldtype": "Link",
@@ -722,10 +720,7 @@
    "options": "Customer"
   },
   {
-   "fieldname": "column_break_31",
-   "fieldtype": "Column Break"
-  },
-  {
+   "depends_on": "eval:doc.guest",
    "fetch_from": "guest.customer_name_en",
    "fieldname": "guest_name",
    "fieldtype": "Data",
@@ -855,10 +850,6 @@
    "label": "Reference Folio Transaction"
   },
   {
-   "fieldname": "column_break_modh",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "section_break_ciha",
    "fieldtype": "Section Break"
   },
@@ -888,6 +879,7 @@
    "length": 250
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "inventory_tab",
    "fieldtype": "Tab Break",
    "label": "Inventory"
@@ -944,16 +936,14 @@
    "label": "Reservation Type"
   },
   {
-   "fieldname": "column_break_vbcw",
-   "fieldtype": "Column Break"
-  },
-  {
+   "depends_on": "eval:doc.guest",
    "fetch_from": "guest.customer_group",
    "fieldname": "guest_type",
    "fieldtype": "Data",
    "label": "Guest Type"
   },
   {
+   "depends_on": "eval:doc.guest",
    "fetch_from": "guest.country",
    "fieldname": "nationality",
    "fieldtype": "Data",
@@ -966,21 +956,14 @@
    "label": "Business Source Type"
   },
   {
-   "fieldname": "vendor_profile_section",
-   "fieldtype": "Section Break",
-   "label": "Vendor Profile"
-  },
-  {
+   "depends_on": "eval:doc.vendor",
    "fieldname": "vendor",
    "fieldtype": "Link",
    "label": "Vendor",
    "options": "Vendor"
   },
   {
-   "fieldname": "column_break_rqcj",
-   "fieldtype": "Column Break"
-  },
-  {
+   "depends_on": "eval:doc.vendor",
    "fetch_from": "vendor.vendor_name",
    "fieldname": "vendor_name",
    "fieldtype": "Data",
@@ -1013,11 +996,24 @@
    "fieldname": "is_verify",
    "fieldtype": "Check",
    "label": "Is Verify"
+  },
+  {
+   "fieldname": "tbl_number",
+   "fieldtype": "Data",
+   "label": "Table Number"
+  },
+  {
+   "fieldname": "column_break_upli",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_qhzn",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-22 17:26:15.387236",
+ "modified": "2024-05-06 11:03:24.189073",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",
@@ -1121,6 +1117,7 @@
   }
  ],
  "search_fields": "transaction_number,guest_name, room_number,account_code,account_name",
+ "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
