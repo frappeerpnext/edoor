@@ -78,7 +78,7 @@
                     <div class="col-6" v-if="doc.required_select_product==1">
                        
                         <label >{{ $t('Product') }}</label>
-                        <ComAutoComplete :filters="JSON.parse( account_code.default_product_filter || '{}')" class="auto__Com_Cus w-full"  doctype="Product" v-model="doc.product" @onSelected="onSelectProduct" :isMultiple="true"/>
+                        <ComAutoComplete :filters="JSON.parse( account_code.default_product_filter || '{}')" class="auto__Com_Cus w-full"  doctype="Product" v-model="doc.product" @onSelected="onSelectProduct" />
                         
                     </div>
                     <div class="col-12">
