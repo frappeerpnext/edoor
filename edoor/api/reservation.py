@@ -2134,7 +2134,8 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         {sort_by_field}, 
                         sum(amount) as amount,
                         sale,
-                        tbl_number
+                        tbl_number,
+                        note
                     from `tabFolio Transaction` 
                     where 
                         transaction_number =if('{transaction_number}'='',transaction_number,'{transaction_number}')   and 
@@ -2181,6 +2182,7 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
             "description": (d["account_code"] + " - " if show_account_code=='1' else "")  +  d["account_name"],
             "sale":d['sale'] or '',
             "tbl_number":d['tbl_number'] or '',
+            "note":d['note'],
             "debit": d["amount"] if d["type"] == "Debit" else 0,
             "credit": d["amount"] if d["type"] == "Credit" else 0,
             "balance":balance,

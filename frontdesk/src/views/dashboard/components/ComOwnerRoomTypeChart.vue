@@ -11,7 +11,11 @@
         </template>
         <div>
 <div class="col w-full p-0">
-    <ComOwnerBarChartLine v-for="(room, index) in data?.datasets_actual" :key="index" :roomType="room.name" :color="room.color" :roomSold="room.room_sold" :totalRoomSold="totalRoomActual" :value="room.values" />
+
+    <Skeleton v-if="loading" class="mb-2" v-for="index in 3" :key="index" width="100%" height="50px"></Skeleton>
+    <template v-else>
+    <ComOwnerBarChartLine  v-for="(room, index) in data?.datasets_actual" :key="index" :roomType="room.name" :color="room.color" :roomSold="room.room_sold" :totalRoomSold="totalRoomActual" :value="room.values" />
+    </template>
 </div>
         </div>
     </TabPanel>
@@ -36,15 +40,21 @@ import {  ref, onMounted,getApi ,computed  } from '@/plugin'
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 import ComOwnerBarChartLine from '@/views/dashboard/components/ComOwnerBarChartLine.vue'
 import TabView from 'primevue/tabview';
+const loading = ref(true)
 const data = ref({})
 function renderdata() {
+    loading.value = true 
 const doc = getApi('frontdesk.get_room_type_chart_data', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
         date: JSON.parse(localStorage.getItem("edoor_working_day")).date_working_day
     })
     .then((result) => {
+        loading.value = false 
             data.value = result.message 
         })
+        .catch((error) => {
+            loading.value = true 
+  });
     }
 const totalRoomActual = computed(() => {
   if (!data.value || !data.value.datasets_actual) return 0;

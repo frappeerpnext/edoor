@@ -789,7 +789,8 @@ def get_room_type_chart_data(property=None,date=None):
             where 
                 property = '{}' and
                 posting_date = '{}' and
-                room_type != ''
+                room_type != '' and
+                flash_report_revenue_group in ('Room Charge')
             group by
                 room_type
         """.format(property,date)
@@ -854,11 +855,13 @@ def get_room_type_chart_data(property=None,date=None):
     chart_data["datasets_expected"] = []
     for i, d in enumerate(epx_data):
         total_room = [g['total_room'] for g in room_type if g['room_type'] == d['room_type']][0]
+        total_room_sold = [g['total_room_sold'] for g in room_sold if g['room_type'] == d['room_type']][0]
         datasets_expected = {
             "type": 'pie',
             "name": d['room_type'],
             "values": d['amount'],
             "total_room":total_room,
+            "room_sold":total_room_sold,
             "color": colors[i % len(colors)]
         }
         chart_data["datasets_expected"].append(datasets_expected)

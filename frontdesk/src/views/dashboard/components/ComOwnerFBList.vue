@@ -1,6 +1,11 @@
 <template>
     <ComOwnerContentTitle label="F&B">    
-      hiiiii
+    {{data}}
+    <div class="card">
+        <DataTable :value="data?.datasets_actual" tableStyle="min-width: 50rem">
+            <Column field="name" header="Name"></Column>
+        </DataTable>
+    </div>
 </ComOwnerContentTitle>    
 </template>
 <script setup>
@@ -20,5 +25,8 @@ const doc = getApi('frontdesk.get_business_source_chart_data', {
     .then((result) => {
             data.value = result.message
         })
-    }      
+    } 
+    onMounted(() => {
+    renderdata()
+})       
 </script>

@@ -1,12 +1,19 @@
 <template>
     <div class="w-full text-white bg-kpi-owner-db p-5 border-round-xl">
-        <div class="grid gap-2">
+        <div class="grid gap-2" style="height:80px">
+            <template v-if="loading">
+                <div v-for="index in 6" :key="index" class="col p-0">
+      <Skeleton width="100%" height="100%"></Skeleton>   
+    </div>
+            </template>
+           <template v-else> 
             <ComOwnerKPICard label="Today Revenue" :value="data.room_revenue" bgColor="bg-blue-500" icon="pi pi-chart-line"/>
-            <ComOwnerKPICard label="Today ADR" :value="data?.adr" bgColor="bg-blue-500"/>
-            <ComOwnerKPICard label="Today Payment" :value="data?.today_payment" bgColor="bg-red-400"/>
-            <ComOwnerKPICard label="MTD Revenue" :value="data?.mtd_room_revenue" bgColor="bg-cyan-500"/>
-            <ComOwnerKPICard label="MTD ADR" :value="data?.mtd_adr" bgColor="bg-cyan-500"/>
-            <ComOwnerKPICard label="MTD Payment" :value="data?.mtd_payment" bgColor="bg-red-400"/> 
+            <ComOwnerKPICard label="Today ADR" :value="data?.adr" bgColor="bg-blue-500" icon="pi pi-dollar" />
+            <ComOwnerKPICard label="Today Payment" :value="data?.today_payment" bgColor="bg-red-400" icon="pi pi-dollar" />
+            <ComOwnerKPICard label="MTD Revenue" :value="data?.mtd_room_revenue" bgColor="bg-cyan-500" icon="pi pi-dollar" />
+            <ComOwnerKPICard label="MTD ADR" :value="data?.mtd_adr" bgColor="bg-cyan-500" icon="pi pi-dollar" />
+            <ComOwnerKPICard label="MTD Payment" :value="data?.mtd_payment" bgColor="bg-red-400" icon="pi pi-dollar" /> 
+            </template>
         </div>
         <hr class="my-3">
         <div class="grid">
@@ -41,6 +48,7 @@ import ComOwnerKPICard from '@/views/dashboard/components/ComOwnerKPICard.vue';
 import ComTitleOfKeyKPI from '@/views/dashboard/components/ComTitleOfKeyKPI.vue';
 import ComOwnerKeyValueKPI from '@/views/dashboard/components/ComOwnerKeyValueKPI.vue';
 import { inject, ref, onUnmounted, onMounted, computed } from '@/plugin'
+const loading = ref(true)
 const frappe = inject("$frappe")
 const selected_date = JSON.parse(localStorage.getItem("edoor_working_day")).edoor_working_day
 const call = frappe.call()
@@ -51,6 +59,8 @@ const doc = call.get('edoor.api.frontdesk.get_owner_dashboard_current_revenue_da
     })
         .then((result) => {
             data.value = result.message
-            console.log(JSON.parse(localStorage.getItem("edoor_working_day")).date_working_day)
-        })
+            loading.value = false 
+        }).catch((error) => {
+            loading.value = false 
+  });
 </script>

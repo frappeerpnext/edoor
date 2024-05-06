@@ -1,13 +1,15 @@
 <template>
-    {{loading}}
-    <Skeleton v-if="loading" width="100%" height="200px"></Skeleton>
     <ComOwnerContentTitle label="Payment chart">         
         <div class="grid">
         <div class="col-6">
+            <div v-if="loading" class="flex w-full justify-content-center">
+            <Skeleton  shape="circle" size="17rem" class="mr-2"></Skeleton>
+            </div>
             <div id="chart"></div>
         </div>
 <div class="col-6 h-auto">
-<div class="surface-ground rounded-lg p-2 h-full">
+<Skeleton v-if="loading" width="100%" height="100%"></Skeleton>    
+<div v-else class="surface-ground rounded-lg p-2 h-full">
     <table class="w-full border-bottom-1">
         <tr class="border-bottom-1">
             <th class="text-center ">Payment Type</th>

@@ -3,7 +3,7 @@
         <AutoComplete :label="label"  :disabled="disabled" :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
             v-model="selected" :suggestions="options" optionLabel="label" removeTokenIcon="pi-check" completeOnFocus
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
-            :placeholder="$t(placeholder ?? '')">
+            :placeholder="$t(placeholder ?? '')" :multiple="isMultiple">
             <template #option="slotProps">
                 <template v-if="slotProps.option.description == addNewKey || slotProps.option.description == AdvancedSearchKey">
                     <div v-if="slotProps.option.description == addNewKey">
@@ -75,6 +75,10 @@ const props = defineProps({
     pageLength:{
         type:String,
         default:10
+    },
+    isMultiple: {
+        type: Boolean,
+        default: false,
     }
 })
 let value = computed({

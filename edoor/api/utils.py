@@ -15,7 +15,6 @@ import time
 import copy
 from functools import lru_cache
 
-
 @frappe.whitelist(allow_guest=True)
 def get_theme():
     return frappe.db.get_single_value("ePOS Settings","app_theme")
@@ -1494,7 +1493,7 @@ def update_room_status_by_reservation_stay(name):
 
 @frappe.whitelist()
 def get_tax_invoice_data(folio_number,document_type,date = None):
-    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio'".format(folio_number),as_dict=1)
+    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio' and parent_account_name!='POS Transfer'".format(folio_number),as_dict=1)
     sale=frappe.db.sql("select * from `tabSale` where name='{}'".format(folio_number),as_dict=1)
     
     tax_data = []
@@ -1512,8 +1511,13 @@ def get_tax_invoice_data(folio_number,document_type,date = None):
     if (exchange_rate or 0) == 0:
         exchange_rate = get_exchange_rate(property,date)
 # xxxxxxx
-    tax_summary =get_tax_summary(data)
-    total_vat = get_tax_invoice_vat_amount(data)
+    tax_summary = get_tax_summary(data + pos_tax_data["tax_summary_raw_data"])
+    
+    
+    total_vat = get_tax_invoice_vat_amount(data) 
+    # total tax vat from pos bill to room
+    total_vat = total_vat + sum([d["tax_3_amount"] for d in pos_tax_data["revenue_data"]])
+    
     grand_total = sum(d["amount"] for d in tax_data) + sum(d["child_total"] for d in tax_summary)  + total_vat
     
     return_data = {
@@ -1636,12 +1640,15 @@ def get_tax_summary(data):
             record["amount"] = (d["amount"] - d["discount"]) * (1 if d["type"] =="Debit" else -1) 
             
             raw_data.append(record)
-    
+
     tax_summary_group = frappe.db.sql("select total_label,alias,is_group, parent_tax_invoice_summary_group, name, label from `tabTax Invoice Summary Group` order by sort_order",as_dict=1)
+    
+    # return data
     # loop group
     return_data = []
     for g in [d for d in tax_summary_group if d["is_group"]==1]:
         value = sum([d["amount"] for d in raw_data if d["tax_invoice_summary_key"]==g["name"]])
+       
         if value>0:
             record = {
                 "label":g["label"],
@@ -1703,17 +1710,16 @@ def get_tax_invoice_data_from_pos_bill_to_room(transaction_type,transaction_numb
         
         if account_codes:
             r["description"] = frappe.db.get_value("Account Code", account_codes[0],"account_name")
-        
+        tax_raw_data.append({"account_code":account_codes[0],"amount":r["price"],"discount":r["discount"],"type":"Debit" })
         if r["tax_1_amount"]:
             tax_raw_data.append({"account_code":pos_account_code_config.tax_1_account,"amount":r["tax_1_amount"],"discount":0,"type":"Debit" })
             
         if r["tax_2_amount"]:
             tax_raw_data.append({"account_code":pos_account_code_config.tax_2_account,"amount":r["tax_2_amount"],"discount":0,"type":"Debit" })
             
-        if r["tax_3_amount"]:
-            tax_raw_data.append({"account_code":pos_account_code_config.tax_3_account,"amount":r["tax_3_amount"],"discount":0,"type":"Debit" })
             
-    return {"revenue_data":revenue_data,"tax_summary_raw_data":tax_raw_data}
+            
+    return {"revenue_data":revenue_data,"tax_summary_raw_data":tax_raw_data or []}
 
 
 def get_sale_data_group_by_revenue_group(sale_numbers):
@@ -1723,6 +1729,7 @@ def get_sale_data_group_by_revenue_group(sale_numbers):
             s.outlet,
             s.shift_name,
             sum(sp.sub_total) as price, 
+            sum(sp.total_discount) as discount,
             1 as quantity ,
             sum(sp.sub_total) as amount,
             sum(sp.tax_1_amount) as tax_1_amount,

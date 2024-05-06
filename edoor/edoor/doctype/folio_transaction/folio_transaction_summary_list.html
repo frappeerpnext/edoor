@@ -1,0 +1,20 @@
+<div class="container" style="background: #f5f3f5;
+    border-radius: 6px;padding:10px; ">
+    <div class="row">
+        <div class="col"><strong>Discount</strong></div>
+        <div class="col text-right">{{frappe.format(discount_amount,{"fieldtype":"Currency"})}}</div>
+    </div>
+    <div class="row">
+        <div class="col"><strong>Tax Rule</strong></div>
+        <div class="col text-right">{{frappe.format(total_tax,{"fieldtype":"Currency"})}}</div>
+    </div>
+    <div class="row">
+        <div class="col"><strong>Bank Fee</strong></div>
+        <div class="col text-right">{{frappe.format(bank_fee_amount,{"fieldtype":"Currency"})}}</div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col"><strong>Total Amount</strong></div>
+        <div class="col text-right">{{frappe.format(total_amount,{"fieldtype":"Currency"})}}</div>
+    </div>
+</div>
