@@ -41,6 +41,7 @@
   "column_break_ycuf",
   "adult",
   "child",
+  "is_manual_change_pax",
   "discount_section",
   "discount_type",
   "column_break_18",
@@ -414,13 +415,13 @@
    "label": "Nationality"
   },
   {
-   "fetch_from": "reservation_stay.adult",
+   "fetch_from": ".",
    "fieldname": "adult",
    "fieldtype": "Int",
    "label": "Adult"
   },
   {
-   "fetch_from": "reservation_stay.child",
+   "fetch_from": ".",
    "fieldname": "child",
    "fieldtype": "Int",
    "label": "Child"
@@ -437,11 +438,17 @@
    "fieldname": "is_package",
    "fieldtype": "Check",
    "label": "Is Package"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_manual_change_pax",
+   "fieldtype": "Check",
+   "label": "Is Manual Change Pax"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-05 15:35:48.724556",
+ "modified": "2024-05-07 10:38:26.426729",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

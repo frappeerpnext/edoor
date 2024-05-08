@@ -1828,3 +1828,11 @@ flex-direction: column;
 .bg-kpi-owner-db{
     background-color: #2100A6;
 }
+.p-highlight .p-radiobutton-box{
+    border-color: #4337cb !important;
+}
+.p-highlight .p-radiobutton-icon{
+    background-color: #4337cb !important;
+    visibility: visible;
+    transform: translateZ(0) scale(-1);
+}

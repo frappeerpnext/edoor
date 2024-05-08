@@ -20,13 +20,16 @@
           <span><i v-if="slotProps.data?.is_package"  class="pi pi-gift package_room_rate"></i></span>
         </template>
       </Column>
-      
       <Column  headerStyle="width: 3rem" field="date" :header="$t('Date')" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
         </template>
       </Column>
-
+      <Column  :header="$t('Pax(a/c)')" bodyClass="text-center" headerClass="text-center">
+        <template #body="{ data }">
+          <span @click="onEditRoomRate(data)" class="p-0 link_line_action1" >{{ data?.adult }} / {{ data?.child }}</span>
+        </template>
+      </Column>
       <Column field="room_number" :header="$t('Room')">
         <template #body="slotProps">
           <div> 
@@ -40,6 +43,7 @@
           </div>
         </template>
       </Column>
+  
       <Column field="rate_type" :header="$t('Rate Type')">
         <template #body="{ data }">
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
@@ -76,7 +80,7 @@
       </Column>
       <ColumnGroup type="footer">
         <Row>
-          <Column :footer="$t('Total') + ':'" :colspan="4" footerStyle="text-align:right" />
+          <Column :footer="$t('Total') + ':'" :colspan="5" footerStyle="text-align:right" />
           <Column >
             <template #footer>
               {{ rs?.room_rates?.length }} 

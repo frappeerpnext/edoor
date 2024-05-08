@@ -105,7 +105,7 @@
                     <TabPanel :header="$t('Room Rate')" v-if="can_view_rate">
                         <ComReservationStayRoomRate />
                     </TabPanel>
-                    <TabPanel :header="$t('Package & Inclusion')">
+                    <TabPanel :header="$t('Package & Inclusion')" v-if="user.name=='Administrator'" >
                         <ComReservationStayPackageItems/>
                         <!-- This feature is comming soon. -->
                     </TabPanel>
@@ -234,6 +234,8 @@ const activeTab = ref(0)
 const name = ref("")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const can_view_rate = ref(window.can_view_rate)
+const user = ref(JSON.parse(localStorage.getItem('edoor_user')))
+
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })

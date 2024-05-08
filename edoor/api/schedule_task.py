@@ -46,16 +46,35 @@ def get_job_by_job_name(job_name):
     
     return  [d for d in jobs if d["job_name"]==job_name]
 
+
 @frappe.whitelist()
 def re_run_fail_jobs():
-    args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 'filters': [['RQ Job', 'status', '=', 'failed']], 'order_by': '`tabRQ Job`.`modified` desc', 'start': '0', 'page_length': '20', 'group_by': '`tabRQ Job`.`name`', 'with_comment_count': '1', 'save_user_settings': True, 'strict': None}
-    start = cint(args.get("start"))
-    page_length = cint(args.get("page_length")) or 20
+    job_names=[
+        "edoor.api.utils.update_reservation_stay_and_reservation",
+        "edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy",
+        "edoor.api.reservation.generate_room_occupies",
+        "edoor.api.utils.update_reservation",
+        "edoor.api.reservation.post_charge_to_folio_afer_check_in",
+        "edoor.api.utils.update_is_arrival_date_in_room_rate",
+        "edoor.api.reservation.verify_reservation_stay",
+    ]
+    # append unwanted queue job from system
+    job_names.append("frappe.model.delete_doc.delete_dynamic_links")
+    job_names.append("build_index_for_all_routes")
+    job_names.append("edoor.api.schedule_task.run_queue_job")
+    job_names.append("upload_to_ftp")
+    job_names.append("edoor.api.schedule_task.re_run_fail_jobs")
+    
+    args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 
+            'filters': [['RQ Job', 'status', '=', 'failed']], 
+            'order_by': '`tabRQ Job`.`modified` desc', 'start': '0', 'page_length': '20', 'group_by': '`tabRQ Job`.`name`', 'with_comment_count': '1', 'save_user_settings': True, 'strict': None}
+    start =0
+    page_length = 100
 
     order_desc = "desc" in args.get("order_by", "")
 
     matched_job_ids = get_matching_job_ids(args)[start : start + page_length]
-
+    
     conn = get_redis_conn()
     jobs = [
         serialize_job(job) for job in Job.fetch_many(job_ids=matched_job_ids, connection=conn) if job
@@ -63,19 +82,12 @@ def re_run_fail_jobs():
 
     jobs =  sorted(jobs, key=lambda j: j.modified, reverse=order_desc)
     jobs = [d for d in jobs if "exc_info" in d]
-    job_names=[
-        "edoor.api.utils.update_reservation_stay_and_reservation",
-        "edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy",
-        "edoor.api.reservation.generate_room_occupies",
-        "edoor.api.utils.update_reservation",
-        "edoor.api.reservation.post_charge_to_folio_afer_check_in",
-        "edoor.api.utils.update_is_arrival_date_in_room_rate"
-    ]
+
     
-    jobs = [d for d in jobs  if  (d["job_name"] in job_names) and ("Deadlock found when trying"  in  d["exc_info"]  or "Lock wait timeout exceeded"  in  d["exc_info"] or "Document has been modified after you have opened it" in d["exc_info"] ) ]
     
+    jobs = [d for d in jobs  if  (d["job_name"] in job_names)]
     job_ids = []
-    
+
     for j in jobs:
         try:
             job =   json.loads(j["arguments"]) 
@@ -90,17 +102,25 @@ def re_run_fail_jobs():
             elif j["job_name"] == "edoor.api.utils.update_reservation_stay_and_reservation":
                 update_reservation_stay_and_reservation(reservation=job["kwargs"]["reservation"],reservation_stay=job["kwargs"]["reservation_stay"],ignore_validate=True) 
             elif j["job_name"] == "edoor.api.reservation.post_charge_to_folio_afer_check_in":
+
                 post_charge_to_folio_afer_check_in(
                     reservation=job["kwargs"]["reservation"],
                     stays=job["kwargs"]["stays"],
-                    working_day=job["kwargs"]["working_day"])
+                    working_day=job["kwargs"]["working_day"],
+                    master_folio=frappe.get_doc( job["kwargs"]["master_folio"]))
+                return "rund done"
             elif j["job_name"]  =="edoor.api.utils.update_is_arrival_date_in_room_rate":
                 update_is_arrival_date_in_room_rate(stay_name=job["kwargs"]["stay_name"])
+            elif j["job_name"]  =="edoor.api.reservation.verify_reservation_stay":
+                verify_reservation_stay(stay_name=job["kwargs"]["stay_name"])
+            elif j["job_name"]  =="edoor.api.schedule_task.validate_opening_folio_balance":
+                validate_opening_folio_balance()
+
                 
 
             job_ids.append(j["job_id"])
-        except:
-            print("An exception occurred")
+        except Exception as e:
+            return e
         
     
     remove_failed_jobs(job_ids)
@@ -405,13 +425,12 @@ def fix_generate_duplicate_room_occupy():
 
     # find count room occupy by stay and compare to room night in reservation 
     # if differenct then update run script update room occupy
-    sql="""with a as(
-                select name, room_nights from `tabReservation Stay` where reservation_status in ('Reserved','In-house','Confirmed') 
-            ),
-            b as (
-                select x.reservation_stay as  name, count(x.name) as room_nights from `tabRoom Occupy` x inner join a on a.name=x.reservation_stay group by x.reservation_stay
-            )
-            select a.name  from a left join b on a.name = b.name where a.room_nights <> coalesce(b.room_nights,0)-1
+    sql=""" select 
+            a.name
+        from `tabReservation Stay` a
+        where 
+            a.reservation_status in ('Reserved','In-house','Confirmed')  and
+            (select count(x.name)-1  from `tabRoom Occupy` x where x.reservation_stay =a.name) != a.room_nights
         """
     data = frappe.db.sql(sql,as_dict=1)
 

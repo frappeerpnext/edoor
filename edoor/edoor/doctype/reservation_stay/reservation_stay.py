@@ -259,7 +259,12 @@ class ReservationStay(Document):
 		 where parent=%(name)s
 		""",data_for_udpate)
 	
- 
+		# check old doc if user change adult and child then update adult and chidl to reservation room rate
+		old_doc = self.get_doc_before_save()
+		if old_doc:
+			if old_doc.adult != self.adult or old_doc.child != self.child:
+				frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
+				frappe.db.commit()
 
 def update_note(self):
 	self.note_by = frappe.session.user
@@ -402,7 +407,9 @@ def generate_room_rate(self, run_commit = True):
 					"regenerate_rate":regenerate_rate,
 					"is_active_reservation":1,
 					"is_active":1,
-					"is_arrival": 1 if getdate(d) == getdate(self.arrival_date) else 0 
+					"is_arrival": 1 if getdate(d) == getdate(self.arrival_date) else 0 ,
+					"adult":self.adult,
+					"child":self.child
 				}).insert()
 			else:
 				# avaliable room rate
@@ -496,7 +503,9 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				"property":stay_doc.property,
 				"regenerate_rate":0 if (data["generate_rate_type"] =="stay_rate") else 1,
 				"is_active_reservation":1,
-				"is_active":1
+				"is_active":1,
+				"adult":stay_doc.adult,
+				"child":stay_doc.child
 			}).insert()
 		
 

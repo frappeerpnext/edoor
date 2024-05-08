@@ -4,7 +4,7 @@
       :rowsPerPageOptions="[20, 50, 100]">
                 <Column field="account_code" :header="$t('Account Code')" bodyClass="text-center" headerClass="text-center">
                     <template #body="slotProps">
-                        <span>{{ slotProps.data.account_code }}</span>
+                        <span @click="onEdit(slotProps.data)" class="p-0 link_line_action1" >{{ slotProps.data.account_code }}</span>
                     </template>
                 </Column>
                 <Column field="posting_rule" :header="$t('Posting Rule')" bodyClass="text-center" headerClass="text-center">
@@ -42,7 +42,7 @@
                         <Menu :model="menus" :popup="true" ref="show" style="min-width: 180px;">
                             <template #end>
                                 <template v-if="isEdit">
-                                    <button
+                                    <button @click="onEdit(slotProps.data)"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                                         {{$t('Edit')}}
                                     </button>
@@ -62,9 +62,10 @@
     </div>
 </template>
 <script setup>
-import {ref,inject} from "@/plugin"
+import {ref,inject,useDialog} from "@/plugin"
 import {i18n} from '@/i18n';
-
+import ComEditReservationStayPackageItems from '@/views/reservation/components/ComEditReservationStayPackageItems.vue';
+const dialog = useDialog();
 const { t: $t } = i18n.global;
 const gv = inject("$gv")
 const rs =inject("$reservation_stay")
@@ -86,8 +87,27 @@ const opDelete = ref(false)
 const toggle = (event) => {
     show.value.toggle(event)
 }
-function onEdit(){
+function onEdit(item){
+    console.log(item)
+     dialog.open(ComEditReservationStayPackageItems, {
+      data: {
+        data:item,        
+        },
+      props: {
+        header: $t('Edit Package & Inclusion'),
+        style: {
+          width: '40vw',
+        },
+        position: "top",
+        modal: true,
+        closeOnEscape: false,
+        breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+      },
 
+    })
 }
 function onOpenDelete() {
    

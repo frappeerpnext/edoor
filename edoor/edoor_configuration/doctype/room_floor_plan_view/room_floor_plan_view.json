@@ -1,0 +1,98 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2024-05-07 11:11:08.940990",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "room",
+  "building",
+  "floor",
+  "section_break_dxmy",
+  "height",
+  "width",
+  "column_break_bwfs",
+  "x",
+  "y"
+ ],
+ "fields": [
+  {
+   "fieldname": "room",
+   "fieldtype": "Link",
+   "label": "Room",
+   "options": "Room"
+  },
+  {
+   "fieldname": "width",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Width (%)"
+  },
+  {
+   "fieldname": "height",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Height (%)"
+  },
+  {
+   "fieldname": "x",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "X"
+  },
+  {
+   "fieldname": "y",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Y"
+  },
+  {
+   "fieldname": "section_break_dxmy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_bwfs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "room.building",
+   "fieldname": "building",
+   "fieldtype": "Link",
+   "label": "Building",
+   "options": "Building"
+  },
+  {
+   "fetch_from": "room.floor",
+   "fieldname": "floor",
+   "fieldtype": "Link",
+   "label": "Floor",
+   "options": "Floor"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-05-07 11:29:10.790213",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Room Floor Plan View",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

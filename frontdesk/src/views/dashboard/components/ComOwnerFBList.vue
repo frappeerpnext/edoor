@@ -18,7 +18,7 @@ import { Colors } from 'chart.js';
  
 const data = ref({})
 function renderdata() {
-const doc = getApi('frontdesk.get_business_source_chart_data', {
+const doc = getApi('frontdesk.get_f_and_b_chart_data', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
         date: JSON.parse(localStorage.getItem("edoor_working_day")).date_working_day
     })

@@ -47,10 +47,21 @@
         <ComSelect v-if="floorList.length > 0 && !gv.loading" v-model="selectFilters.floor" @onSelected="onFloorSelected" :clear="false"
             :placeholder="$t('Floor')" :options="floorList">
         </ComSelect>
+        <Button  v-tippy="'Walk-in Reservataion'" @click="onArrangeTableClick()" label="Walk-In Guest" class="d-bg-set btn-inner-set-icon border-none">
+            <template v-if="!resizeable">
+                {{ $t('Arrange Room') }}
+            </template>
+            
+            <template v-else>
+                {{ $t('Save Arrange') }}
+            </template>
+
+            
+        </Button>
     </div>
 
     <div>
-      fillter here 
+        Filters
     </div>
 </div>
 <div class="pb-5" style="max-width: 100%;">
@@ -94,9 +105,11 @@
                     <hr class="left-0 fixed w-full">
                     <ComNoteGlobal v-if="showNote" />
                 </Sidebar>
+               
                 <div id="floor-plan-wrapper">
-                    <template v-for="r in roomList" v-if="roomList.length > 0" >
-                        <ComRenderRoom :room="r" :wrapper-width="wrapperWidth"/>
+                    
+                    <template v-for="room in roomList" v-if="roomList.length > 0" >
+                        <ComRenderRoom :room="room" :resizeable="resizeable"/>
                     </template>
                
                 
@@ -128,7 +141,6 @@ import ComRenderRoom from '@/views/floor_plan_view/components/ComRenderRoom.vue'
 import ComWalkInReservation from '@/views/reservation/components/ComWalkInReservation.vue';
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
-import { onMounted } from "vue";
 const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
 const frappe = inject('$frappe')
@@ -139,17 +151,16 @@ const showSummary = ref(true)
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const wrapperWidth = ref(0)
+const wrapperHeight = ref(0)
 
 const buildingList = ref([])
 const floorList = ref([])
 const roomList = ref([])
 
 const selectFilters =ref({})
+const resizeable =ref(false)
 const toast = useToast();
 
-onMounted(()=>{
-    const wrapperWidth = ref(document.getElementById("floor-plan-wrapper").clientWidth);
-})
 
 gv.loading=true;
 db.getDocList("Building",{
@@ -168,6 +179,10 @@ db.getDocList("Floor",{
     gv.loading=false;
 })
 
+function onArrangeTableClick(){
+    resizeable.value = !resizeable.value
+}
+
 function onBuildingSelected(selected){
     gv.loading=true;
     db.getDocList("Floor",{
@@ -181,14 +196,17 @@ function onBuildingSelected(selected){
     }).catch(err=>gv.loading=false)
 }
 function onFloorSelected(selected){
-    db.getDocList("Room",{
-        filters:[['property', '=', property.name],['building', '=', selectFilters.value.building],['floor', '=', selected]],
-        fields:["name","room_type","room_status","status_color","room_type_color","housekeeping_status"]
-    }).then((res)=>{
-        roomList.value = res
-    }).catch((error)=>{
+
+
+    let apiParams = { doctype: 'Room' , fields: ["name","room_type","room_status","building","floor","status_color","room_type_color","housekeeping_status"] ,page_length: 1000 }
+    
+    apiParams.filters =JSON.parse(JSON.stringify({'property':['=', property.name],'building':['=', selectFilters.value.building],'floor':[ '=', selected]}))
+    call.get('edoor.edoor_configuration.doctype.room_floor_plan_view.room_floor_plan_view.get_room_for_floor_plan_view', {"apiParams":apiParams}).then((result) => {
+        roomList.value = result.message;
+       
+    }).catch((error) => {
         toast.add({ severity: 'error', summary: 'Error', detail: error, life: 3000 })
-    })
+    });
 }
 
 
@@ -196,7 +214,7 @@ function onFloorSelected(selected){
 
 </script>
 <style>
-    .floor-plan-wrapper{
+    #floor-plan-wrapper{
         height: 100%;
     }
 </style>

@@ -104,6 +104,7 @@
         <div class="grid">
             <div class="col-12 lg:col mt-2 ">
                 <div class="grid">
+                
                     <div class="col-12 lg:col-6">
                         <div>
                             <label> {{ $t('Rate Type') }} </label>
@@ -122,6 +123,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="wp-number-cus col-12 pt-0 w-full grid pr-0">
+ 
+        <div class="col-6 pr-1 ">
+            
+        <label>{{$t('Adults')}}</label>
+        <InputNumber v-model="doc.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
+            class="child-adults-txt w-full" :disabled="!(doc.is_manual_change_pax)" />
+        </div>
+        <div class="col-6 pr-0 pl-3">
+        <label>{{$t('Children')}}</label>
+        <InputNumber v-model="doc.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
+            class="child-adults-txt w-full" :disabled="!(doc.is_manual_change_pax)" />
+        </div>
+        <div class="relative mt-2 pt-0 col-12">
+            <span class="absolute w-full"><Checkbox class="w-full" v-model="doc.is_manual_change_pax" :binary="true" :trueValue="1"
+                                :falseValue="0" /></span>
+            <span class="pl-5">Manual Change Pax</span>
+        </div> 
+        </div>
                     <template v-if="doc.allow_discount==1">
                     <div class="col-12 lg:col-4">
                         <label>{{ $t('Discount Type') }}</label>
@@ -256,7 +276,7 @@
             <hr />
 
         </div>
-        
+
     </ComDialogContent>
 </template>
 <script setup>

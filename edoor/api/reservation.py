@@ -5,7 +5,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import  generate_room
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_backdate_permission, validate_role,update_keyword
+from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_backdate_permission, validate_role,update_keyword,add_package_inclusion_charge_to_folio
 import frappe
 from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
@@ -437,9 +437,9 @@ def add_new_reservation(doc):
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation.name, reservation_stay=stay_names)
     
     frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='default', stay_names=stay_names )
-    
+ 
     if frappe.db.get_value("Rate Type",reservation.rate_type,"is_package")==1:
-        frappe.enqueue("edoor.api.reservation.update_package_data_to_reservation_stay",queue='default', reservation=reservation.name, stay_names=stay_names,rate_type=reservation.rate_type )
+        frappe.enqueue("edoor.api.reservation.update_package_data_to_reservation_stay",queue='short', reservation=reservation.name, stay_names=stay_names,rate_type=reservation.rate_type )
         # update is package to reservation stay and reservation room rate
         
 
@@ -450,6 +450,7 @@ def add_new_reservation(doc):
     frappe.msgprint("Add new reservation successfully")
     return reservation
 
+ 
 def update_package_data_to_reservation_stay(reservation=None, stay_names=None,rate_type=None):
     if reservation and not stay_names:
         stay_names = frappe.db.sql("select name from `tabReservation Stay` where is_active_reservation=1 and reservation='{}'".format(reservation),as_dict=1)
@@ -458,7 +459,6 @@ def update_package_data_to_reservation_stay(reservation=None, stay_names=None,ra
         rate_type_doc = frappe.get_doc("Rate Type",rate_type,ignore_permissions=True)
         if rate_type_doc.is_package ==1:
             account_code = frappe.get_doc("Account Code",rate_type_doc.account_code,ignore_permissions=True)
-            
     if account_code:
         if account_code.packages:
             for s in stay_names:
@@ -476,6 +476,7 @@ def update_package_data_to_reservation_stay(reservation=None, stay_names=None,ra
                         
                     })
                 stay_doc.flags.ignore_validate = True
+                stay_doc.flags.ignore_on_update = True
                 stay_doc.flags.ignoreignore_on_update_validate = True
                 stay_doc.save(ignore_permissions=True)
                 
@@ -587,13 +588,21 @@ def stay_add_more_rooms(reservation=None, data=None):
             stay_doc.is_master = 1
             if len(stay_doc.stays)>0:
                 stay_doc.stays[0].is_master = 1
-            stay_doc.save()
+            stay_doc.flags.ingnore_validate = True
+            stay_doc.flags.ingnore_on_update = True
+            stay_doc.save(ignore_permissions=True)
+            
+        
 
 
 
     frappe.db.commit()
+    #update room occupy
+    frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='default', stay_names=stay_doc_names)
+    
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation.name, reservation_stay=stay_doc_names)
     return reservation
+
 @frappe.whitelist(methods="POST")
 def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     #reservation_stays is array
@@ -719,6 +728,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
         
         for stays in group_check_in_stays:
             frappe.enqueue("edoor.api.reservation.post_charge_to_folio_afer_check_in", working_day=working_day, reservation=reservation, stays=stays,master_folio=master_folio, queue='short')
+            
+            
         
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation=reservation,reservation_stay=[d["stay_name"] for d in checked_in_stays])
     
@@ -739,10 +750,17 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
         "reservation":doc
     }
 
- 
+@frappe.whitelist()
+def dome():
+    return post_charge_to_folio_afer_check_in(
+        working_day=get_working_day("ESTC HOTEL"),
+        reservation="RS2024-0727",
+        stays=[{"stay_name":"ST2024-3536","paid_by_master_room":1}],
+        master_folio=frappe.get_doc("Reservation Folio","FN2024-0700")
+    )
     
-def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_folio):
 
+def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_folio):
     for s in stays:
         stay_doc = frappe.get_doc("Reservation Stay", s["stay_name"])
         folio = {}
@@ -763,9 +781,73 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                 
         room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":s["stay_name"],"date":["=",working_day["date_working_day"]]},order_by="date desc",page_length=1000)
         for r  in room_rates:
-            add_room_charge_to_folio(folio,r )
-        
+            if not stay_doc.inclusion_items:
+                add_room_charge_to_folio(folio,r )
+            else:
+                # pos room charge exclude package charge 
+                package_charges = get_breakdown_package_charge_code(stay_doc, r)
+                # return package_charges
+                
+                # get discount percentage if have discount amount
+                
+                # Discount for sub package charge code is percent only 
+                # we calculate this percentage from base account code charge and pacage charge amount
+                    
+                if r.discount and r.discount_type=='Amount':
+                    r.discount_type = "Percent"
+                    r.discount = r.discount / r.input_rate 
+                
+                r.input_rate = r.input_rate - sum([d["rate"] for d in package_charges]) 
+                
+                folio_tran_doc = add_room_charge_to_folio(folio,r )
+                # check if room rate have discount then minute discount from package room rate
+                for p in package_charges: 
+                    rate_data = {
+                        "account_code":p["account_code"],
+                        "reference_folio_transaction":folio_tran_doc.name,
+                        "date":r["date"],
+                        "room_type_id":r["room_type_id"],
+                        "room_id":r["room_id"],
+                        "input_amount":p["rate"],
+                        "tax_rule":frappe.db.get_value("Account Code",p["account_code"],"tax_rule"),
+                        "is_auto_post":1,
+                        "name":r.name,
+                        "reservation_stay":r["reservation_stay"],
+                        "stay_room_id":r.stay_room_id,
+                        "note": "This folio transaction is package charge breakdown from folio transaction number " + folio_tran_doc.name
+                        
+                    }   
+                    if rate_data["tax_rule"]:
+                        tax_rule_doc = frappe.get_doc("Tax Rule", rate_data["tax_rule"])
+                        rate_data["tax_1_rate"] = tax_rule_doc.tax_1_rate
+                        rate_data["tax_2_rate"] = tax_rule_doc.tax_2_rate
+                        rate_data["tax_3_rate"] = tax_rule_doc.tax_3_rate
+                        rate_data["rate_include_tax"] =  'Yes' if tax_rule_doc.rate_include_tax else 'No'
+                    
+                    rate_data["discount_type"] ="Percent"
+                    rate_data["discount"] = r.discount
+                    add_package_inclusion_charge_to_folio(folio,rate_data )
 
+def get_breakdown_package_charge_code(stay_doc, room_rate):
+    package_charge_codes = []
+    if stay_doc.inclusion_items:
+        for p in stay_doc.inclusion_items:
+            charge = {"account_code":p.account_code}
+            if p.charge_rule=="Stay":
+                charge["rate"] = p.rate
+            elif p.charge_rule=="PAX":
+                charge["rate"] = (p.adult_rate * room_rate.adult) + (p.child_rate*room_rate.child)
+            
+            elif p.charge_rule=="Adult":
+                charge["rate"] = (p.adult_rate * room_rate.adult) 
+                
+            elif p.charge_rule=="Child":
+                charge["rate"] = (p.child_rate * room_rate.child) 
+            
+            package_charge_codes.append(charge)
+    
+    return []
+            
 
 @frappe.whitelist(methods="POST")
 def undo_check_in(reservation_stay, reservation, property,note=""):
@@ -2368,6 +2450,9 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
     for d in room_rate_names:
         doc = frappe.get_doc("Reservation Room Rate",d)
         doc.is_manual_rate = data["is_manual_rate"]
+        doc.is_manual_change_pax = data["is_manual_change_pax"]
+        doc.adult = data["adult"]
+        doc.child = data["child"]
         doc.rate_type = data["rate_type"]
         doc.input_rate = data["input_rate"]
         doc.discount_type = data["discount_type"] 
