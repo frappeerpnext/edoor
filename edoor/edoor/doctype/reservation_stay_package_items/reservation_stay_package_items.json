@@ -9,6 +9,7 @@
   "is_rate_type_package",
   "allow_user_to_edit_information",
   "account_code",
+  "account_name",
   "posting_rule",
   "charge_rule",
   "rate",
@@ -64,12 +65,19 @@
    "fieldname": "allow_user_to_edit_information",
    "fieldtype": "Check",
    "label": "Allow User to Edit Information"
+  },
+  {
+   "fetch_from": "account_code.account_name",
+   "fieldname": "account_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-04-29 10:01:35.786559",
+ "modified": "2024-05-10 15:18:43.044112",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Package Items",

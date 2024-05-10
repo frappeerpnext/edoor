@@ -4,7 +4,7 @@
       :rowsPerPageOptions="[20, 50, 100]">
                 <Column field="account_code" :header="$t('Account Code')" bodyClass="text-center" headerClass="text-center">
                     <template #body="slotProps">
-                        <span @click="onEdit(slotProps.data)" class="p-0 link_line_action1" >{{ slotProps.data.account_code }}</span>
+                        <span @click="onEdit(slotProps.data)" class="p-0 link_line_action1" >{{ slotProps.data.account_code }}-{{ slotProps.data.account_name }}</span>
                     </template>
                 </Column>
                 <Column field="posting_rule" :header="$t('Posting Rule')" bodyClass="text-center" headerClass="text-center">

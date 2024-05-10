@@ -14,14 +14,14 @@
   "nationality",
   "vendor",
   "vendor_name",
-  "column_break_7",
+  "column_break_gftr",
   "property",
   "posting_date",
   "working_day",
   "cashier_shift",
   "working_date",
   "reservation",
-  "column_break_8",
+  "column_break_trjd",
   "reservation_stay",
   "transaction_type",
   "transaction_number",
@@ -29,6 +29,8 @@
   "naming_series",
   "room_type",
   "room_number",
+  "business_source",
+  "business_source_type",
   "stay_information_section",
   "room_type_id",
   "room_type_alias",
@@ -159,8 +161,6 @@
   "bank_fee_description",
   "is_auto_post",
   "is_master_folio",
-  "business_source",
-  "business_source_type",
   "keyword",
   "is_housekeeping_account",
   "inventory_tab",
@@ -187,6 +187,7 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.reservation",
    "fetch_from": ".reservation",
    "fetch_if_empty": 1,
    "fieldname": "reservation",
@@ -195,6 +196,7 @@
    "options": "Reservation"
   },
   {
+   "depends_on": "eval:doc.reservation_stay",
    "fetch_from": ".",
    "fetch_if_empty": 1,
    "fieldname": "reservation_stay",
@@ -233,6 +235,7 @@
    "options": "\nCredit\nDebit"
   },
   {
+   "depends_on": "eval:doc.reference_number",
    "fieldname": "reference_number",
    "fieldtype": "Data",
    "label": "Reference Number"
@@ -251,7 +254,6 @@
   {
    "fieldname": "discount_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Discount"
   },
   {
@@ -351,12 +353,7 @@
   },
   {
    "fieldname": "section_break_31",
-   "fieldtype": "Section Break",
-   "hidden": 1
-  },
-  {
-   "fieldname": "column_break_7",
-   "fieldtype": "Column Break"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "posting_date",
@@ -384,10 +381,6 @@
    "options": "Cashier Shift"
   },
   {
-   "fieldname": "column_break_8",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "total_amount",
    "fieldtype": "Currency",
    "label": "Total Amount"
@@ -411,7 +404,6 @@
   {
    "fieldname": "bank_fee_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Bank Fee"
   },
   {
@@ -431,7 +423,6 @@
   {
    "fieldname": "stay_information_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Stay Information"
   },
   {
@@ -445,6 +436,7 @@
    "options": "Room"
   },
   {
+   "depends_on": "eval:doc.room_number",
    "fetch_from": "room_id.room_number",
    "fieldname": "room_number",
    "fieldtype": "Data",
@@ -550,7 +542,8 @@
    "label": "Deleted Note"
   },
   {
-   "fetch_from": "room_type_id.room_type",
+   "depends_on": "eval:doc.room_type",
+   "fetch_from": "room_id.",
    "fieldname": "room_type",
    "fieldtype": "Data",
    "label": "Room Type"
@@ -765,6 +758,7 @@
    "label": "Is Master Folio"
   },
   {
+   "depends_on": "eval:doc.business_source",
    "fetch_from": "reservation.business_source",
    "fieldname": "business_source",
    "fieldtype": "Link",
@@ -965,6 +959,7 @@
    "label": "Nationality"
   },
   {
+   "depends_on": "eval:doc.business_source_type",
    "fetch_from": "business_source.business_source_type",
    "fieldname": "business_source_type",
    "fieldtype": "Data",
@@ -1065,11 +1060,19 @@
    "fieldname": "child",
    "fieldtype": "Int",
    "label": "Child"
+  },
+  {
+   "fieldname": "column_break_gftr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_trjd",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-10 10:24:24.597715",
+ "modified": "2024-05-10 17:13:57.823659",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

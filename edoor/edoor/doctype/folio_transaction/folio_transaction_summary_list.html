@@ -1,26 +1,36 @@
 <div class="container" style="background: #f5f3f5;
-    border-radius: 6px;padding:10px; ">
-    {% if discount_amount != 0%}
+    border-radius: 6px;padding:10px; ">  
+        <!-- {% if discount_description %}
         <div class="row">
-            <div class="col"><strong>Discount</strong></div>
-            <div class="col text-right">{{frappe.format(discount_amount,{"fieldtype":"Currency"})}}</div>
+            <div class="col"><strong>{{discount_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(discount,{"fieldtype":"Currency"})}}</div>
         </div>
-    {% endif %}
-    {% if total_tax != 0%}
+        {% endif %}  -->
+        {% if tax_1_description %}
         <div class="row">
-            <div class="col"><strong>Tax Rule</strong></div>
-            <div class="col text-right">{{frappe.format(total_tax,{"fieldtype":"Currency"})}}</div>
+            <div class="col"><strong>{{tax_1_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(tax_1_rate,{"fieldtype":"Currency"})}}</div>
         </div>
-    {% endif %}
-    {% if bank_fee_amount != 0%}
+        {% endif %}
+        {% if tax_2_description %}
+        <div class="row">
+            <div class="col"><strong>{{tax_2_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(tax_2_rate,{"fieldtype":"Currency"})}}</div>
+        </div>
+        {% endif %}
+        {% if tax_3_description %}
+        <div class="row">
+            <div class="col"><strong>{{tax_3_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(tax_3_rate,{"fieldtype":"Currency"})}}</div>
+        </div>
+        {% endif %}
+        {% if bank_fee_amount %}
         <div class="row">
             <div class="col"><strong>Bank Fee</strong></div>
             <div class="col text-right">{{frappe.format(bank_fee_amount,{"fieldtype":"Currency"})}}</div>
         </div>
-    {% endif %}
-    {% if bank_fee_amount != 0 || total_tax != 0 || discount_amount != 0%}
-        <hr/>
-    {% endif %}
+        {% endif %}
+        {% if discount_description || tax_1_description || tax_2_description || tax_3_description || bank_fee_amount %} <hr/> {% endif %}
     <div class="row">
         <div class="col"><strong>Total Amount</strong></div>
         <div class="col text-right">{{frappe.format(total_amount,{"fieldtype":"Currency"})}}</div>

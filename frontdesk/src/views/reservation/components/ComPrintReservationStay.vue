@@ -40,6 +40,10 @@
                         <Checkbox v-model="filters.show_all_room_rate" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_all_room_rate" />
                         <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate</label>
                     </div>
+                    <div>
+                        <Checkbox v-model="filters.breakdown_account_code" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_all_room_rate" />
+                        <label for="show_all_room_rate" class="white-space-nowrap" >Show/Hide Breakdown Account Code</label>
+                    </div>
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view||'')!='ui'">
@@ -76,7 +80,9 @@ const filters = ref({
     show_account_code:window.setting.show_account_code_in_folio_transaction,
     show_room_number:1,
     show_all_room_rate:0,
-    show_summary:0
+    show_summary:0,
+    breakdown_account_code:0,
+
 })
 
 function onSelectFolio(f){
@@ -96,6 +102,7 @@ const refreshReport = () => {
     url.value = url.value + "&invoice_style=" + filters.value.invoice_style
     url.value = url.value + "&show_summary=" + filters.value.show_summary || 0
     url.value = url.value + "&show_all_room_rate=" + filters.value.show_all_room_rate || 0
+    url.value = url.value + "&show_breakdown_account_code=" + filters.value.breakdown_account_code || 0
     if (filters.value.selected_folio) {
         url.value = url.value + "&folio=" + filters.value.selected_folio.name
     }
