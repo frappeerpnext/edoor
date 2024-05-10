@@ -81,15 +81,6 @@
   "sort_order": 2200
  },
  {
-  "account_category": "F&B Revenue",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-02-06 17:41:22.199221",
-  "name": "F&B Revenue",
-  "note": null,
-  "sort_order": 1900
- },
- {
   "account_category": "F&B Service Charge",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -99,13 +90,22 @@
   "sort_order": 700
  },
  {
-  "account_category": "F&B Tax",
+  "account_category": "F&B Payment",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2024-02-07 08:57:43.023166",
-  "name": "F&B Tax",
+  "modified": "2024-02-07 08:50:40.248581",
+  "name": "F&B Payment",
   "note": null,
-  "sort_order": 1400
+  "sort_order": 1700
+ },
+ {
+  "account_category": "F&B Revenue",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-02-06 17:41:22.199221",
+  "name": "F&B Revenue",
+  "note": null,
+  "sort_order": 1900
  },
  {
   "account_category": "Other Charge Discount",
@@ -115,15 +115,6 @@
   "name": "Other Charge Discount",
   "note": null,
   "sort_order": 1200
- },
- {
-  "account_category": "F&B Payment",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-02-07 08:50:40.248581",
-  "name": "F&B Payment",
-  "note": null,
-  "sort_order": 1700
  },
  {
   "account_category": "POS Bill to City Ledger",
@@ -160,6 +151,15 @@
   "name": "Ticketing",
   "note": null,
   "sort_order": 0
+ },
+ {
+  "account_category": "F&B Tax",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-02-07 08:57:43.023166",
+  "name": "F&B Tax",
+  "note": null,
+  "sort_order": 1400
  },
  {
   "account_category": "Service Charge",
@@ -243,15 +243,6 @@
   "sort_order": 400
  },
  {
-  "account_category": "Room Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:54.619116",
-  "name": "Room Charge",
-  "note": null,
-  "sort_order": 100
- },
- {
   "account_category": "Payment",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -259,6 +250,15 @@
   "name": "Payment",
   "note": "a",
   "sort_order": 1600
+ },
+ {
+  "account_category": "Room Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:11:54.619116",
+  "name": "Room Charge",
+  "note": null,
+  "sort_order": 100
  },
  {
   "account_category": "Folio Transfer",

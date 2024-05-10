@@ -192,7 +192,11 @@ watch(() => props.folio, (newValue, oldValue) => {
 
 //load data
 function LoadFolioTransaction() {
-    saveDisplayViewFolioTransaction.value = localStorage.getItem('displayViewFolioTransaction');
+    if(localStorage.getItem('displayViewFolioTransaction')){
+      saveDisplayViewFolioTransaction.value = localStorage.getItem('displayViewFolioTransaction');  
+    }else{
+        saveDisplayViewFolioTransaction.value = 0
+    }
     getApi('reservation.get_folio_transaction', {
         transaction_type: props.doctype,
         transaction_number: selectedFolio.value.name,
@@ -323,13 +327,11 @@ const windowActionHandler = async function (e) {
     }
 }
 onMounted(() => {
-    saveDisplayViewFolioTransaction.value = localStorage.getItem('displayViewFolioTransaction');
-
-window.addEventListener('storage', (event) => {
-    if (event.key === 'displayViewFolioTransaction') {
-        console.log(localStorage.getItem('displayViewFolioTransaction'))
+    if(localStorage.getItem('displayViewFolioTransaction')){
+      saveDisplayViewFolioTransaction.value = localStorage.getItem('displayViewFolioTransaction');  
+    }else{
+        saveDisplayViewFolioTransaction.value = 0
     }
-  });
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){

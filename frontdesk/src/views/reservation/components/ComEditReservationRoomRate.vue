@@ -188,7 +188,7 @@
                 <div class="grid justify-end ">
                     <div class="col-12">
                         <div class="flex justify-end text-end"
-                            v-if="tax_rule && tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
+                            v-if="tax_rule">
                             <label for="rate_tax" class="col-6 font-medium cursor-pointer">
                                 {{ $t('Rate Include Tax') }}
                                 </label>
@@ -205,7 +205,7 @@
                                 <template #prefix>
                                     <div>
                                         <div class="flex items-center">
-                                            <Checkbox input-id="tax-1" v-model="use_tax.use_tax_1" @change="onUseTax1Change"
+                                            <Checkbox input-id="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change"
                                                 :binary="true" />
                                         </div>
                                     </div>
@@ -226,7 +226,7 @@
                                 <template #prefix>
                                     <div>
                                         <div class="flex items-center">
-                                            <Checkbox input-id="tax-2" @change="onUseTax2Change" v-model="use_tax.use_tax_2"
+                                            <Checkbox input-id="tax-2" @input="onUseTax2Change" v-model="use_tax.use_tax_2"
                                                 :binary="true" />
                                         </div>
                                     </div>
@@ -247,7 +247,7 @@
                                 <template #prefix>
                                     <div>
                                         <div class="flex items-center">
-                                            <Checkbox input-id="tax-3" @change="onUseTax3Change" v-model="use_tax.use_tax_3"
+                                            <Checkbox input-id="tax-3" @input="onUseTax3Change" v-model="use_tax.use_tax_3"
                                                 :binary="true" />
                                         </div>
                                     </div>
@@ -342,18 +342,18 @@ const tax_rule = computed(() => {
 })
 function onUseTax1Change(value) {
 
-    doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
+    doc.value.tax_1_rate = use_tax.value.use_tax_1 ? 0 : tax_rule.value.tax_1_rate
 
 
 }
 function onUseTax2Change(value) {
 
-    doc.value.tax_2_rate = value ? tax_rule.value.tax_2_rate : 0
+    doc.value.tax_2_rate = use_tax.value.use_tax_2 ? 0 : tax_rule.value.tax_2_rate
 
 }
 function onUseTax3Change(value) {
 
-    doc.value.tax_3_rate = value ? tax_rule.value.tax_3_rate : 0
+    doc.value.tax_3_rate = use_tax.value.use_tax_3 ? 0 : tax_rule.value.tax_3_rate
 
 }
 

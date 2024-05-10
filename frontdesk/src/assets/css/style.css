@@ -1816,6 +1816,7 @@ flex-direction: column;
     width: auto;
     display: inline-block;
     padding: 4px;
+    min-width: 28px;
     border-radius: 8px;
     background: #594fd033;
     margin-top: 3px !important;
