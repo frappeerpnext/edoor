@@ -20,11 +20,20 @@
   "working_day",
   "cashier_shift",
   "working_date",
+  "reservation",
   "column_break_8",
+  "reservation_stay",
   "transaction_type",
   "transaction_number",
   "reference_number",
   "naming_series",
+  "room_type",
+  "room_number",
+  "stay_information_section",
+  "room_type_id",
+  "room_type_alias",
+  "column_break_23",
+  "room_id",
   "section_break_ciha",
   "column_break_upli",
   "is_package",
@@ -32,10 +41,8 @@
   "account_name",
   "type",
   "column_break_kwtq",
-  "reservation",
   "reservation_type",
   "column_break_zhod",
-  "reservation_stay",
   "parent_reference",
   "column_break_fwos",
   "quantity",
@@ -46,19 +53,14 @@
   "price",
   "report_quantity",
   "amount",
+  "total_sub_package_charge",
+  "is_sub_package_charge",
   "section_break_gdka",
   "item_list",
   "section_break_jjcd",
   "note",
   "column_break_ciqk",
   "summary_list",
-  "stay_information_section",
-  "room_type_id",
-  "room_type",
-  "room_type_alias",
-  "column_break_23",
-  "room_id",
-  "room_number",
   "discount_section",
   "discount_type",
   "column_break_15",
@@ -465,7 +467,6 @@
    "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "other_tab",
    "fieldtype": "Tab Break",
-   "hidden": 1,
    "label": "Other"
   },
   {
@@ -486,7 +487,6 @@
    "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "city_ledger_tab",
    "fieldtype": "Tab Break",
-   "hidden": 1,
    "label": "System Transfer"
   },
   {
@@ -509,7 +509,6 @@
    "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "payment_information_section",
    "fieldtype": "Tab Break",
-   "hidden": 1,
    "label": "Payment Information"
   },
   {
@@ -563,7 +562,6 @@
    "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "descriptions_tab",
    "fieldtype": "Tab Break",
-   "hidden": 1,
    "label": "Descriptions"
   },
   {
@@ -897,7 +895,6 @@
    "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "inventory_tab",
    "fieldtype": "Tab Break",
-   "hidden": 1,
    "label": "Inventory"
   },
   {
@@ -1045,11 +1042,22 @@
   {
    "fieldname": "summary_list",
    "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "total_sub_package_charge",
+   "fieldtype": "Currency",
+   "label": "Total Sub Package Charge"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_sub_package_charge",
+   "fieldtype": "Check",
+   "label": "Is Sub Package Charge"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-06 16:39:21.631964",
+ "modified": "2024-05-09 19:00:30.624076",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

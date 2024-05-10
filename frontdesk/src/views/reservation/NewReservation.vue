@@ -205,7 +205,7 @@
                     </div>
                     <div class="">
                         <div class="flex gap-3 flex-wrap">
-                            <div class="flex gap-3 relative">
+                            <div class="flex gap-3 relative" v-if="room_tax.tax_1_rate > 0">
                                 <label for="tax-1-rate" class="font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_1_name)  }} - {{ room_tax.tax_1_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
@@ -219,7 +219,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex gap-3 relative">
+                            <div class="flex gap-3 relative" v-if="room_tax.tax_2_rate > 0">
                                 <label for="tax-2-rate" class="font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_2_name)  }} - {{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
@@ -233,7 +233,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex gap-3 relative">
+                            <div class="flex gap-3 relative" v-if="room_tax.tax_3_rate > 0">
                                 <label for="tax-3-rate" class="font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_3_name)  }} - {{ room_tax.tax_3_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">

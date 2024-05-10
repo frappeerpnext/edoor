@@ -25,7 +25,7 @@
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
         </template>
       </Column>
-      <Column  :header="$t('Pax(a/c)')" bodyClass="text-center" headerClass="text-center">
+      <Column  :header="$t('Pax(A/C)')" bodyClass="text-center" headerClass="text-center">
         <template #body="{ data }">
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1" >{{ data?.adult }} / {{ data?.child }}</span>
         </template>

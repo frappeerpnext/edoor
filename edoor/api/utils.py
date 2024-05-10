@@ -468,6 +468,12 @@ def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=Fal
         return doc
 
 @frappe.whitelist()
+def update_reservation_folios(folio_names):
+    for f in set(folio_names):
+        update_reservation_folio(name=f, run_commit=False, ignore_validate=True)
+    frappe.db.commit()
+    
+@frappe.whitelist()
 def update_reservation_folio(name=None, doc=None,run_commit=True,ignore_validate=False):
     if name:
         doc = frappe.get_doc("Reservation Folio",name)
@@ -834,11 +840,10 @@ def remove_temp_room_occupy(reservation):
                   """.format(reservation))
     frappe.db.commit()
 
-def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_day=None, cashier_shift=None,ignore_validateion_cashier_shift=False, ignore_validate_back_date_transaction=False ):
+def add_room_charge_to_folio(folio,rate,is_package=0,is_night_audit_posing=0,note="",working_day=None, cashier_shift=None,ignore_validateion_cashier_shift=False, ignore_validate_back_date_transaction=False,ignore_update_folio_transaction=False,ignore_update_reservation_folio=False ):
     rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
     data = frappe.db.sql("select name from  `tabFolio Transaction` where reservation_room_rate='{}' and account_code='{}'".format(rate.name,rate_type_doc.account_code),as_dict=1)
     if not data :
-        rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
         doc = {
             "doctype":"Folio Transaction",
             "transaction_type":"Reservation Folio",
@@ -863,7 +868,8 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_
             "source_reservation_stay": rate.reservation_stay,
             "stay_room_id": rate.stay_room_id,
             "is_night_audit_posing":is_night_audit_posing,
-            "note":note
+            "note":note,
+            "is_package":is_package
         }
         
         doc = frappe.get_doc(doc)
@@ -871,19 +877,19 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_
         doc.flags.ignore_validate_close_folio = True
         doc.flags.ignore_validateion_cashier_shift = ignore_validateion_cashier_shift
         doc.flags.ignore_validate_back_date_transaction = ignore_validate_back_date_transaction
+        doc.flags.ignore_update_folio_transaction = ignore_update_folio_transaction
+        doc.flags.ignore_update_reservation_folio = ignore_update_reservation_folio
         
-
-    
         doc.insert()
         return doc
     
     return None
 
-def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_day=None, cashier_shift=None,ignore_validateion_cashier_shift=False, ignore_validate_back_date_transaction=False ):
+def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_day=None, cashier_shift=None,ignore_validateion_cashier_shift=False, ignore_validate_back_date_transaction=False,ignore_update_folio_transaction=False,ignore_update_reservation_folio =False):
     doc = {
         "doctype":"Folio Transaction",
         "transaction_type":"Reservation Folio",
-        "naming_series":rate["reference_folio_transaction"],
+        "naming_series":rate["reference_folio_transaction"] + ".-.##",
         "working_day":working_day,
         "cashier_shift":cashier_shift,
         "posting_date":rate["date"],
@@ -907,7 +913,9 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
         "is_night_audit_posing":is_night_audit_posing,
         "note":note,
         "is_package_inclusion_item":1,
-        "reference_folio_transaction":rate["reference_folio_transaction"]
+        "reference_folio_transaction":rate["reference_folio_transaction"],
+        "parent_reference":rate["parent_reference"],
+        "is_sub_package_charge":1
         
     }
     
@@ -916,13 +924,15 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
     doc.flags.ignore_validate_close_folio = True
     doc.flags.ignore_validateion_cashier_shift = ignore_validateion_cashier_shift
     doc.flags.ignore_validate_back_date_transaction = ignore_validate_back_date_transaction
+    doc.flags.ignore_update_folio_transaction = ignore_update_folio_transaction
+    doc.flags.ignore_update_reservation_folio = ignore_update_reservation_folio
     
 
 
     doc.insert()
     return doc
     
-    return None
+ 
     
 
 

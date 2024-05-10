@@ -126,7 +126,7 @@ doc_events = {
 		"on_update_after_submit": [
             "edoor.api.utils.update_keyword",
 		],
-
+		
 		# "on_cancel": "method",
 		# "on_trash": "method"
 	}

@@ -41,7 +41,6 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
-
             <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
                 <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
                     stateStorage="local" stateKey="table_desk_folio_state" :reorderableColumns="true" :value="data"
@@ -175,6 +174,7 @@ const isMobile = ref(window.isMobile)
 const columns = ref([
     { fieldname: 'name', label: 'Desk Folio #', fieldtype: "Link", post_message_action: "view_desk_folio_detail", default: true },
     { fieldname: 'room_number', label: 'Room', default: true ,header_class: "text-center"},
+    { fieldname: 'reference_number', label: 'Reference #', default: true ,header_class: "text-center"},
     { fieldname: 'room_type', label: 'Room Type', header_class: "text-left", default: true },
     { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'posting_date', label: 'Desk Folio. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },

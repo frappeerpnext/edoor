@@ -14,9 +14,12 @@
                 <ComAutoComplete placeholder="Select Room"  v-model="data.room_id" class="pb-2 w-full"  doctype="Room" :filters="['property','=',property.name]" :disabled="doc?.docstatus==1" />
             </div>
         </div>
-        
-        <div class="col-12">
-            <label for="room">{{$t('Guest')}}<span class="text-red-500">*</span></label>
+        <div class="col-6">
+            {{$t('Reference Number')}}
+            <InputText type="text" class="p-inputtext-sm w-full" v-model="data.reference_number" :maxlength="100" />
+        </div>
+        <div class="col-6">
+            <label >{{$t('Guest')}}<span class="text-red-500">*</span></label>
             <ComAutoComplete v-model="data.guest" placeholder="Select Guest" doctype="Customer" :isAddNew="true" @onAddNew="onAddNewGuest"
                 class="auto__Com_Cus w-full"/>
         </div>
@@ -51,6 +54,7 @@ function onOK() {
     loading.value = true
     var savedData = {
         name: data.value.name,
+        reference_number: data.value.reference_number,
         posting_date: gv.dateApiFormat(data.value.posting_date),
         room_id: data.value.room_id,
         note: data.value.note,

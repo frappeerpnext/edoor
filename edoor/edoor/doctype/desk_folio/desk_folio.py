@@ -18,8 +18,9 @@ class DeskFolio(Document):
 		if not self.is_new():
 			folio_data = frappe.db.sql("select min(posting_date) as min_date from `tabFolio Transaction` where transaction_type='Desk Folio' and transaction_number='{}'".format(self.name))
 			if len(folio_data)>0:
-				if getdate(self.posting_date)>getdate(folio_data[0][0]):
-					frappe.throw("Posting date of desk folio must less than or equal to min date of desk transaction")	
+				if folio_data[0][0]:
+					if getdate(self.posting_date)>getdate(folio_data[0][0]):
+						frappe.throw("Posting date of desk folio must less than or equal to min date of desk transaction transaction")	
 
 	def on_update(self):
 		if self.status == "Closed":

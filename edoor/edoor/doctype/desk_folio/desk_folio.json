@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "guest",
+  "reference_number",
   "guest_name",
   "phone_number",
   "email",
@@ -211,11 +212,16 @@
    "fieldname": "exchange_rate",
    "fieldtype": "Currency",
    "label": "Exchange Rate"
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference #"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-06 08:55:45.264911",
+ "modified": "2024-05-09 10:58:46.816975",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Desk Folio",

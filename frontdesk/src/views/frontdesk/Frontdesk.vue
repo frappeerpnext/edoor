@@ -1183,7 +1183,7 @@ function setRoomTypeColor() {
          
 
                 if (el) {
-                    el.style.backgroundColor = r.room_type_color;
+                    el.style.backgroundColor = r?.room_type_color;
                 }
 
             })
@@ -1263,7 +1263,7 @@ function showConflictRoom(conflig_rooms) {
 
                         } else {
                             room_type_el.parentNode.style.backgroundColor = '';
-                            el.style.backgroundColor = r.room_type_color;
+                            el.style.backgroundColor = r?.room_type_color;
                         }
                     })
                 })
@@ -1277,7 +1277,10 @@ function showConflictRoom(conflig_rooms) {
 
                     } else {
                         room_type_el.parentNode.style.backgroundColor = '';
-                        el.style.backgroundColor = r.room_type_color;
+                        
+                          el.style.backgroundColor = c.room_type_color;
+                        
+                        
                     }
                 })
             }

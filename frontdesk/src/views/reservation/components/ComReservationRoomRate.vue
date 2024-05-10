@@ -37,6 +37,11 @@
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
         </template>
       </Column>
+      <Column  :header="$t('Pax(A/C)')" bodyClass="text-center" headerClass="text-center">
+        <template #body="{ data }">
+          <span @click="onEditRoomRate(data)" class="p-0 link_line_action1" >{{ data?.adult }} / {{ data?.child }}</span>
+        </template>
+      </Column>
       <Column field="reservation_stay" :header="$t('Stay') + '#' " bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
           <button @click="showReservationStayDetail(slotProps.data?.reservation_stay)" class="link_line_action w-auto">
@@ -89,7 +94,7 @@
       </Column>
       <ColumnGroup type="footer">
         <Row>
-          <Column :footer="$t('Total') + ':'" :colspan="6" footerStyle="text-align:right" />
+          <Column :footer="$t('Total') + ':'" :colspan="7" footerStyle="text-align:right" />
           <Column footerStyle="text-align:center">
             <template #footer>
               {{ rs?.room_rates?.length }} {{$t('Room Night(s)')}}

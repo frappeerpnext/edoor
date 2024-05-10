@@ -16,6 +16,12 @@
                                 <ComStayInfoNoBox label="Posting Date">
                                     {{ moment(doc.posting_date).format("DD-MM-YYYY") }}
                                 </ComStayInfoNoBox>
+                                <ComStayInfoNoBox  label="Reference Number">
+                                   <span v-if="doc.reference_number" class="text-right link_line_action1 -ml-2" @click="opshow" >{{ doc.reference_number }}
+                                   </span>
+                                   <span v-else class="text-right link_line_action1 -ml-2"> <i class="pi pi-pencil" @click="opshow" /> 
+                                </span>  
+                                </ComStayInfoNoBox>
                                 <ComStayInfoNoBox label="Guest">
                                     <span @click="onViewCustomerDetail(doc.guest)"
                                         class="text-right link_line_action1 -ml-2">
@@ -122,12 +128,27 @@
                 </div>
             </div>
         </div>
-
+        <OverlayPanel ref="op">
+            <ComOverlayPanelContent :title="$t('Edit Desk Folio')" @onSave="onSaveEdit" :hideButtonClose="false" @onCancel="opshow(false)">
+            <div class="grid">
+                <div class="col-12">
+                    {{$t('Reference Number')}}
+                    <InputText type="text" class="p-inputtext-sm w-full" v-model="newReferenceNumber" :maxlength="100" />
+                </div>
+                <div class="col-12">
+                    <label>{{ $t('Note') }}</label>
+                    <div class="card w-full flex justify-content-left">
+                        <Textarea class="w-full" v-model="newNoted" autoResize />
+                    </div>
+                </div>
+            </div>
+            </ComOverlayPanelContent> 
+        </OverlayPanel>
     </ComDialogContent>
 </template>
 <script setup>
-
-import { ref, onMounted, inject, getApi, useDialog, computed, onUnmounted } from '@/plugin'
+import OverlayPanel from 'primevue/overlaypanel';
+import { ref, onMounted, inject, getApi, useDialog, computed, onUnmounted ,updateDoc } from '@/plugin'
 import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
 import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folios/ComFolioTransactionSimpleStyle.vue"
 import ComDeskFolioAction from "@/views/desk_folio/components/ComDeskFolioAction.vue"
@@ -141,11 +162,34 @@ const moment = inject("$moment")
 const name = ref()
 const doc = ref()
 const relatedIds = ref()
+const newReferenceNumber = ref();
+const newNoted = ref();
 const totalDocument = ref(0)
-
-
-
+const gv = inject('$gv');
+const op = ref();
 const dialogRef = inject("dialogRef");
+const opshow = (event) => {
+  if (event == false) {
+      op.value.hide()
+  }
+  else {
+      op.value.toggle(event);
+  }
+}
+function onSaveEdit(){
+    updateDoc('Desk Folio', doc.value.name, {
+        reference_number: newReferenceNumber.value,
+        note: newNoted.value
+    }).then((r) => {
+        getData()
+        op.value.hide()
+    }).catch((err) => {
+        getData()   
+    console.log(doc)
+        // saving.value = false
+    })
+}
+
 
 const newDoc = computed(() => {
     return {
@@ -200,6 +244,8 @@ function getData() {
         name: name.value
     }).then(r => {
         doc.value = r.message.desk_folio
+        newReferenceNumber.value = r.message.desk_folio.reference_number
+        newNoted.value = r.message.desk_folio.note
         relatedIds.value = r.message.related_ids
         loading.value = false
     }).catch(err => {
@@ -233,7 +279,6 @@ onMounted(() => {
     getData() 
     window.addEventListener('message', actionRefreshData, false);
 })
-
 onUnmounted(() => {
     window.removeEventListener('message', actionRefreshData, false);
 })

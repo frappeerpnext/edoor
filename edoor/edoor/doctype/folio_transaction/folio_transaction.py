@@ -17,7 +17,8 @@ class FolioTransaction(Document):
 
 		if not self.account_code:
 			frappe.throw("Please select an account code")
-			
+		account_doc = frappe.get_doc("Account Code", self.account_code)
+  
 		if frappe.session.user !="Administrator":
 			if not self.is_new():
 					if self.is_auto_post ==1:
@@ -42,8 +43,9 @@ class FolioTransaction(Document):
 			self.note_by = frappe.session.user
 			self.note_modified = now()
 		if not self.input_amount:
-			if not hasattr(self,"valiate_input_amount"):
-				frappe.throw("Please enter amount")
+			if not  account_doc.allow_zero_amount_posting:
+				if not hasattr(self,"valiate_input_amount"):
+					frappe.throw("Please enter amount")
 		
 		#pheakdey
 		if self.target_transaction_type:
@@ -206,7 +208,7 @@ class FolioTransaction(Document):
 			self.discount_amount = self.discount or 0 
 
 		#update discount account code and bank fee account
-		account_doc = frappe.get_doc("Account Code", self.account_code)
+		
 		self.account_category = account_doc.account_category
 
 		self.discount_account = account_doc.discount_account
@@ -370,7 +372,6 @@ class FolioTransaction(Document):
 
 	def on_update(self):
 		if not hasattr(self,"ignore_update_folio_transaction"):
-			 
 			update_folio_transaction(self)
 
 		
@@ -519,6 +520,7 @@ def update_fetch_from_field(self):
 	
 
 def update_folio_transaction(self):
+
 	#we use this method add folio transaction breakown
 	#1. self is main account transaction
 	#2. Discount Account
@@ -663,7 +665,8 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						"is_night_audit_posting":self.is_night_audit_posting,
 						"reservation_room_rate": self.reservation_room_rate,
 						"source_reservation_stay": self.source_reservation_stay,
-						"stay_room_id": self.stay_room_id
+						"stay_room_id": self.stay_room_id,
+						"is_sub_package_charge":self.is_sub_package_charge
 					}).insert()
 					
 

@@ -2817,7 +2817,7 @@ def post_room_change_to_folio(working_day):
                     cashier_shift=cashier_shift[0]["name"],
                     ignore_validateion_cashier_shift=True,
                     ignore_validate_back_date_transaction=True
-                    )
+                )
                 
     frappe.enqueue("edoor.api.frontdesk.update_transaction_balance_after_run_night_audit", queue='long', working_day=working_day)
 

@@ -19,6 +19,7 @@ def get_report_columns(filters):
 		{"fieldname":"room_type","label":"Room Type", "width":250},
 		{"fieldname":"room_charge","label":"Room Revenue", "width":125, "fieldtype":"Currency","align":"right"},
 		{"fieldname":"room_charge_adjustment","label":"Room Adj", "width":125, "fieldtype":"Currency","align":"right"},
+		{"fieldname":"room_charge_discount","label":"Room Dis.", "width":125, "fieldtype":"Currency","align":"right"},
 		{"fieldname":"other_room_charge","label":"Other Room Revenue", "width":150, "fieldtype":"Currency","align":"right"},
 		{"fieldname":"service_charge","label":"Service Charge", "width":100, "fieldtype":"Currency","align":"right"},
 		{"fieldname":"tax","label":"Tax", "width":75, "fieldtype":"Currency","align":"right"},
@@ -41,10 +42,11 @@ def get_report_data (filters):
 			row=row[0]
 			row["room_charge"] = c["room_charge"] or 0
 			row["room_charge_adjustment"] = c["room_charge_adjustment"] or 0
+			row["room_charge_discount"] = c["room_charge_discount"] or 0
 			row["other_room_charge"] = c["other_room_charge"] or 0
 			row["service_charge"] = c["service_charge"] or 0
 			row["tax"] = c["tax"] or 0
-			row["total_revenue"] = c["room_charge"] + c["room_charge_adjustment"] +  c["other_room_charge"]  + c["service_charge"] + c["tax"]
+			row["total_revenue"] = c["room_charge"] + c["room_charge_discount"] + c["room_charge_adjustment"] +  c["other_room_charge"]  + c["service_charge"] + c["tax"]
 
 
 	#occupy data 
@@ -66,6 +68,7 @@ def get_report_data (filters):
 		"room_number": "Total",
 		"room_charge":sum([d["room_charge"] for d in charge_data]),
 		"room_charge_adjustment":sum([d["room_charge_adjustment"] for d in charge_data]),
+		"room_charge_discount":sum([d["room_charge_discount"] for d in charge_data]),
 		"other_room_charge":sum([d["other_room_charge"] for d in charge_data]),
 		"service_charge":sum([d["service_charge"] for d in charge_data]),
 		"tax":sum([d["tax"] for d in charge_data]),
@@ -80,11 +83,12 @@ def get_room_charge_data(filters):
 	sql="""
 		select
 			room_id,
-			sum(if(account_category='Room Charge',a.amount, 0)) as room_charge,
-			sum(if(account_category='Room Charge Adjustment',a.amount, 0)) as room_charge_adjustment,
-			sum(if(account_category='Other Room Charge',a.amount, 0)) as other_room_charge,
-			sum(if(account_category='Service Charge',a.amount, 0)) as service_charge,
-			sum(if(account_category='Room Tax',a.amount, 0)) as tax
+			sum(if(account_category='Room Charge',a.amount * if(type='Debit',1,-1), 0)) as room_charge,
+			sum(if(account_category='Room Charge Adjustment',a.amount * if(type='Debit',1,-1), 0)) as room_charge_adjustment,
+			sum(if(account_category='Room Discount',a.amount * if(type='Debit',1,-1), 0)) as room_charge_discount,
+			sum(if(account_category='Other Room Charge',a.amount * if(type='Debit',1,-1), 0)) as other_room_charge,
+			sum(if(account_category='Service Charge',a.amount * if(type='Debit',1,-1), 0)) as service_charge,
+			sum(if(account_category='Room Tax',a.amount * if(type='Debit',1,-1), 0)) as tax
 		from `tabFolio Transaction` a
 		where 
 			property=%(property)s and 
@@ -97,7 +101,7 @@ def get_room_charge_data(filters):
 		sql=sql +" and a.room_type_id in  %(room_types)s"
 	
 	sql= sql + " group by a.room_id"
-
+ 
 	data = frappe.db.sql(sql,filters,as_dict=1)
 	return data
 
@@ -150,10 +154,11 @@ def get_summary(filters,data):
 			row=row[0]
 			row["room_charge"] = c["room_charge"] or 0
 			row["room_charge_adjustment"] = c["room_charge_adjustment"] or 0
+			row["room_charge_discount"] = c["room_charge_discount"] or 0
 			row["other_room_charge"] = c["other_room_charge"] or 0
 			row["service_charge"] = c["service_charge"] or 0
 			row["tax"] = c["tax"] or 0
-			row["total_revenue"] = c["room_charge"] + c["room_charge_adjustment"] +  c["other_room_charge"]  + c["service_charge"] + c["tax"]
+			row["total_revenue"] = c["room_charge"] +  c["room_charge_discount"] + c["room_charge_adjustment"] +  c["other_room_charge"]  + c["service_charge"] + c["tax"]
 
 
 	#occupy data 
@@ -174,6 +179,7 @@ def get_summary(filters,data):
 			{ "label":"Total Room","value":len(data),"indicator":"red"},
 			{ "label":"Total Room Revenue","value":sum([d["room_charge"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"red"},
 			{ "label":"Total Room Adj","value":sum([d["room_charge_adjustment"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"blue"},
+			{ "label":"Total Room Discount","value":sum([d["room_charge_discount"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"blue"},
 			{ "label":"Total Other Room Revenue","value":sum([d["other_room_charge"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"green"},
 			{ "label":"Total Service Charge","value":sum([d["service_charge"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"red"},
 			{ "label":"Total Tax","value":sum([d["tax"] for d in get_room_charge_data(filters)]),"datatype": "Currency","indicator":"blue"},
