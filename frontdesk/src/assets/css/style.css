@@ -1813,17 +1813,17 @@ flex-direction: column;
     background: #dbdbdb;
 }
 .package_room_rate{
-    font-size: 1.2rem;
-    padding: 2px 13px;
-    background: #e9e7ff;
-    border-color: #453acc;
+    width: auto;
+    display: inline-block;
+    padding: 4px;
+    border-radius: 8px;
+    background: #594fd033;
+    margin-top: 3px !important;
     cursor: pointer;
-    color: #4337cb;
-    border-radius: 4px;
 }
 .package_room_rate:hover{
-    background: rgb(124, 113, 252);
-    color: #e9e7ff;
+    background: #5a4fd069;
+    color: #0000006a;
 }
 .bg-kpi-owner-db{
     background-color: #2100A6;

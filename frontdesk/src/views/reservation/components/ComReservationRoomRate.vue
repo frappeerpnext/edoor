@@ -27,19 +27,16 @@
         <strong>{{ $t('Total Records') }}: <span class="ttl-column_re">{{rs?.room_rates.length }}</span></strong>
        </div>
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-      <Column  field="is_package" :header="$t('Package')" bodyClass="text-center" headerClass="text-center">
+      <Column  field="is_package"  bodyClass="text-center p-0" headerClass="text-center p-0">
         <template #body="slotProps">
-          <span><i v-if="slotProps.data?.is_package"  class="pi pi-folder-open package_room_rate"></i></span>
+          <span v-if="slotProps.data?.is_package" class="package_room_rate" >
+          <ComIcon icon="iconPackage" height="20px" /> 
+          </span>
         </template>
       </Column>
       <Column field="date" :header="$t('Date')" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
-        </template>
-      </Column>
-      <Column  :header="$t('Pax(A/C)')" bodyClass="text-center" headerClass="text-center">
-        <template #body="{ data }">
-          <span @click="onEditRoomRate(data)" class="p-0 link_line_action1" >{{ data?.adult }} / {{ data?.child }}</span>
         </template>
       </Column>
       <Column field="reservation_stay" :header="$t('Stay') + '#' " bodyClass="text-center" headerClass="text-center">
@@ -62,6 +59,11 @@
           <Button  class="p-0 link_line_action1 overflow-hidden text-overflow-ellipsis whitespace-nowrap max-w-12rem"  @click="onViewCustomerDetail(slotProps.data.guest)" link>
             {{slotProps.data.guest_name}}
          </Button>
+        </template>
+      </Column>
+      <Column  :header="$t('Pax(A/C)')" bodyClass="text-center" headerClass="text-center">
+        <template #body="{ data }">
+          <span @click="onEditRoomRate(data)" class="p-0 link_line_action1" >{{ data?.adult }} / {{ data?.child }}</span>
         </template>
       </Column>
       <Column field="rate_type" :header="$t('Rate Type')" bodyClass="text-center" headerClass="text-center">

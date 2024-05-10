@@ -205,7 +205,7 @@
                                 <template #prefix>
                                     <div>
                                         <div class="flex items-center">
-                                            <Checkbox input-id="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change"
+                                            <Checkbox input-id="tax-1" v-model="use_tax.use_tax_1" @change="onUseTax1Change"
                                                 :binary="true" />
                                         </div>
                                     </div>
@@ -226,7 +226,7 @@
                                 <template #prefix>
                                     <div>
                                         <div class="flex items-center">
-                                            <Checkbox input-id="tax-2" @input="onUseTax2Change" v-model="use_tax.use_tax_2"
+                                            <Checkbox input-id="tax-2" @change="onUseTax2Change" v-model="use_tax.use_tax_2"
                                                 :binary="true" />
                                         </div>
                                     </div>
@@ -247,7 +247,7 @@
                                 <template #prefix>
                                     <div>
                                         <div class="flex items-center">
-                                            <Checkbox input-id="tax-3" @input="onUseTax3Change" v-model="use_tax.use_tax_3"
+                                            <Checkbox input-id="tax-3" @change="onUseTax3Change" v-model="use_tax.use_tax_3"
                                                 :binary="true" />
                                         </div>
                                     </div>

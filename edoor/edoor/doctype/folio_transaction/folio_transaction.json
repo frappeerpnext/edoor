@@ -44,6 +44,8 @@
   "reservation_type",
   "column_break_zhod",
   "parent_reference",
+  "adult",
+  "child",
   "column_break_fwos",
   "quantity",
   "input_amount",
@@ -278,9 +280,9 @@
    "label": "Discount Amount"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "tax_rule_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Tax Rule"
   },
   {
@@ -862,9 +864,9 @@
    "label": "Reference Folio Transaction"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "section_break_ciha",
-   "fieldtype": "Section Break",
-   "hidden": 1
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "column_break_kwtq",
@@ -1053,11 +1055,21 @@
    "fieldname": "is_sub_package_charge",
    "fieldtype": "Check",
    "label": "Is Sub Package Charge"
+  },
+  {
+   "fieldname": "adult",
+   "fieldtype": "Int",
+   "label": "Adult"
+  },
+  {
+   "fieldname": "child",
+   "fieldtype": "Int",
+   "label": "Child"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-09 19:00:30.624076",
+ "modified": "2024-05-10 10:24:24.597715",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

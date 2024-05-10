@@ -15,11 +15,13 @@
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
                     <DataTable :rowClass="rowClass" class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column  field="is_package" :header="$t('Package')" bodyClass="text-center" headerClass="text-center">
-                            <template #body="slotProps">
-                            <span><i v-if="slotProps.data?.is_package"  class="pi pi-gift package_room_rate"></i></span>
-                            </template>
-                        </Column>
+                        <Column  field="is_package"  bodyClass="text-center p-0" headerClass="text-center p-0">
+        <template #body="slotProps">
+          <span v-if="slotProps.data?.is_package" class="package_room_rate" >
+          <ComIcon icon="iconPackage" height="20px" /> 
+          </span>
+        </template>
+      </Column>
                         <Column field="name" :header="$t('RES STAY #')">
                         <template #body="slotProps">
                             <button @click="showReservationStayDetail(slotProps.data.name)" class="link_line_action w-auto">

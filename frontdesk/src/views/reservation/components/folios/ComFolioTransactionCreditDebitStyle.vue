@@ -11,6 +11,13 @@
             <Column selectionMode="multiple" headerStyle="width: 3rem" v-if="showCheckbox">
 
             </Column>
+            <Column  field="is_package"  bodyClass="text-center p-0" headerClass="text-center p-0">
+        <template #body="slotProps">
+          <span @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.is_package" class="package_room_rate" >
+          <ComIcon icon="iconPackage" height="20px" /> 
+          </span>
+        </template>
+      </Column>
             <Column field="name" :header="$t('Name')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')" >{{
@@ -82,7 +89,7 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column :footer="$t('Total') + ':'" :colspan="showCheckbox ? 5 : 4" footerStyle="text-align:right" />
+                    <Column :footer="$t('Total') + ':'" :colspan="showCheckbox ? 6 : 5" footerStyle="text-align:right" />
                     <Column footerStyle="text-align:center">
                         <template #footer>
                             {{ totalQuantity }}
@@ -161,7 +168,7 @@ const folio_summary = ref()
 
 const dialog = useDialog();
 const show = ref()
-
+const saveDisplayViewFolioTransaction = ref('');
 function onRowSelection(r) {
 
     selectedfolioTransactions.value.push(...folioTransactions.value.filter(x => x.parent_reference == r.data.name))
@@ -185,10 +192,11 @@ watch(() => props.folio, (newValue, oldValue) => {
 
 //load data
 function LoadFolioTransaction() {
-
+    saveDisplayViewFolioTransaction.value = localStorage.getItem('displayViewFolioTransaction');
     getApi('reservation.get_folio_transaction', {
         transaction_type: props.doctype,
-        transaction_number: selectedFolio.value.name
+        transaction_number: selectedFolio.value.name,
+        breakdown_account_code:saveDisplayViewFolioTransaction.value
     })
         .then((result) => {
             folioTransactions.value = result.message
@@ -315,6 +323,13 @@ const windowActionHandler = async function (e) {
     }
 }
 onMounted(() => {
+    saveDisplayViewFolioTransaction.value = localStorage.getItem('displayViewFolioTransaction');
+
+window.addEventListener('storage', (event) => {
+    if (event.key === 'displayViewFolioTransaction') {
+        console.log(localStorage.getItem('displayViewFolioTransaction'))
+    }
+  });
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){

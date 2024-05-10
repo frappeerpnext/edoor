@@ -67,6 +67,16 @@
                             <i class="pi pi-times-circle" />
                             <span class="ml-2"> {{ $t('Delete Folio') }} </span>
                         </button>
+                        <button v-if="displayViewFolio == 0" @click="savedisplayView(1)"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-history" />
+                            <span class="ml-2"> {{ $t('Display Account Code Breakdown') }} </span>
+                        </button>
+                        <button v-if="displayViewFolio == 1" @click="savedisplayView(0)"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-history" />
+                            <span class="ml-2"> {{ $t('Display Only Main Account Code') }} </span>
+                        </button>
                         <button @click="onAuditTrail"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-history" />
@@ -119,7 +129,7 @@ import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTax
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
-
+const displayViewFolio = ref('');
 
 const props = defineProps({
     doctype:String,
@@ -715,8 +725,21 @@ function onAuditTrail() {
         }
     });
 }
- 
+
+function savedisplayView(value) {
+ localStorage.setItem('displayViewFolioTransaction', value);   
+   window.postMessage({action:"load_reservation_folio_list"},"*")
+window.postMessage({action:"load_reservation_stay_folio_list"},"*")
+
+
+}; 
 onMounted(()=>{
+    const saveDisplayViewFolioTransaction = localStorage.getItem('displayViewFolioTransaction');
+    if (saveDisplayViewFolioTransaction) {
+        displayViewFolio.value = saveDisplayViewFolioTransaction;
+    }else{
+        displayViewFolio.value = 0
+    }
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){

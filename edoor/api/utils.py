@@ -869,7 +869,9 @@ def add_room_charge_to_folio(folio,rate,is_package=0,is_night_audit_posing=0,not
             "stay_room_id": rate.stay_room_id,
             "is_night_audit_posing":is_night_audit_posing,
             "note":note,
-            "is_package":is_package
+            "is_package":is_package,
+            "adult": rate.adult or 1,
+            "child":rate.child or 0
         }
         
         doc = frappe.get_doc(doc)
@@ -915,8 +917,9 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
         "is_package_inclusion_item":1,
         "reference_folio_transaction":rate["reference_folio_transaction"],
         "parent_reference":rate["parent_reference"],
-        "is_sub_package_charge":1
-        
+        "is_sub_package_charge":1,
+        "adult":rate["adult"],
+        "child":rate["child"]
     }
     
     doc = frappe.get_doc(doc)
@@ -1897,6 +1900,33 @@ def get_package_detail(rate_type=None,property=None, business_source=None,date=N
         "account_code":package_account_code_doc
     }
     
+    
+
+def get_breakdown_package_charge_code(stay_doc, room_rate,posting_rules=[]):
+    package_charge_codes = []
+    if stay_doc.inclusion_items:
+
+        for p in [d for d in stay_doc.inclusion_items if d.posting_rule in posting_rules]:
+            charge = {"account_code":p.account_code}
+            
+            if p.charge_rule=="Stay":
+                charge["rate"] = p.rate
+            elif p.charge_rule=="Pax":
+                charge["rate"] = (p.adult_rate * room_rate.adult) + (p.child_rate*room_rate.child)
+            
+            elif p.charge_rule=="Adult":
+                charge["rate"] = (p.adult_rate * room_rate.adult) 
+                
+            elif p.charge_rule=="Child":
+                charge["rate"] = (p.child_rate * room_rate.child) 
+            
+            package_charge_codes.append(charge)
+            
+        
+        return package_charge_codes
+    
+    return []
+
 @frappe.whitelist()
 def ping():
     return "pong"

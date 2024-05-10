@@ -15,9 +15,11 @@
         <strong> {{$t('Total Records') }}: <span class="ttl-column_re">{{ rs?.room_rates?.length }}</span></strong>
       </div>
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-      <Column  headerStyle="width: 3rem" field="is_package" header="" bodyClass="text-center" headerClass="text-center">
-        <template #body="slotProps">
-          <span><i v-if="slotProps.data?.is_package"  class="pi pi-gift package_room_rate"></i></span>
+      <Column  headerStyle="width: 3rem" field="is_package" bodyClass="text-center p-0" headerClass="text-center p-0">
+        <template  #body="slotProps" >
+          <span v-if="slotProps.data?.is_package" class="package_room_rate" >
+          <ComIcon icon="iconPackage" height="20px" /> 
+          </span>
         </template>
       </Column>
       <Column  headerStyle="width: 3rem" field="date" :header="$t('Date')" bodyClass="text-center" headerClass="text-center">

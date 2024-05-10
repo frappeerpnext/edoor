@@ -46,6 +46,7 @@
     <img v-else-if="icon == 'iconCamera'" :style="{'height' : height}" :class="class" :src="iconCamera"/>
     <img v-else-if="icon == 'iconMoveStay'" :style="{'height' : height}" :class="class" :src="iconMoveStay"/>
     <img v-else-if="icon == 'iconWalkIn'" :style="{'height' : height}" :class="class" :src="iconWalkIn"/>
+    <img v-else-if="icon == 'iconPackage'" :style="{'height' : height}" :class="class" :src="iconPackage"/>
 </template>
 <script setup>
 const theme =window.theme
@@ -109,6 +110,7 @@ import iconConflictRoom from '@/assets/svg/icon-conflict-room.svg'
 import iconCamera from '@/assets/svg/icon-camera.svg'
 import iconMoveStay from '@/assets/svg/icon-move_stay.svg'
 import iconWalkIn from '@/assets/svg/walk-in-icon.svg'
+import iconPackage from '@/assets/svg/package-icon.svg'
 
 
 </script>

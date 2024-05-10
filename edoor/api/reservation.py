@@ -5,7 +5,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import  generate_room
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_backdate_permission, validate_role,update_keyword,add_package_inclusion_charge_to_folio
+from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_backdate_permission, validate_role,update_keyword,add_package_inclusion_charge_to_folio,get_breakdown_package_charge_code
 import frappe
 from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
@@ -755,9 +755,9 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 def dome():
     return post_charge_to_folio_afer_check_in(
         working_day=get_working_day("ESTC HOTEL"),
-        reservation="RS2024-0729",
-        stays=[{"stay_name":"ST2024-3554","paid_by_master_room":1}],
-        master_folio=frappe.get_doc("Reservation Folio","FN2024-0708")
+        reservation="RS2024-0734",
+        stays=[{"stay_name":"ST2024-3559","paid_by_master_room":1}],
+        master_folio=frappe.get_doc("Reservation Folio","FN2024-0713")
     )
     
 
@@ -789,7 +789,8 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                 add_room_charge_to_folio(folio,r )
             else:
                 # pos room charge exclude package charge 
-                package_charges = get_breakdown_package_charge_code(stay_doc, r)
+                posting_rules = ["Everyday","Everyday Except Checked Out Date","Checked In Date"]
+                package_charges = get_breakdown_package_charge_code(stay_doc, r, posting_rules)
                 
                 
                 # get discount percentage if have discount amount
@@ -811,7 +812,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                         rate_data = {
                             "account_code":p["account_code"],
                             "reference_folio_transaction":folio_tran_doc.name,
-                            "parent_reference":folio_tran_doc.name,
+                            "parent_reference":"",
                             "date":r["date"],
                             "room_type_id":r["room_type_id"],
                             "room_id":r["room_id"],
@@ -821,6 +822,8 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                             "name":r.name,
                             "reservation_stay":r["reservation_stay"],
                             "stay_room_id":r.stay_room_id,
+                            "adult":r.adult,
+                            "child":r.child,
                             "note": "This folio transaction is package charge breakdown from folio transaction number " + folio_tran_doc.name
                             
                         }   
@@ -854,42 +857,18 @@ def update_sub_package_charge_to_folio_transaction(folio_transaction_name=None, 
         if data:
             frappe.db.sql("update `tabFolio Transaction` set total_sub_package_charge={} where name='{}'", data[0]["amount"],folio_transaction_name)
     elif reservation_folio:
-        data =frappe.db.sql("select parent_reference, sum(total_amount) as amount from `tabFolio Transaction` where is_sub_package_charge=1 and coalesce(reference_folio_transaction,'')!='' and transaction_number='{}' and transaction_type='Reservation Folio' group by parent_reference".format(reservation_folio) ,as_dict=1)
+        data =frappe.db.sql("select reference_folio_transaction, sum(total_amount) as amount from `tabFolio Transaction` where is_sub_package_charge=1 and coalesce(reference_folio_transaction,'')!='' and transaction_number='{}' and transaction_type='Reservation Folio' group by reference_folio_transaction".format(reservation_folio) ,as_dict=1)
         for d in data:
-            frappe.db.sql("update `tabFolio Transaction` set total_sub_package_charge={} where name='{}'", d["amount"],d["parent_reference"])
+            frappe.db.sql("update `tabFolio Transaction` set total_sub_package_charge={} where name='{}'", d["amount"],d["reference_folio_transaction"])
     elif reservation_folios:
-        data =frappe.db.sql("select parent_reference, sum(total_amount) as amount from `tabFolio Transaction` where is_sub_package_charge=1 and coalesce(reference_folio_transaction,'')!='' and transaction_number in %(reservation_folio)s and transaction_type='Reservation Folio' group by parent_reference",{"reservation_folio":reservation_folios} ,as_dict=1)
+        data =frappe.db.sql("select reference_folio_transaction, sum(total_amount) as amount from `tabFolio Transaction` where is_sub_package_charge=1 and coalesce(reference_folio_transaction,'')!='' and transaction_number in %(reservation_folio)s and transaction_type='Reservation Folio' group by reference_folio_transaction",{"reservation_folio":reservation_folios} ,as_dict=1)
         for d in data:
-            frappe.db.sql("update `tabFolio Transaction` set total_sub_package_charge={} where name='{}'".format( d["amount"],d["parent_reference"]))
+            frappe.db.sql("update `tabFolio Transaction` set total_sub_package_charge={} where name='{}'".format( d["amount"],d["reference_folio_transaction"]))
         
 
     frappe.db.commit()
 
-    
-def get_breakdown_package_charge_code(stay_doc, room_rate):
-    package_charge_codes = []
- 
-    if stay_doc.inclusion_items:
 
-        for p in stay_doc.inclusion_items:
-            charge = {"account_code":p.account_code}
-            
-            if p.charge_rule=="Stay":
-                charge["rate"] = p.rate
-            elif p.charge_rule=="Pax":
-                charge["rate"] = (p.adult_rate * room_rate.adult) + (p.child_rate*room_rate.child)
-            
-            elif p.charge_rule=="Adult":
-                charge["rate"] = (p.adult_rate * room_rate.adult) 
-                
-            elif p.charge_rule=="Child":
-                charge["rate"] = (p.child_rate * room_rate.child) 
-            
-            
-            package_charge_codes.append(charge)
-            return package_charge_codes
-    
-    return []
             
 
 @frappe.whitelist(methods="POST")
@@ -2108,7 +2087,7 @@ def update_master_room(reservation):
 @frappe.whitelist()
 def get_folio_transaction(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1", breakdown_account_code = "0"):
 
-    if breakdown_account_code == "1":
+    if cint(breakdown_account_code) ==1:
         return get_folio_transaction_with_breakdown_account_code(transaction_type=transaction_type, transaction_number=transaction_number,reservation=reservation, reservation_stay=reservation_stay,show_account_code=show_account_code)
         
     else:
@@ -2134,6 +2113,7 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
         filters["reservation"]=reservation
     if reservation_stay:
         filters["reservation_stay"]=reservation_stay
+        
     data = frappe.db.get_list("Folio Transaction", fields=["*"], filters=filters, page_length=1000, order_by='name')
     
  
@@ -2198,7 +2178,8 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
              "is_auto_post":d["is_auto_post"],
              "total_amount":d["total_amount"],
               "sale":d.sale,
-              "tbl_number":d.tbl_number
+              "tbl_number":d.tbl_number,
+              "is_package":d.is_package
         })
         
         if  d.discount_amount > 0:
@@ -2316,7 +2297,8 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
              "is_auto_post":d["is_auto_post"],
              "total_amount":d["total_amount"],
               "sale":d.sale,
-              "tbl_number":d.tbl_number
+              "tbl_number":d.tbl_number,
+              "is_package":d.is_package
         })
         
 

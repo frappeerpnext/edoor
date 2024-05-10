@@ -18,6 +18,13 @@
                         {{slotProps.data?.name}}</button>
                 </template>
             </Column>
+            <Column  field="is_package"  bodyClass="text-center p-0" headerClass="text-center p-0">
+        <template #body="slotProps">
+          <span @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.is_package" class="package_room_rate" >
+          <ComIcon icon="iconPackage" height="20px" /> 
+          </span>
+        </template>
+      </Column>
             <Column field="posting_date" :header="$t('Date')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span>{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY") }}</span>

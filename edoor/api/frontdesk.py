@@ -1,7 +1,7 @@
 import secrets
 import time
  
-from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio, get_months, validate_role
+from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio, get_months, validate_role,get_breakdown_package_charge_code,add_package_inclusion_charge_to_folio
 
 import frappe
 import datetime
@@ -2790,7 +2790,8 @@ def update_daily_property_data(property, working_date):
 
 
 @frappe.whitelist()
-def post_room_change_to_folio(working_day):  
+def post_room_change_to_folio(working_day): 
+    folio_names=[] 
     cashier_shift = frappe.db.sql( "select name from `tabCashier Shift` where working_day='{}' and pos_profile='{}' order by creation desc limit 1".format(working_day.name,working_day.pos_profile),as_dict=1)
     
     
@@ -2809,17 +2810,92 @@ def post_room_change_to_folio(working_day):
 
             
             if folio:
-                add_room_charge_to_folio(
-                    folio= folio,
-                    rate= r,
-                    is_night_audit_posing=1,
-                    working_day=working_day.name,
-                    cashier_shift=cashier_shift[0]["name"],
-                    ignore_validateion_cashier_shift=True,
-                    ignore_validate_back_date_transaction=True
-                )
+                if not stay_doc.inclusion_items:
+                    # get folio name to update after post room charge to folio
+                    folio_names.append(folio.name)
+                    add_room_charge_to_folio(
+                        folio= folio,
+                        rate= r,
+                        is_night_audit_posing=1,
+                        working_day=working_day.name,
+                        cashier_shift=cashier_shift[0]["name"],
+                        ignore_validateion_cashier_shift=True,
+                        ignore_validate_back_date_transaction=True
+                    )
+                else:
+                    # pos room charge exclude package charge 
+                    posting_rules = ["Everyday","Everyday Except Checked Out Date"]
+                    package_charges = get_breakdown_package_charge_code(stay_doc, r, posting_rules)
+                    
+                    
+                    # get discount percentage if have discount amount
+                    
+                    # Discount for sub package charge code is percent only 
+                    # we calculate this percentage from base account code charge and pacage charge amount
+                        
+                    if r.discount and r.discount_type=='Amount':
+                        r.discount_type = "Percent"
+                        r.discount = r.discount / r.input_rate 
+                    
+                    r.input_rate = r.input_rate - sum([d["rate"] for d in package_charges]) 
+                    # get folio name to update after post room charge to folio
+                    folio_names.append(folio.name)
+                    folio_tran_doc = add_room_charge_to_folio( folio= folio,rate = r, is_package=1,ignore_validateion_cashier_shift=True,ignore_validate_back_date_transaction=True,ignore_update_reservation_folio=True )
+                    if folio_tran_doc:
+                        # check if room rate have discount then minute discount from package room rate
+                        for p in package_charges: 
+                            rate_data = {
+                                "account_code":p["account_code"],
+                                "reference_folio_transaction":folio_tran_doc.name,
+                                "parent_reference":"",
+                                "date":r["date"],
+                                "room_type_id":r["room_type_id"],
+                                "room_id":r["room_id"],
+                                "input_rate":p["rate"],
+                                "tax_rule":frappe.db.get_value("Account Code",p["account_code"],"tax_rule"),
+                                "is_auto_post":1,
+                                "name":r.name,
+                                "reservation_stay":r["reservation_stay"],
+                                "stay_room_id":r.stay_room_id,
+                                "adult":r.adult,
+                                "child":r.child,
+                                "note": "This folio transaction is package charge breakdown from folio transaction number " + folio_tran_doc.name
+                                
+                            }   
+                            if rate_data["tax_rule"]:
+                                tax_rule_doc = frappe.get_doc("Tax Rule", rate_data["tax_rule"])
+                                
+                                rate_data["tax_1_rate"] = tax_rule_doc.tax_1_rate
+                                rate_data["tax_2_rate"] = tax_rule_doc.tax_2_rate
+                                rate_data["tax_3_rate"] = tax_rule_doc.tax_3_rate
+                                rate_data["rate_include_tax"] =  'Yes' if tax_rule_doc.is_rate_include_tax else 'No'
+                            else:
+                                rate_data["tax_1_rate"] =0
+                                rate_data["tax_2_rate"] = 0
+                                rate_data["tax_3_rate"] = 0
+                                rate_data["rate_include_tax"] =  'No'
+                            
+                            rate_data["discount_type"] ="Percent"
+                            rate_data["discount"] = r.discount
+                            
+                            add_package_inclusion_charge_to_folio(
+                                folio= folio,
+                                rate= rate_data ,
+                                ignore_update_reservation_folio=True,
+                                ignore_validateion_cashier_shift=True,
+                                ignore_validate_back_date_transaction=True,
+                                is_night_audit_posing=1,
+                                working_day=working_day.name,
+                                cashier_shift=cashier_shift[0]["name"]
+
+                            )
+                        
                 
+    if folio_names:  
+        frappe.enqueue("edoor.api.reservation.update_sub_package_charge_to_folio_transaction",queue="short",reservation_folios = folio_names)           
     frappe.enqueue("edoor.api.frontdesk.update_transaction_balance_after_run_night_audit", queue='long', working_day=working_day)
+    
+
 
 @frappe.whitelist()
 def update_transaction_balance_after_run_night_audit(working_day):
