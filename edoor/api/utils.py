@@ -15,6 +15,7 @@ import time
 import copy
 from functools import lru_cache
 
+    
 @frappe.whitelist(allow_guest=True)
 def get_theme():
     return frappe.db.get_single_value("ePOS Settings","app_theme")
@@ -1973,6 +1974,10 @@ def get_breakdown_package_charge_code(stay_doc, room_rate,posting_rules=[]):
         return package_charge_codes
     
     return []
+
+
+    
+    
 
 @frappe.whitelist()
 def ping():

@@ -14,6 +14,8 @@ from edoor.api.frontdesk import get_working_day
 from frappe import _
 from frappe.utils import date_diff,today ,add_months, add_days,getdate,add_to_date
 import frappe
+from epos_restaurant_2023.utils import get_date_range_by_timespan
+
 def execute(filters=None):
 	if not filters.property:
 		filters.property = frappe.defaults.get_user_default("business_branch")
@@ -24,13 +26,12 @@ def execute(filters=None):
 		else:
 			filters.property = business_branch[0]
 
-		
-	if filters.timespan=="This Month":
-		
-		filters.start_date = getdate(today()).replace(day=1)
-		 
-		filters.end_date = add_to_date( filters.start_date,months=1,days=-1)
-		 
+	
+	if filters.timespan!="Date Range":
+		date_range = get_date_range_by_timespan(filters.timespan)
+		filters.start_date =date_range["start_date"]
+		filters.end_date = date_range["end_date"]
+  
   
 	if filters.parent_row_group==filters.row_group:
 		frappe.throw("Parent row group and row group can not be the same")

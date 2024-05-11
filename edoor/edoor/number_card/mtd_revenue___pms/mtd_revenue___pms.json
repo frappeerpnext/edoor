@@ -1,0 +1,23 @@
+{
+ "color": "#1684d9",
+ "creation": "2024-05-11 17:51:10.006909",
+ "docstatus": 0,
+ "doctype": "Number Card",
+ "filters_json": "{\"timespan\":\"This Month\",\"start_date\":\"2024-04-30T17:00:00.000Z\",\"end_date\":\"2024-05-30T17:00:00.000Z\",\"row_group\":\"Month\",\"show_columns\":[],\"show_summary\":1,\"show_summary_field\":[],\"chart_type\":\"bar\",\"show_chart_series\":[]}",
+ "function": "Count",
+ "idx": 9,
+ "is_public": 0,
+ "is_standard": 1,
+ "label": "MTD Revenue - PMS",
+ "modified": "2024-05-11 18:06:28.142668",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "MTD Revenue - PMS",
+ "owner": "Administrator",
+ "report_field": "total_charge",
+ "report_function": "Sum",
+ "report_name": "Revenue and Occupancy Summary Report",
+ "show_percentage_stats": 1,
+ "stats_time_interval": "Daily",
+ "type": "Report"
+}

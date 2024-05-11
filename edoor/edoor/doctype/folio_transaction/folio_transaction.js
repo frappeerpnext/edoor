@@ -18,19 +18,13 @@ frappe.ui.form.on("Folio Transaction", {
 
     if (frm.doc.source_transaction_number) {
       frm.set_intro(
-        "This transaction has been transferred from the Reservation Folio " + "<a href=" + '/app/reservation-folio/' + frm.doc.source_transaction_number + "><strong>"  + frm.doc.source_transaction_number + "</strong></a>.", "blue"
+        "This transaction has been transferred from the " + frm.doc.source_transaction_type + " " + "<a href=" + onchangeURL(frm.doc) + frm.doc.source_transaction_number + "><strong>"  + frm.doc.source_transaction_number + "</strong></a>.", "blue"
       );
     }
 
-    if (frm.doc.target_transaction_number && frm.doc.transaction_type == "Reservation Folio") {
+    if (frm.doc.target_transaction_number) {
       frm.set_intro(
-        "This folio transaction transferred to " + frm.doc.target_transaction_type + " " + "<a href=" + '/app/reservation-folio/' + frm.doc.target_transaction_number + "><strong>" + frm.doc.target_transaction_number + "</strong></a>", "blue"
-      );
-    }
-
-    if (frm.doc.target_transaction_number && frm.doc.transaction_type == "City Ledger") {
-      frm.set_intro(
-        "This folio transaction transferred to " + frm.doc.target_transaction_type + " " + "<a href=" + '/app/reservation-folio/' + frm.doc.target_transaction_number + "><strong>" + frm.doc.target_transaction_number + "</strong></a>", "blue"
+        "This transaction has been transferred to " + frm.doc.target_transaction_type + " " + "<a href=" + onchangeURL(frm.doc) + frm.doc.target_transaction_number + "><strong>" + frm.doc.target_transaction_number + "</strong></a>", "blue"
       );
     }
 
@@ -81,7 +75,7 @@ frappe.ui.form.on("Folio Transaction", {
       frm.add_custom_button(
         __("View Desk Folio"),
         function () {
-          window.open("/app/desk-folio/" + frm.doc.transaction_number);
+          window.location.href = "/app/desk-folio/" + frm.doc.transaction_number;
         },
         __("View")
       );
@@ -121,3 +115,15 @@ function updateTransactionList(frm) {
 	$(frm.fields_dict['summary_list'].wrapper).html(html_summary);
 	frm.refresh_field('summary_list');
 } 
+
+function onchangeURL(frm) {
+  if (frm.source_transaction_type == "Desk Folio" || frm.target_transaction_type == "Desk Folio" ) {
+    return "/app/desk-folio/"
+  }else if (frm.source_transaction_type == "Reservation Folio" || frm.target_transaction_type == "Reservation Folio") {
+    return "/app/reservation-folio/" 
+  }else if (frm.source_transaction_type == "Deposit Ledger" || frm.target_transaction_type == "Deposit Ledger") {
+    return "/app/deposit-ledger/"
+  }else if (frm.source_transaction_type == "City Ledger" || frm.target_transaction_type == "City Ledger") {
+    return "/app/city-ledger/"
+  } 
+}

@@ -57,12 +57,14 @@ const doc = getApi('frontdesk.get_paymet_chart_data', {
             labels:data.value.labels,
             datasets:[{
                 values:data.value.datasets.map(r=>r.values),
-                show_label: false
+       
             }
         ]
             },
             type: "pie",
-            colors:data.value.datasets.map(r=>r.color)
+            colors:data.value.datasets.map(r=>r.color),
+            show_legend: false
+            
         };
 
   new Chart("#chart", chartConfig);

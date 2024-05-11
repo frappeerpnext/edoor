@@ -18,7 +18,7 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			"fieldname":"timespan",
 			"label": __("Timespan"),
 			"fieldtype": "Select",
-			"options": ["This Month", "Date Range"],
+			"options": ["Today","Yesterday","This Month","Next Month","Last Month","This Year","Last Year", "Date Range"],
 			"default": ["This Month"],
 			hide_in_filter: 1,
 			on_change: function() {
