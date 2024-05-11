@@ -24,7 +24,10 @@
                     <ComSelect class="w-full min-w-full" id="dis_type" 
                      v-model="data.tax_invoice_type"  :options="['Tax Invoice','Commercial Invoice']" :clear="false" />
                 </div>
-                <div class="text-center shadow-1 p-3 mt-3 border-round-xl">
+                <div class="text-center shadow-1 p-3 mt-3 border-round-xl relative overflow-hidden">
+                    <div v-tippy="'Update Exchange'" class="bgsummaryday flex justify-content-center align-items-center conten-btn border-1 w-2rem h-2rem cursor-pointer  absolute right-2 top-1 border-circle border-round-xl">
+<i class="pi pi-pencil" style="font-size: 12px;" />
+                    </div>
                         <div class="text-2xl">Rate Exchange</div>
                         <span class="text-2xl">
                             <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ data?.base_currency }}) =

@@ -251,6 +251,7 @@
    "label": "Quantity"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "discount_section",
    "fieldtype": "Section Break",
    "label": "Discount"
@@ -351,6 +352,7 @@
    "label": "Note"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "section_break_31",
    "fieldtype": "Section Break"
   },
@@ -401,6 +403,7 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "bank_fee_section",
    "fieldtype": "Section Break",
    "label": "Bank Fee"
@@ -420,6 +423,7 @@
    "label": "Bank Fee Amount"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "stay_information_section",
    "fieldtype": "Section Break",
    "label": "Stay Information"
@@ -1071,7 +1075,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-10 18:48:02.187472",
+ "modified": "2024-05-11 08:43:46.722351",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

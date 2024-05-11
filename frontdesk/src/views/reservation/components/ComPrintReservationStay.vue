@@ -1,27 +1,22 @@
 <template>
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
-        <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
-            <div class="grid mb-3 overflow-auto flex-nowrap	lg:flex-wrap">
-                <div class="col flex gap-2">
+        <div class="p-3 view-table-iframe-dialog grid" style="height: 85vh;">
+            <div class="mb-3 overflow-auto col-4 lg:col-3 gap-2">
+                <div class="flex flex-column gap-2">
                     <div>
-                        <Dropdown v-model="filters.selected_folio"  :options="dialogRef.data.folios" optionLabel="name" 
-                placeholder="Select Folio" class="w-full md:w-14rem" @change="onSelectFolio" />
+                        <Dropdown v-model="filters.selected_folio"  :options="dialogRef.data.folios" optionLabel="name" placeholder="Select Folio" class="w-full" @change="onSelectFolio" />
                     </div>
-                    <div>
-                        
+                    <div> 
                         <ComLetterHead v-model="filters.letterHead"  @onSelect="onSelectLetterHead"/>
-                        
                     </div>
-                    
-                    <div>
-                        
+                    <div> 
                         <ComSelect v-model="filters.invoice_style" @onSelected="refreshReport" :clear="false" placeholder="Invoice Style"
                             :options="['Simple Style','Debit/Credit Style']">
-                        </ComSelect>
-                    
+                        </ComSelect> 
                     </div>
                 </div>
-                <div class="col flex gap-2">
+                <br/>
+                <div class="flex flex-column gap-2">
                     <div >
                         <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_room_number" />
                         <label for="show_room_number" class="white-space-nowrap" >Show/Hide Room Number</label>
@@ -41,20 +36,22 @@
                         <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate</label>
                     </div>
                     <div>
-                        <Checkbox v-model="filters.breakdown_account_code" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_all_room_rate" />
+                        <Checkbox v-model="filters.breakdown_account_code" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="breakdown_account_code" />
                         <label for="show_all_room_rate" class="white-space-nowrap" >Show/Hide Breakdown Account Code</label>
                     </div>
-                </div>
-                <div class="col flex gap-2 justify-end">
-                    <div v-if="(view||'')!='ui'">
-                        <ComPrintButton :url="url"  @click="onPrint"/>
-                    </div>
-                    <div >
-                        <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
-                    </div>
-                </div>
+                </div> 
             </div> 
-            <div class="widht-ifame">
+            <div class="widht-ifame col">
+                <div>
+                    <div class="col flex gap-2 justify-end">
+                        <div v-if="(view||'')!='ui'">
+                            <ComPrintButton :url="url"  @click="onPrint"/>
+                        </div>
+                        <div >
+                            <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
+                        </div>
+                    </div>
+                </div>
                 <iframe @load="onIframeLoaded()" id="report-view" width="100%" style="min-height: 70vh;" :src="url"></iframe>
             </div>
         </div>
@@ -102,7 +99,7 @@ const refreshReport = () => {
     url.value = url.value + "&invoice_style=" + filters.value.invoice_style
     url.value = url.value + "&show_summary=" + filters.value.show_summary || 0
     url.value = url.value + "&show_all_room_rate=" + filters.value.show_all_room_rate || 0
-    url.value = url.value + "&show_breakdown_account_code=" + filters.value.breakdown_account_code || 0
+    url.value = url.value + "&breakdown_account_code=" + filters.value.breakdown_account_code || 0
     if (filters.value.selected_folio) {
         url.value = url.value + "&folio=" + filters.value.selected_folio.name
     }

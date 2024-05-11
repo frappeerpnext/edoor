@@ -919,7 +919,10 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
         "parent_reference":rate["parent_reference"],
         "is_sub_package_charge":1,
         "adult":rate["adult"],
-        "child":rate["child"]
+        "child":rate["child"],
+        "quantity":0 if not "quantity" in rate else rate["quantity"],
+        "report_quantity":0 if not "quantity" in rate else rate["quantity"]
+        
     }
     
     doc = frappe.get_doc(doc)
@@ -1336,6 +1339,19 @@ def update_account_code_to_folio_transaction():
     #Update flash report revenue group
     sql="""
          update `tabFolio Transaction` f set flash_report_revenue_group = (select flash_report_revenue_group from `tabAccount Code` t where t.name = f.account_code )
+    """
+    frappe.db.sql(sql)
+
+
+    frappe.db.commit()
+    return "Done"
+
+@frappe.whitelist()
+def update_account_category_information_to_folio_transaction():
+    sql="""
+        UPDATE `tabFolio Transaction` t
+        JOIN `tabAccount Category` c ON t.account_category = c.name
+        SET t.account_category_sort_order = c.sort_order
     """
     frappe.db.sql(sql)
 
@@ -1911,16 +1927,40 @@ def get_breakdown_package_charge_code(stay_doc, room_rate,posting_rules=[]):
             
             if p.charge_rule=="Stay":
                 charge["rate"] = p.rate
+                charge["quantity"] =1
+                charge["adult"] =room_rate.adult
+                charge["child"] =room_rate.child
+                package_charge_codes.append(charge)
+                
             elif p.charge_rule=="Pax":
-                charge["rate"] = (p.adult_rate * room_rate.adult) + (p.child_rate*room_rate.child)
-            
+                if room_rate.adult:
+                    charge["rate"] = p.adult_rate
+                    charge["quantity"] =room_rate.adult
+                    charge["adult"] =room_rate.adult
+                    charge["child"] =0
+                    package_charge_codes.append(copy.deepcopy(charge))
+                if room_rate.child:
+                    charge["rate"] = p.child_rate
+                    charge["quantity"] =room_rate.child
+                    charge["child"] =room_rate.child
+                    charge["adult"] =0
+                    package_charge_codes.append(copy.deepcopy(charge))
+                
             elif p.charge_rule=="Adult":
-                charge["rate"] = (p.adult_rate * room_rate.adult) 
+                charge["rate"] = p.adult_rate
+                charge["quantity"] =room_rate.adult
+                charge["adult"] =room_rate.adult
+                charge["child"] =0
+                package_charge_codes.append(charge)
                 
             elif p.charge_rule=="Child":
-                charge["rate"] = (p.child_rate * room_rate.child) 
+                charge["rate"] = p.child_rate
+                charge["quantity"] =room_rate.child
+                charge["child"] =room_rate.child
+                charge["adult"] =0
+                package_charge_codes.append(charge)
             
-            package_charge_codes.append(charge)
+            
             
         
         return package_charge_codes

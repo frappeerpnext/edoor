@@ -1,38 +1,38 @@
 <div class="container" style="background: #f5f3f5;
     border-radius: 6px;padding:10px; ">  
-        {% if discount_description %}
+        {% if doc.discount_description %}
         <div class="row">
-            <div class="col"><strong>{{discount_description}}</strong></div>
-            <div class="col text-right">{{frappe.format(discount,{"fieldtype":"Currency"})}}</div>
+            <div class="col"><strong>{{doc.discount_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(doc.discount,{"fieldtype":"Currency"})}}</div>
         </div>
         {% endif %} 
-        {% if tax_1_description %}
+        {% if doc.tax_1_description %}
         <div class="row">
-            <div class="col"><strong>{{tax_1_description}}</strong></div>
-            <div class="col text-right">{{frappe.format(tax_1_rate,{"fieldtype":"Currency"})}}</div>
+            <div class="col"><strong>{{doc.tax_1_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(doc.tax_1_rate,{"fieldtype":"Currency"})}}</div>
         </div>
         {% endif %}
-        {% if tax_2_description %}
+        {% if doc.tax_2_description %}
         <div class="row">
-            <div class="col"><strong>{{tax_2_description}}</strong></div>
-            <div class="col text-right">{{frappe.format(tax_2_rate,{"fieldtype":"Currency"})}}</div>
+            <div class="col"><strong>{{doc.tax_2_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(doc.tax_2_rate,{"fieldtype":"Currency"})}}</div>
         </div>
         {% endif %}
-        {% if tax_3_description %}
+        {% if doc.tax_3_description %}
         <div class="row">
-            <div class="col"><strong>{{tax_3_description}}</strong></div>
-            <div class="col text-right">{{frappe.format(tax_3_rate,{"fieldtype":"Currency"})}}</div>
+            <div class="col"><strong>{{doc.tax_3_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(doc.tax_3_rate,{"fieldtype":"Currency"})}}</div>
         </div>
         {% endif %}
-        {% if bank_fee_amount %}
+        {% if doc.bank_fee_description %}
         <div class="row">
-            <div class="col"><strong>Bank Fee</strong></div>
-            <div class="col text-right">{{frappe.format(bank_fee_amount,{"fieldtype":"Currency"})}}</div>
+            <div class="col"><strong>{{doc.bank_fee_description}}</strong></div>
+            <div class="col text-right">{{frappe.format(doc.bank_fee_amount,{"fieldtype":"Currency"})}}</div>
         </div>
         {% endif %}
-        {% if discount_description || tax_1_description || tax_2_description || tax_3_description || bank_fee_amount %} <hr/> {% endif %}
-    <div class="row">
-        <div class="col"><strong>Total Amount</strong></div>
-        <div class="col text-right">{{frappe.format(total_amount,{"fieldtype":"Currency"})}}</div>
-    </div>
+        {% if doc.discount_description || doc.tax_1_description || doc.tax_2_description || doc.tax_3_description || doc.bank_fee_description %} <hr/> {% endif %}
+        <div class="row">
+            <div class="col"><strong>Total Amount</strong></div>
+            <div class="col text-right">{{frappe.format(doc.total_amount,{"fieldtype":"Currency"})}}</div>
+        </div>
 </div>

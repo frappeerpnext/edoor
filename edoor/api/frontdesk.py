@@ -2837,7 +2837,8 @@ def post_room_change_to_folio(working_day):
                         r.discount_type = "Percent"
                         r.discount = r.discount / r.input_rate 
                     
-                    r.input_rate = r.input_rate - sum([d["rate"] for d in package_charges]) 
+                    
+                    r.input_rate = r.input_rate - sum([d["rate"] *d["quantity"]  for d in package_charges]) 
                     # get folio name to update after post room charge to folio
                     folio_names.append(folio.name)
                     folio_tran_doc = add_room_charge_to_folio( folio= folio,rate = r, is_package=1,ignore_validateion_cashier_shift=True,ignore_validate_back_date_transaction=True,ignore_update_reservation_folio=True )
@@ -2857,8 +2858,9 @@ def post_room_change_to_folio(working_day):
                                 "name":r.name,
                                 "reservation_stay":r["reservation_stay"],
                                 "stay_room_id":r.stay_room_id,
-                                "adult":r.adult,
-                                "child":r.child,
+                                "adult":p["adult"],
+                                "child":p["child"],
+                                "quantity":p["quantity"],
                                 "note": "This folio transaction is package charge breakdown from folio transaction number " + folio_tran_doc.name
                                 
                             }   

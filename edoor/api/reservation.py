@@ -755,9 +755,9 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 def dome():
     return post_charge_to_folio_afer_check_in(
         working_day=get_working_day("ESTC HOTEL"),
-        reservation="RS2024-0734",
-        stays=[{"stay_name":"ST2024-3559","paid_by_master_room":1}],
-        master_folio=frappe.get_doc("Reservation Folio","FN2024-0713")
+        reservation="RS2024-0738",
+        stays=[{"stay_name":"ST2024-3563","paid_by_master_room":1}],
+        master_folio=frappe.get_doc("Reservation Folio","FN2024-0720")
     )
     
 
@@ -792,7 +792,6 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                 posting_rules = ["Everyday","Everyday Except Checked Out Date","Checked In Date"]
                 package_charges = get_breakdown_package_charge_code(stay_doc, r, posting_rules)
                 
-                
                 # get discount percentage if have discount amount
                 
                 # Discount for sub package charge code is percent only 
@@ -802,7 +801,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                     r.discount_type = "Percent"
                     r.discount = r.discount / r.input_rate 
                 
-                r.input_rate = r.input_rate - sum([d["rate"] for d in package_charges]) 
+                r.input_rate = r.input_rate - sum([d["rate"] *d["quantity"]  for d in package_charges]) 
                 # get folio name to update after post room charge to folio
                 folio_names.append(folio.name)
                 folio_tran_doc = add_room_charge_to_folio( folio= folio,rate = r, is_package=1,ignore_validateion_cashier_shift=True,ignore_validate_back_date_transaction=True,ignore_update_reservation_folio=True )
@@ -822,8 +821,9 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                             "name":r.name,
                             "reservation_stay":r["reservation_stay"],
                             "stay_room_id":r.stay_room_id,
-                            "adult":r.adult,
-                            "child":r.child,
+                            "adult":p["adult"],
+                            "child":p["child"],
+                            "quantity":p["quantity"],
                             "note": "This folio transaction is package charge breakdown from folio transaction number " + folio_tran_doc.name
                             
                         }   
@@ -2304,9 +2304,39 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
 
         
     return folio_transactions
- 
+
 @frappe.whitelist()
-def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None):
+def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None,breakdown_account_code=0,show_note=0):
+ 
+    if cint(breakdown_account_code)==1:
+        
+        return get_folio_transaction_summary_with_breadown_account_code(
+            transaction_type=transaction_type,
+            transaction_number=transaction_number,
+            reservation=reservation,
+            reservation_stay=reservation_stay,
+            sort_by_field = sort_by_field,
+            show_room_number=show_room_number,
+            show_account_code=show_account_code,
+            show_all_room_rate=show_all_room_rate,
+            show_note=show_note
+        )
+    else:
+        return get_folio_transaction_summary_without_breadwon_account_code(
+            transaction_type=transaction_type,
+            transaction_number=transaction_number,
+            reservation=reservation,
+            reservation_stay=reservation_stay,
+            sort_by_field = sort_by_field,
+            show_room_number=show_room_number,
+            show_account_code=show_account_code,
+            show_all_room_rate=show_all_room_rate,
+            show_note=show_note
+        )
+
+
+@frappe.whitelist()
+def get_folio_transaction_summary_with_breadown_account_code( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None,show_note = 0):
 
     if show_account_code == None:
         show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
@@ -2321,8 +2351,8 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         {sort_by_field}, 
                         sum(amount) as amount,
                         sale,
-                        tbl_number,
-                        note
+                        tbl_number
+                        {',note' if show_note==1 else ''}
                     from `tabFolio Transaction` 
                     where 
                         transaction_number =if('{transaction_number}'='',transaction_number,'{transaction_number}')   and 
@@ -2333,8 +2363,88 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         account_code,
                         ifnull(report_description,account_name),
                         {'room_number,' if show_room_number =='1' else '' }
+                        type
+                        {',note' if show_note==1 else ''},
+                        sale,
+                        tbl_number
+                    order by 
+                        {'room_number,' if show_room_number =='1' else '' }
+                        {sort_by_field},
+                        account_code_sort_order
+                """,as_dict=1)
+    
+   
+    summary_data = []
+    balance = 0
+   
+    #  check if room show all room charge then get data from room rate include in guest invoice
+    
+    if show_all_room_rate=="1":
+        room_rates = get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,transaction_number,show_room_number) or []
+        for r in room_rates:
+            charge = [d for d in data  if d["account_code"] == r["account_code"]]
+            if charge:
+                charge=charge[0]
+                charge["quantity"] = charge["quantity"] + r["quantity"]
+                charge["amount"] = charge["amount"] + r["amount"]
+            else:
+                data.append(r)
+    data = sorted(data, key=lambda x: x['account_category_sort_order'])
+    
+ 
+             
+    for d in data:
+        balance = balance + d["amount"]  * (1 if d["type"] =="Debit" else -1)
+        record = {
+            "description": (d["account_code"] + " - " if show_account_code=='1' else "")  +  d["account_name"],
+            "sale":d['sale'] or '',
+            "tbl_number":d['tbl_number'] or '',
+            "note":"" if not show_note else  d['note'],
+            "debit": d["amount"] if d["type"] == "Debit" else 0,
+            "credit": d["amount"] if d["type"] == "Credit" else 0,
+            "balance":balance,
+            "quantity":d["quantity"],
+        }
+        
+        if show_room_number=='1':
+            record["room_number"] = d["room_number"]
+        summary_data.append(record)
+    return summary_data
+
+
+@frappe.whitelist()
+def get_folio_transaction_summary_without_breadwon_account_code( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None,show_note=0):
+
+    if show_account_code == None:
+        show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
+    
+    data = frappe.db.sql(f"""
+                    select 
+                        account_code,
+                        {'room_number,' if show_room_number =='1' else '' }
+                        ifnull(report_description,account_name) as account_name,
+                        sum(report_quantity) as quantity,
                         type,
-                        note,
+                        {sort_by_field}, 
+                        sum(total_amount + coalesce(total_sub_package_charge,0)) as amount,
+                        sale,
+                        tbl_number
+                        {',note' if show_note==1 else ''}
+                    from `tabFolio Transaction` 
+                    where 
+                        transaction_number =if('{transaction_number}'='',transaction_number,'{transaction_number}')   and 
+                        transaction_type = '{transaction_type}' and 
+                        reservation_stay = if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') and 
+                        reservation = if('{reservation}'='',reservation,'{reservation}') and
+                        coalesce(parent_reference,'') = '' and 
+                        coalesce(is_sub_package_charge,'') = 0
+                        
+                    group by 
+                        account_code,
+                        ifnull(report_description,account_name),
+                        {'room_number,' if show_room_number =='1' else '' }
+                        type
+                        {',note' if show_note==1 else ''},
                         sale,
                         tbl_number
                     order by 
@@ -2369,7 +2479,7 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
             "description": (d["account_code"] + " - " if show_account_code=='1' else "")  +  d["account_name"],
             "sale":d['sale'] or '',
             "tbl_number":d['tbl_number'] or '',
-            "note":d['note'],
+            "note":"" if not show_note else d['note'],
             "debit": d["amount"] if d["type"] == "Debit" else 0,
             "credit": d["amount"] if d["type"] == "Credit" else 0,
             "balance":balance,
@@ -2381,7 +2491,6 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
         summary_data.append(record)
     return summary_data
 
- 
     
 def get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,folio_number,show_room_number):
 

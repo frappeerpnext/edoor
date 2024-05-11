@@ -76,11 +76,19 @@
                                         class="auto__Com_Cus w-full" />
                                 </div>
                             </div>
-                            <Message severity="info" v-if="doc.is_package"> 
+                            <div class="col-12">
+                                <div class="ms_message_cs_edoor">
+<Message  v-if="doc.is_package"> 
+
                                 {{ $t("This rate type is package rate.") }} 
-                                <Button @click="onViewPackageDetail" :label="$t('View Package Detail')" severity="Danger" text />
-            
+                                      
+                                <Button @click="onViewPackageDetail" class=" conten-btn ml-auto mr-3 h-3rem"  >
+<i class="pi pi-eye me-2" /> {{ $t('View Package Detail') }}
+                                 </Button>   
                             </Message>
+                            </div>
+                            </div>
+                            
                             
                         </div>
                         <div class="pt-2 flex justify-end">

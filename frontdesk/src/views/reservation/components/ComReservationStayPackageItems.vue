@@ -1,5 +1,10 @@
 <template>
     <div class="min-h-folio-cus mt-3">
+        <Button  class="conten-btn mr-1 mb-3" serverity="waring" @click="addnew()">
+      <i class="pi pi-plus me-2" style="font-size: 1rem"></i>
+      {{$t('Add New Package') }}
+    </Button>
+    <ComPlaceholder text="No Data" :loading="loading" :isNotEmpty="data.length > 0">
         <DataTable  :value="data" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
                 <Column field="account_code" :header="$t('Account Code')" bodyClass="text-center" headerClass="text-center">
@@ -59,12 +64,14 @@
                     </template>
                 </Column>
                 </DataTable>
+            </ComPlaceholder>            
     </div>
 </template>
 <script setup>
 import {ref,inject,useDialog} from "@/plugin"
 import {i18n} from '@/i18n';
 import ComEditReservationStayPackageItems from '@/views/reservation/components/ComEditReservationStayPackageItems.vue';
+import ComAddNewPackageItems from '@/views/reservation/components/ComAddNewPackageItems.vue';
 const dialog = useDialog();
 const { t: $t } = i18n.global;
 const gv = inject("$gv")
@@ -87,14 +94,34 @@ const opDelete = ref(false)
 const toggle = (event) => {
     show.value.toggle(event)
 }
-function onEdit(item){
-    console.log(item)
+function onEdit(item = null){
      dialog.open(ComEditReservationStayPackageItems, {
       data: {
         data:item,        
         },
       props: {
         header: $t('Edit Package & Inclusion'),
+        style: {
+          width: '40vw',
+        },
+        position: "top",
+        modal: true,
+        closeOnEscape: false,
+        breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+      },
+
+    })
+}
+function addnew(){
+     dialog.open(ComAddNewPackageItems, {
+      data:{
+        rs:rs.reservationStay.name,
+      },
+      props: {
+        header: $t('Add New Package & Inclusion'),
         style: {
           width: '40vw',
         },
