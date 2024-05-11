@@ -18,13 +18,26 @@ frappe.ui.form.on("Folio Transaction", {
 
     if (frm.doc.source_transaction_number) {
       frm.set_intro(
-        "This transaction has been transferred from the Reservation Folio " + "<a href=" + '/app/reservation-folio/' + frm.doc.source_transaction_number + "><strong>"  + frm.doc.source_transaction_number + "</strong></a>."
-        + "Transaction Number " + "<a href=" + '/app/folio-transaction/' + frm.doc.reference_folio_transaction + "><strong>"  + frm.doc.reference_folio_transaction + "</strong></a>", "blue"
+        "This transaction has been transferred from the Reservation Folio " + "<a href=" + '/app/reservation-folio/' + frm.doc.source_transaction_number + "><strong>"  + frm.doc.source_transaction_number + "</strong></a>.", "blue"
       );
     }
 
-    if (frm.doc.target_transaction_number) {
-      
+    if (frm.doc.target_transaction_number && frm.doc.transaction_type == "Reservation Folio") {
+      frm.set_intro(
+        "This folio transaction transferred to " + frm.doc.target_transaction_type + " " + "<a href=" + '/app/reservation-folio/' + frm.doc.target_transaction_number + "><strong>" + frm.doc.target_transaction_number + "</strong></a>", "blue"
+      );
+    }
+
+    if (frm.doc.target_transaction_number && frm.doc.transaction_type == "City Ledger") {
+      frm.set_intro(
+        "This folio transaction transferred to " + frm.doc.target_transaction_type + " " + "<a href=" + '/app/reservation-folio/' + frm.doc.target_transaction_number + "><strong>" + frm.doc.target_transaction_number + "</strong></a>", "blue"
+      );
+    }
+
+    if (frm.doc.sale) {
+      frm.set_intro(
+        "This folio transaction is transferred from " + frm.doc.account_category + ". " + "View Sale transaction " + "<a href=" + '/app/sale/' + frm.doc.sale + "><strong>" + frm.doc.sale + "</strong></a>", "blue"
+      );
     }
 
     // if(frm.doc.vendor){
@@ -49,6 +62,26 @@ frappe.ui.form.on("Folio Transaction", {
         __("View Reservation"),
         function () {
           window.open("/frontdesk/reservation-detail/" + frm.doc.reservation);
+        },
+        __("View")
+      );
+    }
+
+    if (frm.doc.transaction_type == "Reservation Folio") {
+      frm.add_custom_button(
+        __("View Reservation Folio"),
+        function () {
+          window.open("/app/reservation-folio/" + frm.doc.transaction_number);
+        },
+        __("View")
+      );
+    }
+
+    if (frm.doc.transaction_type == "Desk Folio") {
+      frm.add_custom_button(
+        __("View Desk Folio"),
+        function () {
+          window.open("/app/desk-folio/" + frm.doc.transaction_number);
         },
         __("View")
       );

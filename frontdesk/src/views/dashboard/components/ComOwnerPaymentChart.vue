@@ -57,7 +57,7 @@ const doc = getApi('frontdesk.get_paymet_chart_data', {
             labels:data.value.labels,
             datasets:[{
                 values:data.value.datasets.map(r=>r.values),
-     
+                show_label: false
             }
         ]
             },

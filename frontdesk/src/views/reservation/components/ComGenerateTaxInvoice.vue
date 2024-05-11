@@ -25,13 +25,13 @@
                      v-model="data.tax_invoice_type"  :options="['Tax Invoice','Commercial Invoice']" :clear="false" />
                 </div>
                 <div class="text-center shadow-1 p-3 mt-3 border-round-xl relative overflow-hidden">
-                    <div v-tippy="'Update Exchange'" class="bgsummaryday flex justify-content-center align-items-center conten-btn border-1 w-2rem h-2rem cursor-pointer  absolute right-2 top-1 border-circle border-round-xl">
+                    <div v-tippy="'Update Exchange'" @click="opshow" class="bgsummaryday flex justify-content-center align-items-center conten-btn border-1 w-2rem h-2rem cursor-pointer  absolute right-2 top-1 border-circle border-round-xl">
 <i class="pi pi-pencil" style="font-size: 12px;" />
                     </div>
                         <div class="text-2xl">Rate Exchange</div>
                         <span class="text-2xl">
-                            <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ data?.base_currency }}) =
-                            <CurrencyFormat currAddClass="font-semibold" :value="4000" :currency="data?.second_currency" /> ({{
+                            <CurrencyFormat currAddClass="font-semibold" :value="1"  />({{ data?.base_currency }}) =
+                            <CurrencyFormat currAddClass="font-semibold" :value="data.exchange_rate" :currency="data?.second_currency" /> ({{
                                 data?.second_currency?.currency }})
                         </span>
                     </div>
@@ -46,6 +46,24 @@
             <span class="absolute w-full"><Checkbox class="w-full" v-model="isConfirm" :binary="true" /></span>
             <span class="pl-5">I am verify that all information is correct</span>
         </div>
+
+        <OverlayPanel ref="op">
+            <ComOverlayPanelContent :title="$t('Rate Exchange')" @onSave="onSaveEdit" :hideButtonClose="false" @onCancel="opshow(false)">
+            <div class="grid my-2">
+                <div class="col-4 flex align-items-center justify-content-center">
+                    <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ data?.base_currency }})  <span class="ms-3">=</span>     
+                </div>
+                <div class="col-8">
+                    <div class="flex align-items-center">
+<InputNumber inputClass="w-full" class="w-full" v-model="newExchange" :max="9999999999"  />
+                   <span class="ms-2">({{ data?.second_currency?.currency }})</span> 
+                    </div>
+                    
+                </div>
+            </div>
+            </ComOverlayPanelContent> 
+        </OverlayPanel>
+
     </ComDialogContent>
 </template>
 <script setup>
@@ -63,7 +81,21 @@ const tax_invoice_date = ref(moment(window.current_working_date).toDate())
 const data = ref({tax_invoice_type:""})
 const confirm = useConfirm()
 const gv = inject("$gv")
-
+const op = ref();
+const newExchange  = ref()
+const opshow = (event) => { 
+    newExchange.value  = data.value.exchange_rate   
+  if (event == false) {
+    op.value.hide() 
+  }
+  else {
+      op.value.toggle(event);
+  }
+}
+function onSaveEdit(){
+    data.value.exchange_rate = newExchange.value
+    op.value.hide() 
+}
 function onSave() {
     confirm.require({
             message: $t('Are you sure you want to Generate Tax Invoice'),
@@ -80,7 +112,8 @@ function onSave() {
         property:dialogRef.value.data.property,
         folio_number:dialogRef.value.data.name,
         tax_invoice_date:moment(tax_invoice_date.value).format("YYYY-MM-DD"),
-        tax_invoice_type:data.value.tax_invoice_type || ""
+        tax_invoice_type:data.value.tax_invoice_type || "",
+        exchange_rate:data.value.exchange_rate
     }).then(result=>{
         isSaving.value = false
         dialogRef.value.close(result)
@@ -124,6 +157,8 @@ function viewfoliotaxinvoicedetail() {
  
  }
  function get_tax_invoice_info() {
+   
+    
     isSaving.value = true 
     getApi("utils.get_generate_tax_invoice_information",{
         property:window.property_name,
@@ -133,6 +168,7 @@ function viewfoliotaxinvoicedetail() {
         
         data.value = result.message
         isSaving.value = false
+        newExchange.value = result.message.exchange_rate
     })
     .catch(err=>{
         isSaving.value = false
@@ -147,6 +183,7 @@ function onDateSelect(event) {
 onMounted(() => {
     
     get_tax_invoice_info()
+
 });
 
 

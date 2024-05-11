@@ -2,6 +2,7 @@
 // For license information, please see license.txt
 
 frappe.query_reports["Revenue and Occupancy Summary Report"] = {
+ 
 	"filters": [
 		{
 			fieldname: "property",
@@ -9,10 +10,33 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			fieldtype: "Link",
 			options: "Business Branch",
 			default: frappe.defaults.get_user_default("business_branch"),
-			"reqd": 1,
 			"on_change": function (query_report) {
 				setLinkField()
 			},
+		},
+		{
+			"fieldname":"timespan",
+			"label": __("Timespan"),
+			"fieldtype": "Select",
+			"options": ["This Month", "Date Range"],
+			"default": ["This Month"],
+			hide_in_filter: 1,
+			on_change: function() {
+				let filter_based_on = frappe.query_report.get_filter_value('timespan');
+				if(filter_based_on=="Date Range"){ 
+					frappe.query_report.toggle_filter_display('start_date', false  );
+					frappe.query_report.toggle_filter_display('end_date', false );
+					
+				
+				}else{
+					
+					frappe.query_report.toggle_filter_display('start_date', true  );
+					frappe.query_report.toggle_filter_display('end_date', true );
+
+				}
+
+			},
+			
 		},
 		{
 			"fieldname": "start_date",
@@ -127,6 +151,18 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 
 	],
 	onload: function (report) {
+		let filter_based_on = frappe.query_report.get_filter_value('Timespan');
+		
+		if(filter_based_on=="Date Range"){ 
+			frappe.query_report.toggle_filter_display('start_date', false  );
+			frappe.query_report.toggle_filter_display('end_date', false );
+			
+		
+		}else{
+			frappe.query_report.toggle_filter_display('start_date', true  );
+			frappe.query_report.toggle_filter_display('end_date', true );
+		}
+
 		report.page.add_inner_button("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
@@ -176,7 +212,6 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 
 function setLinkField() {
 	const property = frappe.query_report.get_filter_value("property")
-	if (property) {
 		const business_source_filter = frappe.query_report.get_filter('business_source');
 		business_source_filter.df.get_query = function () {
 			return {
@@ -237,6 +272,6 @@ function setLinkField() {
 			},
 		});
 
-	}
+
 
 }

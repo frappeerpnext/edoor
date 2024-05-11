@@ -11,8 +11,27 @@ from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_gu
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_nationality
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_room_type
 from edoor.api.frontdesk import get_working_day
+from frappe import _
+from frappe.utils import date_diff,today ,add_months, add_days,getdate,add_to_date
 import frappe
 def execute(filters=None):
+	if not filters.property:
+		filters.property = frappe.defaults.get_user_default("business_branch")
+	if not filters.property: 
+		business_branch = frappe.db.get_list("Business Branch",pluck="name")
+		if not filters.property and len(business_branch)>1:
+			frappe.throw(_("Please select property"))
+		else:
+			filters.property = business_branch[0]
+
+		
+	if filters.timespan=="This Month":
+		
+		filters.start_date = getdate(today()).replace(day=1)
+		 
+		filters.end_date = add_to_date( filters.start_date,months=1,days=-1)
+		 
+  
 	if filters.parent_row_group==filters.row_group:
 		frappe.throw("Parent row group and row group can not be the same")
 		

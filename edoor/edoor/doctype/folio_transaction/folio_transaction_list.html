@@ -12,6 +12,7 @@
                     {% if doc.city_ledger_type %}
                     <div class="col">City Ledger Type</div>
                     {% endif %}
+                    <div class="col text-right">Rate</div>
                     <div class="col text-right" >Amount</div>
                 </div>
             </div>
@@ -29,7 +30,8 @@
                         {% if doc.city_ledger_type %}
                         <div class="col">{{doc.city_ledger_type}}</div>
                         {% endif %}
-                        <div class="col text-right">{{frappe.format(doc.input_amount,{"fieldtype":"Currency"})}}</div>
+                        <div class="col text-right">{{frappe.format(doc.price,{"fieldtype":"Currency"})}}</div>
+                        <div class="col text-right">{{frappe.format(doc.amount,{"fieldtype":"Currency"})}}</div>
                     </div>
                 </div>  
             </div>

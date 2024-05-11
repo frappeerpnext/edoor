@@ -1,6 +1,6 @@
 <template>
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
-        <div class="p-3 view-table-iframe-dialog grid" style="height: 85vh;">
+        <div class="p-3 view-table-iframe-dialog grid" id="view-table-iframe-dialog" style="height: 85vh;">
             <div class="mb-3 overflow-auto col-4 lg:col-3 gap-2">
                 <div class="flex flex-column gap-2">
                     <div>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 </div>
-                <iframe @load="onIframeLoaded()" id="report-view" width="100%" style="min-height: 70vh;" :src="url"></iframe>
+                <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
             </div>
         </div>
     </div>
@@ -109,7 +109,9 @@ const refreshReport = () => {
 }
 function onIframeLoaded() {
     const iframe = document.getElementById("report-view");
-    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    const wrapper = document.getElementById("view-table-iframe-dialog").offsetHeight - 90
+    iframe.height = wrapper + 'px'
+    // iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
     // iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
 

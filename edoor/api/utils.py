@@ -1534,7 +1534,14 @@ def update_is_arrival_date_in_room_rate(stay_name):
 @frappe.whitelist()
 def get_report_config(property,report):
     if not property:
+        property = frappe.defaults.get_user_default("business_branch")
+    if not property:
+        business_branch = frappe.db.get_list("Business Branch",pluck="name")
+        if business_branch:
+            property = business_branch[0]
+    if not property:
         return {}
+   
     return frappe.get_last_doc("Report Configuration", filters={"property":property, "report":report} )
 
 @frappe.whitelist()
@@ -1840,7 +1847,7 @@ def get_pos_account_code_config(outlet, shift_name):
 
 
 @frappe.whitelist(methods="POST")
-def generate_tax_invoice(property,document_type, folio_number,tax_invoice_date,tax_invoice_type):
+def generate_tax_invoice(property,document_type, folio_number,tax_invoice_date,tax_invoice_type,exchange_rate):
     # if frappe.db.get_value("Reservation Folio",folio_number,"tax_invoice_number"):
     #     frappe.throw("This folio number is already generate tax invoice")
     # if not frappe.db.get_value("Folio Transaction",folio_number,"transaction_number"):
@@ -1851,8 +1858,8 @@ def generate_tax_invoice(property,document_type, folio_number,tax_invoice_date,t
     # tax_invoice_number = make_autoname(tax_invoice_format)
     if not tax_invoice_type:
         frappe.throw("Please enter tax invoice type.")
-        
-    exchange_rate  = get_exchange_rate(property, tax_invoice_date)
+    if not exchange_rate:    
+        exchange_rate  = get_exchange_rate(property, tax_invoice_date)
     
     doc =frappe.get_doc(document_type,folio_number)
     if frappe.db.exists("Tax Invoice",{"document_type":document_type,"document_name":folio_number}):
