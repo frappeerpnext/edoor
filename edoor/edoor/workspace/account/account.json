@@ -1,0 +1,95 @@
+{
+ "charts": [
+  {
+   "chart_name": "Current Month Revenue by Date",
+   "label": "Current Month Revenue by Date"
+  }
+ ],
+ "content": "[{\"id\":\"JQFnKv5sW1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Current Month Revenue by Date\",\"col\":12}},{\"id\":\"hnXStuTusO\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tax Invoices\",\"col\":3}},{\"id\":\"1eXpPXOgBN\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Folio\",\"col\":3}},{\"id\":\"C7J0zqXoDE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Desk Folio\",\"col\":3}},{\"id\":\"yFcH3cVYCQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deposit Ledger\",\"col\":3}},{\"id\":\"KtdL8taJ5N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Payable Ledger\",\"col\":3}},{\"id\":\"OlEAB5M7e7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POS Sale Invoice\",\"col\":3}},{\"id\":\"uST6tT4O8R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"City Ledger Account\",\"col\":3}},{\"id\":\"X6V3Aci5kY\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h1\\\">Todo in here</span><br>1. kpi Today Revenue, ADR, Payment, MTD Revenue, ADR, Payment<br>2. current month Revenue Chart<br>\",\"col\":12}}]",
+ "creation": "2024-05-02 18:04:52.412103",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "income",
+ "idx": 0,
+ "indicator_color": "red",
+ "is_hidden": 0,
+ "label": "Account",
+ "links": [],
+ "modified": "2024-05-11 16:58:09.208720",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Account",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 23.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Guest Folio",
+   "link_to": "Reservation Folio",
+   "stats_filter": "[[\"Reservation Folio\",\"status\",\"=\",\"Open\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Tax Invoices",
+   "link_to": "Tax Invoice",
+   "stats_filter": "[[\"Tax Invoice\",\"tax_invoice_date\",\"Timespan\",\"this month\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "City Ledger Account",
+   "link_to": "City Ledger",
+   "stats_filter": "[[\"City Ledger\",\"status\",\"=\",\"Open\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Desk Folio",
+   "link_to": "Desk Folio",
+   "stats_filter": "[[\"Desk Folio\",\"status\",\"=\",\"Open\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Deposit Ledger",
+   "link_to": "Deposit Ledger",
+   "stats_filter": "[[\"Deposit Ledger\",\"status\",\"=\",\"Open\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "POS Sale Invoice",
+   "link_to": "Sale",
+   "stats_filter": "[[\"Sale\",\"posting_date\",\"Timespan\",\"today\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Payable Ledger",
+   "link_to": "Payable Ledger",
+   "stats_filter": "[[\"Payable Ledger\",\"status\",\"=\",\"Open\",false]]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Account"
+}
