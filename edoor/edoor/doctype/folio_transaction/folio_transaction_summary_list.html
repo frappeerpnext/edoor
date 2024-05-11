@@ -1,11 +1,11 @@
 <div class="container" style="background: #f5f3f5;
     border-radius: 6px;padding:10px; ">  
-        <!-- {% if discount_description %}
+        {% if discount_description %}
         <div class="row">
             <div class="col"><strong>{{discount_description}}</strong></div>
             <div class="col text-right">{{frappe.format(discount,{"fieldtype":"Currency"})}}</div>
         </div>
-        {% endif %}  -->
+        {% endif %} 
         {% if tax_1_description %}
         <div class="row">
             <div class="col"><strong>{{tax_1_description}}</strong></div>

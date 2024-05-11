@@ -27,11 +27,6 @@
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
         </template>
       </Column>
-      <Column  :header="$t('Pax(A/C)')" bodyClass="text-center" headerClass="text-center">
-        <template #body="{ data }">
-          <span @click="onEditRoomRate(data)" class="p-0 link_line_action1" >{{ data?.adult }} / {{ data?.child }}</span>
-        </template>
-      </Column>
       <Column field="room_number" :header="$t('Room')">
         <template #body="slotProps">
           <div> 
@@ -45,7 +40,11 @@
           </div>
         </template>
       </Column>
-  
+      <Column  :header="$t('Pax(A/C)')" bodyClass="text-center" headerClass="text-center">
+        <template #body="{ data }">
+          <span @click="onEditRoomRate(data)" class="p-0 link_line_action1" >{{ data?.adult }} / {{ data?.child }}</span>
+        </template>
+      </Column>
       <Column field="rate_type" :header="$t('Rate Type')">
         <template #body="{ data }">
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
