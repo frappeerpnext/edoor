@@ -108,7 +108,6 @@ def re_run_fail_jobs():
                     stays=job["kwargs"]["stays"],
                     working_day=job["kwargs"]["working_day"],
                     master_folio=frappe.get_doc( job["kwargs"]["master_folio"]))
-                return "rund done"
             elif j["job_name"]  =="edoor.api.utils.update_is_arrival_date_in_room_rate":
                 update_is_arrival_date_in_room_rate(stay_name=job["kwargs"]["stay_name"])
             elif j["job_name"]  =="edoor.api.reservation.verify_reservation_stay":

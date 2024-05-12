@@ -1,5 +1,5 @@
 <template>
-hello
+
     <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
         <div class="p-3 ">
             <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
