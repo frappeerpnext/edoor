@@ -721,8 +721,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 
     if len(checked_in_stays)> 0:
         group_check_in_stays = []
-        for i in range(0, len(checked_in_stays), 5):
-            group_check_in_stays.append(checked_in_stays[i:i + 5])
+        for i in range(0, len(checked_in_stays), 10):
+            group_check_in_stays.append(checked_in_stays[i:i + 10])
         # create master folio and post master post change to master folio first   
         master_folio = get_master_folio(reservation=reservation,create_if_not_exists=True, reopen_folio_if_closed=True)
         

@@ -2,8 +2,8 @@ import functools
 import re
 
 import requests
-from edoor.api.utils import update_reservation, update_reservation_folio, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate
-from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in
+from edoor.api.utils import update_reservation, update_reservation_folio,update_reservation_folios, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate
+from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in,verify_reservation_stay
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
 from frappe.utils import today,add_to_date,getdate
 from rq.command import send_stop_job_command
@@ -57,6 +57,7 @@ def re_run_fail_jobs():
         "edoor.api.reservation.post_charge_to_folio_afer_check_in",
         "edoor.api.utils.update_is_arrival_date_in_room_rate",
         "edoor.api.reservation.verify_reservation_stay",
+        "edoor.api.utils.update_reservation_folios"
     ]
     # append unwanted queue job from system
     job_names.append("frappe.model.delete_doc.delete_dynamic_links")
@@ -97,6 +98,8 @@ def re_run_fail_jobs():
                 generate_room_occupies( stay_names=job["kwargs"]["stay_names"])
             elif j["job_name"] == "edoor.api.utils.update_reservation_folio":
                 update_reservation_folio( doc=None if "doc" not in job["kwargs"] else job["kwargs"]["doc"], name=None if "name" not in job["kwargs"] else job["kwargs"]["name"], run_commit=True,ignore_validate=True)     
+            elif j["job_name"] == "edoor.api.utils.update_reservation_folios":
+                update_reservation_folios( folio_names =job["kwargs"]["folio_names"])     
             elif j["job_name"] == "edoor.api.utils.update_reservation":
                 update_reservation(name=job["kwargs"]["name"], run_commit=True,ignore_validate=True)
             elif j["job_name"] == "edoor.api.utils.update_reservation_stay_and_reservation":
