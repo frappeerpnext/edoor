@@ -7,6 +7,7 @@ import re
 from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_backdate_permission, validate_role,update_keyword,add_package_inclusion_charge_to_folio,get_breakdown_package_charge_code
 import frappe
+import time
 from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
 from frappe.utils import (
@@ -462,29 +463,53 @@ def update_package_data_to_reservation_stay(reservation=None, stay_names=None,ra
     if account_code:
         if account_code.packages:
             for s in stay_names:
-                stay_doc = frappe.get_doc("Reservation Stay",s)
-                for p in  account_code.packages:
-                    stay_doc.append("inclusion_items", {
-                        "account_code": p.account_code ,
-                        "posting_rule": p.posting_rule,
-                        "charge_rule": p.charge_rule,
-                        "rate":p.rate,
-                        "adult_rate":p.adult_rate,
-                        "child_rate":p.child_rate,
-                        "allow_user_to_edit_information":rate_type_doc.allow_user_to_edit_rate,
-                        "is_rate_type_package":1
-                        
-                    })
-                stay_doc.flags.ignore_validate = True
-                stay_doc.flags.ignore_on_update = True
-                stay_doc.flags.ignoreignore_on_update_validate = True
-                stay_doc.save(ignore_permissions=True)
+                save_package_item_to_reservation_stay(data={
+                    "stay_name":s,
+                    "rate_type_doc":rate_type_doc,
+                    "packages":account.packages
+                })
+                
                 
                 
                 
 
     frappe.db.commit()
+
+def save_package_item_to_reservation_stay(data):
     
+    # data={"stay_name":"", rate_type_doc:obj,"packages"=[]}
+    retries = 0
+    max_retries = 3
+    while retries < max_retries:
+        try:
+            stay_doc = frappe.get_doc("Reservation Stay",data["stay_name"])
+            for p in  data["packages"]:
+                stay_doc.append("inclusion_items", {
+                    "account_code": p.account_code ,
+                    "posting_rule": p.posting_rule,
+                    "charge_rule": p.charge_rule,
+                    "rate":p.rate,
+                    "adult_rate":p.adult_rate,
+                    "child_rate":p.child_rate,
+                    "allow_user_to_edit_information":data["rate_type_doc"].allow_user_to_edit_rate,
+                    "is_rate_type_package":1
+                    
+                })
+            stay_doc.flags.ignore_validate = True
+            stay_doc.flags.ignore_on_update = True
+            stay_doc.flags.ignoreignore_on_update_validate = True
+            stay_doc.save(ignore_permissions=True)
+            return  # Exit the function if the update succeeds
+        except frappe.exceptions.TimestampMismatchError as e:
+            # Handle the timestamp mismatch error
+            retries += 1
+            time.sleep(3)  # Wait for a short period before retrying
+
+    # throw error
+    frappe.throw("Failed to update document after max retries. Aborting.")
+    
+    
+
     
 def generate_room_room_rates(stay_names):
     for s in stay_names:
