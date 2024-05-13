@@ -1,0 +1,50 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Queue Job Configuration",
+  "job_name": "edoor.api.schedule_task.five_minute_job",
+  "modified": "2024-05-12 18:08:30.795670",
+  "name": "edoor.api.schedule_task.five_minute_job",
+  "skip_if_these_job_running": "edoor.api.schedule_task.five_minute_job\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy\nedoor.api.utils.update_reservation\nedoor.api.utils.update_reservation_stay\nedoor.api.reservation.post_charge_to_folio_afer_check_in\nedoor.api.utils.update_reservation_stay_and_reservation\nedoor.api.reservation.update_sub_package_charge_to_folio_transaction\nedoor.api.utils.update_reservation_folios\nedoor.api.utils.update_is_arrival_date_in_room_rate\nedoor.api.reservation.update_room_number_to_room_rate\nedoor.api.reservation.update_room_number_to_occupy_data\nedoor.api.frontdesk.post_room_change_to_folio\nedoor.api.frontdesk.update_daily_property_data"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Queue Job Configuration",
+  "job_name": "edoor.api.schedule_task.run_queue_job",
+  "modified": "2024-05-12 18:08:46.073772",
+  "name": "edoor.api.schedule_task.run_queue_job",
+  "skip_if_these_job_running": "edoor.api.schedule_task.run_queue_job\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy\nedoor.api.utils.update_reservation\nedoor.api.utils.update_reservation_stay\nedoor.api.reservation.post_charge_to_folio_afer_check_in\nedoor.api.utils.update_reservation_stay_and_reservation\nedoor.api.reservation.update_sub_package_charge_to_folio_transaction\nedoor.api.utils.update_reservation_folios\nedoor.api.utils.update_is_arrival_date_in_room_rate\nedoor.api.reservation.update_room_number_to_room_rate\nedoor.api.reservation.update_room_number_to_occupy_data\nedoor.api.frontdesk.post_room_change_to_folio\nedoor.api.frontdesk.update_daily_property_data"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Queue Job Configuration",
+  "job_name": "edoor.api.schedule_task.ten_minute_job",
+  "modified": "2024-05-12 18:08:49.153653",
+  "name": "edoor.api.schedule_task.ten_minute_job",
+  "skip_if_these_job_running": "edoor.api.schedule_task.ten_minute_job\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy\nedoor.api.utils.update_reservation\nedoor.api.utils.update_reservation_stay\nedoor.api.reservation.post_charge_to_folio_afer_check_in\nedoor.api.utils.update_reservation_stay_and_reservation\nedoor.api.reservation.update_sub_package_charge_to_folio_transaction\nedoor.api.utils.update_reservation_folios\nedoor.api.utils.update_is_arrival_date_in_room_rate\nedoor.api.reservation.update_room_number_to_room_rate\nedoor.api.reservation.update_room_number_to_occupy_data\nedoor.api.frontdesk.post_room_change_to_folio\nedoor.api.frontdesk.update_daily_property_data"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Queue Job Configuration",
+  "job_name": "edoor.api.schedule_task.generate_audit_trail_from_version",
+  "modified": "2024-05-12 18:08:38.738917",
+  "name": "edoor.api.schedule_task.generate_audit_trail_from_version",
+  "skip_if_these_job_running": "edoor.api.schedule_task.generate_audit_trail_from_version\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy\nedoor.api.utils.update_reservation\nedoor.api.utils.update_reservation_stay\nedoor.api.reservation.post_charge_to_folio_afer_check_in\nedoor.api.utils.update_reservation_stay_and_reservation\nedoor.api.reservation.update_sub_package_charge_to_folio_transaction\nedoor.api.utils.update_reservation_folios\nedoor.api.utils.update_is_arrival_date_in_room_rate\nedoor.api.reservation.update_room_number_to_room_rate\nedoor.api.reservation.update_room_number_to_occupy_data\nedoor.api.frontdesk.post_room_change_to_folio\nedoor.api.frontdesk.update_daily_property_data"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Queue Job Configuration",
+  "job_name": "edoor.api.schedule_task.re_run_fail_jobs",
+  "modified": "2024-05-12 18:08:42.687961",
+  "name": "edoor.api.schedule_task.re_run_fail_jobs",
+  "skip_if_these_job_running": "edoor.api.schedule_task.re_run_fail_jobs\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy\nedoor.api.utils.update_reservation\nedoor.api.utils.update_reservation_stay\nedoor.api.reservation.post_charge_to_folio_afer_check_in\nedoor.api.utils.update_reservation_stay_and_reservation\nedoor.api.reservation.update_sub_package_charge_to_folio_transaction\nedoor.api.utils.update_reservation_folios\nedoor.api.utils.update_is_arrival_date_in_room_rate\nedoor.api.reservation.update_room_number_to_room_rate\nedoor.api.reservation.update_room_number_to_occupy_data\nedoor.api.frontdesk.post_room_change_to_folio\nedoor.api.frontdesk.update_daily_property_data"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Queue Job Configuration",
+  "job_name": "edoor.api.schedule_task.validate_property_data",
+  "modified": "2024-05-12 18:08:52.094883",
+  "name": "edoor.api.schedule_task.validate_property_data",
+  "skip_if_these_job_running": "edoor.api.schedule_task.validate_property_data\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy\nedoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy\nedoor.api.utils.update_reservation\nedoor.api.utils.update_reservation_stay\nedoor.api.reservation.post_charge_to_folio_afer_check_in\nedoor.api.utils.update_reservation_stay_and_reservation\nedoor.api.reservation.update_sub_package_charge_to_folio_transaction\nedoor.api.utils.update_reservation_folios\nedoor.api.utils.update_is_arrival_date_in_room_rate\nedoor.api.reservation.update_room_number_to_room_rate\nedoor.api.reservation.update_room_number_to_occupy_data\nedoor.api.frontdesk.post_room_change_to_folio\nedoor.api.frontdesk.update_daily_property_data"
+ }
+]

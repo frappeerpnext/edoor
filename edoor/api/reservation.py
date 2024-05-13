@@ -466,7 +466,7 @@ def update_package_data_to_reservation_stay(reservation=None, stay_names=None,ra
                 save_package_item_to_reservation_stay(data={
                     "stay_name":s,
                     "rate_type_doc":rate_type_doc,
-                    "packages":account.packages
+                    "packages":account_code.packages
                 })
                 
                 
@@ -502,12 +502,13 @@ def save_package_item_to_reservation_stay(data):
             return  # Exit the function if the update succeeds
         except frappe.exceptions.TimestampMismatchError as e:
             # Handle the timestamp mismatch error
+            frappe.log_error( "Save Package charge to folio retry {} time".format(retries) ,str(e))
             retries += 1
             time.sleep(3)  # Wait for a short period before retrying
 
     # throw error
     frappe.throw("Failed to update document after max retries. Aborting.")
-    
+
     
 
     

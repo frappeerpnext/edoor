@@ -37,7 +37,7 @@
                     </div>
             </div>
             <div class="col-12 flex justify-content-end">
-           <Button class="conten-btn" @click="viewfoliotaxinvoicedetail()" label="Preview Before Generating" icon="pi pi-eye" />     
+           <!-- <Button class="conten-btn" @click="viewfoliotaxinvoicedetail()" label="Preview Before Generating" icon="pi pi-eye" />      -->
         </div>
         </div>
         

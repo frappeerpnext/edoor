@@ -24,7 +24,7 @@ frappe.ui.form.on("Folio Transaction", {
 
     if (frm.doc.target_transaction_number) {
       frm.set_intro(
-        "This transaction has been transferred to " + frm.doc.target_transaction_type + " " + "<a href=" + onchangeURL(frm.doc) + frm.doc.target_transaction_number + "><strong>" + frm.doc.target_transaction_number + "</strong></a>", "blue"
+        "This transaction has been transferred to " + frm.doc.target_transaction_type + " " + (frm.doc.city_ledger_name ? '(' + frm.doc.city_ledger_name + ')' : '') + " " + "<a href=" + onchangeURL(frm.doc) + frm.doc.target_transaction_number + "><strong>" + frm.doc.target_transaction_number + "</strong></a>", "blue"
       );
     }
 

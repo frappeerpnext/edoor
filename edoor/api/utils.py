@@ -65,7 +65,7 @@ def successful_login(login_manager):
 
 def update_fetch_from_field(doc, method=None, *args, **kwargs):
     if frappe.db.exists("DocType", "Queue Job"):
-        if doc.doctype not in ["Tag Link","Report","POS User Permission","Custom DocPerm","Translation","User","Audit Trail Document","DocType","File","Sale Product Deleted","POS Print Format Setting","Server Script","Category Note","ePOS Table Position","Scheduled Job Log","Queue Job","POS Account Code Config","Note", "Temp Room Occupy","Contact","DocShare","Doctype","DefaultValue","Print Format","Queue Job","System Console","Scheduled Job Log","Route History","Version","Error Log","Scheduled Job Log","Console Log","Activity Log","Comment"]:
+        if doc.doctype not in ["Custom HTML Block","Queue Job Configuration","Tag Link","Report","POS User Permission","Custom DocPerm","Translation","User","Audit Trail Document","DocType","File","Sale Product Deleted","POS Print Format Setting","Server Script","Category Note","ePOS Table Position","Scheduled Job Log","Queue Job","POS Account Code Config","Note", "Temp Room Occupy","Contact","DocShare","Doctype","DefaultValue","Print Format","Queue Job","System Console","Scheduled Job Log","Route History","Version","Error Log","Scheduled Job Log","Console Log","Activity Log","Comment"]:
             frappe.get_doc({
                 "doctype":"Queue Job",
                 "document_name":doc.name,

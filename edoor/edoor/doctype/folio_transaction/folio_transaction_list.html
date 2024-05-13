@@ -6,12 +6,6 @@
                     <div class="col" >Account Code</div> 
                     <div class="col text-center" >Type</div>
                     <div class="col text-center" style="max-width: 3%;">Qty</div>
-                    {% if doc.city_ledger_name %}
-                    <div class="col">City Ledger Name</div>
-                    {% endif %}
-                    {% if doc.city_ledger_type %}
-                    <div class="col">City Ledger Type</div>
-                    {% endif %}
                     <div class="col text-right">Rate</div>
                     <div class="col text-right" >Amount</div>
                 </div>
@@ -23,13 +17,7 @@
                     <div class="data-row row">
                         <div class="col">{{doc.account_code}} - {{doc.account_name}}</div> 
                         <div class="col text-center">{{doc.type}}</div>
-                        <div class="col text-center" style="max-width: 3%;">{{doc.quantity}}</div>
-                        {% if doc.city_ledger_name %}
-                        <div class="col">{{doc.city_ledger_name}}</div> 
-                        {% endif %}
-                        {% if doc.city_ledger_type %}
-                        <div class="col">{{doc.city_ledger_type}}</div>
-                        {% endif %}
+                        <div class="col text-center" style="max-width: 3%;">{{doc.quantity}}</div> 
                         <div class="col text-right">{{frappe.format(doc.price,{"fieldtype":"Currency"})}}</div>
                         <div class="col text-right">{{frappe.format(doc.amount,{"fieldtype":"Currency"})}}</div>
                     </div>
@@ -64,33 +52,50 @@
         </div>
     </div>
 </div>
-{% endif %}
+{% endif %}  
 {% if doc.credit_card_number || doc.bank_name || doc.card_holder_name || doc.credit_expired_date %}
 <br/>
 <div style="background: #f5f3f5;border-radius: 6px;padding:10px;width: 40%;">  
         {% if doc.credit_card_number %}
         <div class="row">
-            <div class="col"><strong>Credit Card Number</strong></div>
-            <div class="col text-right">{{doc.credit_card_number}}</div>
+            <div class="col">Credit Card Number</div>
+            <div class="col text-right"><strong>{{doc.credit_card_number}}</strong></div>
         </div>
         {% endif %}
         {% if doc.bank_name %}
         <div class="row">
-            <div class="col"><strong>Bank Name</strong></div>
-            <div class="col text-right">{{doc.bank_name}}</div>
+            <div class="col">Bank Name</div>
+            <div class="col text-right"><strong>{{doc.bank_name}}</strong></div>
         </div>
         {% endif %}
         {% if doc.card_holder_name %}
         <div class="row">
-            <div class="col"><strong>Card Holder Name</strong></div>
-            <div class="col text-right">{{doc.card_holder_name}}</div>
+            <div class="col">Card Holder Name</div>
+            <div class="col text-right"><strong>{{doc.card_holder_name}}</strong></div>
         </div>
         {% endif %}
         {% if doc.credit_expired_date %}
         <div class="row">
-            <div class="col"><strong>Card Expired Date</strong></div>
-            <div class="col text-right">{{ frappe.format(doc.credit_expired_date,{"fieldtype":"Date"})}}</div>
+            <div class="col">Card Expired Date</div>
+            <div class="col text-right"><strong>{{ frappe.format(doc.credit_expired_date,{"fieldtype":"Date"})}}</strong></div>
         </div>
         {% endif %}
+</div>
+{% endif %}
+{% if doc.payment_by || doc.payment_by_phone_number || doc.payment_type %}
+<br/>
+<div style="background: #f5f3f5;border-radius: 6px;padding:10px;width: 40%;">  
+    {% if doc.payment_by %}
+    <div class="row">
+        <div class="col">Payment By</div>
+        <div class="col text-right"><strong>{{doc.payment_by}}</strong></div>
+    </div>
+    {% endif %}
+    {% if doc.payment_by_phone_number %}
+    <div class="row">
+        <div class="col">Payment By Phone No.</div>
+        <div class="col text-right"><strong>{{doc.payment_by_phone_number}}</strong></div>
+    </div>
+    {% endif %}
 </div>
 {% endif %}

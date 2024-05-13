@@ -108,15 +108,6 @@
   "sort_order": 1300
  },
  {
-  "account_category": "POS Bill to City Ledger",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-01-26 11:29:28.533178",
-  "name": "POS Bill to City Ledger",
-  "note": null,
-  "sort_order": 2600
- },
- {
   "account_category": "F&B Revenue",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -126,15 +117,6 @@
   "sort_order": 1500
  },
  {
-  "account_category": "POS Bill to Desk Folio",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-01-26 17:16:54.898701",
-  "name": "POS Bill to Desk Folio",
-  "note": null,
-  "sort_order": 2500
- },
- {
   "account_category": "Other Charge Tax",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -142,6 +124,24 @@
   "name": "Other Charge Tax",
   "note": null,
   "sort_order": 1700
+ },
+ {
+  "account_category": "POS Bill to City Ledger",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-01-26 11:29:28.533178",
+  "name": "POS Bill to City Ledger",
+  "note": null,
+  "sort_order": 2600
+ },
+ {
+  "account_category": "POS Bill to Desk Folio",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-01-26 17:16:54.898701",
+  "name": "POS Bill to Desk Folio",
+  "note": null,
+  "sort_order": 2500
  },
  {
   "account_category": "Ticketing",

@@ -1,6 +1,5 @@
 <template>
     <ComDialogContent @onOK="onSave" v-model:visible="visible" modal header="Edit Rate" :loading="isSaving" hideButtonClose>
-      {{ rs }}
         <div class="grid">
         <div class="col-6">
           <label class="white-space-nowrap">{{ $t('Account Code') }}</label><br />

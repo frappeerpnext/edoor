@@ -33,7 +33,7 @@ JOB_STATUSES = ["queued", "started", "failed", "finished", "deferred", "schedule
 def get_job_by_job_name(job_name):
     args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 'filters': [['RQ Job', 'status', '=', 'queued']], 'order_by': '`tabRQ Job`.`modified` desc', 'start': '0', 'page_length': '20', 'group_by': '`tabRQ Job`.`name`', 'with_comment_count': '1', 'save_user_settings': True, 'strict': None}
     start = cint(args.get("start"))
-    page_length = cint(args.get("page_length")) or 20
+    page_length = 1000
 
 
 
@@ -46,9 +46,46 @@ def get_job_by_job_name(job_name):
     
     return  [d for d in jobs if d["job_name"]==job_name]
 
+@frappe.whitelist()
+def get_runing_job_by_job_name(job_names):
+    args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 
+            'filters': [
+                 ['RQ Job', 'status', 'in', ['queued','started']]
+                 ], 'order_by': '`tabRQ Job`.`modified` desc', 'start': '0', 'page_length': '20', 'group_by': '`tabRQ Job`.`name`', 'with_comment_count': '1', 'save_user_settings': True, 'strict': None}
+    start = cint(args.get("start"))
+    page_length = 1000
 
+
+
+    matched_job_ids = get_matching_job_ids(args)[start : start + page_length]
+
+    conn = get_redis_conn()
+    jobs = [
+        serialize_job(job) for job in Job.fetch_many(job_ids=matched_job_ids, connection=conn) if job
+    ]
+    
+    return  [d["job_name"] for d in jobs if d["job_name"] in job_names]
+
+def can_run_job(job_name):
+    
+    if frappe.db.exists("Queue Job Configuration",job_name):   
+             
+        job = frappe.get_doc("Queue Job Configuration",job_name)
+        
+        if job.skip_if_these_job_running:
+        
+            job_names = job.skip_if_these_job_running.split()
+            
+            if len(get_runing_job_by_job_name(job_names=job_names))>0:
+                frappe.log_error("This job is skip running. Job name: {}".format(job_name))
+                return False
+                
+    return True
+    
 @frappe.whitelist()
 def re_run_fail_jobs():
+    if not can_run_job("edoor.api.schedule_task.re_run_fail_jobs"):
+        return
     job_names=[
         "edoor.api.utils.update_reservation_stay_and_reservation",
         "edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy",
@@ -65,6 +102,7 @@ def re_run_fail_jobs():
     job_names.append("edoor.api.schedule_task.run_queue_job")
     job_names.append("upload_to_ftp")
     job_names.append("edoor.api.schedule_task.re_run_fail_jobs")
+    job_names.append("erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.evaluate_alert_queue")
     
     args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 
             'filters': [['RQ Job', 'status', '=', 'failed']], 
@@ -228,6 +266,8 @@ def remove_failed_jobs(failed_jobs):
                     
 @frappe.whitelist()
 def five_minute_job():
+    if not can_run_job("edoor.api.schedule_task.five_minute_job"):
+        return
     
     #delete void and cancel from temp room occupy
     sql="""
@@ -290,17 +330,21 @@ def five_minute_job():
 
 @frappe.whitelist()
 def ten_minute_job():
-    if not get_job_by_job_name("edoor.api.schedule_task.run_queue_job"):
+    if not can_run_job("edoor.api.schedule_task.ten_minute_job"):
+        return
+    
+
+    if can_run_job("edoor.api.schedule_task.run_queue_job"):
         frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
 
-    if not get_job_by_job_name("edoor.api.schedule_task.validate_opening_folio_balance"):
+    if can_run_job("edoor.api.schedule_task.validate_opening_folio_balance"):
         frappe.enqueue("edoor.api.schedule_task.validate_opening_folio_balance",queue='default')
     
     
-    if not get_job_by_job_name("edoor.api.schedule_task.validate_reservation_stay_balance"):
+    if  can_run_job("edoor.api.schedule_task.validate_reservation_stay_balance"):
         frappe.enqueue("edoor.api.schedule_task.validate_reservation_stay_balance",queue='default')
     
-    if not get_job_by_job_name("edoor.api.schedule_task.validate_reservation_balance"):
+    if can_run_job("edoor.api.schedule_task.validate_reservation_balance"):
         frappe.enqueue("edoor.api.schedule_task.validate_reservation_balance",queue='default')
     
     
@@ -310,6 +354,7 @@ def ten_minute_job():
 
 @frappe.whitelist()
 def run_queue_job():
+
     data = frappe.db.sql( "select distinct document_name, document_type, action from `tabQueue Job` limit 100",as_dict = 1)
     
     update_fetch_from_field([d for d in data if d["action"] =="update_fetch_from_field"])
@@ -374,6 +419,9 @@ def update_keyword(data):
 
 @frappe.whitelist()
 def validate_property_data():
+    if not can_run_job("edoor.api.schedule_task.validate_property_data"):
+        return
+    
     #check if data have duplicate reservation
     fix_generate_duplicate_room_occupy()
 
@@ -461,7 +509,9 @@ def fix_generate_duplicate_room_occupy():
 
 @frappe.whitelist()
 def generate_audit_trail_from_version():
-      
+    if not can_run_job("edoor.api.schedule_task.generate_audit_trail_from_version"):
+        return
+    
 
     audit_trail_documents = frappe.db.get_list("Audit Trail Document", pluck='name',filters={"is_epos_audit_trail":0})
     version_data = frappe.db.get_list('Version',
@@ -491,34 +541,35 @@ def generate_audit_trail_from_version():
 @frappe.whitelist()
 def validate_opening_folio_balance():
     data_folios = frappe.db.sql("select name, total_credit,total_debit,balance from `tabReservation Folio` where status = 'Open'",as_dict=1)
-    sql = """
-    select 
-        transaction_number,
-        sum(if(type='Debit',amount,0)) as debit,
-        sum(if(type='Credit',amount,0)) as credit
-    from `tabFolio Transaction`
-    where 
-        transaction_type='Reservation Folio' and 
-        transaction_number in %(folio_numbers)s    
-    group by
-        transaction_number
-"""
-    data_folio_transaction =frappe.db.sql(sql, {"folio_numbers":set([d["name"] for d in data_folios])},as_dict=1)
-    do_commit = False
-    for f in data_folios:
-        t =  [d for d in data_folio_transaction if d["transaction_number"] ==f["name"]]
-        if t:
-             t=t[0]
-             if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
-                do_commit = True
-                sql="update `tabReservation Folio` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
-                    t["debit"], 
-                    t["credit"],
-                    f["name"]
-                )
-                frappe.db.sql(sql)
-    if do_commit:
-        frappe.db.commit()
+    if data_folios:
+        sql = """
+        select 
+            transaction_number,
+            sum(if(type='Debit',amount,0)) as debit,
+            sum(if(type='Credit',amount,0)) as credit
+        from `tabFolio Transaction`
+        where 
+            transaction_type='Reservation Folio' and 
+            transaction_number in %(folio_numbers)s    
+        group by
+            transaction_number
+    """
+        data_folio_transaction =frappe.db.sql(sql, {"folio_numbers":set([d["name"] for d in data_folios])},as_dict=1)
+        do_commit = False
+        for f in data_folios:
+            t =  [d for d in data_folio_transaction if d["transaction_number"] ==f["name"]]
+            if t:
+                t=t[0]
+                if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
+                    do_commit = True
+                    sql="update `tabReservation Folio` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
+                        t["debit"], 
+                        t["credit"],
+                        f["name"]
+                    )
+                    frappe.db.sql(sql)
+        if do_commit:
+            frappe.db.commit()
 
 
 @frappe.whitelist()
@@ -530,35 +581,36 @@ def validate_reservation_stay_balance():
                                         select reservation_stay from `tabReservation Folio` where status='Open'
                                     ) 
                                 """,as_dict=1)
+    if data_folios:
 
-    sql = """
-    select 
-        reservation_stay,
-        sum(if(type='Debit',amount,0)) as debit,
-        sum(if(type='Credit',amount,0)) as credit
-    from `tabFolio Transaction`
-    where 
-        transaction_type='Reservation Folio' and 
-        reservation_stay in %(reservation_stays)s    
-    group by
-        reservation_stay
-"""
-    data_folio_transaction =frappe.db.sql(sql, {"reservation_stays":set([d["reservation_stay"] for d in data_folios])},as_dict=1)
-    do_commit = False
-    for f in data_folios:
-        t =  [d for d in data_folio_transaction if d["reservation_stay"] ==f["reservation_stay"]]
-        if t:
-             t=t[0]
-             if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
-                do_commit = True
-                sql="update `tabReservation Stay` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
-                    t["debit"], 
-                    t["credit"],
-                    f["reservation_stay"]
-                )
-                frappe.db.sql(sql)
-    if do_commit:
-        frappe.db.commit()
+        sql = """
+        select 
+            reservation_stay,
+            sum(if(type='Debit',amount,0)) as debit,
+            sum(if(type='Credit',amount,0)) as credit
+        from `tabFolio Transaction`
+        where 
+            transaction_type='Reservation Folio' and 
+            reservation_stay in %(reservation_stays)s    
+        group by
+            reservation_stay
+    """
+        data_folio_transaction =frappe.db.sql(sql, {"reservation_stays":set([d["reservation_stay"] for d in data_folios])},as_dict=1)
+        do_commit = False
+        for f in data_folios:
+            t =  [d for d in data_folio_transaction if d["reservation_stay"] ==f["reservation_stay"]]
+            if t:
+                t=t[0]
+                if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
+                    do_commit = True
+                    sql="update `tabReservation Stay` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
+                        t["debit"], 
+                        t["credit"],
+                        f["reservation_stay"]
+                    )
+                    frappe.db.sql(sql)
+        if do_commit:
+            frappe.db.commit()
 
     return "Done"
 
@@ -574,34 +626,34 @@ def validate_reservation_balance():
                                         select reservation from `tabReservation Folio` where status='Open'
                                     ) 
                                 """,as_dict=1)
-
-    sql = """
-    select 
-        reservation,
-        sum(if(type='Debit',amount,0)) as debit,
-        sum(if(type='Credit',amount,0)) as credit
-    from `tabFolio Transaction`
-    where 
-        transaction_type='Reservation Folio' and 
-        reservation in %(reservations)s    
-    group by
-        reservation
-"""
-    data_folio_transaction =frappe.db.sql(sql, {"reservations":set([d["reservation"] for d in data_folios])},as_dict=1)
-    do_commit = False
-    for f in data_folios:
-        t =  [d for d in data_folio_transaction if d["reservation"] ==f["reservation"]]
-        if t:
-             t=t[0]
-             if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
-                do_commit = True
-                sql="update `tabReservation` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
-                    t["debit"], 
-                    t["credit"],
-                    f["reservation"]
-                )
-                frappe.db.sql(sql)
-    if do_commit:
-        frappe.db.commit()
+    if data_folios:
+        sql = """
+        select 
+            reservation,
+            sum(if(type='Debit',amount,0)) as debit,
+            sum(if(type='Credit',amount,0)) as credit
+        from `tabFolio Transaction`
+        where 
+            transaction_type='Reservation Folio' and 
+            reservation in %(reservations)s    
+        group by
+            reservation
+    """
+        data_folio_transaction =frappe.db.sql(sql, {"reservations":set([d["reservation"] for d in data_folios])},as_dict=1)
+        do_commit = False
+        for f in data_folios:
+            t =  [d for d in data_folio_transaction if d["reservation"] ==f["reservation"]]
+            if t:
+                t=t[0]
+                if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
+                    do_commit = True
+                    sql="update `tabReservation` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
+                        t["debit"], 
+                        t["credit"],
+                        f["reservation"]
+                    )
+                    frappe.db.sql(sql)
+        if do_commit:
+            frappe.db.commit()
 
     return "Done"

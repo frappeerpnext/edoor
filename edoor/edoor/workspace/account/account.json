@@ -5,9 +5,14 @@
    "label": "Current Month Revenue by Date"
   }
  ],
- "content": "[{\"id\":\"-8EMHxKowN\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Revenue\",\"col\":3}},{\"id\":\"oYw-6l9rNI\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today ADR\",\"col\":3}},{\"id\":\"LPUc2S9qfr\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"MTD Revenue\",\"col\":3}},{\"id\":\"fMCQzYgc1Q\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"MTD ADR\",\"col\":3}},{\"id\":\"JQFnKv5sW1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Current Month Revenue by Date\",\"col\":12}},{\"id\":\"hnXStuTusO\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tax Invoices\",\"col\":3}},{\"id\":\"1eXpPXOgBN\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Folio\",\"col\":3}},{\"id\":\"C7J0zqXoDE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Desk Folio\",\"col\":3}},{\"id\":\"yFcH3cVYCQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deposit Ledger\",\"col\":3}},{\"id\":\"KtdL8taJ5N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Payable Ledger\",\"col\":3}},{\"id\":\"OlEAB5M7e7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POS Sale Invoice\",\"col\":3}},{\"id\":\"uST6tT4O8R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"City Ledger Account\",\"col\":3}},{\"id\":\"sNUVA1Trrk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XJ-SC0bjfi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy Report\",\"col\":4}}]",
+ "content": "[{\"id\":\"-8EMHxKowN\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Revenue\",\"col\":3}},{\"id\":\"oYw-6l9rNI\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today ADR\",\"col\":3}},{\"id\":\"LPUc2S9qfr\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"MTD Revenue\",\"col\":3}},{\"id\":\"fMCQzYgc1Q\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"MTD ADR\",\"col\":3}},{\"id\":\"JQFnKv5sW1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Current Month Revenue by Date\",\"col\":12}},{\"id\":\"hnXStuTusO\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tax Invoices\",\"col\":3}},{\"id\":\"1eXpPXOgBN\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Folio\",\"col\":3}},{\"id\":\"C7J0zqXoDE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Desk Folio\",\"col\":3}},{\"id\":\"yFcH3cVYCQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deposit Ledger\",\"col\":3}},{\"id\":\"KtdL8taJ5N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Payable Ledger\",\"col\":3}},{\"id\":\"OlEAB5M7e7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POS Sale Invoice\",\"col\":3}},{\"id\":\"uST6tT4O8R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"City Ledger Account\",\"col\":3}},{\"id\":\"sNUVA1Trrk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"14ka_m6Ego\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Recent Journal Transaction\",\"col\":12}},{\"id\":\"XJ-SC0bjfi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy Report\",\"col\":4}}]",
  "creation": "2024-05-02 18:04:52.412103",
- "custom_blocks": [],
+ "custom_blocks": [
+  {
+   "custom_block_name": "Recent Journal Transaction",
+   "label": "Recent Journal Transaction"
+  }
+ ],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -28,7 +33,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Revenue and Occupancy",
    "link_count": 0,
    "link_to": "Revenue and Occupancy Summary Report",
@@ -38,7 +43,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Trail Balance Report",
    "link_count": 0,
    "link_to": "Trail Balance Report",
@@ -48,7 +53,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "General Journal Report",
    "link_count": 0,
    "link_to": "General Journal Transaction",
@@ -58,7 +63,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Room Revenue Detail",
    "link_count": 0,
    "link_to": "Room Revenue Detail Report",
@@ -67,7 +72,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-05-11 18:19:57.106717",
+ "modified": "2024-05-13 12:33:49.585245",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Account",

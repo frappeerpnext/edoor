@@ -253,14 +253,13 @@ fixtures = [
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Dashboard Arrival Guest"]]},
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Unassign Room Reservation Lis"]]}
     
-
     {"dt": "Global Search Template"},
     # {"dt": "eDoor Menu"},
     # {"dt": "System Report"},
     {"dt": "Audit Trail Document"},
     {"dt": "Account Category"},
     {"dt": "App Icons"},
-
+    {"dt": "Queue Job Configuration"}
 ]
 
 # website_route_rules = [{'from_route': '/housekeeping/<path:app_path>', 'to_route': 'housekeeping'}, {'from_route': '/housekeeping/<path:app_path>', 'to_route': 'housekeeping'}, {'from_route': '/frontdesk/<path:app_path>', 'to_route': '/edoor/frontdesk'},]
