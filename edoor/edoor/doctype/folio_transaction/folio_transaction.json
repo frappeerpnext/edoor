@@ -61,6 +61,7 @@
   "is_sub_package_charge",
   "section_break_gdka",
   "item_list",
+  "item_list_2",
   "section_break_jjcd",
   "note",
   "column_break_ciqk",
@@ -1071,11 +1072,15 @@
   {
    "fieldname": "column_break_trjd",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_list_2",
+   "fieldtype": "HTML"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-13 10:31:54.815894",
+ "modified": "2024-05-14 14:21:04.663737",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

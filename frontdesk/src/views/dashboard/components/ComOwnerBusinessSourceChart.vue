@@ -12,7 +12,9 @@
             <div v-else class="surface-ground rounded-lg p-2 h-full">
                 <table class="w-full border-bottom-1">
                 <tr >
-                    <th colspan="2" class="text-start"> Actual </th>
+                    <th colspan="2" class="text-start">  
+<spna class="border-b-2" style="border-color:#7cd6fd;">Actual</spna>
+                    </th>
                 </tr>
                 <tr class="border-bottom-1">
                     <th class="text-start ">Charge List</th>
@@ -33,7 +35,9 @@
             <div v-else class="surface-ground rounded-lg p-2 h-full">
                 <table class="w-full border-bottom-1">
                 <tr >
-                    <th colspan="2" class="text-start"> Expected </th>
+                    <th colspan="2" class="text-start"> 
+                        <spna class="border-b-2" style="border-color:#5e64ff;">Expected</spna>
+                         </th>
                 </tr>
                 <tr class="border-bottom-1">
                     <th class="text-start ">Charge List</th>

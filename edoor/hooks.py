@@ -117,19 +117,18 @@ doc_events = {
     #         "edoor.api.utils.update_audit_trail_from_version"
 	# 	]
 	# },
-	"*": {
-		"on_update": [
-            "edoor.api.utils.update_keyword",
-            "edoor.api.utils.update_fetch_from_field"
-		],
+	# "*": {
+	# 	"on_update": [
+    #         "edoor.api.utils.update_keyword",
+    #         "edoor.api.utils.update_fetch_from_field"
+	# 	],
 
-		"on_update_after_submit": [
-            "edoor.api.utils.update_keyword",
-		],
-		
-		# "on_cancel": "method",
-		# "on_trash": "method"
-	}
+	# 	"on_update_after_submit": [
+    #         "edoor.api.utils.update_keyword",
+	# 	],
+	# 	# "on_cancel": "method",
+	# 	# "on_trash": "method"
+	# }
 }
 
 # Scheduled Tasks

@@ -11,7 +11,7 @@ from frappe.model.document import Document
 from frappe.utils import add_to_date,today,now,getdate
 from py_linq import Enumerable
 from edoor.api.utils import update_reservation
-
+from edoor.edoor.doctype.reservation_stay.utils import update_fetch_from_fields
 
 class ReservationStay(Document):
 	def  validate(self):
@@ -204,7 +204,11 @@ class ReservationStay(Document):
 		}])
 
 	def on_update(self):
-
+		
+		if self.creation !=self.modified:
+			update_fetch_from_fields(self)
+			
+  
 		if self.flags.ignore_on_update:
 			return
 		
@@ -265,6 +269,8 @@ class ReservationStay(Document):
 			if old_doc.adult != self.adult or old_doc.child != self.child:
 				frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
 				frappe.db.commit()
+
+
 
 def update_note(self):
 	self.note_by = frappe.session.user

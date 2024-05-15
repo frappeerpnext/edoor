@@ -263,7 +263,7 @@ function loadData(show_loading=true,delay_load_reservation_stay=0){
     
         window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
     } else if (tabs[activeTab.value] == "Package & Inclusion") {
-        alert("Package and inclusion")
+        // alert("Package and inclusion")
     } 
     else if (tabs[activeTab.value] == "Document") { 
         window.postMessage({ action: "refresh_document", docname: name.value })

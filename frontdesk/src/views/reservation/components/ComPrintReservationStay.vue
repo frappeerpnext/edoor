@@ -36,8 +36,8 @@
                         <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate</label>
                     </div>
                     <div>
-                        <Checkbox v-model="filters.breakdown_account_code" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="breakdown_account_code" />
-                        <label for="show_all_room_rate" class="white-space-nowrap" >Show/Hide Breakdown Account Code</label>
+                        <Checkbox  v-model="filters.breakdown_account_code" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="breakdown_account_code" />
+                        <label for="breakdown_account_code" class="white-space-nowrap" >Show/Hide Breakdown Account Code</label>
                     </div>
                 </div> 
             </div> 

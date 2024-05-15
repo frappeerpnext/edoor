@@ -1,189 +1,201 @@
 <template>
 
     <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
-        <div class="p-3 ">
-            <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
-                <div class="col flex gap-2">
-                   
-                    <div v-if="show_letter_head">
-                     
-                        <ComLetterHead :letterhead="letter_head" v-model="letter_head" @onSelect="onSelectLetterHead" />
+        <div class="p-3" :class="(view || '') != 'ui' ? 'grid': ''">
+            <div :class="(view || '') != 'ui' ? 'col-4 lg:col-3' : ''">
+                <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
+                    <div class="col" :class="(view || '') != 'ui' ? 'flex flex-column gap-2' : 'flex gap-2'">
+                        <div v-if="show_letter_head">
+                            <ComLetterHead :letterhead="letter_head" v-model="letter_head" @onSelect="onSelectLetterHead" />
+                        </div>
+                        <div v-if="hasFilter('show_vattin')">
+                            <div class="relative mt-2">
+                                <span class="absolute w-full">
+                                    <Checkbox @input="reloadIframe" class="w-full" v-model="filters.show_vattin" :trueValue="1" :falseValue="0"  :binary="true" /></span>
+                                <span class="pl-5">Show / Hide Vattin Number</span>
+                            </div>        
+                        </div>
+                        <div v-if="hasFilter('keyword')">
+                            <InputText type="text" class="p-inputtext-sm w-full w-16rem" @input="reloadIframe"
+                                :placeholder="$t('Search')" v-model="filters.keyword" :maxlength="50" />
+                        </div>
+                        <div v-if="hasFilter('start_date')">
+                            <Calendar :selectOtherMonths="true" panelClass="no-btn-clear"
+                                class="p-inputtext-sm w-full w-12rem" v-model="filters.start_date" placeholder="Start Date"
+                                @date-select="loadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon />
+                        </div>
+                        <div v-if="hasFilter('end_date')">
+                            <Calendar :selectOtherMonths="true" :min-date="filters.start_date"
+                                class="p-inputtext-sm w-full w-12rem" v-model="filters.end_date" placeholder="End Date"
+                                @date-select="loadIframe" panelClass="no-btn-clear" showButtonBar dateFormat="dd-mm-yy"
+                                showIcon />
+                        </div>
+                        <!-- invoice style for print invoice document credsit debit styoe or simple style -->
+                        <div v-if="hasFilter('invoice_style')">
+                            <ComSelect v-model="filters.invoice_style" @onSelected="reloadIframe" :clear="false"
+                                placeholder="Invoice Style" :options="['Simple Style', 'Debit/Credit Style']">
+                            </ComSelect>
+                        </div>
+                        <div v-if="hasFilter('show_rate')">
+                            <div>
+                                <Checkbox v-model="filters.show_rate" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_rate" />
+                            </div>
+                            <div>
+                                <label class="white-space-nowrap" for="show_rate">Show/Hide Rate</label>
+                            </div>
+                        </div>
+                        <div v-if="hasFilter('business_source')" class="w-16rem">
+                            <ComAutoComplete v-model="filters.business_source" placeholder="Business Source"
+                                @onSelected="reloadIframe" doctype="Business Source" class="auto__Com_Cus w-full" />
+                        </div>
+                        <div v-if="hasFilter('city_ledger_type')" class="w-16rem">
+                            <ComAutoComplete v-model="filters.city_ledger_type" placeholder="City Ledger Type"
+                                @onSelected="reloadIframe" doctype="City Ledger Type" class="auto__Com_Cus w-full" />
+                        </div>
+                        <div v-if="hasFilter('building')">
+                            <ComSelect v-model="filters.building" @onSelected="reloadIframe" placeholder="Building"
+                                doctype="Building" :filters="[['property', '=', property_name]]">
+                            </ComSelect>
+                        </div>
+                        <div v-if="hasFilter('floor')">
+                            <ComSelect v-model="filters.floor" @onSelected="reloadIframe" placeholder="Floor"
+                                doctype="Floor">
+                            </ComSelect>
+                        </div>
+                        <div v-if="hasFilter('room_type_group')">
+                            <ComSelect v-model="filters.room_type_group" @onSelected="reloadIframe"
+                                placeholder="Room Type Group" doctype="Room Type Group"></ComSelect>
+                        </div>
+                        <div v-if="hasFilter('room_type')">
+                            <ComSelect v-model="filters.room_type" extraFields="room_type" optionLabel="room_type"
+                                optionValue="room_type" @onSelected="reloadIframe" placeholder="Room Type"
+                                doctype="Room Type" :filters="[['property', '=', property_name]]"></ComSelect>
+                        </div>
+                        <div v-if="hasFilter('reservation_status')">
+                            <ComSelect v-model="filters.reservation_status" placeholder="Reservation Status"
+                                @onSelected="reloadIframe" doctype="Reservation Status" />
+                        </div>
+                        <div v-if="hasFilter('housekeeping_status')">
+                            <ComSelect v-model="filters.housekeeping_status" placeholder="Housekeeping Status"
+                                @onSelected="reloadIframe" doctype="Housekeeping Status" />
+                        </div>
+                        <div v-if="hasFilter('transportation_mode')">
+                            <ComSelect v-model="filters.transportation_mode" placeholder="Transportation Mode"
+                                @onSelected="reloadIframe" doctype="Transportation Mode" />
+                        </div>
+                        <div v-if="hasFilter('transportation_company')">
+                            <ComSelect v-model="filters.transportation_mode" placeholder="Pickup Location"
+                                @onSelected="reloadIframe" doctype="Transportation Company" />
+                        </div>
+                        <div v-if="hasFilter('customer')">
+                            <ComAutoComplete v-model="filters.customer" placeholder="Customer" @onSelected="reloadIframe"
+                                doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
+                        </div>
+                        <div v-if="hasFilter('guest')">
+                            <ComAutoComplete v-model="filters.guest" placeholder="Guest" @onSelected="reloadIframe"
+                                doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
+                        </div>
+                        <div v-if="hasFilter('reservation')">
+                            <ComAutoComplete v-model="filters.reservation" placeholder="Reservation"
+                                @onSelected="reloadIframe" doctype="Reservation" class="auto__Com_Cus w-full min-w-max" />
+                        </div>
+                        <div v-if="hasFilter('reservation_stay')">
+                            <ComAutoComplete v-model="filters.reservation_stay" placeholder="Reservation Stay"
+                                @onSelected="reloadIframe" doctype="Reservation Stay"
+                                class="auto__Com_Cus w-full min-w-max" />
+                        </div>
+                        <div v-if="hasFilter('account_code')">
+                            <ComAutoComplete v-model="filters.account_code" placeholder="Account Code"
+                                @onSelected="reloadIframe" doctype="Account Code"
+                                class="auto__Com_Cus w-full min-w-max" />
+                        </div>
+                        <div v-if="hasFilter('show_room_number')" class="flex ml-2">
+                            <div>
+                                <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_room_number" />
+                            </div>
+                            <div>
+                                <label class="white-space-nowrap" for="show_room_number">Show/Hide Room Number</label>
+                            </div>
+                        </div>
+
+                        <div v-if="hasFilter('show_account_code')" class="flex ml-2">
+                            <div>
+                                <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_account_code" />
+                            </div>
+                            <div>
+                                <label for="show_account_code" class="white-space-nowrap">Show/Hide Account Code</label>
+                            </div>
+                        </div>
+
+                        <div v-if="hasFilter('show_summary')" class="flex ml-2">
+                            <div>
+                                <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_summary" />
+                            </div>
+                            <div>
+                                <label for="show_summary" class="white-space-nowrap">Show/Hide Summary</label>
+                            </div>
+                        </div>
+
+                        <div v-if="hasFilter('group_by_ledger_type')" class="flex ml-2">
+                            <div>
+                                <Checkbox v-model="filters.group_by_ledger_type" :binary="true" :trueValue="1"
+                                    :falseValue="0" @input="reloadIframe" inputId="group_by_ledger_type" />
+                            </div>
+                            <div>
+                                <label for="group_by_ledger_type">Group by Ledger Type</label>
+                            </div>
+                        </div>
+
+                        <div v-if="hasFilter('show_cash_float')" class="flex ml-2">
+                            <div>
+                                <Checkbox v-model="filters.show_cash_float" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_cash_float" />
+                            </div>
+                            <div>
+                                <label for="show_cash_float">Show/Hide Cash Float</label>
+                            </div>
+                        </div>
+
+                        <div v-if="hasFilter('show_cash_count')" class="flex ml-2">
+                            <div>
+                                <Checkbox v-model="filters.show_cash_count" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_cash_count" />
+                            </div>
+                            <div>
+                                <label for="show_cash_count">Show/Hide Cash Count</label>
+                            </div>
+                        </div>
+
+                        <div v-if="hasFilter('is_master')" class="flex ml-2">
+                            <div>
+                                <Checkbox v-model="filters.is_master" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_master_folio_only" />
+                            </div>
+                            <div>
+                                <label for="show_master_folio_only">Show Master Folio Only</label>
+                            </div>
+                        </div>
+
                     </div>
-                    <div v-if="hasFilter('show_vattin')">
-                        <div class="relative mt-2">
-            <span class="absolute w-full">
-                <Checkbox @input="reloadIframe" class="w-full" v-model="filters.show_vattin" :trueValue="1" :falseValue="0"  :binary="true" /></span>
-            <span class="pl-5">Show / Hide Vattin Number</span>
-        </div>
+                 
+                        <!-- <div v-if="(view || '') != 'ui'">
+                            <ComPrintButton
+                                :BtnClassPrinter="dialogRef.data.BtnClassPrinter ? dialogRef.data.BtnClassPrinter : ''"
+                                :url="url" @click="onPrint" />
+                        </div> -->
+                        <div v-if="(view || '') == 'ui'">
+                            <Button @click="loadIframe" icon="pi pi-refresh" :class="BtnClass ? BtnClass : ''"
+                                class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
+                        </div> 
                     
-                 </div>
-                    <div v-if="hasFilter('keyword')">
-                        <InputText type="text" class="p-inputtext-sm w-full w-16rem" @input="reloadIframe"
-                            :placeholder="$t('Search')" v-model="filters.keyword" :maxlength="50" />
-                    </div>
-                    <div v-if="hasFilter('start_date')">
-                        <Calendar :selectOtherMonths="true" panelClass="no-btn-clear"
-                            class="p-inputtext-sm w-full w-12rem" v-model="filters.start_date" placeholder="Start Date"
-                            @date-select="loadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon />
-                    </div>
-                    <div v-if="hasFilter('end_date')">
-                        <Calendar :selectOtherMonths="true" :min-date="filters.start_date"
-                            class="p-inputtext-sm w-full w-12rem" v-model="filters.end_date" placeholder="End Date"
-                            @date-select="loadIframe" panelClass="no-btn-clear" showButtonBar dateFormat="dd-mm-yy"
-                            showIcon />
-                    </div>
-                    <!-- invoice style for print invoice document credsit debit styoe or simple style -->
-                    <div v-if="hasFilter('invoice_style')">
-                        <ComSelect v-model="filters.invoice_style" @onSelected="reloadIframe" :clear="false"
-                            placeholder="Invoice Style" :options="['Simple Style', 'Debit/Credit Style']">
-                        </ComSelect>
-                    </div>
-                    <div v-if="hasFilter('show_rate')">
-                        <div>
-                            <Checkbox v-model="filters.show_rate" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_rate" />
-                        </div>
-                        <div>
-                            <label class="white-space-nowrap" for="show_rate">Show/Hide Rate</label>
-                        </div>
-                    </div>
-                    <div v-if="hasFilter('business_source')" class="w-16rem">
-                        <ComAutoComplete v-model="filters.business_source" placeholder="Business Source"
-                            @onSelected="reloadIframe" doctype="Business Source" class="auto__Com_Cus w-full" />
-                    </div>
-                    <div v-if="hasFilter('city_ledger_type')" class="w-16rem">
-                        <ComAutoComplete v-model="filters.city_ledger_type" placeholder="City Ledger Type"
-                            @onSelected="reloadIframe" doctype="City Ledger Type" class="auto__Com_Cus w-full" />
-                    </div>
-                    <div v-if="hasFilter('building')">
-                        <ComSelect v-model="filters.building" @onSelected="reloadIframe" placeholder="Building"
-                            doctype="Building" :filters="[['property', '=', property_name]]">
-                        </ComSelect>
-                    </div>
-                    <div v-if="hasFilter('floor')">
-                        <ComSelect v-model="filters.floor" @onSelected="reloadIframe" placeholder="Floor"
-                            doctype="Floor">
-                        </ComSelect>
-                    </div>
-                    <div v-if="hasFilter('room_type_group')">
-                        <ComSelect v-model="filters.room_type_group" @onSelected="reloadIframe"
-                            placeholder="Room Type Group" doctype="Room Type Group"></ComSelect>
-                    </div>
-                    <div v-if="hasFilter('room_type')">
-                        <ComSelect v-model="filters.room_type" extraFields="room_type" optionLabel="room_type"
-                            optionValue="room_type" @onSelected="reloadIframe" placeholder="Room Type"
-                            doctype="Room Type" :filters="[['property', '=', property_name]]"></ComSelect>
-                    </div>
-                    <div v-if="hasFilter('reservation_status')">
-                        <ComSelect v-model="filters.reservation_status" placeholder="Reservation Status"
-                            @onSelected="reloadIframe" doctype="Reservation Status" />
-                    </div>
-                    <div v-if="hasFilter('housekeeping_status')">
-                        <ComSelect v-model="filters.housekeeping_status" placeholder="Housekeeping Status"
-                            @onSelected="reloadIframe" doctype="Housekeeping Status" />
-                    </div>
-                    <div v-if="hasFilter('transportation_mode')">
-                        <ComSelect v-model="filters.transportation_mode" placeholder="Transportation Mode"
-                            @onSelected="reloadIframe" doctype="Transportation Mode" />
-                    </div>
-                    <div v-if="hasFilter('transportation_company')">
-                        <ComSelect v-model="filters.transportation_mode" placeholder="Pickup Location"
-                            @onSelected="reloadIframe" doctype="Transportation Company" />
-                    </div>
-                    <div v-if="hasFilter('customer')">
-                        <ComAutoComplete v-model="filters.customer" placeholder="Customer" @onSelected="reloadIframe"
-                            doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
-                    </div>
-                    <div v-if="hasFilter('guest')">
-                        <ComAutoComplete v-model="filters.guest" placeholder="Guest" @onSelected="reloadIframe"
-                            doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
-                    </div>
-                    <div v-if="hasFilter('reservation')">
-                        <ComAutoComplete v-model="filters.reservation" placeholder="Reservation"
-                            @onSelected="reloadIframe" doctype="Reservation" class="auto__Com_Cus w-full min-w-max" />
-                    </div>
-                    <div v-if="hasFilter('reservation_stay')">
-                        <ComAutoComplete v-model="filters.reservation_stay" placeholder="Reservation Stay"
-                            @onSelected="reloadIframe" doctype="Reservation Stay"
-                            class="auto__Com_Cus w-full min-w-max" />
-                    </div>
-                    <div v-if="hasFilter('account_code')">
-                        <ComAutoComplete v-model="filters.account_code" placeholder="Account Code"
-                            @onSelected="reloadIframe" doctype="Account Code"
-                            class="auto__Com_Cus w-full min-w-max" />
-                    </div>
-                    <div v-if="hasFilter('show_room_number')" class="flex ml-2">
-                        <div>
-                            <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_room_number" />
-                        </div>
-                        <div>
-                            <label class="white-space-nowrap" for="show_room_number">Show/Hide Room Number</label>
-                        </div>
-                    </div>
-
-                    <div v-if="hasFilter('show_account_code')" class="flex ml-2">
-                        <div>
-                            <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_account_code" />
-                        </div>
-                        <div>
-                            <label for="show_account_code" class="white-space-nowrap">Show/Hide Account Code</label>
-                        </div>
-                    </div>
-
-                    <div v-if="hasFilter('show_summary')" class="flex ml-2">
-                        <div>
-                            <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_summary" />
-                        </div>
-                        <div>
-                            <label for="show_summary" class="white-space-nowrap">Show/Hide Summary</label>
-                        </div>
-                    </div>
-
-                    <div v-if="hasFilter('group_by_ledger_type')" class="flex ml-2">
-                        <div>
-                            <Checkbox v-model="filters.group_by_ledger_type" :binary="true" :trueValue="1"
-                                :falseValue="0" @input="reloadIframe" inputId="group_by_ledger_type" />
-                        </div>
-                        <div>
-                            <label for="group_by_ledger_type">Group by Ledger Type</label>
-                        </div>
-                    </div>
-
-                    <div v-if="hasFilter('show_cash_float')" class="flex ml-2">
-                        <div>
-                            <Checkbox v-model="filters.show_cash_float" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_cash_float" />
-                        </div>
-                        <div>
-                            <label for="show_cash_float">Show/Hide Cash Float</label>
-                        </div>
-                    </div>
-
-                    <div v-if="hasFilter('show_cash_count')" class="flex ml-2">
-                        <div>
-                            <Checkbox v-model="filters.show_cash_count" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_cash_count" />
-                        </div>
-                        <div>
-                            <label for="show_cash_count">Show/Hide Cash Count</label>
-                        </div>
-                    </div>
-
-                    <div v-if="hasFilter('is_master')" class="flex ml-2">
-                        <div>
-                            <Checkbox v-model="filters.is_master" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="reloadIframe" inputId="show_master_folio_only" />
-                        </div>
-                        <div>
-                            <label for="show_master_folio_only">Show Master Folio Only</label>
-                        </div>
-                    </div>
-
                 </div>
-                <div class="col flex gap-2 justify-end">
+            </div>
+            <div :class="(view || '') != 'ui' ? 'col' : ''">
+                <div class="col flex gap-2 justify-end" v-if="(view || '') != 'ui'">
                     <div v-if="(view || '') != 'ui'">
                         <ComPrintButton
                             :BtnClassPrinter="dialogRef.data.BtnClassPrinter ? dialogRef.data.BtnClassPrinter : ''"
@@ -194,25 +206,23 @@
                             class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                     </div>
                 </div>
+                <div class="widht-ifame">
+                    <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true" />
+                    <template v-if="!loading">
+                        <div v-html="html" class="view_table_style view_srolling_table" v-if="view"></div>
+                    </template>
+
+
+                    <template v-if="!view">
+
+                        <iframe class="iframe_max_height" :style="loading ? 'visibility: hidden;' : ''" @load="onIframeLoaded()"
+                            style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
+
+                    </template>
+
+
+                </div>
             </div>
-            <div class="widht-ifame ">
-                <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true" />
-                <template v-if="!loading">
-                    <div v-html="html" class="view_table_style view_srolling_table" v-if="view"></div>
-                </template>
-
-
-                <template v-if="!view">
-
-                    <iframe class="iframe_max_height" :style="loading ? 'visibility: hidden;' : ''" @load="onIframeLoaded()"
-                        style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
-
-                </template>
-
-
-            </div>
-
-
         </div>
     </div>
 </template>

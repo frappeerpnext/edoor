@@ -99,7 +99,7 @@ def re_run_fail_jobs():
     # append unwanted queue job from system
     job_names.append("frappe.model.delete_doc.delete_dynamic_links")
     job_names.append("build_index_for_all_routes")
-    job_names.append("edoor.api.schedule_task.run_queue_job")
+
     job_names.append("upload_to_ftp")
     job_names.append("edoor.api.schedule_task.re_run_fail_jobs")
     job_names.append("erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.evaluate_alert_queue")
@@ -334,8 +334,6 @@ def ten_minute_job():
         return
     
 
-    if can_run_job("edoor.api.schedule_task.run_queue_job"):
-        frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
 
     if can_run_job("edoor.api.schedule_task.validate_opening_folio_balance"):
         frappe.enqueue("edoor.api.schedule_task.validate_opening_folio_balance",queue='default')
@@ -350,17 +348,7 @@ def ten_minute_job():
     
     
     
-    
 
-@frappe.whitelist()
-def run_queue_job():
-
-    data = frappe.db.sql( "select distinct document_name, document_type, action from `tabQueue Job` limit 100",as_dict = 1)
-    
-    update_fetch_from_field([d for d in data if d["action"] =="update_fetch_from_field"])
-    update_keyword([d for d in data if d["action"] =="update_keyword"])
-
-    frappe.db.commit()
 
 
 @frappe.whitelist()

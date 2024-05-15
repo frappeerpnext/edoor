@@ -1,17 +1,17 @@
 <template>
     <ComOwnerContentTitle label="Payment chart">         
         <div class="grid">
-        <div class="col-6">
+        <div class="col-6 pt-6">
             <div v-if="loading" class="flex w-full justify-content-center">
             <Skeleton  shape="circle" size="17rem" class="mr-2"></Skeleton>
             </div>
-            <div id="chart"></div>
+            <div id="chart" style="margin-bottom: -30px;"></div>
         </div>
 <div class="col-6 h-auto">
 <Skeleton v-if="loading" width="100%" height="100%"></Skeleton>    
-<div v-else class="surface-ground rounded-lg p-2 h-full">
-    <table class="w-full border-bottom-1">
-        <tr class="border-bottom-1">
+<div v-else class="surface-ground rounded-lg p-2 max-h-list-scroll">
+    <table class="w-full border-bottom-1 relative">
+        <tr class="border-bottom-1 surface-ground" style="position: sticky;top: 0;">
             <th class="text-center ">Payment Type</th>
             <th class="text-center border-left-1">Amount</th>
         </tr>
@@ -33,7 +33,6 @@
 import {  ref, onMounted,getApi } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
-import { Colors } from 'chart.js';
 const loading = ref(true)
  
  
@@ -56,21 +55,28 @@ const doc = getApi('frontdesk.get_paymet_chart_data', {
             data: {
             labels:data.value.labels,
             datasets:[{
+                name: "", 
                 values:data.value.datasets.map(r=>r.values),
-       
             }
         ]
             },
+             height: 320,
             type: "pie",
             colors:data.value.datasets.map(r=>r.color),
-            show_legend: false
             
         };
 
   new Chart("#chart", chartConfig);
-  console.log(chartConfig);
+  
 }
+
 onMounted(() => {
     renderdata()
 })       
 </script>
+<style scoped>
+::v-deep .chart-legend,
+::v-deep .chart-container text {
+    display: none !important;
+}
+</style>

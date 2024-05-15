@@ -7,6 +7,7 @@ import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
 from frappe.utils import now,getdate,add_to_date
+from edoor.edoor.doctype.reservation.utils import update_fetch_from_fields
 
 class Reservation(Document):
 	def validate(self):
@@ -59,7 +60,9 @@ class Reservation(Document):
 	
 	
 	def on_update(self):
-		frappe.db.sql("update `tabReservation Stay Room` set reservation_type = '{}' where reservation = '{}'".format(self.reservation_type, self.name))
+		if self.creation != self.modified:
+			update_fetch_from_fields(self)
+
 
 	def after_insert(self):
 		
@@ -75,6 +78,8 @@ class Reservation(Document):
 		}])
 	 
 
+   
+   
 def update_note(self):
 	self.note_by = frappe.session.user
 	self.note_modified = now()

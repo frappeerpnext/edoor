@@ -188,7 +188,8 @@ class FolioTransaction(Document):
 		self.discount = self.discount if (self.discount or 0) >0 else 0
 
 		if self.discount_type =="Percent" and self.discount>100:
-			frappe.throw("Discount percent cannot greater than 100%")
+			if not self.flags.is_auto_post:
+				frappe.throw("Discount percent cannot greater than 100%")
 
 		self.input_amount =float( self.input_amount or 0)
 
@@ -269,9 +270,10 @@ class FolioTransaction(Document):
 			self.taxable_amount_2 = 0
 			self.taxable_amount_3 = 0
 			self.total_tax = 0
-		
-		if self.discount_amount> self.input_amount:
-			frappe.throw("Discount amount cannot greater than amount")
+   
+		if not self.flags.is_auto_post:
+			if self.discount_amount> self.input_amount:
+				frappe.throw("Discount amount cannot greater than amount")
 		
 		self.bank_fee = self.bank_fee or 0
 		
@@ -378,8 +380,8 @@ class FolioTransaction(Document):
 		 
 	def on_trash(self):
 		#if this transaction is auto post 
-
-		if self.is_auto_post:
+		
+		if self.is_auto_post and frappe.session.user !="Administrator":
 			if (frappe.db.get_default("allow_user_to_daddelete_auto_post_transaction") or 0)==0:
 				frappe.throw("Auto post transaction is not allow to delete.")
 		
@@ -489,7 +491,39 @@ class FolioTransaction(Document):
 			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=reservation_stay_names,reservation=reservation_names)
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
-	 
+
+	@frappe.whitelist()
+	def get_package_data(self):
+		if self.is_package:
+			sql ="""
+				select 
+					name,
+					account_code,
+					account_name,
+					quantity,
+					input_amount,
+					price,
+					amount,
+					note,
+					type
+				from `tabFolio Transaction`
+				where
+					name = %(name)s or 
+					(
+						coalesce(reference_folio_transaction,'') =%(name)s and   
+						is_sub_package_charge = 1 and 
+						coalesce(parent_reference,'') = ''
+					)
+			"""
+			transaction_list = frappe.db.sql(sql,{"name":self.name},as_dict=1)
+			summary_list =frappe.db.sql( "select account_code,account_name, sum(total_amount) as amount from `tabFolio Transaction` where parent_reference in %(parent_references)s group by account_code,account_name order by account_category_sort_order",
+                               {"parent_references":[d["name"] for d in transaction_list]},as_dict=1)
+   
+			return {
+				"transaction_list":transaction_list,
+				"summary":summary_list
+			}
+			
 def update_fetch_from_field(self):
 	if self.guest:
 		guest_name, guest_type,nationality = frappe.db.get_value("Customer",self.guest,["customer_name_en","customer_group","country"])

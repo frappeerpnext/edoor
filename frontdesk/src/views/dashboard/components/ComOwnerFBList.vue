@@ -1,13 +1,13 @@
 <template>
     <ComOwnerContentTitle label="F&B">    
     <div class="grid ">
-  <div class="col-6">
+  <div class="col-6 pt-6 relative">
     <Skeleton v-if="loading" width="100%" height="20rem"></Skeleton> 
-            <div id="chartChargefnb"></div>
+            <div id="chartChargefnb" style="margin-bottom: -30px;" ></div>
   </div>      
  <div class="card col-6">
     <Skeleton v-if="loading" width="100%" height="100%"></Skeleton>    
-<div v-else class="surface-ground rounded-lg p-2 h-full">
+<div v-else class="surface-ground rounded-lg p-2 max-h-list-scroll">
     <table class="w-full border-bottom-1">
         <tr class="border-bottom-1">
             <th class="text-center ">Payment Type</th>
@@ -58,6 +58,7 @@ const doc = getApi('fnb.get_fnb_revenue', {
             }
         ]
             },
+            height:320,
             type: "pie",
             colors:data.value.datasets.map(r=>r.color)
            
@@ -70,3 +71,9 @@ const doc = getApi('fnb.get_fnb_revenue', {
     renderdata()
 })       
 </script>
+<style scoped>
+::v-deep .chart-legend,
+::v-deep .chart-container text {
+    display: none !important;
+}
+</style>

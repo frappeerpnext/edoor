@@ -1,41 +1,52 @@
 
 <template>
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
-        <div class="p-3 pt-2 view-table-iframe-dialog" style="height: 85vh;">
-            <div class="grid">
-                <div class="col flex align-items-center gap-2">
-                    <div class="col">
-                        <Dropdown v-model="selected_guest" :options="guests" optionLabel="guest_name" optionValue="name"
-                placeholder="Select Guest" class="w-full " @change="refreshReport" />
-                    </div>
-                    <div class="col">                      
-                        <ComLetterHead v-model="letter_head" class="w-full"  @onSelect="onSelectLetterHead"/>
-                        <!-- <ComSelect  class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" @change="refreshReport" /> -->
-                    </div>
-                    <div class="col">
-                        <div>
-                            <Checkbox v-model="show_rate" :binary="true" :trueValue="1" :falseValue="0"
-                                @input="refreshReport" inputId="show_rate" />
+        <div class="p-3 pt-2 view-table-iframe-dialog" :class="(view||'')!='ui' ? 'grid' : ''" style="height: 85vh;">
+            <div :class="(view||'')!='ui' ? 'col-4 lg:col-3' : ''">
+                <div class="grid">
+                    <div :class="(view||'')!='ui' ? 'w-full flex flex-column gap-2' : 'col flex align-items-center gap-2'">
+                        <div :class="(view||'')!='ui' ? '' : 'col'">
+                            <Dropdown v-model="selected_guest" :options="guests" optionLabel="guest_name" optionValue="name"
+                    placeholder="Select Guest" class="w-full " @change="refreshReport" />
                         </div>
-                        <div>
-                            <label for="show_rate">Show Rate</label>
+                        <div :class="(view||'')!='ui' ? '' : 'col'">                      
+                            <ComLetterHead v-model="letter_head" class="w-full"  @onSelect="onSelectLetterHead"/>
+                            <!-- <ComSelect  class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" @change="refreshReport" /> -->
+                        </div>
+                        <div :class="(view||'')!='ui' ? '' : 'col'">
+                            <div>
+                                <Checkbox v-model="show_rate" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="refreshReport" inputId="show_rate" />
+                                    <label class="pl-1" for="show_rate">Show Rate</label>
+                            </div> 
                         </div>
                     </div>
-                </div>
-                <div class="col flex justify-content-end align-items-center gap-2">
+                    <div class="col flex justify-content-end align-items-center gap-2" v-if="(view || '') == 'ui'">
+                        <!-- <div v-if="(view||'')!='ui'">
+                            
+                            <ComPrintButton :url="url"  @click="onPrint"/> 
+                            
+                        </div> -->
+                        <div>
+                            <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
+                        </div>
+                    </div>
+                    
+                </div> 
+            </div>
+            <div :class="(view||'')!='ui' ? 'col' : ''">
+                <div class="col flex gap-2 justify-end" v-if="(view || '') != 'ui'">
                     <div v-if="(view||'')!='ui'">
-                        
                         <ComPrintButton :url="url"  @click="onPrint"/> 
-                        
                     </div>
                     <div>
                         <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                     </div>
                 </div>
-                
-            </div> 
-            <div class="widht-ifame">
-                <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
+                <!-- iframe -->
+                <div class="widht-ifame">
+                    <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
+                </div>
             </div>
         </div>
     </div>

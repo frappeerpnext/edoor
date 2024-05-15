@@ -29,3 +29,75 @@ class Room(Document):
 				self.housekeeping_icon= status[0].icon
 				self.show_in_room_availability= status[0].show_in_room_availability
 				self.block_room= status[0].is_block_room
+
+
+	def on_update(self):
+		if self.creation != self.modified:
+			update_fetch_from_fields(self)
+   
+def update_fetch_from_fields(self):
+	data_for_updates = []
+
+	if self.has_value_changed("room_number"):
+		data_for_updates.append({"doctype":"Room Block","update_field":"room_number='{}'".format(self.room_number)})
+		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_number='{}'".format(self.room_number)})
+		# deposit ledter
+		data_for_updates.append({"doctype":"Deposit Ledger","update_field":"room_number='{}'".format(self.room_number)})
+		# desk folio
+		data_for_updates.append({"doctype":"Desk Folio","update_field":"room_number='{}'".format(self.room_number)})
+		# payable ledger
+		data_for_updates.append({"doctype":"Payable Ledger","update_field":"room_number='{}'".format(self.room_number)})
+		
+  		# reservation room rate
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"room_number='{}'".format(self.room_number)})
+  
+  		# folio transaction
+		data_for_updates.append({"doctype":"Folio Transaction","update_field":"room_number='{}'".format(self.room_number)})
+  
+  		# room occupy
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"room_number='{}'".format(self.room_number)})
+  
+		
+	if self.has_value_changed("room_type_id"):
+		data_for_updates.append({"doctype":"Room Block","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Room Block","update_field":"room_type='{}'".format(self.room_type)})
+		# stay room
+		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type='{}'".format(self.room_type)})
+		# temp room occupy
+		data_for_updates.append({"doctype":"Temp Room Occupy","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		# Room Occupy
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"room_type='{}'".format(self.room_type)})
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
+		# deposit leder
+		data_for_updates.append({"doctype":"Deposit Ledger","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Deposit Ledger","update_field":"room_type='{}'".format(self.room_type)})
+		# desk folio
+		data_for_updates.append({"doctype":"Desk Folio","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Desk Folio","update_field":"room_type='{}'".format(self.room_type)})
+		# Payable Ledger 
+		data_for_updates.append({"doctype":"Payable Ledger","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Payable Ledger","update_field":"room_type='{}'".format(self.room_type)})
+		
+		 # reservation room rate
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"room_type='{}'".format(self.room_type)})
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
+		 # Folio Transaction
+		data_for_updates.append({"doctype":"Folio Transaction","update_field":"room_type='{}'".format(self.room_type)})
+		data_for_updates.append({"doctype":"Folio Transaction","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Folio Transaction","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
+		
+  		# reservation stay room
+		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
+  
+	if data_for_updates:
+		for d in set([x["doctype"] for x in data_for_updates]):
+			sql="update `tab{}` set {} where room_id='{}'".format(
+				d,
+				",".join([x["update_field"] for x in data_for_updates if x["doctype"]==d]),
+				self.name
+			)
+			
+			frappe.db.sql(sql)

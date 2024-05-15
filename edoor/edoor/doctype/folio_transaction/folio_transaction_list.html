@@ -1,3 +1,106 @@
+{% if doc %}
+    <div class="form-grid-container">
+        <div class="form-grid">
+            <div class="grid-heading-row" style="height: auto !important;">
+                <div class="grid-row">
+                    <div class="data-row row"> 
+                        <div class="col" >Account Code</div> 
+                        <div class="col text-center" >Type</div>
+                        <div class="col text-center" style="max-width: 3%;">Qty</div>
+                        <div class="col text-right">Rate</div>
+                        <div class="col text-right" >Amount</div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-body">
+                <div class="rows">  
+                    <div class="grid-row">
+                        <div class="data-row row">
+                            <div class="col">{{doc.account_code}} - {{doc.account_name}}</div> 
+                            <div class="col text-center">{{doc.type}}</div>
+                            <div class="col text-center" style="max-width: 3%;">{{doc.quantity}}</div> 
+                            <div class="col text-right">{{frappe.format(doc.price,{"fieldtype":"Currency"})}}</div>
+                            <div class="col text-right">{{frappe.format(doc.amount,{"fieldtype":"Currency"})}}</div>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div> 
+    {% if doc.product %}
+    <br/>
+    <div class="form-grid-container" style="width: 30%;">
+        <div class="form-grid">
+            <div class="grid-heading-row" style="height: auto !important;background: #D6DAC8;">
+                <div class="grid-row">
+                    <div class="data-row row"> 
+                        <div class="col" >Product</div> 
+                        <div class="col text-center" style="max-width: 10%;">Qty</div>
+                        <div class="col text-right" >Amount</div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-body">
+                <div class="rows">  
+                    <div class="grid-row">
+                        <div class="data-row row">
+                            <div class="col">{{doc.product}} - {{doc.product_name}}</div> 
+                            <div class="col text-center" style="max-width: 10%;">{{doc.quantity}}</div>
+                            <div class="col text-right">{{frappe.format(doc.input_amount,{"fieldtype":"Currency"})}}</div>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}  
+    {% if doc.credit_card_number || doc.bank_name || doc.card_holder_name || doc.credit_expired_date %}
+    <br/>
+    <div style="background: #f5f3f5;border-radius: 6px;padding:10px;width: 40%;">  
+            {% if doc.credit_card_number %}
+            <div class="row">
+                <div class="col">Credit Card Number</div>
+                <div class="col text-right"><strong>{{doc.credit_card_number}}</strong></div>
+            </div>
+            {% endif %}
+            {% if doc.bank_name %}
+            <div class="row">
+                <div class="col">Bank Name</div>
+                <div class="col text-right"><strong>{{doc.bank_name}}</strong></div>
+            </div>
+            {% endif %}
+            {% if doc.card_holder_name %}
+            <div class="row">
+                <div class="col">Card Holder Name</div>
+                <div class="col text-right"><strong>{{doc.card_holder_name}}</strong></div>
+            </div>
+            {% endif %}
+            {% if doc.credit_expired_date %}
+            <div class="row">
+                <div class="col">Card Expired Date</div>
+                <div class="col text-right"><strong>{{ frappe.format(doc.credit_expired_date,{"fieldtype":"Date"})}}</strong></div>
+            </div>
+            {% endif %}
+    </div>
+    {% endif %}
+    {% if doc.payment_by || doc.payment_by_phone_number || doc.payment_type %}
+    <br/>
+    <div style="background: #f5f3f5;border-radius: 6px;padding:10px;width: 40%;">  
+        {% if doc.payment_by %}
+        <div class="row">
+            <div class="col">Payment By</div>
+            <div class="col text-right"><strong>{{doc.payment_by}}</strong></div>
+        </div>
+        {% endif %}
+        {% if doc.payment_by_phone_number %}
+        <div class="row">
+            <div class="col">Payment By Phone No.</div>
+            <div class="col text-right"><strong>{{doc.payment_by_phone_number}}</strong></div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+{% else %}
 <div class="form-grid-container">
     <div class="form-grid">
         <div class="grid-heading-row" style="height: auto !important;">
@@ -8,94 +111,26 @@
                     <div class="col text-center" style="max-width: 3%;">Qty</div>
                     <div class="col text-right">Rate</div>
                     <div class="col text-right" >Amount</div>
+                    <div class="col" >Note</div>
                 </div>
             </div>
         </div>
         <div class="grid-body">
             <div class="rows">  
-                <div class="grid-row">
-                    <div class="data-row row">
-                        <div class="col">{{doc.account_code}} - {{doc.account_name}}</div> 
-                        <div class="col text-center">{{doc.type}}</div>
-                        <div class="col text-center" style="max-width: 3%;">{{doc.quantity}}</div> 
-                        <div class="col text-right">{{frappe.format(doc.price,{"fieldtype":"Currency"})}}</div>
-                        <div class="col text-right">{{frappe.format(doc.amount,{"fieldtype":"Currency"})}}</div>
-                    </div>
-                </div>  
+                {% for d in data %}
+                    <div class="grid-row">
+                        <div class="data-row row">
+                            <div class="col">{{d.account_code}} - {{d.account_name}}</div> 
+                            <div class="col text-center">{{d.type}}</div>
+                            <div class="col text-center" style="max-width: 3%;">{{d.quantity}}</div> 
+                            <div class="col text-right">{{frappe.format(d.price,{"fieldtype":"Currency"})}}</div>
+                            <div class="col text-right">{{frappe.format(d.amount,{"fieldtype":"Currency"})}}</div>
+                            <div class="col">{{d.note}}</div>
+                        </div>
+                    </div>  
+                {% endfor %}
             </div>
         </div>
     </div>
 </div> 
-{% if doc.product %}
-<br/>
-<div class="form-grid-container" style="width: 30%;">
-    <div class="form-grid">
-        <div class="grid-heading-row" style="height: auto !important;background: #D6DAC8;">
-            <div class="grid-row">
-                <div class="data-row row"> 
-                    <div class="col" >Product</div> 
-                    <div class="col text-center" style="max-width: 10%;">Qty</div>
-                    <div class="col text-right" >Amount</div>
-                </div>
-            </div>
-        </div>
-        <div class="grid-body">
-            <div class="rows">  
-                <div class="grid-row">
-                    <div class="data-row row">
-                        <div class="col">{{doc.product}} - {{doc.product_name}}</div> 
-                        <div class="col text-center" style="max-width: 10%;">{{doc.quantity}}</div>
-                        <div class="col text-right">{{frappe.format(doc.input_amount,{"fieldtype":"Currency"})}}</div>
-                    </div>
-                </div>  
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}  
-{% if doc.credit_card_number || doc.bank_name || doc.card_holder_name || doc.credit_expired_date %}
-<br/>
-<div style="background: #f5f3f5;border-radius: 6px;padding:10px;width: 40%;">  
-        {% if doc.credit_card_number %}
-        <div class="row">
-            <div class="col">Credit Card Number</div>
-            <div class="col text-right"><strong>{{doc.credit_card_number}}</strong></div>
-        </div>
-        {% endif %}
-        {% if doc.bank_name %}
-        <div class="row">
-            <div class="col">Bank Name</div>
-            <div class="col text-right"><strong>{{doc.bank_name}}</strong></div>
-        </div>
-        {% endif %}
-        {% if doc.card_holder_name %}
-        <div class="row">
-            <div class="col">Card Holder Name</div>
-            <div class="col text-right"><strong>{{doc.card_holder_name}}</strong></div>
-        </div>
-        {% endif %}
-        {% if doc.credit_expired_date %}
-        <div class="row">
-            <div class="col">Card Expired Date</div>
-            <div class="col text-right"><strong>{{ frappe.format(doc.credit_expired_date,{"fieldtype":"Date"})}}</strong></div>
-        </div>
-        {% endif %}
-</div>
-{% endif %}
-{% if doc.payment_by || doc.payment_by_phone_number || doc.payment_type %}
-<br/>
-<div style="background: #f5f3f5;border-radius: 6px;padding:10px;width: 40%;">  
-    {% if doc.payment_by %}
-    <div class="row">
-        <div class="col">Payment By</div>
-        <div class="col text-right"><strong>{{doc.payment_by}}</strong></div>
-    </div>
-    {% endif %}
-    {% if doc.payment_by_phone_number %}
-    <div class="row">
-        <div class="col">Payment By Phone No.</div>
-        <div class="col text-right"><strong>{{doc.payment_by_phone_number}}</strong></div>
-    </div>
-    {% endif %}
-</div>
 {% endif %}

@@ -4,7 +4,6 @@
 frappe.ui.form.on("Folio Transaction", {
 	onload(frm) {
         
-        
 	},
   refresh(frm) {
     updateTransactionList(frm) 
@@ -32,14 +31,7 @@ frappe.ui.form.on("Folio Transaction", {
       frm.set_intro(
         "This folio transaction is transferred from " + frm.doc.account_category + ". " + "View Sale transaction " + "<a href=" + '/app/sale/' + frm.doc.sale + "><strong>" + frm.doc.sale + "</strong></a>", "blue"
       );
-    }
-
-    // if(frm.doc.vendor){
-    //   frm.set_intro(
-    //     "This folio transaction is from " + "<strong>Payable Ledger</strong> transaction. View transaction " + "<a href=" + '/app/payable-ledger/' + frm.doc.transaction_number + "><strong>" + frm.doc.parent_reference + "</strong></a>",  
-    //     "blue"
-    //   );
-    // }
+    } 
 
     if (frm.doc.reservation_stay) {
       frm.add_custom_button(
@@ -105,15 +97,37 @@ frappe.ui.form.on("Folio Transaction", {
 
 
 function updateTransactionList(frm) {
+  if (!frm.doc.is_package) {
+    const html = frappe.render_template("folio_transaction_list", frm);
+    $(frm.fields_dict["item_list"].wrapper).html(html);
+    frm.refresh_field("item_list");
 
-	const html = frappe.render_template("folio_transaction_list", frm)
-	$(frm.fields_dict['item_list'].wrapper).html(html);
-	frm.refresh_field('item_list');
+    const html_summary = frappe.render_template(
+      "folio_transaction_summary_list",
+      frm
+    );
+    $(frm.fields_dict["summary_list"].wrapper).html(html_summary);
+    frm.refresh_field("summary_list");
+  } else { 
+    frm.call("get_package_data").then((r) => {
+    //get package list
+    const html = frappe.render_template("folio_transaction_list", {data:r.message.transaction_list, doc:null});
+    $(frm.fields_dict["item_list"].wrapper).html(html);
+    frm.refresh_field("item_list");
 
 
-  const html_summary = frappe.render_template("folio_transaction_summary_list", frm)
-	$(frm.fields_dict['summary_list'].wrapper).html(html_summary);
-	frm.refresh_field('summary_list');
+    //get package data summary
+    const html_summary = frappe.render_template(
+      "folio_transaction_summary_list",
+      {summary:r.message.summary, doc:null, total_amount:frm.doc}
+    );
+    $(frm.fields_dict["summary_list"].wrapper).html(html_summary);
+    frm.refresh_field("summary_list");
+
+
+
+    });
+  }
 } 
 
 function onchangeURL(frm) {

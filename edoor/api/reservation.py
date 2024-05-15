@@ -747,8 +747,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 
     if len(checked_in_stays)> 0:
         group_check_in_stays = []
-        for i in range(0, len(checked_in_stays), 10):
-            group_check_in_stays.append(checked_in_stays[i:i + 10])
+        for i in range(0, len(checked_in_stays), 20):
+            group_check_in_stays.append(checked_in_stays[i:i + 20])
         # create master folio and post master post change to master folio first   
         master_folio = get_master_folio(reservation=reservation,create_if_not_exists=True, reopen_folio_if_closed=True)
         
@@ -769,8 +769,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     #enqueue add comment
     frappe.enqueue("edoor.api.utils.add_audit_trail", data =comment_doc,  queue='long')
 
-    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
-    
+
  
     
     return {
@@ -1455,7 +1454,7 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
         if is_complimentary ==1 or is_house_use==1:
             doc.input_rate = 0
 
-        doc.save()
+        doc.save(ignore_permissions=True)
 
     #update rate type to reservation stay
     for s in active_stays:
@@ -2078,8 +2077,7 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
     frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
     frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[s["name"] for s in stays])
 
-    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
-
+  
 
     return stays
 
@@ -2749,9 +2747,7 @@ def update_business_source(reservation, business_source, regenerate_rate,reserva
     
     reservation_doc.save()
  
-    #update reservation to stay
-    frappe.db.sql("update `tabReservation Stay` set business_source='{}' where reservation='{}'".format(reservation_doc.business_source, reservation_doc.name)) 
-    
+
     working_day = get_working_day(reservation_doc.property)
 
     if regenerate_rate:
@@ -2780,7 +2776,7 @@ def update_business_source(reservation, business_source, regenerate_rate,reserva
     frappe.db.commit()
     if reservation_stay:
         doc =  frappe.get_doc("Reservation Stay", reservation_stay)
-        
+
         return doc
     else:
         return reservation_doc
@@ -3115,7 +3111,7 @@ def unreserved_room(property, reservation_stay):
     frappe.db.commit()
     frappe.msgprint("Unreserved room successfully")
     frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[stay.name])
-    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
+
 
 @frappe.whitelist(methods="POST")
 def reserved_room(property, reservation_stay):
@@ -3165,7 +3161,6 @@ def reserved_room(property, reservation_stay):
     frappe.db.commit()
     frappe.msgprint("Reserved room successfully")
     frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[stay.name])
-    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
 
 
 @frappe.whitelist()

@@ -1837,3 +1837,8 @@ flex-direction: column;
     visibility: visible;
     transform: translateZ(0) scale(-1);
 }
+.max-h-list-scroll{
+    max-height: 320px ;
+    overflow: auto;
+    height: 320px ;
+}

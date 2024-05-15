@@ -882,6 +882,7 @@ def add_room_charge_to_folio(folio,rate,is_package=0,is_night_audit_posing=0,not
         doc.flags.ignore_validate_back_date_transaction = ignore_validate_back_date_transaction
         doc.flags.ignore_update_folio_transaction = ignore_update_folio_transaction
         doc.flags.ignore_update_reservation_folio = ignore_update_reservation_folio
+        doc.flags.is_auto_post = True
         
         doc.insert()
         return doc
@@ -933,7 +934,7 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
     doc.flags.ignore_validate_back_date_transaction = ignore_validate_back_date_transaction
     doc.flags.ignore_update_folio_transaction = ignore_update_folio_transaction
     doc.flags.ignore_update_reservation_folio = ignore_update_reservation_folio
-    
+    doc.flags.is_auto_post = True
 
 
     doc.insert()
