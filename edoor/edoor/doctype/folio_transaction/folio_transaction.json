@@ -37,23 +37,23 @@
   "column_break_23",
   "room_id",
   "section_break_ciha",
+  "column_break_zhod",
+  "reservation_type",
+  "parent_reference",
+  "adult",
+  "column_break_fwos",
+  "child",
+  "reservation_status_color",
+  "reservation_status",
+  "section_break_fcbh",
   "column_break_upli",
   "is_package",
   "account_code",
   "account_name",
   "type",
-  "column_break_kwtq",
-  "reservation_type",
-  "column_break_zhod",
-  "parent_reference",
-  "adult",
-  "child",
-  "column_break_fwos",
-  "quantity",
-  "input_amount",
-  "reservation_status_color",
-  "reservation_status",
   "column_break_qhzn",
+  "input_amount",
+  "quantity",
   "price",
   "report_quantity",
   "amount",
@@ -867,10 +867,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "column_break_kwtq",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "column_break_zhod",
    "fieldtype": "Column Break"
   },
@@ -1076,11 +1072,15 @@
   {
    "fieldname": "item_list_2",
    "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "section_break_fcbh",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-14 14:21:04.663737",
+ "modified": "2024-05-15 09:28:10.269340",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

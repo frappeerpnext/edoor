@@ -72,7 +72,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-05-14 17:12:14.335435",
+ "modified": "2024-05-15 09:57:01.945926",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Account",
@@ -124,6 +124,14 @@
   {
    "color": "Grey",
    "doc_view": "List",
+   "label": "POS Sale Invoice",
+   "link_to": "Sale",
+   "stats_filter": "[[\"Sale\",\"posting_date\",\"Timespan\",\"today\",false],[\"POS Sale Payment\",\"payment_type\",\"!=\",\"Pay to Room\",false],[\"Sale\",\"is_generate_tax_invoice\",\"=\",0,false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
    "label": "City Ledger Account",
    "link_to": "City Ledger",
    "stats_filter": "[[\"City Ledger\",\"status\",\"=\",\"Open\",false]]",
@@ -143,14 +151,6 @@
    "label": "Deposit Ledger",
    "link_to": "Deposit Ledger",
    "stats_filter": "[[\"Deposit Ledger\",\"status\",\"=\",\"Open\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "POS Sale Invoice",
-   "link_to": "Sale",
-   "stats_filter": "[[\"Sale\",\"posting_date\",\"Timespan\",\"today\",false]]",
    "type": "DocType"
   },
   {

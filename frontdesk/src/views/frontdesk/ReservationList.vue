@@ -76,15 +76,11 @@
                             </span>
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date='slotProps.data[c.fieldname]' />
                             <div v-tippy="slotProps.data.room_numbers" class="overflow-hidden text-overflow-ellipsis" v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.room_numbers">
-                             
 
-                                <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
-                                    <div class="inline-block overflow-hidden text-overflow-ellipsis max-w-10rem">
-                                    <span>{{ item }}</span>
-                                    <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">,
-                                    </span>
-                                    </div>
-                                </template>
+                                <div class="inline-block">
+                                    <roomIDDisplay :item="slotProps.data.room_numbers.split(',')"/>
+                                </div>
+                                
                             </div>
                             <div v-tippy="slotProps.data.room_types" class="overflow-hidden text-overflow-ellipsis" v-else-if="c.fieldtype == 'room_type'" v-if="slotProps?.data && slotProps?.data?.room_type_alias">
                                 <template v-for="(item, index) in slotProps.data.room_type_alias.split(',')" :key="index">
@@ -194,6 +190,9 @@ import NewGITReservationButton from "@/views/reservation/components/NewGITReserv
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
+import roomIDDisplay from '@/components/roomIDDisplay.vue'
+
+
 import { Timeago } from 'vue2-timeago'
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;

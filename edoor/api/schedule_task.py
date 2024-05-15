@@ -84,6 +84,7 @@ def can_run_job(job_name):
     
 @frappe.whitelist()
 def re_run_fail_jobs():
+    delete_finish_jobs()
     if not can_run_job("edoor.api.schedule_task.re_run_fail_jobs"):
         return
     job_names=[
@@ -166,6 +167,25 @@ def re_run_fail_jobs():
     remove_failed_jobs(job_ids)
 
     return job_ids
+
+    
+@frappe.whitelist()
+def delete_finish_jobs():
+     
+    args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 
+            'filters': [['RQ Job', 'status', '=', 'finished']], 
+            'order_by': '`tabRQ Job`.`modified` desc', 'start': '0', 'page_length': '20', 'group_by': '`tabRQ Job`.`name`', 'with_comment_count': '1', 'save_user_settings': True, 'strict': None}
+    start =0
+    page_length = 1000
+
+
+    matched_job_ids = get_matching_job_ids(args)[start : start + page_length]
+    
+    conn = get_redis_conn()
+    jobs = [
+        serialize_job(job) for job in Job.fetch_many(job_ids=matched_job_ids, connection=conn) if job
+    ]
+    remove_failed_jobs( [d["job_id"] for d in jobs])
 
 
 def serialize_job(job: Job) -> frappe._dict:

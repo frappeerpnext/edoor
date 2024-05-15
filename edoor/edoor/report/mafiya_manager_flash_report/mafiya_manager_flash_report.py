@@ -76,10 +76,16 @@ def get_columns(filters):
 
 def get_report_data(filters):
 	
-	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Manager Flash Report"} )
+	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Mafiya Manager Flash Report"} )
 	report_data =  []
 	taxable_room_sale = get_taxable_room_sale(filters)
-	report_data.append(taxable_room_sale)
+	report_data.append(taxable_room_sale[0]['taxable_room_sale'])
+	nontaxable_room_sale = get_nontaxable_room_sale(filters)
+	report_data.append(nontaxable_room_sale[0]['nontaxable_room_sale'])
+	adjustment_amount = get_adj_data(filters)
+	report_data.append(adjustment_amount[0]['adjustment_amount'])
+	total_posted = get_total_posted_data(filters)
+	report_data.append(total_posted[0]['total_posted'])
         
 	return_report_data = []
 	#get group list
@@ -89,10 +95,11 @@ def get_report_data(filters):
 			groups.append(g)
         
 	for g in groups:
-		return_report_data.append({
-			"title": g,
-			"indent":0
-		})
+		if g != '':
+			return_report_data.append({
+				"title": g,
+				"indent":0
+			})
 		for r in [d for d in report_config.row_configs if d.group == g and d.show_in_report==1]:
 			row = [d for d in report_data if isinstance(d, dict) and d.get('title', 'No Title') == r.field_name]
 			if r.formula:
@@ -158,6 +165,97 @@ def get_data_fieldname(filters):
 	sql="""select 
 			%(fieldname)s as fieldname, 
     		sum(amount * if (type='Debit',1,-1)) as taxable_room_sale 
+		from `tabFolio Transaction` 
+		where
+			posting_date between %(start_date)s and %(end_date)s and
+			account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') and property=%(property)s """
+
+	return frappe.db.sql(sql,filters,as_dict=1)
+def get_nontaxable_room_sale(filters):
+	data = []
+	
+	fields = ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]
+	for f in fields:
+		data+=get_notaxable({ "fieldname":f,"property":filters.property,"start_date":filters.get(f)["start_date"],"end_date":filters.get(f)["end_date"]})
+	# frappe.throw(str(data))
+	row = {
+				"nontaxable_room_sale":{"title":"Non-Taxable Room Sales"}
+				
+	}
+	occupy_data = []
+	for f in fields:
+		row['nontaxable_room_sale'][f] = sum([y["nontaxable_room_sale"] for y in data if y["fieldname"]==f and y["nontaxable_room_sale"] is not None]) or 0
+
+	occupy_data.append(row)
+
+	return occupy_data
+
+def get_notaxable(filters):
+	
+	sql="""select 
+			%(fieldname)s as fieldname, 
+    		sum(amount * if (type='Debit',1,-1)) as nontaxable_room_sale 
+		from `tabFolio Transaction` 
+		where
+			posting_date between %(start_date)s and %(end_date)s and
+			total_tax = 0 and
+			account_category in ('Room Charge','Room Discount','Service Charge') and property=%(property)s """
+
+	return frappe.db.sql(sql,filters,as_dict=1)
+def get_adj_data(filters):
+	data = []
+	
+	fields = ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]
+	for f in fields:
+		data+=get_adjustment({ "fieldname":f,"property":filters.property,"start_date":filters.get(f)["start_date"],"end_date":filters.get(f)["end_date"]})
+	# frappe.throw(str(data))
+	row = {
+				"adjustment_amount":{"title":"Adjustment"}
+				
+	}
+	occupy_data = []
+	for f in fields:
+		row['adjustment_amount'][f] = sum([y["adjustment_amount"] for y in data if y["fieldname"]==f and y["adjustment_amount"] is not None]) or 0
+
+	occupy_data.append(row)
+
+	return occupy_data
+
+def get_adjustment(filters):
+	
+	sql="""select 
+			%(fieldname)s as fieldname, 
+    		sum(amount * if (type='Debit',1,-1)) as adjustment_amount
+		from `tabFolio Transaction` 
+		where
+			posting_date between %(start_date)s and %(end_date)s and
+			account_category = 'Room Charge Adjustment' and property=%(property)s """
+
+	return frappe.db.sql(sql,filters,as_dict=1)
+def get_total_posted_data(filters):
+	data = []
+	
+	fields = ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]
+	for f in fields:
+		data+=get_total_posted({ "fieldname":f,"property":filters.property,"start_date":filters.get(f)["start_date"],"end_date":filters.get(f)["end_date"]})
+	# frappe.throw(str(data))
+	row = {
+				"total_posted":{"title":"Total Posted"}
+				
+	}
+	occupy_data = []
+	for f in fields:
+		row['total_posted'][f] = sum([y["total_posted"] for y in data if y["fieldname"]==f and y["total_posted"] is not None]) or 0
+
+	occupy_data.append(row)
+
+	return occupy_data
+
+def get_total_posted(filters):
+	
+	sql="""select 
+			%(fieldname)s as fieldname, 
+    		sum(amount * if (type='Debit',1,-1)) as total_posted
 		from `tabFolio Transaction` 
 		where
 			posting_date between %(start_date)s and %(end_date)s and
