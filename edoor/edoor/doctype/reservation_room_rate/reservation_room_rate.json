@@ -72,7 +72,9 @@
   "total_rate",
   "note",
   "is_active_reservation",
-  "is_active"
+  "is_active",
+  "other_information_tab",
+  "package_charge_data"
  ],
  "fields": [
   {
@@ -87,7 +89,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Reservation",
-   "options": "Reservation"
+   "options": "Reservation",
+   "search_index": 1
   },
   {
    "fieldname": "reservation_stay",
@@ -95,7 +98,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Reservation Stay",
-   "options": "Reservation Stay"
+   "options": "Reservation Stay",
+   "search_index": 1
   },
   {
    "fieldname": "room_type_id",
@@ -205,7 +209,8 @@
    "fieldname": "date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Date"
+   "label": "Date",
+   "search_index": 1
   },
   {
    "fieldname": "total_tax",
@@ -229,8 +234,8 @@
   {
    "fieldname": "stay_room_id",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Stay Room ID"
+   "label": "Stay Room ID",
+   "search_index": 1
   },
   {
    "fieldname": "column_break_7",
@@ -444,11 +449,21 @@
    "fieldname": "is_manual_change_pax",
    "fieldtype": "Check",
    "label": "Is Manual Change Pax"
+  },
+  {
+   "fieldname": "other_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other Information"
+  },
+  {
+   "fieldname": "package_charge_data",
+   "fieldtype": "JSON",
+   "label": "Package Charge Data"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-07 10:38:26.426729",
+ "modified": "2024-05-20 12:20:16.263309",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

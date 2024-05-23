@@ -17,7 +17,32 @@
                                     :maxDate="moment(working_day.date_working_day).toDate()"
                                     :selectOtherMonths="true" panelClass="no-btn-clear"/>
                             </div>
-                            <div class="col-6"> </div>
+                            <div class="col-12 md:col">
+                                <label>{{ $t('Reservation Color Code') }}</label>                          
+                                        <Dropdown @change="onSelectChangeColor" v-model="itemscolorreservation_select" :options="itemscolorreservation" optionLabel="name" showClear
+                :placeholder="$t('Select Reservation Color Code')" class="w-full">
+                <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flex align-items-center">
+                        <div
+                            :style="'height: 20px;width: 20px;border-radius: 10px;margin-right: 8px;background:' + slotProps.value.color">
+                        </div>
+                        <div>{{ slotProps.value.name }}</div>
+                    </div>
+                    <span v-else>
+                        {{ slotProps.placeholder }}
+                    </span>
+                </template>
+                <template #option="slotProps">
+                    <div class="flex align-items-center">
+                        <div
+                            :style="'height: 20px;width: 20px;border-radius: 10px;margin-right: 8px;background:' + slotProps.option.color">
+                        </div>
+                        <div>{{ slotProps.option.name }}</div>
+                    </div>
+                </template>
+            </Dropdown>
+        
+                            </div>
                         </div>
                         <div class="grid pt-2">
                             <div class="col-6">
@@ -227,7 +252,7 @@
    
                     <div class="">
                         <div class="flex gap-3 flex-wrap">
-                            <div class="flex gap-3 relative">
+                            <div class="flex gap-3 relative" v-if="room_tax.tax_1_rate > 0">
                                 <label for="tax-1-rate"
                                     class="font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_1_name ?? '') }}
@@ -244,7 +269,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex gap-3 relative">
+                            <div class="flex gap-3 relative" v-if="room_tax.tax_2_rate > 0">
                                 <label for="tax-2-rate"
                                     class="font-medium flex align-items-center h-full">{{ $t(room_tax.tax_2_name ?? '') }}
                                     {{ room_tax.tax_2_rate }}%</label>
@@ -258,7 +283,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex gap-3 relative">
+                            <div class="flex gap-3 relative" v-if="room_tax.tax_3_rate > 0">
                                 <label for="tax-3-rate"
                                     class="font-medium flex align-items-center h-full">{{ $t(room_tax.tax_3_name) ?? '' }}
                                     {{ room_tax.tax_3_rate }}%</label>
@@ -392,7 +417,12 @@
                 </table>
 </div>
             </div>
-        
+            <div class="flex gap-3 justify-content-end mt-3">    
+            <Button class="p-button p-component conten-btn ml-auto h-3rem"  @click="onViewRoomInventory" >
+          {{ $t('View Room Inventory') }}  
+        </Button>
+        <Button class="conten-btn " :label="$t('View Room Availability')" @click="onViewRoomAvailable"  />
+        </div>
         </div>
         <div>
             <strong>{{ $t('Total Rows') }}: <span class="ttl-column_re">{{ room_types.length }}</span></strong>
@@ -423,7 +453,8 @@ import ComReservationStayChangeRate from "./components/ComReservationStayChangeR
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
-
+import ComRoomInventory from  "@/components/ComRoomInventory.vue"
+import ComRoomAvailable from  "@/components/ComRoomAvailable.vue"
 
 import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
@@ -433,6 +464,16 @@ const isSaving = ref(false)
 const gv = inject("$gv")
 const dialog = useDialog();
 
+const itemscolorreservation = ref([]);
+const itemscolorreservation_select = ref();
+function onSelectChangeColor() {
+    if (itemscolorreservation_select.value) {
+       doc.value.reservation.reservation_color_code = itemscolorreservation_select.value.name 
+    }else{
+        doc.value.reservation.reservation_color_code = ""
+    }
+    
+}
 const opColor = ref();
 const toggleColor = (event) => {
     opColor.value.toggle(event);
@@ -476,6 +517,7 @@ const doc = ref({
         group_code: "",
         group_name: "",
         auto_assign_room: false,
+        reservation_color_code: "",
         group_color: group_color.value,
         allow_post_to_city_ledger: 1
     },
@@ -522,7 +564,42 @@ const rateTax = ref((d) => {
         return 0
     }
 })
-
+function onViewRoomInventory(){
+        const dialogRef = dialog.open(ComRoomInventory, {
+        props: {
+            header: $t('Room Inventory'),
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true,
+            position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+    }
+    function onViewRoomAvailable(){
+        const dialogRef = dialog.open(ComRoomAvailable, {
+        props: {
+            header: $t('Room Available'),
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true,
+            position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+    }   
 function onChangeReference(v){
     if(v){ 
         getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"reference_number",value:v}).then(r=>{
@@ -899,6 +976,12 @@ function generateRandomColor() {
 
 
 onMounted(() => {
+    getDocList("Reservation Color Code", {
+        fields: ["name", "color"],
+        limit: 1000
+    }).then(data => {
+        itemscolorreservation.value = data;
+    });
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){

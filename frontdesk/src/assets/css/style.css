@@ -1842,3 +1842,9 @@ flex-direction: column;
     overflow: auto;
     height: 320px ;
 }
+.note-custom-st {
+    max-width: 30rem;
+    width: 30rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

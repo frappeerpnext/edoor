@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import add_audit_trail, check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger, update_reservation_folio, get_base_rate
+from edoor.api.utils import add_audit_trail, check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger, update_reservation_folio, get_base_rate,update_reservation_stay_and_reservation
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
 from epos_restaurant_2023.inventory.inventory import add_to_inventory_transaction, check_uom_conversion, get_product_cost, get_stock_location_product, get_uom_conversion, update_product_quantity
@@ -436,8 +436,6 @@ class FolioTransaction(Document):
 		reservation_names.append(self.reservation)
 		reservation_stay_names.append(self.reservation_stay)
 
-		# frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
-
 		#update reservation stay and reservation of target folio transfer after delete
 		sql = "select distinct transaction_type, transaction_number, reservation, reservation_stay from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
 		data = frappe.db.sql(sql,as_dict=1)
@@ -450,8 +448,7 @@ class FolioTransaction(Document):
 			
 			reservation_names.append(d["reservation"])
 			reservation_stay_names.append(d["reservation_stay"])
-			# frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=d["reservation_stay"],reservation=d["reservation"])
-
+			
 		
 		#check if folio transaction is city ledger then update city leder summary
 		if self.target_transaction_type == "City Ledger" and  self.target_transaction_number :
@@ -488,7 +485,7 @@ class FolioTransaction(Document):
 			comment["content"] = comment["content"] + "<br /> Note: " + self.deleted_note
 
 		if len(reservation_names)> 0 or len(reservation_stay_names)> 0:
-			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=reservation_stay_names,reservation=reservation_names)
+			update_reservation_stay_and_reservation(reservation_stay=reservation_stay_names,reservation=reservation_names)
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
 
@@ -608,8 +605,7 @@ def update_folio_transaction(self):
 	if not self.parent_reference:	
 		if self.transaction_type=="Reservation Folio": 
 			if not self.flags.ignore_update_reservation:
-				frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
-
+				update_reservation_stay_and_reservation(reservation_stay=self.reservation_stay,reservation=self.reservation)
 
 def update_sub_account_description(self):
 	

@@ -192,7 +192,6 @@ class ReservationStay(Document):
  
 
 	def after_insert(self):
-		generate_room_rate(self)
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
 			"comment_type":"Created",
 			"subject":"Create New Reservation Stay",
@@ -239,6 +238,7 @@ class ReservationStay(Document):
 			"reservation_type":self.reservation_type,
 			"paid_by_master_room":self.paid_by_master_room,
 			"reservation_stay_adr":self.adr,
+			"rate_type":self.rate_type,
 			"name": self.name
 		}
 		frappe.db.sql("""
@@ -259,16 +259,15 @@ class ReservationStay(Document):
 			group_name=%(group_name)s,
 			reservation_stay_adr=%(reservation_stay_adr)s,
 			reservation_type=%(reservation_type)s,
-			paid_by_master_room=%(paid_by_master_room)s
+			paid_by_master_room=%(paid_by_master_room)s,
+			rate_type=%(rate_type)s
 		 where parent=%(name)s
 		""",data_for_udpate)
 	
 		# check old doc if user change adult and child then update adult and chidl to reservation room rate
-		old_doc = self.get_doc_before_save()
-		if old_doc:
-			if old_doc.adult != self.adult or old_doc.child != self.child:
-				frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
-				frappe.db.commit()
+		if self.has_value_changed("adult") or self.has_value_changed("child"):
+			frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
+			frappe.db.commit()
 
 
 

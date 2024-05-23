@@ -161,7 +161,7 @@
                         </div>
                     </div>
                     </template>
-
+ 
                     <div class="col-12 text-right"
                         v-if="tax_rule && tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
                         <div class="grid justify-end">

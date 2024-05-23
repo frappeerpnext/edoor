@@ -12,6 +12,7 @@
                 <div class="bg-card-info border-round-xl p-3 h-full">
                     <div class="">
                         <div class="grid">
+                            
                             <div class="col-12 md:col">
                                 
                                 <label> {{ $t('Reservation Date') }} <span class="text-red-500">*</span></label><br />
@@ -20,7 +21,32 @@
                                     dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear"
                                     :maxDate="moment(working_day.date_working_day).toDate()" />
                             </div>
-                            <div class="col-6"> </div>
+                            <div class="col-12 md:col">
+                                <label>{{ $t('Reservation Color Code') }}</label>                          
+                                        <Dropdown @change="onSelectChangeColor" v-model="itemscolorreservation_select" :options="itemscolorreservation" optionLabel="name" showClear
+                :placeholder="$t('Select Reservation Color Code')" class="w-full">
+                <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flex align-items-center">
+                        <div
+                            :style="'height: 20px;width: 20px;border-radius: 10px;margin-right: 8px;background:' + slotProps.value.color">
+                        </div>
+                        <div>{{ slotProps.value.name }}</div>
+                    </div>
+                    <span v-else>
+                        {{ slotProps.placeholder }}
+                    </span>
+                </template>
+                <template #option="slotProps">
+                    <div class="flex align-items-center">
+                        <div
+                            :style="'height: 20px;width: 20px;border-radius: 10px;margin-right: 8px;background:' + slotProps.option.color">
+                        </div>
+                        <div>{{ slotProps.option.name }}</div>
+                    </div>
+                </template>
+            </Dropdown>
+        
+                            </div>
                         </div>
                         <div class="grid pt-2">
                             <div class="col-6">
@@ -367,6 +393,12 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="flex gap-3 justify-content-end mt-3">
+        <Button class="p-button p-component conten-btn ml-auto h-3rem"  @click="onViewRoomInventory" >
+          {{ $t('View Room Inventory') }}  
+        </Button>
+        <Button class="conten-btn " :label="$t('View Room Availability')" @click="onViewRoomAvailable"  />
+    </div>
             </div>
             <div class="flex justify-between">
                 <div>
@@ -410,6 +442,10 @@ import ComReservationStayChangeRate from "./components/ComReservationStayChangeR
 import ComPackageDetail from "@/views/frontdesk/components/ComPackageDetail.vue"
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import {i18n} from '@/i18n';
+import ComRoomInventory from  "@/components/ComRoomInventory.vue"
+import ComRoomAvailable from  "@/components/ComRoomAvailable.vue"
+const itemscolorreservation = ref([]);
+const itemscolorreservation_select = ref();
 const { t: $t } = i18n.global;
 const dialog = useDialog();
 const dialogRef = inject("dialogRef");
@@ -435,7 +471,14 @@ const onOpenChangeRate = (event, stay) => {
     rate.value = JSON.parse(JSON.stringify(stay)).rate
     op.value.toggle(event);
 }
-
+function onSelectChangeColor() {
+    if (itemscolorreservation_select.value) {
+       doc.value.reservation.reservation_color_code = itemscolorreservation_select.value.name 
+    }else{
+        doc.value.reservation.reservation_color_code = ""
+    }
+    
+}
 const doc = ref({
     reservation: {
         doctype: "Reservation",
@@ -450,6 +493,7 @@ const doc = ref({
         paid_by_master_room: 0,
         group_code: "",
         group_name: "",
+        reservation_color_code: "",
         allow_post_to_city_ledger: 1,
         is_walk_in: dialogRef.value.data?.is_walk_in || 0,
        
@@ -547,7 +591,42 @@ function getTax3Amount(rate) {
         return 0
     }
 }
-
+function onViewRoomInventory(){
+        const dialogRef = dialog.open(ComRoomInventory, {
+        props: {
+            header: $t('Room Inventory'),
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true,
+            position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+    }
+    function onViewRoomAvailable(){
+        const dialogRef = dialog.open(ComRoomAvailable, {
+        props: {
+            header: $t('Room Available'),
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true,
+            position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+    }    
 const totalTax1Amount = computed(() => {
     let amount = 0
     doc.value.reservation_stay.forEach(r => {
@@ -893,6 +972,12 @@ const onSave = () => {
 }
 
 onMounted(() => {
+    getDocList("Reservation Color Code", {
+        fields: ["name", "color"],
+        limit: 1000
+    }).then(data => {
+        itemscolorreservation.value = data;
+    });
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){

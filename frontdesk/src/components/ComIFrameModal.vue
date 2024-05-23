@@ -8,6 +8,12 @@
                         <div v-if="show_letter_head">
                             <ComLetterHead :letterhead="letter_head" v-model="letter_head" @onSelect="onSelectLetterHead" />
                         </div>
+                        <div v-if="hasFilter('select_user')" class="w-16rem">
+                            <ComSelect        class="auto__Com_Cus w-full" 
+                            optionLabel="username" optionValue="name"
+                            extraFields="username" :clear="false"
+                            v-model="filters.select_user" @onSelected="reloadIframe"  placeholder="Select User" doctype="User"></ComSelect>
+                        </div>
                         <div v-if="hasFilter('show_vattin')">
                             <div class="relative mt-2">
                                 <span class="absolute w-full">

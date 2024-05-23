@@ -73,12 +73,10 @@
                                 moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
                             <template v-else-if="c.fieldtype == 'Room'">
-                                <div v-if="slotProps?.data && slotProps?.data?.rooms">
-                                    <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                                        <span>{{ item }}</span>
-                                        <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">,
-                                        </span>
-                                    </template>
+                                <div v-tippy="slotProps.data.rooms" v-if="slotProps?.data && slotProps?.data?.rooms">
+                                    <div class="inline-block">
+                                        <roomIDDisplay :item="slotProps.data.rooms.split(',')"/>
+                                    </div>
                                 </div>
                                 <div @click="onAssignRoom(slotProps.data)" class="link_line_action w-auto" v-else>
                                     <i class="pi pi-pencil"></i>
@@ -209,6 +207,9 @@ import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '@/views/reservation/components/NewFITReservationButton.vue';
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
+import roomIDDisplay from '@/components/roomIDDisplay.vue'
+
+
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {i18n} from '@/i18n';
@@ -232,7 +233,7 @@ const columns = ref([
     { fieldname: 'arrival_date', label: 'Arrival', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'departure_date', label: 'Departure', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'room_nights', label: 'Room Night(s)', header_class: "text-center", default: true },
-    { fieldname: 'rooms', label: 'Rooms', fieldtype: "Room", header_class: "text-center", default: true },
+    { fieldname: 'rooms', label: 'Rooms', fieldtype: "Room", header_class: "text-left", default: true },
     { fieldname: 'rate_type', label: 'Rate Type', default: false },
     { fieldname: 'room_types', label: 'Room Type', default: false },
     { fieldname: 'room_rate', label: 'Room Rate', default: false },

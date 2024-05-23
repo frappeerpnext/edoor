@@ -36,7 +36,7 @@
                     </div>
                     <div class="">
                         <div class="flex gap-3 flex-column md:flex-row">
-                            <div class="flex md:gap-3 relative align-items-center" >
+                            <div class="flex md:gap-3 relative align-items-center" v-if="room_tax.tax_1_rate>0">
                                 <label for="tax-1-rate" class="col-6 md:col font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_1_name ?? '') }} - {{ room_tax.tax_1_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
@@ -49,7 +49,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex md:gap-10 relative align-items-center">
+                            <div class="flex md:gap-10 relative align-items-center" v-if="room_tax.tax_2_rate>0">
                                 <label for="tax-2-rate" class="col-6 md:col font-medium flex align-items-center h-full">
                                     {{$t(room_tax.tax_2_name ?? '') }} - {{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
@@ -62,7 +62,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex md:gap-10 relative align-items-center">
+                            <div class="flex md:gap-10 relative align-items-center" v-if="room_tax.tax_3_rate>0">
                                 <label for="tax-3-rate" class="col-6 md:col font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_3_name ?? '') }} - {{ room_tax.tax_3_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">

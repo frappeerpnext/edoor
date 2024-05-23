@@ -1,12 +1,13 @@
 from edoor.edoor.doctype.reservation_stay.reservation_stay import  generate_room_occupy, generate_temp_room_occupy, update_reservation_stay_room_rate_after_resize
 from edoor.api.frontdesk import get_working_day
 from edoor.api.reservation import check_room_type_availability, post_room_charge_to_folio_after_extend_stay
-from edoor.api.utils import update_reservation, validate_role
+from edoor.api.utils import update_reservation, validate_role,update_reservation_stay_and_reservation
 from py_linq import Enumerable
 import frappe
 from frappe import _ 
 
 from frappe.utils.data import add_to_date, getdate,now,date_diff
+from edoor.api.generate_room_rate import group_change_stay_generate_room_rate
 
 @frappe.whitelist(methods="POST")
 def group_change_stay(data):
@@ -27,7 +28,7 @@ def group_change_stay(data):
     data_for_change_stays = []
     data_for_check_validation = []
 
-    updated_stay_names = [] 
+    
     for s in data["stays"]:
         doc = frappe.get_doc("Reservation Stay",s)              
         if (getdate(data["arrival"]) != getdate(doc.arrival_date) or getdate(data["departure"]) != getdate(doc.departure_date)) and doc.is_active_reservation==1 and doc.allow_user_to_edit_information==1:
@@ -100,26 +101,22 @@ def group_change_stay(data):
         data_for_change_stays.append(can_change_stay_date(d))
     
     can_change_stay_data = [d for d in data_for_change_stays if d["can_change_stay"]==True ]
-
+    # frappe.throw(str(can_change_stay_data))
     if len(can_change_stay_data)> 0:
-        for d in can_change_stay_data:
-            stay_doc = change_stay(d)
-            updated_stay_names.append(stay_doc.name)
-            
-
-        #temporary update arrival date and departure date to reservation for data update in front end
-
+        group_change_stay_generate_room_rate(can_change_stay_data,run_commit=False)
         frappe.db.sql("update `tabReservation` set arrival_date='{}', departure_date='{}' where name='{}'".format( data["arrival"],data["departure"],data["reservation"]))
+        update_data = {"arrival":data["arrival"],"departure":data["departure"],"stay_names":[d["parent"] for d in can_change_stay_data],
+                       "nights":frappe.utils.date_diff(data["departure"], data["arrival"])}
+        
+        frappe.db.sql("update `tabReservation Stay` set room_nights=%(nights)s, arrival_date=%(arrival)s, departure_date=%(departure)s where name in %(stay_names)s",update_data)
+        frappe.db.sql("update `tabReservation Stay Room`  set  room_nights=%(nights)s,  start_date=%(arrival)s, end_date=%(departure)s where parent in %(stay_names)s",update_data)
 
+        update_reservation_stay_and_reservation( reservation = data["reservation"],reservation_stay=[d["parent"] for d in data_for_change_stays if d["can_change_stay"] == True], run_commit=False) 
+        
         #commit data change to database
         frappe.db.commit()
+        frappe.enqueue("edoor.api.generate_occupy_record.generate_room_occupies",queue='short', stay_names=[d["parent"] for d in can_change_stay_data] )        
         
-        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation",queue='short', reservation = data["reservation"],reservation_stay=[d["parent"] for d in data_for_change_stays if d["can_change_stay"] == True]) 
-
-        
-        frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='default', stay_names=updated_stay_names )
-
-         
         
 
         frappe.msgprint("Change stay successfully")
@@ -133,7 +130,7 @@ def group_change_stay(data):
 
 
 def change_stay(data):
-    #this method is do not have validation
+    # this method is do not have validation
     doc = frappe.get_doc("Reservation Stay",data['parent'])
     doc.is_override_rate = 'is_override_rate' in data and data['is_override_rate']
     doc.arrival_date = data["start_date"]
@@ -157,9 +154,7 @@ def change_stay(data):
     doc.save()
 
     if doc:
-       
         update_reservation_stay_room_rate_after_resize(data=data, stay_doc=doc)
-        post_room_charge_to_folio_after_extend_stay([doc.name])
         # frappe.msgprint(doc.rooms)
 
        
@@ -229,9 +224,16 @@ def can_change_stay_date(data):
             
     
     doc = frappe.get_doc("Reservation Stay",data['parent'])
-    
+    # if reservation stay room with multiple stay room is not allow to change stay
+    if len(doc.stays)>1:
+         return {
+                    "can_change_stay": False, 
+                    "reservation_stay": data["parent"],
+                    "message":_("Reservation stay with multiple rooms is not allow to perform in group change stay. Please change stay in reservation stay detal.")
+                }
     #validate move room that have mulltiple stay is not allow to change stay date
     stay_room = [d for d in  doc.stays if d.name ==data["name"]][0]
+    
 
 
         

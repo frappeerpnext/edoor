@@ -14,58 +14,13 @@ import urllib.parse
 import time
 import copy
 from functools import lru_cache
-from edoor.api.update_reservation import update_reservation_stay
+
 
 @frappe.whitelist(allow_guest=True)
 def get_theme():
     return frappe.db.get_single_value("ePOS Settings","app_theme")
 
-@frappe.whitelist(allow_guest=True)
-def x():
- 
-    doc = frappe.get_doc("ePOS Settings")
-    doc.backend_port ="8553"
-    doc.save(ignore_permissions=True)
 
-
-@frappe.whitelist()
-@lru_cache(maxsize=128)
-def get_room_rate(property, rate_type, room_type, business_source, date):
-    sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)
-    season = frappe.db.sql (sql, as_dict=1)
-
-    room_type_rate  = frappe.get_value("Room Type", room_type,"rate")
-    rate = 0
-   
-    if season and rate_type:
-        season_id = season[0]["name"]
-       
-        sql = """select 
-                    max(rate) as rate 
-                from `tabRate Plan` 
-                where 
-                    property='{}' and
-                    season = '{}' and 
-                    rate_type = '{}' 
-                """.format(property, season_id, rate_type)
-     
-        if business_source:
-            sql_with_business_source = "{} and business_source = '{}'".format(sql, business_source)
-            data = frappe.db.sql(sql_with_business_source, as_dict=1)
-            rate = data[0]["rate"] or 0
-            
-            
-        if rate ==0:
-            #check rate from rate that dont have business source
-            sql = "{} and ifnull(business_source,'') = '' ".format(sql) 
-            data = frappe.db.sql(sql, as_dict=1)
-            rate = data[0]["rate"] or 0
-
-            
-    if rate == 0:
-        #if still rate = 0 the  get rate from room type
-        rate = room_type_rate
-    return rate
 
 @frappe.whitelist()
 def get_working_day(property = ''):
@@ -637,6 +592,130 @@ def update_payable_ledger(name=None, doc=None,run_commit=True):
 
 
 @frappe.whitelist()
+def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True,ignore_validate=False):
+    
+    if name or doc:
+        if name:
+            if not frappe.db.exists("Reservation Stay",name ):
+                return
+            
+            doc = frappe.get_doc("Reservation Stay",name)
+
+        #1 update data to reservation stay room the rest will update from reservation stay validate event
+        sql_folio = """
+        select  
+                account_category as label,
+                abs(sum(amount * if(type='Debit',1,-1))) as amount ,
+                sum(if(type='Debit',amount,0)) as debit,
+                sum(if(type='Credit',amount,0)) as credit
+            from `tabFolio Transaction` 
+            where
+                reservation_stay = '{}' and 
+                transaction_type = 'Reservation Folio'
+            group by account_category
+        """.format(
+                doc.name
+            )
+
+        folio_data = frappe.db.sql(sql_folio, as_dict=1)
+ 
+        
+        doc.total_debit =  Enumerable(folio_data).sum(lambda x: x.debit or 0)
+        doc.total_credit=  Enumerable(folio_data).sum(lambda x: x.credit or 0)
+        
+
+        #REMOVE credit and debit from dict
+        for  d in folio_data:
+            del d["credit"]
+            del d["debit"]
+        
+        for stay in doc.stays:
+            #get rate from first stay of each room_type 
+
+            sql = """
+                select 
+                    min(rate) as rate,
+                    min(input_rate) as input_rate,
+                    sum(total_rate)/count(name) as adr,
+                    sum(discount_amount) as discount_amount,
+                    sum(tax_1_amount) as tax_1_amount,
+                    sum(tax_2_amount) as tax_2_amount,
+                    sum(tax_3_amount) as tax_3_amount,
+                    sum(total_tax) as total_tax,
+                    sum(total_rate) as total_amount,
+                    max(is_complimentary) as is_complimentary,
+                    max(is_house_use) as is_house_use
+                from `tabReservation Room Rate`
+                where
+                stay_room_id = '{}'
+            """.format(stay.name)
+
+            data = frappe.db.sql(sql,as_dict=1)
+    
+            if data:
+                d = data[0]
+                stay.rate =  d["rate"] or 0
+                stay.input_rate =  d["input_rate"] or 0
+                stay.total_rate =  d["total_amount"] or  0
+                stay.adr =  d["adr"]
+                stay.discount_amount =d["discount_amount"] or 0
+                stay.tax_1_amount =d["tax_1_amount"] or  0
+                stay.tax_2_amount =d["tax_2_amount"] or  0
+                stay.tax_3_amount =d["tax_3_amount"] or  0
+                stay.total_tax =  d["total_tax"] or  0
+                
+             
+               
+        #update is_complimentary
+        sql = "select max(is_complimentary) as is_complimentary, max(is_house_use) as is_house_use from `tabReservation Room Rate` where reservation_stay='{}'".format(doc.name)
+        complimentary_data = frappe.db.sql(sql, as_dict = 1)
+        if len(complimentary_data)>0:
+            doc.is_complimentary = complimentary_data[0]["is_complimentary"] 
+            doc.is_house_use = complimentary_data[0]["is_house_use"]
+        else:
+            doc.is_complimentary = 0
+            doc.is_house_use = 0
+
+        #update room rate, is_complimentary and house use to room occupy
+        data = frappe.db.sql("select rate_type,date,is_complimentary,is_house_use from `tabReservation Room Rate` where reservation_stay='{}' order by date".format(doc.name),as_dict=1)
+        # TODO otimize this performance        
+        if len(data)> 0:
+            #in room dont have record departure date so we include last record 
+            data.append(copy.deepcopy( data[len(data)-1]))
+            
+            data[len(data)-1]["date"] = add_to_date( data[len(data)-1]["date"] ,days=1)
+
+         
+            for r in set([x["rate_type"] for x in data]):
+                room_rate = [d for d in data if d["rate_type"] == r][0]
+                
+                frappe.db.sql("update `tabRoom Occupy` set rate_type=%(rate_type)s, is_complimentary=%(is_complimentary)s, is_house_use=%(is_house_use)s where reservation_stay=%(reservation_stay)s and date in %(dates)s",
+                              {
+                                  "reservation_stay":doc.name,
+                                  "is_complimentary":room_rate["is_complimentary"],
+                                  "is_house_use":room_rate["is_house_use"],
+                                  "dates":set([y["date"] for y in data if y["rate_type"]==r]),
+                                  "rate_type":r
+                })
+                
+                 
+
+        if is_save:
+            # doc.flags.ignore_on_update= True
+            doc.flags.ignore_validate=ignore_validate
+            doc.save(  ignore_permissions=True)
+            
+            frappe.db.commit()
+
+        #delete all invalid room rate record that stay out site of stay date
+        frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay='{}' and date<'{}'".format(doc.name, doc.arrival_date))
+        frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay='{}' and date>='{}'".format(doc.name, doc.departure_date))
+        if run_commit:
+            frappe.db.commit()
+        return doc
+
+
+@frappe.whitelist()
 def update_city_ledger(name=None,doc=None, run_commit = True):
     if name:
         doc = frappe.get_doc("City Ledger",name)
@@ -664,11 +743,47 @@ def update_city_ledger(name=None,doc=None, run_commit = True):
         
     return doc
 
+@frappe.whitelist()
+def get_room_rate(property, rate_type, room_type, business_source, date):
+    sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)
+    season = frappe.db.sql (sql, as_dict=1)
+
+    room_type_rate  = frappe.get_value("Room Type", room_type,"rate")
+    rate = 0
+   
+    if season and rate_type:
+        season_id = season[0]["name"]
+       
+        sql = """select 
+                    max(rate) as rate 
+                from `tabRate Plan` 
+                where 
+                    property='{}' and
+                    season = '{}' and 
+                    rate_type = '{}' 
+                """.format(property, season_id, rate_type)
+     
+        if business_source:
+            sql_with_business_source = "{} and business_source = '{}'".format(sql, business_source)
+            data = frappe.db.sql(sql_with_business_source, as_dict=1)
+            rate = data[0]["rate"] or 0
+            
+            
+        if rate ==0:
+            #check rate from rate that dont have business source
+            sql = "{} and ifnull(business_source,'') = '' ".format(sql) 
+            data = frappe.db.sql(sql, as_dict=1)
+            rate = data[0]["rate"] or 0
+
+            
+    if rate == 0:
+        #if still rate = 0 the  get rate from room type
+        rate = room_type_rate
+    return rate
 
 
 
 @frappe.whitelist()
-@lru_cache(maxsize=128)
 def get_base_rate(amount,tax_rule,tax_1_rate, tax_2_rate,tax_3_rate):
 
 	t1_r = (tax_1_rate or 0) / 100
@@ -692,11 +807,15 @@ def get_base_rate(amount,tax_rule,tax_1_rate, tax_2_rate,tax_3_rate):
 						+ (t1_r * t2_af_add_t1 * t2_r) 
 						+ t3_r + (t1_r * t3_af_add_t1 * t3_r) 
 						+ (t2_r * t3_af_add_t2 * t3_r)
-						+ (t1_r * t2_af_add_t1 * t2_r * t3_af_add_t2 * t3_r)
-                )
+						+ (t1_r * t2_af_add_t1 * t2_r * t3_af_add_t2 * t3_r))
 
+
+ 
 	tax_rate_con = tax_rate_con or 0
+
+
 	price = amount /  tax_rate_con
+
 
 	return  price
 
@@ -857,7 +976,7 @@ def create_folio(stay):
 
 @frappe.whitelist()
 def clear_reservation():
-    run_backup_command()
+
     if  frappe.session.user =="Administrator":
         pass
         # frappe.db.sql("delete from `tabReservation`")
@@ -1007,9 +1126,11 @@ def update_reservation_stay_and_reservation(reservation_stay, reservation, reser
     #check if user pass array
     
     if isinstance(reservation_stay, list):
-        update_reservation_stay (stay_names=list(set(reservation_stay)),run_commit=run_commit)
+        for s in list(set(reservation_stay)):
+           
+            update_reservation_stay ( name=s, doc=None, run_commit=run_commit,ignore_validate=ignore_validate)
     else:
-        update_reservation_stay (stay_names=[reservation_stay],run_commit=run_commit)
+        update_reservation_stay ( name=reservation_stay, doc=None, run_commit=run_commit,ignore_validate=ignore_validate)
     
     if isinstance(reservation, list):
         for s in list(set(reservation)):
@@ -1858,7 +1979,6 @@ def get_breakdown_package_charge_code(stay_doc, room_rate,posting_rules=[]):
 def get_reservation_stay_additional_information(stay_names):
     sql ="""select 
         name,
-        property,
         reservation_type,
         reservation_status,
         business_source, 
@@ -1887,31 +2007,8 @@ def get_reservation_stay_additional_information(stay_names):
     where name in %(stay_names)s"""
     return frappe.db.sql(sql,{"stay_names":stay_names},as_dict=1)
 
-from frappe.utils import cstr
-from frappe import conf
-import os, shutil
-import asyncio
-import shlex, subprocess
-@frappe.whitelist()
-def run_backup_command():   
-    site_name = cstr(frappe.local.site)
-    asyncio.run(run_bench_command("bench --site " + site_name + " backup"))
 
-async def run_bench_command(command, kwargs=None):
-    site = {"site": frappe.local.site}
-    cmd_input = None
-    if kwargs:
-        cmd_input = kwargs.get("cmd_input", None)
-        if cmd_input:
-            if not isinstance(cmd_input, bytes):
-                raise Exception(f"The input should be of type bytes, not {type(cmd_input).__name__}")
-            del kwargs["cmd_input"]
-        kwargs.update(site)
-    else:
-        kwargs = site
-    command = " ".join(command.split()).format(**kwargs)
-    command = shlex.split(command)
-    subprocess.run(command, input=cmd_input, capture_output=True)
+
     
     
 

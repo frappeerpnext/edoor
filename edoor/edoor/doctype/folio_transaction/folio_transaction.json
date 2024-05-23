@@ -22,6 +22,8 @@
   "working_date",
   "reservation",
   "reservation_stay",
+  "is_complimentary",
+  "is_house_use",
   "column_break_trjd",
   "transaction_type",
   "transaction_number",
@@ -193,7 +195,8 @@
    "fieldname": "reservation",
    "fieldtype": "Link",
    "label": "Reservation",
-   "options": "Reservation"
+   "options": "Reservation",
+   "search_index": 1
   },
   {
    "depends_on": "eval:doc.reservation_stay",
@@ -202,7 +205,8 @@
    "fieldname": "reservation_stay",
    "fieldtype": "Link",
    "label": "Reservation Stay",
-   "options": "Reservation Stay"
+   "options": "Reservation Stay",
+   "search_index": 1
   },
   {
    "fieldname": "account_code",
@@ -232,7 +236,8 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "\nCredit\nDebit"
+   "options": "\nCredit\nDebit",
+   "search_index": 1
   },
   {
    "depends_on": "eval:doc.reference_number",
@@ -747,7 +752,8 @@
    "fieldname": "transaction_type",
    "fieldtype": "Link",
    "label": "Transaction Type",
-   "options": "DocType"
+   "options": "DocType",
+   "search_index": 1
   },
   {
    "fieldname": "transaction_number",
@@ -1076,11 +1082,25 @@
   {
    "fieldname": "section_break_fcbh",
    "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_stay.is_complimentary",
+   "fieldname": "is_complimentary",
+   "fieldtype": "Check",
+   "label": "Is Complimentary"
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_stay.is_house_use",
+   "fieldname": "is_house_use",
+   "fieldtype": "Check",
+   "label": "Is House Use"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-15 09:28:10.269340",
+ "modified": "2024-05-19 10:39:53.752734",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

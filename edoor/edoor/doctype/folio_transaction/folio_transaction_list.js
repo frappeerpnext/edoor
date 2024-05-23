@@ -4,6 +4,8 @@ frappe.listview_settings['Folio Transaction'] = {
         
         if (doc.transaction_type=='Reservation Folio' ) {
             return [__("Guest Folio"), "orange"];
+        } else if (doc.transaction_type=='Cashier Shift' ) {
+            return [__("F&B"), "yellow"];
         } else {
             return [__(doc.transaction_type), "blue"];
         }

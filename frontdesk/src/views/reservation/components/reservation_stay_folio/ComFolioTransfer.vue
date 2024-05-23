@@ -15,14 +15,14 @@
                         <div class="flex gap-3 p-2">
                             <div>
                                 <Checkbox inputId="on-filter-folio-res-stay" 
-                                    @input="onFilterFolioNumber"
+                                    @change="onFilterFolioNumber"
                                     v-model="data.select_folio_in_reservation_stay"  :binary="true" :trueValue="1" :falseValue="0"
                                     />
                                 <label for="on-filter-folio-res-stay">By Stay</label>
                             </div>
                             <div>
                                 <Checkbox inputId="on-filter-folio-res" 
-                                    @input="onFilterFolioNumberRes"
+                                    @change="onFilterFolioNumberRes"
                                     v-model="data.select_folio_in_reservation" :binary="true" :trueValue="1" :falseValue="0"
                                     />
                                 <label for="on-filter-folio-res">By Reservation</label>
@@ -33,8 +33,6 @@
                         <ComAutoComplete @onSelected="onSelectFolioNumber" v-model="data.new_folio_number"
                             placeholder="Select Folio" doctype="Reservation Folio" class="auto__Com_Cus w-full"
                             :filters="folioNumberFilter" />
-
-                        
                         <label>Note</label>
                
                         <Textarea class="w-full" placeholder="Note" v-model="data.note" autoResize rows="2" />
@@ -155,34 +153,20 @@ function onOk() {
 }
 
 function onFilterFolioNumber(r) {
-    if(r==1){
-        data.value.select_folio_in_reservation = 0
-        delete folioNumberFilter.value.reservation
-    } 
-
     if(data.value.select_folio_in_reservation_stay==1){
         folioNumberFilter.value.reservation_stay = data.value.reservation_stay
-        disSecondbox.value = r
     }else {
         delete folioNumberFilter.value.reservation_stay
-        disSecondbox.value = r
     }  
 }
 
 
 function onFilterFolioNumberRes(r) {
-  
-    if(r==1){
-        data.value.select_folio_in_reservation_stay = 0
-        delete folioNumberFilter.value.reservation_stay
-    } 
 
     if(data.value.select_folio_in_reservation==1){
         folioNumberFilter.value.reservation = data.value.reservation
-        disFirstbox.value = r
     }else {
         delete folioNumberFilter.value.reservation
-        disFirstbox.value = r
     } 
 }
 </script>

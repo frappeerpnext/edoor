@@ -90,8 +90,8 @@
             </template>
         </ComReservationStayPanel>
         <div class="flex gap-3 justify-content-end mt-3">
-        <Button type="button" class="border-none" label="View Room Inventory" @click="onViewRoomInventory"  />
-        <Button type="button" class="border-none" label="View Room Available" @click="onViewRoomAvailable"  />
+        <Button type="button" class="border-none" :label="$t('View Room Inventory')" @click="onViewRoomInventory"  />
+        <Button type="button" class="border-none" :label="$t('View Room Availability')" @click="onViewRoomAvailable"  />
     </div>
         
 

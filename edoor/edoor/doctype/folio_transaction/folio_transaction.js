@@ -123,9 +123,6 @@ function updateTransactionList(frm) {
     );
     $(frm.fields_dict["summary_list"].wrapper).html(html_summary);
     frm.refresh_field("summary_list");
-
-
-
     });
   }
 } 

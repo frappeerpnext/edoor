@@ -104,29 +104,28 @@
         <div style="min-height:42rem;">
             <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data.length > 0">
                 <DataTable 
+                class="res_list_scroll" 
                 :rowClass="rowClass"
                 resizableColumns 
-                columnResizeMode="fit" 
+                columnResizeMode="expand" 
                 showGridlines 
                 stateStorage="local"
                 stateKey="table_folio_transaction_list_state" 
                 :reorderableColumns="false" 
                 :value="data"
-                tableStyle="min-width: 50rem;" 
+                :tableStyle="`min-width: ${width}%`" 
                 @row-dblclick="onViewReservationStayDetail">
-                <Column header="" style="width: 25px">
-                <template #body="slotProps">
-                    <i v-if="slotProps.data.is_verify" class="pi pi-verified" style="font-size: 1.25rem;color:forestgreen" ></i>
-                    <i v-else class="pi pi-verified" style="font-size: 1.25rem;color:#dbdbdb" ></i>
-                </template>
-            </Column>
+                    <Column header="" style="width:max-content !important;max-width: max-content !important;">
+                        <template #body="slotProps">
+                            <i v-if="slotProps.data.is_verify" class="pi pi-verified" style="font-size: 1.25rem;color:forestgreen" ></i>
+                            <i v-else class="pi pi-verified" style="font-size: 1.25rem;color:#dbdbdb" ></i>
+                        </template>
+                    </Column>
                     <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"
                         :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''"
-                        :bodyClass="c.header_class || ''" :frozen="c.frozen">
+                        :bodyClass="c.header_class || ''" :frozen="c.frozen" style="width:max-content !important;max-width: max-content !important;">
                         <template #body="slotProps">
-                            
-                            <button v-if="c.fieldname=='name'" @click="onOpenLink(c, slotProps.data)"  :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')">{{
-                        slotProps.data?.name }}</button>
+                            <button v-if="c.fieldname=='name'" @click="onOpenLink(c, slotProps.data)"  :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')">{{slotProps.data?.name }}</button>
 
                             <Button v-else-if="c.fieldtype == 'Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1"
                                 @click="onOpenLink(c, slotProps.data)" link>
@@ -155,6 +154,9 @@
                                 <CurrencyFormat v-if="slotProps.data.type == 'Credit'" :value="slotProps.data[c.fieldname]" />
                                 <span v-else>-</span>
                             </div>
+                            <div v-tippy="slotProps.data[c.fieldname]" class="note-custom-st" v-else-if="c.fieldtype == 'Note'">
+                                {{slotProps.data[c.fieldname]}}
+                            </div>
                             <span v-else>
                                 <div v-if="slotProps.data[c.fieldname]">
                                     {{ slotProps.data[c.fieldname] }}
@@ -165,7 +167,7 @@
 
                         </template>
                     </Column>
-                    <Column  bodyClass="text-right">
+                    <Column  bodyClass="text-right" style="width:max-content !important;max-width: max-content !important;">
                         <template #body="slotProps">
                             <i v-if="slotProps.data.loading" class="pi pi-spin pi-spinner" style="font-size: 1.5rem"></i>
                             <ComCityLedgerTransactionMoreOption v-else @onMarkAsVerify="onMarkAsVerify(slotProps.data)" @onEdit="onEditFolioTransaction(slotProps.data.name)" @onDelete="onDeleteCityLedgerTransaction(slotProps.data.name)"
@@ -230,6 +232,7 @@ const gv = inject("$gv")
 const dialog = useDialog()
 const opShowColumn = ref();
 const cityLedgerAmountSummary = ref()
+const width = ref(0)
 const data = ref([])
 const filter = ref({})
 const loading = ref(false)
@@ -283,7 +286,7 @@ const columns = ref([
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
     { fieldname: 'reservation_status', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
     
-    { fieldname: 'note', label: 'Note', default: true },
+    { fieldname: 'note', label: 'Note', default: true, fieldtype:"Note"  },
     { fieldname: 'type', default: true },
     { fieldname: 'is_auto_post' },
     { fieldname: 'reservation_status_color' },
@@ -298,6 +301,7 @@ const toggleShowColumn = (event) => {
 }
 
 function OnSaveColumn(event) {
+    width.value = 100
     selectedColumns.value = columns.value.filter(r => r.selected).map(x => x.fieldname)
     pageState.value.selectedColumns = selectedColumns.value
     localStorage.setItem("page_state_folio_transaction", JSON.stringify(pageState.value))
@@ -307,6 +311,7 @@ function OnSaveColumn(event) {
 
 
 function onResetTable() {
+    width.value = 100
     localStorage.removeItem("page_state_folio_transaction")
     localStorage.removeItem("table_folio_transaction_list_state")
     window.location.reload()
@@ -619,6 +624,7 @@ function debouncer(fn, delay) {
 
 
 onMounted(() => {
+    width.value = 100
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){

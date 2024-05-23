@@ -8,6 +8,11 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "general_information_tab",
+  "information_list",
+  "section_break_qdnt",
+  "reservation_stay_list_info",
+  "details_tab",
   "naming_series",
   "reference_number",
   "internal_reference_number",
@@ -172,7 +177,6 @@
   {
    "fieldname": "child",
    "fieldtype": "Int",
-   "hidden": 1,
    "in_list_view": 1,
    "label": "Child"
   },
@@ -670,18 +674,35 @@
    "fieldname": "is_walk_in",
    "fieldtype": "Check",
    "label": "Is Walk-In"
+  },
+  {
+   "fieldname": "general_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "General Information"
+  },
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "information_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "reservation_stay_list_info",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "section_break_qdnt",
+   "fieldtype": "Section Break",
+   "label": "Reservation Room List"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
- "links": [
-  {
-   "group": "Stay/Room",
-   "link_doctype": "Reservation Stay",
-   "link_fieldname": "reservation"
-  }
- ],
- "modified": "2024-01-23 16:24:09.278199",
+ "links": [],
+ "modified": "2024-05-23 08:33:48.763178",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

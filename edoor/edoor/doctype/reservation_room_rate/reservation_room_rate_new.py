@@ -11,16 +11,12 @@ from  edoor.api.tax_calculation  import get_tax_breakdown
 from frappe.utils.data import getdate, now
 class ReservationRoomRate(Document):
 	def validate(self):
+		rate_type_doc = frappe.get_doc("Rate Type",self.rate_type,cache=True)
+		if self.is_new():
+			self.allow_discount = rate_type_doc.allow_discount or 0
 		
-		# track changte to imporove performance
-		if self.has_value_changed("rate_type"):
-			rate_type_doc = frappe.get_doc("Rate Type",self.rate_type,cache=True)
-			if self.is_new():
-				self.allow_discount = rate_type_doc.allow_discount or 0
-			
-			self.is_complimentary = rate_type_doc.is_complimentary
-			self.is_house_use = rate_type_doc.is_house_use
-			
+		self.is_complimentary = rate_type_doc.is_complimentary
+		self.is_house_use = rate_type_doc.is_house_use
 		
 		self.input_rate =float(self.input_rate or 0)
 		
@@ -48,10 +44,9 @@ class ReservationRoomRate(Document):
 			self.has_value_changed("tax_2_rate") or 
 			self.has_value_changed("tax_3_rate") or 
 			self.has_value_changed("discount") or
-			self.has_value_changed("is_manual_rate") or
 			self.has_value_changed("discount_amount")  
       		): 
-		 
+  
 			tax_data = get_tax_breakdown(
 				tax_rule = self.tax_rule,
 				rate_include_tax = self.rate_include_tax,
