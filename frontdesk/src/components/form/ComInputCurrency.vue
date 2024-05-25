@@ -1,6 +1,5 @@
 <template>
     <div>
-    
         <InputNumber 
             inputClass="w-full"
             class="w-full"
@@ -13,8 +12,9 @@
             :locale="setting.currency.locale"
             :max="9999999999"
             :disabled="disabled"
-      
-            />
+          
+        />
+
     </div>
 </template>
 <script setup>
@@ -42,6 +42,10 @@ let value = computed({
 })
 
 function onUpdate($event){
+     
     emit('update:modelValue', $event)
 }
+
+ 
+
 </script>

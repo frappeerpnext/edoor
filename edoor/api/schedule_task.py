@@ -2,6 +2,9 @@ import functools
 import re
 
 import requests
+from edoor.api.cache_functions import get_rate_type_info_with_cache
+from edoor.api.generate_room_rate import get_room_rate_account_code_breakdown
+from edoor.api.tax_calculation import get_tax_breakdown
 from edoor.api.utils import update_reservation, update_reservation_folio,update_reservation_folios, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in,verify_reservation_stay
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
@@ -283,11 +286,19 @@ def remove_failed_jobs(failed_jobs):
         for job_ids in create_batch(failed_jobs, 100):
             for job in Job.fetch_many(job_ids=job_ids, connection=conn):
                 job and fail_registry.remove(job, delete_job=True)
-                    
+def clear_cache():
+    get_room_rate_account_code_breakdown.cache_clear()
+    get_tax_breakdown.cache_clear()      
+    get_rate_type_info_with_cache.cache_clear()
+    
+             
+    
 @frappe.whitelist()
 def five_minute_job():
+    clear_cache()
     if not can_run_job("edoor.api.schedule_task.five_minute_job"):
         return
+    
     
     #delete void and cancel from temp room occupy
     sql="""

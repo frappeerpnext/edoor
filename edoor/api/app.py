@@ -10,6 +10,8 @@ def reservation_list(property=None, date=None, room_type=None):
     
     if not date:
         date = frappe.utils.today()
+
+        
         
     filter = {"property":property, "date":date, "room_type":room_type or ""}
     # arrival

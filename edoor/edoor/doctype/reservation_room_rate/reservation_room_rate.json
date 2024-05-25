@@ -30,7 +30,6 @@
   "is_arrival",
   "is_package",
   "input_rate",
-  "rate",
   "allow_discount",
   "guest_information_section",
   "guest",
@@ -52,29 +51,35 @@
   "tax_rule",
   "rate_include_tax",
   "total_tax",
-  "tax_rule_data",
   "column_break_27",
   "tax_1_name",
   "tax_1_rate",
-  "taxable_amount_1",
-  "tax_1_amount",
   "column_break_30",
   "tax_2_name",
   "tax_2_rate",
-  "taxable_amount_2",
-  "tax_2_amount",
   "column_break_ikhd",
   "tax_3_name",
   "tax_3_rate",
-  "taxable_amount_3",
-  "tax_3_amount",
   "section_break_25",
+  "total_room_charge",
+  "total_other_charge",
   "total_rate",
-  "note",
   "is_active_reservation",
   "is_active",
+  "column_break_lpze",
+  "note",
   "other_information_tab",
-  "package_charge_data"
+  "package_charge_data",
+  "tax_rule_data",
+  "not_use_field_tab",
+  "taxable_amount_1",
+  "taxable_amount_2",
+  "rate",
+  "taxable_amount_3",
+  "column_break_yxvw",
+  "tax_1_amount",
+  "tax_2_amount",
+  "tax_3_amount"
  ],
  "fields": [
   {
@@ -167,7 +172,6 @@
    "fetch_from": "tax_rule.tax_rule_data",
    "fieldname": "tax_rule_data",
    "fieldtype": "JSON",
-   "hidden": 1,
    "label": "Tax Rule Data"
   },
   {
@@ -459,11 +463,35 @@
    "fieldname": "package_charge_data",
    "fieldtype": "JSON",
    "label": "Package Charge Data"
+  },
+  {
+   "fieldname": "total_room_charge",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Room Charge"
+  },
+  {
+   "fieldname": "total_other_charge",
+   "fieldtype": "Currency",
+   "label": "Total Other Charge"
+  },
+  {
+   "fieldname": "column_break_lpze",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "not_use_field_tab",
+   "fieldtype": "Tab Break",
+   "label": "Not Use Field"
+  },
+  {
+   "fieldname": "column_break_yxvw",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-20 12:20:16.263309",
+ "modified": "2024-05-25 19:38:38.276471",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal
 
+from edoor.api.cache_functions import get_rate_type_info_with_cache
 import frappe
 import json
 import re
@@ -15,6 +16,7 @@ import time
 import copy
 from functools import lru_cache
 from edoor.api.update_reservation import update_reservation_stay
+from edoor.api.backup import run_backup_command
 
 @frappe.whitelist(allow_guest=True)
 def get_theme():
@@ -857,9 +859,10 @@ def create_folio(stay):
 
 @frappe.whitelist()
 def clear_reservation():
-    run_backup_command()
+    
     if  frappe.session.user =="Administrator":
         pass
+        # run_backup_command()
         # frappe.db.sql("delete from `tabReservation`")
         # frappe.db.sql("delete from `tabReservation Stay`")
         # frappe.db.sql("delete from `tabReservation Stay Room`")
@@ -881,6 +884,8 @@ def clear_reservation():
         # frappe.db.sql("delete from `tabCashier Shift Cash Count`")
         # frappe.db.sql("delete from `tabDaily Property Data`")
         # frappe.db.sql("delete from `tabAdditional Stay Guest`")
+        # frappe.db.sql("delete from `tabReservation Stay Package Items`")
+        # frappe.db.sql("delete from `tabRevenue Forecast Breakdown`")
 
         # frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
         # frappe.db.sql("delete from `tabComment` where custom_is_note=1")
@@ -919,30 +924,8 @@ def clear_reservation():
 
 @frappe.whitelist()
 def get_rate_type_info(name):
-    doc = frappe.get_doc("Rate Type", name)
-    if not doc.account_code:
-        frappe.throw("This account does not have account code")
+    return get_rate_type_info_with_cache(name)
     
-    account_doc =frappe.get_doc("Account Code", doc.account_code)
-    tax_rule=None
-    if account_doc.tax_rule:
-        tax_rule = frappe.get_doc("Tax Rule",account_doc.tax_rule)
-    
-
-    if doc.is_house_use==1 or doc.is_complimentary==1:
-        tax_rule = None
-        
-    return {
-        "name": name,
-        "tax_rule":tax_rule,
-        "allow_discount": account_doc.allow_discount,
-        "allow_user_to_change_tax": account_doc.allow_user_to_change_tax,
-        "allow_user_to_edit_rate": doc.allow_user_to_edit_rate,
-        "is_house_use":doc.is_house_use,
-        "is_complimentary":doc.is_complimentary,
-        "is_package":doc.is_package
-    }
-
 
 
 @frappe.whitelist("POST")
@@ -1194,6 +1177,7 @@ def update_account_code_to_folio_transaction():
     #update parent account name
     sql="""
         update `tabFolio Transaction` f set parent_account_name = (select account_name from `tabAccount Code` t where t.name = f.parent_account_code )
+        
     """
     frappe.db.sql(sql)
 
@@ -1218,6 +1202,14 @@ def update_account_code_to_folio_transaction():
     #Update flash report revenue group
     sql="""
          update `tabFolio Transaction` f set flash_report_revenue_group = (select flash_report_revenue_group from `tabAccount Code` t where t.name = f.account_code )
+    """
+    frappe.db.sql(sql)
+    # update parent account name to account code doctye
+    sql="""
+         update `tabAccount Code` a
+         join `tabAccount Code` b on a.parent_account_code = b.name
+         set
+            a.parent_account_name = b.account_name
     """
     frappe.db.sql(sql)
 
@@ -1886,32 +1878,6 @@ def get_reservation_stay_additional_information(stay_names):
     from `tabReservation Stay` 
     where name in %(stay_names)s"""
     return frappe.db.sql(sql,{"stay_names":stay_names},as_dict=1)
-
-from frappe.utils import cstr
-from frappe import conf
-import os, shutil
-import asyncio
-import shlex, subprocess
-@frappe.whitelist()
-def run_backup_command():   
-    site_name = cstr(frappe.local.site)
-    asyncio.run(run_bench_command("bench --site " + site_name + " backup"))
-
-async def run_bench_command(command, kwargs=None):
-    site = {"site": frappe.local.site}
-    cmd_input = None
-    if kwargs:
-        cmd_input = kwargs.get("cmd_input", None)
-        if cmd_input:
-            if not isinstance(cmd_input, bytes):
-                raise Exception(f"The input should be of type bytes, not {type(cmd_input).__name__}")
-            del kwargs["cmd_input"]
-        kwargs.update(site)
-    else:
-        kwargs = site
-    command = " ".join(command.split()).format(**kwargs)
-    command = shlex.split(command)
-    subprocess.run(command, input=cmd_input, capture_output=True)
     
     
 

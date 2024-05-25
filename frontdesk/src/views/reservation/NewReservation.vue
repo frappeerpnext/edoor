@@ -1,6 +1,7 @@
 <template>
 
     <ComDialogContent dialogClass="max-h-screen-newres overflow-auto" @onOK="onSave" :loading="isSaving" hideButtonClose>
+     
         <div class="ms_message_cs_edoor">
             <Message v-if="hasFutureResertion">
                 {{ checkFutureReservationInfo.message }} <br />
@@ -234,7 +235,7 @@
                         <label for="rate_tax" class="font-medium cursor-pointer">{{ $t('Rate Include Tax') }}</label>
                         <span class="absolute right-0 w-full">
                             <Checkbox input-id="rate_tax" class="w-full flex justify-end"
-                                v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
+                                v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" @change="updateRate()" />
                         </span>
                     </div>
                     <div class="">
@@ -242,13 +243,14 @@
                             <div class="flex gap-3 relative" v-if="room_tax.tax_1_rate > 0">
                                 <label for="tax-1-rate" class="font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_1_name)  }} - {{ room_tax.tax_1_rate }}%</label>
-                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-3rem">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-1-rate" class="w-full" v-model="useTax.use_tax_1"
                                             @input="onUseTax1Change" :binary="true" />
                                     </span>
                                     <div class="white-space-nowrap">
-                                        <CurrencyFormat :value="totalTax1Amount" />
+                                        <!-- Need to rview this again in future -->
+                                        <!-- <CurrencyFormat :value="totalTax1Amount" /> -->
                                     </div>
                                 </div>
                             </div>
@@ -256,28 +258,30 @@
                             <div class="flex gap-3 relative" v-if="room_tax.tax_2_rate > 0">
                                 <label for="tax-2-rate" class="font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_2_name)  }} - {{ room_tax.tax_2_rate }}%</label>
-                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-3rem">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-2-rate" class="w-full" v-model="useTax.use_tax_2"
                                             @input="onUseTax2Change" :binary="true" />
                                     </span>
-                                    <div class="white-space-nowrap">
+                                    <!-- <div class="white-space-nowrap">
+                                       Need to rview this again in future
                                         <CurrencyFormat :value="totalTax2Amount" />
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
 
                             <div class="flex gap-3 relative" v-if="room_tax.tax_3_rate > 0">
                                 <label for="tax-3-rate" class="font-medium flex align-items-center h-full">
                                     {{ $t(room_tax.tax_3_name)  }} - {{ room_tax.tax_3_rate }}%</label>
-                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-3rem">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-3-rate" class="w-full" v-model="useTax.use_tax_3"
                                             @input="onUseTax3Change" :binary="true" />
                                     </span>
-                                    <div class="white-space-nowrap">
+                                    <!-- <div class="white-space-nowrap">
+                                        Need to rview this again in future
                                         <CurrencyFormat :value="totalTax3Amount" />
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -320,6 +324,7 @@
                     <tbody>
                         <tr v-for="(  d, index  ) in   doc.reservation_stay" :key="index">
                             <td class="pr-2 min-w-5rem">
+                
                                 <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
                                     @change="onSelectRoomType(d)" optionLabel="room_type" :placeholder="$t('Select Room Type')"
                                     class="w-full">
@@ -357,16 +362,19 @@
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-12rem text-right">
                                 <div class="box-input-detail">
-                                    <CurrencyFormat :value="roomRateTax(d)" />
+                                    <div :class="d.total_tax <= 0 ? 'pointer-events-none' : ''" class="link_line_action" @click="viewRoomRateBreakdown(d)"  >
+                                        <CurrencyFormat :value="d.total_tax * (doc.reservation.room_night||1)" />
+                                    </div>
+                                    
                                 </div>
                             </td>
                             <td class="p-2 w-4rem">
                                 <InputNumber inputClass="w-4rem" v-model="d.adult" inputId="stacked-buttons" showButtons
-                                    :min="1" :max="100" class="child-adults-txt" />
+                                    :min="1" :max="100" class="child-adults-txt" @update:modelValue="get_room_rate_breakdown(d)" />
                             </td>
                             <td class="p-2 w-4rem">
                                 <InputNumber inputClass="w-4rem" v-model="d.child" inputId="stacked-buttons" showButtons
-                                    :min="0" :max="100" class="child-adults-txt" />
+                                    :min="0" :max="100" class="child-adults-txt" @update:modelValue="get_room_rate_breakdown(d)"/>
                             </td>
 
                             <td class="p-2 w-8rem">
@@ -375,20 +383,23 @@
                                 </div>
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-10rem">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12 white-space-nowrap"
+                                
+                                <div @click="viewRoomRateBreakdown(d)" class="p-inputtext-pt text-end border-1 border-white h-12 white-space-nowrap"
                                     v-if="doc.tax_rule.rate_include_tax == 'Yes'">
 
                                     <CurrencyFormat :value="(d.rate) * (doc.reservation.room_night ?? 0)" />
                                 </div>
                                 <div class="p-inputtext-pt text-end border-1 border-white h-12 white-space-nowrap" v-else>
+                                    <div class="link_line_action" @click="viewRoomRateBreakdown(d)">
                                     <CurrencyFormat
-                                        :value="(roomRateTax(d)) + (d.rate * doc.reservation.room_night ?? 0)" />
-                                </div>
+                                        :value="((d.total_tax || 0) * (doc.reservation.room_night ||1)) + ((d.rate * doc.reservation.room_night ?? 1))" />
+                                    </div>
+                            </div>
                             </td>
 
                             <td v-if="doc.reservation_stay.length > 1" class="pl-2 text-end w-3rem">
-                                <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12"
-                                    aria-label="Filter" />
+                                <Button :loading="d.loading" class="tr-h__custom text-3xl h-12"
+                                     icon="pi pi-trash" @click="onDeleteStay(index)" aria-label="Filter" />
                             </td>
                         </tr>
                     </tbody>
@@ -441,6 +452,7 @@ const theme =window.theme
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
 import ComPackageDetail from "@/views/frontdesk/components/ComPackageDetail.vue"
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
+import ComViewRoomRateBreakdown from '@/views/reservation/components/ComViewRoomRateBreakdown.vue';
 import {i18n} from '@/i18n';
 import ComRoomInventory from  "@/components/ComRoomInventory.vue"
 import ComRoomAvailable from  "@/components/ComRoomAvailable.vue"
@@ -469,6 +481,7 @@ const checkFutureReservationInfo = ref({})
 const onOpenChangeRate = (event, stay) => {
     selectedStay.value = stay
     rate.value = JSON.parse(JSON.stringify(stay)).rate
+   
     op.value.toggle(event);
 }
 function onSelectChangeColor() {
@@ -531,68 +544,10 @@ const gender_list = ref([
 const useTax = ref({})
 
 
-const roomRateTax = ref((d) => {
-    const tax_1_amount = getTax1Amount(d.rate * doc.value.reservation.room_night)
-    const tax_2_amount = getTax2Amount(d.rate * doc.value.reservation.room_night)
-    const tax_3_amount = getTax3Amount(d.rate * doc.value.reservation.room_night)
-    return tax_1_amount + tax_2_amount + tax_3_amount
-});
-
-
-function getTax1Amount(rate) {
-    if (room_tax.value) {
-        if (room_tax.value?.calculate_tax_1_after_discount == 0 || doc.value?.tax_rule.rate_include_tax == 'Yes') {
-            rate = gv.getRateBeforeTax((rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
-
-        } else {
-            rate = rate
-
-        }
-        return (rate || 0) * (doc.value.tax_rule.tax_1_rate / 100 || 0)
-    } else {
-        return 0
-    }
-}
-function getTax2Amount(rate) {
-
-    if (room_tax.value) {
-        if (room_tax.value?.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
-            rate = rate = gv.getRateBeforeTax((rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
-
-        } else {
-            rate = rate
-
-        }
-        if (room_tax.value?.calculate_tax_2_after_adding_tax_1 == 0 || (rate * (doc.value.tax_rule.tax_1_rate / 100)) == 0) {
-            rate = rate
-        } else { rate = rate + (rate * (doc.value.tax_rule.tax_1_rate / 100)) }
-        return (rate || 0) * (doc.value.tax_rule.tax_2_rate / 100 || 0)
-    } else {
-        return 0
-    }
-}
-function getTax3Amount(rate) {
-    if (room_tax.value) {
-        if (room_tax.value?.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
-            rate = rate = gv.getRateBeforeTax((rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
-
-        } else {
-            rate = rate
-
-        }
-        if (room_tax.value.calculate_tax_2_after_adding_tax_1 == 0 || (rate * (doc.value.tax_rule.tax_1_rate / 100)) == 0) {
-            rate = rate
-        } else { rate = rate + (rate * (doc.value.tax_rule.tax_1_rate / 100)) }
-        if (room_tax.value.calculate_tax_3_after_adding_tax_2 == 0 || (rate * (doc.value.tax_rule.tax_2_rate / 100)) == 0) {
-            rate = rate
-        } else { rate = rate + (rate * (doc.value.tax_rule.tax_2_rate / 100)) }
-        return (rate || 0) * (doc.value.tax_rule.tax_3_rate / 100 || 0)
-    } else {
-        return 0
-    }
-}
+ 
 function onViewRoomInventory(){
-        const dialogRef = dialog.open(ComRoomInventory, {
+       dialog.open(ComRoomInventory, {
+        
         props: {
             header: $t('Room Inventory'),
             style: {
@@ -768,12 +723,15 @@ const onRoomNightChanged = (event) => {
 
 function onUseTax1Change(){
     doc.value.tax_rule.tax_1_rate = useTax.value.use_tax_1 ? 0 : room_tax.value.tax_1_rate
+    updateRate()
 }
 function onUseTax2Change(){
     doc.value.tax_rule.tax_2_rate = useTax.value.use_tax_2 ? 0 : room_tax.value.tax_2_rate
+    updateRate()
 }
 function onUseTax3Change(){
     doc.value.tax_rule.tax_3_rate = useTax.value.use_tax_3 ? 0 : room_tax.value.tax_3_rate
+    updateRate()
 }
 
 
@@ -786,7 +744,8 @@ const onAddRoom = () => {
             rate: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].rate,
             room_id: "",
             is_manual_rate: false,
-            is_master: 0
+            is_master: 0,
+            total_tax: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].total_tax
 
         }
     )
@@ -1041,7 +1000,8 @@ const onSelectRoomType = (stay) => {
 
     stay.room_id = null
     OnSelectRoom()
-    updateRate()
+    updateRate(stay)
+ 
 }
 
 
@@ -1049,17 +1009,34 @@ const onDeleteStay = (index) => {
     doc.value.reservation_stay.splice(index, 1);
 }
 
-const updateRate = () => {
-    doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).forEach(s => {
-        const room_type = room_types.value.find(r => r.name == s.room_type_id)
+const updateRate = (stay=null) => {
+    if (!stay){
+        doc.value.reservation_stay.forEach(s => {
+            const room_type = room_types.value.find(r => r.name == s.room_type_id)
+            if (room_type) {
+                if (doc.value.is_house_use==1 || doc.value.is_complimentary==1){
+                    s.rate = 0
+                    s.is_manual_rate = false
 
+                }else {
+                    if((s.is_manual_rate || false)==false){
+                        s.rate = room_type.rate.rate
+                       
 
-        if (room_type) {
-            s.rate = room_type.rate.rate
+                    }
+                }
+                
+                get_room_rate_breakdown(s)  
+            }
 
-        }
-
-    });
+        });
+    }else {
+       
+        const room_type = room_types.value.find(r => r.name == stay.room_type_id)
+        
+        stay.rate = room_type.rate.rate
+        get_room_rate_breakdown(stay)
+    }
 }
 
 const onBusinessSourceChange = (source) => {
@@ -1100,6 +1077,10 @@ const onRateTypeChange = (rate_type) => {
                 doc.value.reservation.rate_type = rate_type
                 doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
                 doc.value.is_package = result.message.is_package || 0
+                doc.value.package_charge_data  = result.message.package_charge_data
+                doc.value.is_house_use = result.message.is_house_use
+                doc.value.is_complimentary = result.message.is_complimentary
+
                 //check if stay have not manully rate update
                 if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {
                     getRoomType()
@@ -1113,6 +1094,7 @@ const onChangeRate = () => {
 
     selectedStay.value.rate = rate.value
     selectedStay.value.is_manual_rate = true
+    get_room_rate_breakdown( selectedStay.value)
     op.value.hide();
 }
 
@@ -1122,9 +1104,82 @@ const onUseRatePlan = () => {
     updateRate()
     op.value.hide();
 }
+
+
+function get_room_rate_breakdown(stay){
+    console.log(stay)
+
+    if ( (stay?.loading || false )==true){
+        return 
+    }
+    
+    if (!doc.value.reservation.rate_type){
+        return 
+    }
+
+//     xxxxxxxxxxxxx
+    stay.loading = true
+
+    const room_rate_data = {
+        rate_type:doc.value.reservation.rate_type,
+        tax_rule:doc.value.reservation.tax_rule,
+        rate_include_tax:doc.value.tax_rule.rate_include_tax,
+        tax_1_rate:doc.value.tax_rule.tax_1_rate,
+        tax_2_rate:doc.value.tax_rule.tax_2_rate,
+        tax_3_rate:doc.value.tax_rule.tax_3_rate,
+        input_rate:stay.rate,
+        discount_type:"Percent",
+        discount:0,
+        adult:stay.adult,
+        child:stay.child,
+        is_package:doc.value.is_package,
+        package_charge_data:doc.value.package_charge_data || "[]"
+    }
+    postApi("generate_room_rate.get_room_rate_calculation", { room_rate_data: room_rate_data},"",false)
+            .then(result => {
+                
+                stay.total_tax = result.message.total_tax || 0
+                stay.loading = false 
+                stay.room_rate_data = result.message
+            }).catch(err=>{
+                stay.loading = false 
+            })
+}
+
+function viewRoomRateBreakdown(stay){
+    if (!doc.value.reservation.rate_type){
+        
+        return
+    }
+   
+    if (!stay.room_type_id){
+        
+        return
+    }
+    dialog.open(ComViewRoomRateBreakdown, {
+        data:{
+            data:stay
+        },
+        props: {
+            header: $t('View Room Rate Breakdown'),
+            style: {
+                width: '40vw',
+            }, 
+            modal: true,
+            closeOnEscape: true,
+            position: "top",
+            breakpoints:{
+                '960px': '60vw',
+                '640px': '100vw'
+            },
+        },
+    });
+}
+
 function onClose() {
     op.value.hide()
 }
+
 </script>
 <style>
 .ch__rate_nres input {
@@ -1137,4 +1192,5 @@ function onClose() {
     font-weight: 600;
     font-size: 1.25rem;
 }
+
 </style>

@@ -18,7 +18,8 @@
   "room_type_id",
   "room_type",
   "guest",
-  "quantity"
+  "quantity",
+  "sort_order"
  ],
  "fields": [
   {
@@ -112,11 +113,17 @@
    "fieldname": "quantity",
    "fieldtype": "Float",
    "label": "Quantity"
+  },
+  {
+   "bold": 1,
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-23 08:51:44.887383",
+ "modified": "2024-05-24 21:58:29.007423",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Revenue Forecast Breakdown",

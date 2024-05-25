@@ -14,7 +14,14 @@
   "charge_rule",
   "rate",
   "adult_rate",
-  "child_rate"
+  "child_rate",
+  "section_break_skmy",
+  "breakdown_account_code",
+  "discount_breakdown_account_code",
+  "column_break_hftq",
+  "tax_1_breakdown_account_code",
+  "tax_2_breakdown_account_code",
+  "tax_3_breakdown_account_code"
  ],
  "fields": [
   {
@@ -72,12 +79,50 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Account Name"
+  },
+  {
+   "fieldname": "section_break_skmy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "breakdown_account_code",
+   "fieldtype": "Link",
+   "label": "Breakdown Account Code",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "discount_breakdown_account_code",
+   "fieldtype": "Link",
+   "label": "Discount Breakdown Account Code",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "column_break_hftq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_1_breakdown_account_code",
+   "fieldtype": "Link",
+   "label": "Tax 1 Breakdown Account Code",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "tax_2_breakdown_account_code",
+   "fieldtype": "Link",
+   "label": "Tax 2 Breakdown Account Code",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "tax_3_breakdown_account_code",
+   "fieldtype": "Link",
+   "label": "Tax 3 Breakdown Account Code",
+   "options": "Account Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-05-10 15:18:43.044112",
+ "modified": "2024-05-24 17:04:59.757215",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Package Items",

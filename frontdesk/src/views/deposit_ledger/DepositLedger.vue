@@ -84,7 +84,7 @@
                     </Column>
                 </DataTable>
             </ComPlaceholder>
-        </div>
+        </div> 
         <div>
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                 :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">

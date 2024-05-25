@@ -1,6 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 import json
+from edoor.api.tax_calculation import get_tax_breakdown
+from edoor.api.cache_functions import get_account_code_doc, get_rate_type_doc
 from edoor.edoor.doctype.reservation_stay.reservation_stay import    update_reservation_stay_room_rate, update_reservation_stay_room_rate_after_move, update_reservation_stay_room_rate_after_resize
 from py_linq import Enumerable
 import re
@@ -15,7 +17,7 @@ from frappe.utils import (
 )
 from functools import lru_cache
 from edoor.api.generate_occupy_record import generate_room_occupies
-from edoor.api.generate_room_rate import generate_new_room_rate, generate_new_room_rate_by_stay_room_id, get_package_charge_data
+from edoor.api.generate_room_rate import generate_new_room_rate, generate_new_room_rate_by_stay_room_id, get_package_charge_data, get_room_rate_account_code_breakdown, get_room_rate_breakdown
 
 @frappe.whitelist()
 def test():
@@ -265,8 +267,8 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
             t["occupy"] = 0
 
         t["total_vacant_room"] = (t["total_room"] or 0) - ( t["occupy"] or 0)
-    
-        t["rate"] = get_room_rate(property, rate_type, t["name"], business_source, start_date)
+        
+        t["rate"] = 0 if not rate_type else  get_room_rate(property, rate_type, t["name"], business_source, start_date)
         # return get_room_rate(property, rate_type, t["name"], business_source, start_date)
         t["new_rate"] = t["rate"]
 
@@ -288,6 +290,9 @@ def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=
 
 @frappe.whitelist(methods="POST")
 def add_new_reservation(doc):
+    get_rate_type_doc.cache_clear()
+    get_account_code_doc.cache_clear()
+    
     if not  "rate_type"  in doc["reservation"]:
         frappe.throw("Please select rate type")
 
@@ -332,11 +337,11 @@ def add_new_reservation(doc):
     #check if not have guest selected then create new guest
     if not check_field(doc["reservation"],"guest"):
         
-        guest = frappe.get_doc(doc["guest_info"]).insert()
+        guest = frappe.get_doc(doc["guest_info"]).insert(ignore_permissions=True)
       
         doc["reservation"]["guest"] = guest.name
     else:
-        guest = frappe.get_doc(doc["guest_info"]).save()
+        guest = frappe.get_doc(doc["guest_info"]).save(ignore_permissions=True)
     
 
     #assign is_complementary or is house use o reservation
@@ -347,7 +352,7 @@ def add_new_reservation(doc):
 
     reservation = frappe.get_doc(doc["reservation"]).insert()
  
-    
+ 
     #start insert insert reservation stay
     i = 0
     stay_names = []
@@ -363,7 +368,9 @@ def add_new_reservation(doc):
                     start_date=reservation.arrival_date,
                     end_date=reservation.departure_date,
             )
-
+    # check if item is package item then get package item from account code attach to reservation stay
+     
+    package_items = get_package_item_for_reservation_stay(reservation.rate_type)
     
     for   d in doc["reservation_stay"]:
         room = None
@@ -383,7 +390,9 @@ def add_new_reservation(doc):
                 if len(room_by_room_types)>0:
                     room = room_by_room_types[0]["name"]
                     available_rooms.remove(room_by_room_types[0])
-                    
+        
+        
+             
         stay = {
             "doctype":"Reservation Stay",
             "update_reservation":False,
@@ -426,7 +435,8 @@ def add_new_reservation(doc):
 
                     "is_manual_rate":d["is_manual_rate"]
                 }
-            ]
+            ],
+            "inclusion_items":package_items
         }
        
         stay_doc = frappe.get_doc(stay).insert()
@@ -435,17 +445,16 @@ def add_new_reservation(doc):
 
     #update summary to reservation stay
     from edoor.api.generate_room_rate import generate_new_room_rate
-    generate_new_room_rate(stay_names=stay_names)
-    update_reservation_stay_and_reservation(reservation = reservation.name, reservation_stay=stay_names)
+    generate_new_room_rate(stay_names=stay_names,run_commit=False)
+    update_reservation_stay_and_reservation(reservation = reservation.name, reservation_stay=stay_names,run_commit=False)
     
-    # frappe.enqueue("edoor.api.generate_room_rate.generate_new_room_rate",queue='short', stay_names=stay_names )
-    generate_room_occupies(stay_names)
-    # frappe.enqueue("edoor.api.generate_occupy_record.generate_room_occupies",queue='default', stay_names=stay_names )
- 
-    if frappe.db.get_value("Rate Type",reservation.rate_type,"is_package")==1:
-        frappe.enqueue("edoor.api.reservation.update_package_data_to_reservation_stay",queue='short', reservation=reservation.name, stay_names=stay_names,rate_type=reservation.rate_type )
-        # update is package to reservation stay and reservation room rate
-        
+    
+    generate_room_occupies(stay_names,run_commit=False)
+    
+    frappe.enqueue("edoor.api.generate_room_rate.generate_forecast_revenue",queue='short', stay_names=stay_names, run_commit = False )
+    
+    
+   
     frappe.db.commit()
 
     
@@ -453,70 +462,32 @@ def add_new_reservation(doc):
     return reservation
 
  
-def update_package_data_to_reservation_stay(reservation=None, stay_names=None,rate_type=None):
-    if reservation and not stay_names:
-        stay_names = frappe.db.sql("select name from `tabReservation Stay` where is_active_reservation=1 and reservation='{}'".format(reservation),as_dict=1)
-    account_code=None
-    if rate_type:
-        rate_type_doc = frappe.get_doc("Rate Type",rate_type,ignore_permissions=True)
-        if rate_type_doc.is_package ==1:
-            account_code = frappe.get_doc("Account Code",rate_type_doc.account_code,ignore_permissions=True)
-    if account_code:
+def get_package_item_for_reservation_stay(rate_type):
+    rate_type_doc = get_rate_type_doc(rate_type)
+    package_items = []
+    if rate_type_doc.is_package:
+        account_code = get_account_code_doc(rate_type_doc.account_code)
         if account_code.packages:
-            for s in stay_names:
-                save_package_item_to_reservation_stay(data={
-                    "stay_name":s,
-                    "rate_type_doc":rate_type_doc,
-                    "packages":account_code.packages
-                })
-                
-                
-                
-                
-
-    frappe.db.commit()
-
-def save_package_item_to_reservation_stay(data):
-    
-    # data={"stay_name":"", rate_type_doc:obj,"packages"=[]}
-    retries = 0
-    max_retries = 3
-    while retries < max_retries:
-        try:
-            stay_doc = frappe.get_doc("Reservation Stay",data["stay_name"])
-            for p in  data["packages"]:
-                stay_doc.append("inclusion_items", {
+            for p in account_code.packages:
+                package_items.append( {
                     "account_code": p.account_code ,
                     "posting_rule": p.posting_rule,
                     "charge_rule": p.charge_rule,
                     "rate":p.rate,
                     "adult_rate":p.adult_rate,
                     "child_rate":p.child_rate,
-                    "allow_user_to_edit_information":data["rate_type_doc"].allow_user_to_edit_rate,
-                    "is_rate_type_package":1
-                    
+                    "allow_user_to_edit_information":rate_type_doc.allow_user_to_edit_rate,
+                    "is_rate_type_package":1,
+                    "breakdown_account_code": p.breakdown_account_code or "",
+                    "discount_breakdown_account_code": p.discount_breakdown_account_code or "",
+                    "tax_1_breakdown_account_code": p.tax_1_breakdown_account_code or "",
+                    "tax_2_breakdown_account_code": p.tax_2_breakdown_account_code or "",
+                    "tax_3_breakdown_account_code": p.tax_3_breakdown_account_code or "",
+                     
                 })
-            stay_doc.flags.ignore_validate = True
-            stay_doc.flags.ignore_on_update = True
-            stay_doc.flags.ignoreignore_on_update_validate = True
-            stay_doc.save(ignore_permissions=True)
-            return  # Exit the function if the update succeeds
-        except frappe.exceptions.TimestampMismatchError as e:
-            # Handle the timestamp mismatch error
-            frappe.log_error( "Save Package charge to folio retry {} time".format(retries) ,str(e))
-            retries += 1
-            time.sleep(3)  # Wait for a short period before retrying
+                
+    return package_items
 
-    # throw error
-    frappe.throw("Failed to update document after max retries. Aborting.")
-
-    
-
-    
-# def generate_room_room_rates(stay_names):
-#     for s in stay_names:
-#         generate_room_rate(self= frappe.get_doc("Reservation Stay",s))
-        
 @frappe.whitelist()
 def test_generate_room_occupy():
     
@@ -617,7 +588,8 @@ def stay_add_more_rooms(reservation=None, data=None):
                 "start_time":reservation.arrival_time,
                 "end_time":reservation.departure_time,
                 "is_manual_rate":d["is_manual_rate"]
-            }]
+            }],
+            "inclusion_items":get_package_item_for_reservation_stay(reservation.rate_type)
         }
         stay_doc =  frappe.get_doc(stay).insert()
         stay_doc_names.append(stay_doc.name)
@@ -1360,16 +1332,16 @@ def get_reservation_folio(reservation=None, reservation_stay=None):
             """.format(reservation_stay)
         return frappe.db.sql(sql, as_dict=1)
 
-
-
 @frappe.whitelist(methods="POST")
 @lru_cache(maxsize=128)
 def get_room_rate(property, rate_type, room_type, business_source, date,include_tax_rule=False):
+    rate_type_doc = None
+    if rate_type:
+        rate_type_doc = get_rate_type_doc(rate_type)
+    
     sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)
     season = frappe.db.sql (sql, as_dict=1)
-    
     room_type_rate  = frappe.get_value("Room Type", room_type,"rate")
-    
     rate = 0
    
     if season and rate_type:
@@ -1402,11 +1374,13 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
   
     if rate == 0:
         #if still rate = 0 the  get rate from room type
-        
-        if (frappe.db.get_value("Rate Type",rate_type,"disable_get_rate_room_room_type") or 0)==0:
-            rate = room_type_rate
+        if rate_type_doc:
+            if rate_type_doc.disable_get_rate_room_room_type ==0:
+                rate = room_type_rate
+            
     tax_rule = None
 
+    rate_type_info = None
     if include_tax_rule==True:
         rate_type_info= get_rate_type_info(rate_type)
         tax_rule = rate_type_info["tax_rule"]
@@ -1414,10 +1388,13 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
      
     #if have rate type check if rate is allow to discount or note
     allow_discount = 0
-
+    is_house_use = 0
+    is_complimentary =0
     if rate_type:
-        account_code, is_house_use,is_complimentary = frappe.db.get_value("Rate Type",rate_type,["account_code","is_complimentary","is_house_use"])
-        if account_code:
+        account_code = rate_type_doc.account_code
+        is_house_use = rate_type_doc.is_house_use
+        is_complimentary = rate_type_doc.is_complimentary
+        if  account_code:
             allow_discount = frappe.db.get_value("Account Code",account_code, "allow_discount")
 
         if is_house_use == 1 or is_complimentary ==1:
@@ -1425,13 +1402,24 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
             tax_rule = None
             allow_discount = 0
 
-    return {"rate":rate,"tax_rule":tax_rule,"allow_discount":allow_discount}
+    return {"rate":rate,"tax_rule":tax_rule,
+            "allow_discount":allow_discount,
+            "allow_user_to_change_tax":0 if not rate_type_info else rate_type_info["allow_user_to_change_tax"],
+            "is_house_use":is_house_use or 0,
+            "allow_user_to_edit_rate":0 if not rate_type_info else rate_type_info["allow_user_to_edit_rate"],
+            "is_complimentary":is_complimentary or 0,
+            "is_package":0 if not rate_type_info else rate_type_info["is_package"],
+            "package_charge_data": '[]'  if not rate_type_info else rate_type_info["package_charge_data"],
+        }
 
 
 #@frappe.whitelist(methods="POST")
 @frappe.whitelist()
 def change_rate_type(property=None,reservation=None, reservation_stay=None, rate_type = None, apply_to_all_stay = None,regenerate_new_rate=None):
     get_package_charge_data.cache_clear()
+    get_room_rate_breakdown.cache_clear()
+    get_room_rate_account_code_breakdown.cache_clear()
+    get_tax_breakdown.cache_clear()
     
     working_day = get_working_day(property)
     #get reservation room rate
@@ -1462,6 +1450,8 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
 
     is_complimentary, is_house_use = frappe.db.get_value("Rate Type", rate_type,["is_complimentary","is_house_use"])
 
+
+    
     for r in room_rates:
         doc = frappe.get_doc("Reservation Room Rate",r.name)
         doc.rate_type = rate_type
@@ -1469,7 +1459,7 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
         doc.regenerate_rate = regenerate_new_rate,
         if is_complimentary ==1 or is_house_use==1:
             doc.input_rate = 0
-
+        doc.flags.ignore_on_update = True
         doc.save(ignore_permissions=True)
 
     #update rate type to reservation stay
@@ -2686,6 +2676,11 @@ def get_account_cagegory_sort_order_by_account_code(account_code):
 
 @frappe.whitelist(methods="POST")
 def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
+    get_package_charge_data.cache_clear()
+    get_room_rate_breakdown.cache_clear()
+    get_room_rate_account_code_breakdown.cache_clear()
+    get_tax_breakdown.cache_clear()
+  
     #validate reservation status 
     #reservation_stays is array string
     if reservation_stays:
@@ -2711,19 +2706,20 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
         doc.discount_type = data["discount_type"] 
         doc.discount = data["discount"] 
         doc.tax_rule = data["tax_rule"]
-        doc.tax_rule_data = '{}' if not 'tax_rule_data' in data else  data["tax_rule_data"]
         doc.tax_1_rate = data["tax_1_rate"]
         doc.tax_2_rate = data["tax_2_rate"]
         doc.tax_3_rate = data["tax_3_rate"]
         doc.note = "" if "note" not in data else  data["note"]
-
+        doc.package_charge_data = data['package_charge_data']
         doc.rate_include_tax = data["rate_include_tax"]
 
- 
+        doc.flags.ignore_on_update = True
         doc.save()
 
     frappe.db.commit()
+    
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=reservation_stays)
+    frappe.enqueue("edoor.api.generate_room_rate.generate_forecast_revenue",queue='short', stay_names=reservation_stays, run_commit = False )
     
     return frappe.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":data["reservation_stay"]},limit_page_length=1000,order_by="date")
     

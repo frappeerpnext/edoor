@@ -4,12 +4,12 @@
         <div class="grid-heading-row" style="height: auto !important;">
             <div class="grid-row">
                 <div class="data-row row">
-                    <div class="col text-center">
+                    <div class="col text-center" style="max-width: 3%;">
                         <span>No.</span>
                     </div> 
                     <div class="col" style="min-width: 8%;">RES STAY #</div>
                     <div class="col text-center" style="min-width: 14%;">Stay Date</div>
-                    <div class="col text-center" style="max-width: 5%;">Nights</div>
+                    <div class="col text-center overflow-hidden" style="max-width: 4%;white-space: nowrap;text-overflow: ellipsis;">Nights</div>
                     <div class="col">Room</div>
                     <div class="col">Guest Name</div>
                     <div class="col text-center">Pax(A/C)</div>
@@ -32,16 +32,16 @@
                     <div class="grid-row">
                         {% if d.is_master %}
                             <div class="data-row row" style="background: #ead6fd;">
-                                <div class="col text-center">{{index}}</div>
+                                <div class="col text-center" style="max-width: 3%;">{{index}}</div>
                                 <div class="col" style="min-width: 8%;"><a href="/app/reservation-stay/{{d.name}}">{{d.name}}</a></div>
                                 <div class="col text-center" style="min-width: 14%;">
                                     <div class="d-flex">{{ frappe.format(d.arrival_date,{"fieldtype":"Date"})}} &#8594; {{ frappe.format(d.departure_date,{"fieldtype":"Date"})}}</div>
                                 </div>
-                                <div class="col text-center" style="max-width: 5%;">{{d.room_nights}}</div>
+                                <div class="col text-center" style="max-width: 4%;">{{d.room_nights}}</div>
                                 <div class="col">
-                                    {% for n in rooms_data %}
-                                        {{n.name}}
-                                    {% endif %}
+                                    {% for n in d.rooms_data %}
+                                        <span>{{n.room_type_alias}}/{{n.room_number}}</span>,<br/>
+                                    {% endfor %}
                                 </div>
                                 <div class="col">{{d.guest_name}}</div>
                                 <div class="col text-center">{{d.adult}}/{{d.child}}</div>
@@ -51,21 +51,21 @@
                                 <div class="col text-right">{{ frappe.format(d.total_credit,{"fieldtype":"Currency"})}}</div>
                                 <div class="col text-right">{{ frappe.format(d.balance,{"fieldtype":"Currency"})}}</div>
                                 <div class="col text-center">
-                                    <div class="rounded p-1 text-white" style="background-color: {{d.status_color}};">{{d.reservation_status}}</div>
+                                <div class="rounded p-1 text-white" style="background-color: {{d.status_color}};">{{d.reservation_status}}</div>
                                 </div>
                             </div>
                         {% else %}
                             <div class="data-row row">
-                                <div class="col text-center">{{index}}</div>
+                                <div class="col text-center" style="max-width: 3%;">{{index}}</div>
                                 <div class="col" style="min-width: 8%;"><a href="/app/reservation-stay/{{d.name}}">{{d.name}}</a></div>
                                 <div class="col text-center" style="min-width: 14%;">
                                     <div class="d-flex">{{ frappe.format(d.arrival_date,{"fieldtype":"Date"})}} &#8594; {{ frappe.format(d.departure_date,{"fieldtype":"Date"})}}</div>
                                 </div>
-                                <div class="col text-center" style="max-width: 5%;">{{d.room_nights}}</div>
-                                <div class="col text-center">
-                                    {% for n in rooms_data %}
-                                        {{n.name}}
-                                    {% endif %}
+                                <div class="col text-center" style="max-width:4%;">{{d.room_nights}}</div>
+                                <div class="col">
+                                    {% for n in d.rooms_data %}
+                                        <span>{{n.room_type_alias}}/{{n.room_number}}</span>,<br/>
+                                    {% endfor %}
                                 </div>
                                 <div class="col">{{d.guest_name}}</div>
                                 <div class="col text-center">{{d.adult}}/{{d.child}}</div>

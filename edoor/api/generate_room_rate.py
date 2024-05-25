@@ -124,6 +124,9 @@ def get_stays_room_info(stay_names, stay_room_id=""):
  
 def generate_new_room_rate(stay_names,run_commit=True):
     get_package_charge_data.cache_clear() 
+    get_room_rate_breakdown.cache_clear()
+    get_tax_breakdown.cache_clear()
+   
     # delete old rate if exists 
     frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay in %(stay_names)s",{"stay_names":stay_names})
     reservation_stays_info =  get_reservation_stay_additional_information(stay_names)
@@ -156,7 +159,6 @@ def get_new_room_rate_record(reservation_stays_info,stay_rooms_info ):
             
         
 def get_new_rate_doc(stay_info, stay_room_info, date,rate=0,discount_amount = 0):
-    
     doc = frappe.new_doc("Reservation Room Rate")
     doc.name  = str(uuid.uuid4())
     doc.property = stay_room_info["property"]
@@ -192,30 +194,8 @@ def get_new_rate_doc(stay_info, stay_room_info, date,rate=0,discount_amount = 0)
     doc.tax_1_rate =  stay_info["tax_1_rate"] or 0
     doc.tax_2_rate =  stay_info["tax_2_rate"] or 0
     doc.tax_3_rate =  stay_info["tax_3_rate"] or 0
-
-    tax_data = get_tax_breakdown(
-        tax_rule=doc.tax_rule,
-        tax_1_rate=doc.tax_1_rate,
-        tax_2_rate=doc.tax_2_rate,
-        tax_3_rate=doc.tax_3_rate,
-        rate_include_tax=doc.rate_include_tax,
-        rate=doc.input_rate,
-        discount_amount=discount_amount
-    )
-
-    doc.rate = tax_data["rate"]
-    doc.tax_rule_data = tax_data["tax_rule_data"]
-    doc.tax_1_name = tax_data["tax_1_name"]
-    doc.tax_2_name = tax_data["tax_2_name"]
-    doc.tax_3_name = tax_data["tax_3_name"]
-    doc.tax_1_amount = tax_data["tax_1_amount"]
-    doc.tax_2_amount = tax_data["tax_2_amount"]
-    doc.tax_3_amount = tax_data["tax_3_amount"]
-    doc.taxable_amount_1 = tax_data["taxable_amount_1"]
-    doc.taxable_amount_2 = tax_data["taxable_amount_2"]
-    doc.taxable_amount_3 = tax_data["taxable_amount_3"]
-    doc.total_tax = (doc.tax_1_amount or 0 ) + (doc.tax_2_amount or 0 ) + (doc.tax_3_amount or 0 ) 
-    doc.total_rate = (doc.rate or 0) - (doc.discount_amount or 0) + doc.total_tax
+    
+    
 
     doc.is_active_reservation=1
     doc.is_active= 1
@@ -235,7 +215,38 @@ def get_new_rate_doc(stay_info, stay_room_info, date,rate=0,discount_amount = 0)
                 
             else:
                 doc.package_charge_data = json.dumps([d for d in package_data if d["posting_rule"] in ["Everyday"]])
-        
+
+    rate_breakdown = get_room_rate_breakdown(json.dumps({
+        "rate_type":doc.rate_type,
+        "tax_rule":doc.tax_rule,
+        "rate_include_tax":doc.rate_include_tax,
+        "tax_1_rate":doc.tax_1_rate,
+        "tax_2_rate":doc.tax_2_rate,
+        "tax_3_rate":doc.tax_3_rate,
+        "input_rate":doc.input_rate,
+        "is_package":doc.is_package,
+        "discount_type":doc.discount_type,
+        "discount":doc.discount or 0,
+        "discount_amount":doc.discount_amount or 0,
+        "adult":doc.adult,
+        "child":doc.child,
+        "package_charge_data":doc.package_charge_data
+    }))
+    
+
+    doc.tax_rule_data = rate_breakdown["tax_rule_data"]
+    doc.total_tax =rate_breakdown["total_tax"]
+    doc.total_room_charge = rate_breakdown["total_room_charge"]
+    doc.total_other_charge = rate_breakdown["total_other_charge"]
+    doc.total_rate = rate_breakdown["total_amount"]
+    doc.discount_amount= rate_breakdown["discount_amount"]
+    
+    if doc.tax_rule_data:
+        tax_info = json.loads(doc.tax_rule_data)
+        if tax_info:
+            doc.tax_1_name = tax_info["tax_1_name"] 
+            doc.tax_2_name = tax_info["tax_2_name"] 
+            doc.tax_3_name = tax_info["tax_3_name"] 
     return doc
 
 
@@ -243,8 +254,40 @@ def get_new_rate_doc(stay_info, stay_room_info, date,rate=0,discount_amount = 0)
 def get_package_charge_data(rate_type):
     account_code= frappe.db.get_value("Rate Type", rate_type ,"account_code")
     doc = frappe.get_doc("Account Code",account_code)
-    return [{"account_code":d.account_code,"posting_rule":d.posting_rule,"charge_rule":d.charge_rule,"rate":d.rate,"adult_rate":d.adult_rate,"child_rate":d.child_rate} for d in doc.packages]
+    return [{
+                "account_code":d.account_code,
+                "posting_rule":d.posting_rule,
+                "charge_rule":d.charge_rule,
+                "rate":d.rate,
+                "adult_rate":d.adult_rate,
+                "child_rate":d.child_rate,
+                "breakdown_account_code": d.breakdown_account_code,
+                "discount_breakdown_account_code": d.discount_breakdown_account_code or "",
+                "tax_1_breakdown_account_code": d.tax_1_breakdown_account_code or "",
+                "tax_2_breakdown_account_code": d.tax_2_breakdown_account_code or "",
+                "tax_3_breakdown_account_code": d.tax_3_breakdown_account_code or "",
+             } for d in doc.packages]
 
+@frappe.whitelist()
+def test_me():
+    return get_room_rate_breakdown(json.dumps( {"rate_type": 
+        "Rate Include B/F",
+        "tax_rule": "Room Charge Tax",
+        "rate_include_tax": "Yes",
+        "tax_1_rate": 0,
+        "tax_2_rate": 2.0,
+        "tax_3_rate": 10.0,
+        "input_rate": 300.0,
+        "is_package": 1,
+        "discount_type": "Percent",
+        "discount": 0,
+        "discount_amount": 0,
+        "adult": 1,
+        "child": 0,
+        "package_charge_data": '[{\"account_code\": \"10837\", \"posting_rule\": \"Everyday\", \"charge_rule\": \"Adult\", \"rate\": 0.0, \"adult_rate\": 6.0, \"child_rate\": 0.0, \"breakdown_account_code\": \"10119\", \"discount_breakdown_account_code\": \"40103\", \"tax_1_breakdown_account_code\": \"\", \"tax_2_breakdown_account_code\": \"\", \"tax_3_breakdown_account_code\": \"20107\"}, {\"account_code\": \"10838\", \"posting_rule\": \"Everyday\", \"charge_rule\": \"Child\", \"rate\": 0.0, \"adult_rate\": 0.0, \"child_rate\": 3.0, \"breakdown_account_code\": \"10119\", \"discount_breakdown_account_code\": \"40103\", \"tax_1_breakdown_account_code\": \"\", \"tax_2_breakdown_account_code\": \"\", \"tax_3_breakdown_account_code\": \"20107\"}]'}))
+
+
+ 
 @frappe.whitelist()
 def generate_forecast_revenue(stay_names=None,run_commit=True):
     # clear cache first
@@ -258,16 +301,15 @@ def generate_forecast_revenue(stay_names=None,run_commit=True):
     get_tax_rule_doc.cache_clear()
     get_room_rate_account_code_breakdown.cache_clear()
     get_tax_breakdown.cache_clear()
-
+    get_charge_breakdown_by_account_code_breakdown.cache_clear()
     
     if not stay_names:
-        stay_names = [d["name"] for d in frappe.db.sql("select name from `tabReservation Stay` where reservation='RS2024-0858'",as_dict=1)]
+        stay_names =['ST2024-5397'] #[d["name"] for d in frappe.db.sql("select name from `tabReservation Stay` where reservation='RS2024-0890'",as_dict=1)]
      
     sql="delete from `tabRevenue Forecast Breakdown` where reservation_stay in %(stay_names)s"
-    sql="delete from `tabRevenue Forecast Breakdown`"
-
-    
+ 
     frappe.db.sql(sql,{"stay_names":stay_names})
+    
     sql="""
         select 
             name,
@@ -293,15 +335,27 @@ def generate_forecast_revenue(stay_names=None,run_commit=True):
             is_package,
             package_charge_data
         from `tabReservation Room Rate`
-        where 
+     
+       where 
             reservation_stay in %(stay_names)s
     """
+    
     data = frappe.db.sql(sql,{"stay_names":stay_names},as_dict=1)
-
+    
     # return data
     new_records =  get_new_revenue_forecast_records(data)
     # return new_records
     bulk_insert("Revenue Forecast Breakdown",new_records , chunk_size=10000)
+    # update account information
+    sql="""
+        update `tabRevenue Forecast Breakdown` a 
+        JOIN `tabAccount Code` b on b.name = a.account_code
+        SET
+            a.type=b.type
+        where 
+            reservation_stay in %(stay_names)s
+    """
+    frappe.db.sql(sql,{"stay_names":stay_names})
     if run_commit:
         frappe.db.commit()  
     
@@ -312,6 +366,7 @@ def generate_forecast_revenue(stay_names=None,run_commit=True):
     
 def get_new_revenue_forecast_records(room_rate_data):
     for rate in room_rate_data:
+        # we create this to usful with cache
         rate_breakdown_param = {
             "rate_type":rate["rate_type"],
             "tax_rule":rate["tax_rule"],
@@ -326,12 +381,20 @@ def get_new_revenue_forecast_records(room_rate_data):
             "discount_amount":rate["discount_amount"],
             "package_charge_data":rate["package_charge_data"],
         }
+        
         account_code_breakdown = get_room_rate_account_code_breakdown(tuple(sorted(rate_breakdown_param.items())))
- 
+
         account_code_breakdown =[d for d in account_code_breakdown if d["amount"]>0]
-       
-        for acc in account_code_breakdown:
-         
+        
+        account_code_breakdown = get_charge_breakdown_by_account_code_breakdown(json.dumps(account_code_breakdown)) 
+        # mearge it into 1 array so easy to loop
+        account_code_breakdown = (account_code_breakdown["base_accounts"]+   
+                                  group_breakdown_breakdown_account_code(account_code_breakdown["breakdown_accounts"]) + 
+                                  account_code_breakdown["package_accounts"]
+                                )
+        
+        
+        for acc in [d for d in account_code_breakdown if d["amount"]>0]:
             doc = frappe.new_doc("Revenue Forecast Breakdown")
             doc.name  = str(uuid.uuid4())
             doc.room_rate_id =  rate["name"]
@@ -346,12 +409,36 @@ def get_new_revenue_forecast_records(room_rate_data):
             doc.reservation= rate["reservation"]
             doc.reservation_stay= rate["reservation_stay"]
             doc.account_code = acc["account_code"]
-            doc.type = acc["type"]
-            doc.quantity = acc["quantity"]
+            doc.quantity = 0 if not "quantity" in acc else  acc["quantity"]
+            doc.amount =  acc["amount"]
+            doc.sort_order = acc["sort_order"]
+            yield doc
+
+            
+
+    
+def group_breakdown_breakdown_account_code(data):
+    if len(set([d["account_code"] for d in data])) == len(data):
+        return data
+    result =[]
+    for acc in set([d["account_code"] for d in data]):
+        
+        result.append({
+            "account_code":acc,
+            "amount":sum(d["amount"] for d in data if d["account_code"] ==acc),
+            "sort_order":min(d["sort_order"] for d in data if d["account_code"] ==acc),
+        })
+    return sorted(result, key=lambda x: x["sort_order"])
+        
 
 
-            # breakdow tax 
-            tax_data = get_tax_breakdown( acc["tax_rule"],
+@lru_cache(maxsize=128)
+def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
+    account_code_breakdown = json.loads(account_code_breakdown)
+    # return account_code_breakdown
+    tax_data_breakdown = []
+    for acc in account_code_breakdown:
+        tax_data = get_tax_breakdown( acc["tax_rule"],
                                          rate_include_tax="No" if not acc["rate_include_tax"] else acc["rate_include_tax"], 
                                          tax_1_rate=acc["tax_1_rate"], 
                                          tax_2_rate=acc["tax_2_rate"], 
@@ -359,64 +446,168 @@ def get_new_revenue_forecast_records(room_rate_data):
                                          discount_amount=acc["discount_amount"],
                                          rate=acc["amount"]
                                         )
-            doc.amount = tax_data["rate"]
-
-            yield doc
-
-            # discount 
-            if "discount_account" in acc and  acc["discount_account"] and acc["discount_amount"]>0:
-                
-                discount_doc = copy.deepcopy(doc)
-                discount_doc.name = str(uuid.uuid4())
-                discount_doc.account_code = acc["discount_account"] 
-                discount_doc.amount= acc["discount_amount"] 
-                discount_doc.type= "Credit" 
-                discount_doc.quantity=0 
-
-                yield discount_doc
-
-            if "tax_1_account" in acc and  acc["tax_1_account"] and acc["tax_1_rate"]>0 and tax_data["tax_1_amount"]>0:
-                
-                tax_1_doc = copy.deepcopy(doc)
-                tax_1_doc.name = str(uuid.uuid4())
-                tax_1_doc.account_code = acc["tax_1_account"] 
-                tax_1_doc.amount= tax_data["tax_1_amount"] 
-                tax_1_doc.type= "Debit"
-                tax_1_doc.quantity=0
-                
-                yield tax_1_doc
-
-            if "tax_2_account" in acc and  acc["tax_2_account"] and acc["tax_2_rate"]>0 and tax_data["tax_2_amount"]>0:
-                
-                tax_2_doc = copy.deepcopy(doc)
-                tax_2_doc.name = str(uuid.uuid4())
-                tax_2_doc.account_code = acc["tax_2_account"] 
-                tax_2_doc.amount= tax_data["tax_2_amount"] 
-                tax_2_doc.type= "Debit"
-                tax_2_doc.quantity=0
-                yield tax_2_doc
-                
-            if "tax_3_account" in acc and  acc["tax_3_account"] and acc["tax_3_rate"]>0 and tax_data["tax_3_amount"]>0:
-                
-                tax_3_doc = copy.deepcopy(doc)
-                tax_3_doc.name = str(uuid.uuid4())
-                tax_3_doc.account_code = acc["tax_3_account"] 
-                tax_3_doc.amount= tax_data["tax_3_amount"] 
-                tax_3_doc.type= "Debit"
-                tax_3_doc.quantity=0
-                yield tax_3_doc
-
-      
-
-
+        tax_data["account_code"] = acc["account_code"]
+        tax_data_breakdown.append(tax_data)
+    breakdown_account_codes = {"base_accounts":[],"package_accounts":[],"breakdown_accounts":[]}
+    # 1 Base Account
+    base_account = account_code_breakdown[0]
+    breakdown_account_codes["base_accounts"].append({
+        "account_code":base_account["account_code"],
+        "type":base_account["type"],
+        "amount":sum([d["rate"] for d in tax_data_breakdown]),
+        "sort_order":1
+        
+    })
+    # discount
+    if base_account["discount"]>0:
+          breakdown_account_codes["base_accounts"].append({
+            "account_code":base_account["discount_account"],
+            "amount":sum([d["discount_amount"] for d in account_code_breakdown   if "discount_amount" in d]),
+            "note":"Base Discount"  ,
+            "sort_order":2          
+        })
+    if base_account["tax_1_rate"] > 0:
+         breakdown_account_codes["base_accounts"].append({
+            "account_code":base_account["tax_1_account"],
+            "amount":sum(
+                d["amount"]
+                for entry in tax_data_breakdown
+                for d in entry["tax_data_list"]
+                if d["tax_name"] == base_account["tax_1_name"]
+            ),
+            "sort_order":3    
+            
+        })
+    
+    if base_account["tax_2_rate"] > 0:
+         breakdown_account_codes["base_accounts"].append({
+            "account_code":base_account["tax_2_account"],
+            "amount":sum(
+                d["amount"]
+                for entry in tax_data_breakdown
+                for d in entry["tax_data_list"]
+                if d["tax_name"] == base_account["tax_2_name"]
+            ),
+            "sort_order":4  
+        })
+    
+    if base_account["tax_3_rate"] > 0:
+         breakdown_account_codes["base_accounts"].append({
+            "account_code":base_account["tax_3_account"],
+            "amount":sum(
+                d["amount"]
+                for entry in tax_data_breakdown
+                for d in entry["tax_data_list"]
+                if d["tax_name"] == base_account["tax_3_name"]
+            ),
+            "sort_order":5  
+            
+        })
+    # package account breakdown
+    package_sort_order = 100
+    
+    for p in [d for d in account_code_breakdown if "is_package_account" in d and  d["is_package_account"]==1]:
+        package_account = [d for d in tax_data_breakdown if d["account_code"]== p["account_code"]]
+       
+        if package_account:
+            package_account = package_account[0]
+            breakdown_account_codes["package_accounts"].append({
+                "account_code":p["account_code"],
+                "type":p["type"],
+                "amount":package_account["rate"],
+                "quantity":0 if not "quantity" in  p else   p["quantity"],
+                "sort_order": package_sort_order + 1
+            })
+            # breakdown account
+            if p["breakdown_account_code"]:
+                breakdown_account_codes["breakdown_accounts"].append({
+                    "account_code":p["breakdown_account_code"],
+                    "amount":package_account["rate"],
+                    "note":"Breakdown Account of {}".format(p["account_code"]),
+                    "sort_order":10  
+                })
+            # discount
+            if "discount" in p and   p["discount"]>0:
+                breakdown_account_codes["package_accounts"].append({
+                    "account_code":p["discount_account"],
+                    "amount":p["discount_amount"],
+                    "note":"Package Discount",
+                     "sort_order": package_sort_order + 2
+                })
+                # breakdown discount account
+                if p["discount_breakdown_account_code"]:
+                    breakdown_account_codes["breakdown_accounts"].append({
+                        "account_code":p["discount_breakdown_account_code"],
+                        "amount":p["discount_amount"],
+                        "note":"Discount Breakdown Account",
+                        "sort_order":11  
+                        
+                })
+            
+            # tax_1_account amount
+            if p["tax_1_rate"] > 0:
+                breakdown_account_codes["package_accounts"].append({
+                    "account_code":p["tax_1_account"],
+                    "amount":package_account["tax_1_amount"],
+                     "sort_order": package_sort_order + 3
+                })
+                # tax 1 breakdown account
+                if p["tax_1_breakdown_account_code"]:
+                    breakdown_account_codes["breakdown_accounts"].append({
+                        "account_code":p["tax_1_breakdown_account_code"],
+                        "amount":package_account["tax_1_amount"],
+                        "note":"Tax 1 Breakdown Account",
+                        "sort_order":12 
+                        
+                })
+            # tax_2_account amount
+            if p["tax_2_rate"] > 0:
+                breakdown_account_codes["package_accounts"].append({
+                    "account_code":p["tax_2_account"],
+                    "amount":package_account["tax_2_amount"],
+                     "sort_order": package_sort_order + 4
+                })
+                # tax 2 breakdown account
+                if p["tax_2_breakdown_account_code"]:
+                    breakdown_account_codes["breakdown_accounts"].append({
+                        "account_code":p["tax_2_breakdown_account_code"],
+                        "amount":package_account["tax_2_amount"],
+                        "note":"Tax 2 Breakdown Account",
+                        "sort_order":13  
+                        
+                })
+            # tax_3_account amount
+            if p["tax_3_rate"] > 0:
+                breakdown_account_codes["package_accounts"].append({
+                    "account_code":p["tax_3_account"],
+                    "amount":package_account["tax_3_amount"],
+                     "sort_order": package_sort_order + 5
+                })
+                # tax 3 breakdown account
+                if p["tax_3_breakdown_account_code"]:
+                    breakdown_account_codes["breakdown_accounts"].append({
+                        "account_code":p["tax_3_breakdown_account_code"],
+                        "amount":package_account["tax_3_amount"],
+                        "note":"Tax 3 Breakdown Account",
+                        "sort_order":14  
+                        
+                })
+        package_sort_order = package_sort_order + 100
+    return breakdown_account_codes
+        
 @lru_cache(maxsize=128)
 def get_room_rate_account_code_breakdown(room_rate_data):
     room_rate_data = {key: value for key, value in room_rate_data}
     base_account_codes=[]
+    
     rate_type_doc = get_rate_type_doc(room_rate_data['rate_type'])
+    
     account_code_doc = get_account_code_doc(rate_type_doc.account_code)
-    base_code = {"account_code":rate_type_doc.account_code,
+    base_code = {
+                "account_code":rate_type_doc.account_code,
+                "account_name":account_code_doc.account_name,
                  "allow_discount":account_code_doc.allow_discount,
+                "parent_account_name":account_code_doc.parent_account_name,
                 "amount":0,
                 "tax_1_rate":0,
                 "tax_2_rate":0,
@@ -424,15 +615,17 @@ def get_room_rate_account_code_breakdown(room_rate_data):
                 "discount_amount":0,
                 "type":account_code_doc.type,
                 "tax_rule":"",
-                "quantity":0
+                "quantity":0,
             }
     # sub account of main account
     base_code["tax_rule"] = room_rate_data["tax_rule"]
     base_code["rate_include_tax"] = room_rate_data["rate_include_tax"]
-    
+ 
     if room_rate_data["tax_rule"]:
         tax_rule_doc = get_tax_rule_doc(room_rate_data["tax_rule"])
-        
+        base_code["tax_1_name"] = tax_rule_doc.tax_1_name
+        base_code["tax_2_name"] = tax_rule_doc.tax_2_name
+        base_code["tax_3_name"] = tax_rule_doc.tax_3_name
         if tax_rule_doc.tax_1_account and room_rate_data["tax_1_rate"]:
             base_code["tax_1_account"] = tax_rule_doc.tax_1_account
             base_code["tax_1_rate"] = room_rate_data["tax_1_rate"]
@@ -460,22 +653,28 @@ def get_room_rate_account_code_breakdown(room_rate_data):
     # set discount 
     discountable_amount = room_rate_data["input_rate"] - sum([d["amount"] for d in base_account_codes if d["allow_discount"]==0])
     for a in [d for d in base_account_codes if d["allow_discount"]==1]:
+        room_rate_data["discount_amount"] = room_rate_data["discount_amount"] or 0
         a["discount"] =  room_rate_data["discount_amount"] /  ( 1 if discountable_amount==0 else  discountable_amount )
+        if a["discount"]>1:
+            a["discount"] =1
+            
         a["discount_amount"] = a["amount"] * a["discount"]
+        
     return base_account_codes
 
 @lru_cache(maxsize=128)
 def package_base_account_code_charge_breakdown(room_rate_data):
+    
     room_rate_data = {key: value for key, value in room_rate_data}
     
     data = []
- 
-    for p in json.loads( room_rate_data["package_charge_data"]):
+    for p in json.loads( room_rate_data["package_charge_data"]) or []:
         account_code_doc = get_account_code_doc(p["account_code"])
         
         doc = {
             "account_code": p["account_code"],
             "allow_discount": account_code_doc.allow_discount,
+            "parent_account_name": account_code_doc.parent_account_name,
             "is_package_account": 1,
             "tax_1_rate":0,
             "tax_2_rate":0,
@@ -483,7 +682,13 @@ def package_base_account_code_charge_breakdown(room_rate_data):
             "discount_amount":0,
             "tax_rule":"",
             "rate_include_tax": "No",
-           "type":account_code_doc.type
+           "type":account_code_doc.type,
+           "account_name":account_code_doc.account_name,
+           "breakdown_account_code": p["breakdown_account_code"],
+           "discount_breakdown_account_code": p["discount_breakdown_account_code"],
+           "tax_1_breakdown_account_code": p["tax_1_breakdown_account_code"],
+           "tax_2_breakdown_account_code": p["tax_2_breakdown_account_code"],
+           "tax_3_breakdown_account_code": p["tax_3_breakdown_account_code"],
         }
         if p["charge_rule"] =="Stay":
             doc["quantity"] = 1
@@ -503,13 +708,13 @@ def package_base_account_code_charge_breakdown(room_rate_data):
             doc["rate_include_tax"] ="Yes" if  tax_rule_doc.is_rate_include_tax else 'No'
             if tax_rule_doc.tax_1_account and   tax_rule_doc.tax_1_rate:
                 doc["tax_1_account"] = tax_rule_doc.tax_1_account
-                doc["tax_1_rate"] = room_rate_data["tax_1_rate"]
+                doc["tax_1_rate"] = tax_rule_doc.tax_1_rate
             if tax_rule_doc.tax_2_account and  tax_rule_doc.tax_2_rate :
                 doc["tax_2_account"] = tax_rule_doc.tax_2_account
-                doc["tax_2_rate"] = room_rate_data["tax_2_rate"]
+                doc["tax_2_rate"] =  tax_rule_doc.tax_2_rate
             if tax_rule_doc.tax_3_account and tax_rule_doc.tax_3_rate:
                 doc["tax_3_account"] = tax_rule_doc.tax_3_account
-                doc["tax_3_rate"] = room_rate_data["tax_3_rate"]
+                doc["tax_3_rate"] = tax_rule_doc.tax_3_rate
 
         if account_code_doc.allow_discount and account_code_doc.discount_account:
            doc["discount_account"]= account_code_doc.discount_account 
@@ -535,3 +740,187 @@ def get_new_revenue_forecast_doc(room_rate_data, account_code, rate):
     doc.amount = rate
     return doc
  
+@frappe.whitelist()
+def get_room_rate_calculation(room_rate_data=None,rate=100):
+    data = []
+    if not room_rate_data:
+        room_rate_data = {
+            "rate_type":"Rate Include B/F",
+            "tax_rule":"Room Charge Tax",
+            "rate_include_tax":"Yes",
+            "tax_1_rate":0,
+            "tax_2_rate":0,
+            "tax_3_rate":0,
+            "input_rate":float(rate),
+            "is_package":1,
+            "discount_type":"Percent",
+            "discount":20,
+            "discount_amount":0,
+            "adult":2,
+            "child":1,
+            "package_charge_data":json.dumps( [{"account_code": "10837", "posting_rule": "Everyday", "charge_rule": "Adult", "rate": 0.0, "adult_rate": 6.0, "child_rate": 0.0}, {"account_code": "10838", "posting_rule": "Everyday", "charge_rule": "Child", "rate": 0.0, "adult_rate": 0.0, "child_rate": 3.0}])
+        }
+    if "discount_amount" not in room_rate_data:
+        room_rate_data["discount_amount"] = 0
+        
+    account_codes = get_room_rate_account_code_breakdown(tuple(sorted(room_rate_data.items())))
+    if room_rate_data["discount"]>0:
+        if room_rate_data["discount_type"]=="Amount":
+            discountable_amount = sum(d["amount"] for d in account_codes if d["allow_discount"]==1)
+            
+            room_rate_data["discount"] = room_rate_data["discount"] / (1 if discountable_amount==0 else discountable_amount)
+
+        
+        else:
+            # convert discount to decimal number 10%=0.1
+            room_rate_data["discount"] = room_rate_data["discount"] / 100
+        
+        for d in [x for x in account_codes if x["allow_discount"] == 1]:
+            d["discount_amount"] = d["amount"] * room_rate_data["discount"] 
+    # return account_codes
+    for acc in account_codes:
+        tax_data  =  get_tax_breakdown(
+                tax_rule=acc["tax_rule"],
+                rate_include_tax=acc["rate_include_tax"], 
+                tax_1_rate=acc["tax_1_rate"],
+                tax_2_rate=acc["tax_2_rate"], 
+                tax_3_rate=acc["tax_3_rate"],
+                discount_amount=acc["discount_amount"],
+                rate=acc["amount"]
+        )
+        if "tax_rule_data" in tax_data:
+            del tax_data["tax_rule_data"]
+        
+        tax_data["account_name"] = acc["account_name"]
+        tax_data["tax_1_rate"] = acc["tax_1_rate"]
+        tax_data["tax_2_rate"] = acc["tax_2_rate"]
+        tax_data["tax_3_rate"] = acc["tax_3_rate"]
+        tax_data["rate_include_tax"] = acc["rate_include_tax"]
+        tax_data["allow_discount"] = acc["allow_discount"]
+        tax_data["discount_amount"] = acc["discount_amount"]
+        
+        tax_data["quantity"] = 0 if "quantity" not in acc else  acc["quantity"]
+        
+        tax_data["is_package"] = 0 if not "is_package_account" in acc else  acc["is_package_account"]
+        data.append(
+            tax_data
+        )
+    
+    return {
+        "room_charge_data": data[0],
+        "package_charge_data": [d for d in data if d["is_package"] == 1],
+        "discount_amount": sum(d["discount_amount"] for d in data),
+        "total_tax": sum(d["total_tax"] for d in data),
+        "total_amount": sum(d["total_amount"] for d in data)
+    }
+
+# this function is use to test performance
+
+@frappe.whitelist()
+def test_rate_breakdown():
+    start_time = time.time()
+
+
+
+
+ 
+    # get_room_rate_breakdown.cache_clear()
+    
+    data = frappe.db.sql("""select  
+                         rate_type,
+                         tax_rule,
+                         rate_include_tax,
+                         tax_1_rate,
+                         tax_2_rate,
+                         tax_3_rate,
+                         input_rate,
+                         is_package,
+                         discount_type,
+                         discount,
+                         discount_amount,
+                         adult,
+                         child,
+                         coalesce(package_charge_data,'[]') as package_charge_data
+                         from `tabReservation Room Rate` limit 50000""",as_dict=1)
+    
+    result = []
+    for x in data:
+        result.append(get_room_rate_breakdown(json.dumps(x)))
+        
+    end_time = time.time()
+    duration = end_time - start_time
+    return("Duration:", duration, "seconds",result)
+ 
+# this function return room rate,total_tax, total_other charge and total all rate
+@lru_cache(maxsize=1024)
+def get_room_rate_breakdown(room_rate_data=None,rate=100):
+    data = []
+    room_rate_data = json.loads(room_rate_data)
+    if not room_rate_data:
+        room_rate_data = {
+            "rate_type":"Rate Include B/F",
+            "tax_rule":"Room Charge Tax",
+            "rate_include_tax":"No",
+            "tax_1_rate":5,
+            "tax_2_rate":2,
+            "tax_3_rate":10,
+            "input_rate":float(rate),
+            "is_package":1,
+            "discount_type":"Percent",
+            "discount":20,
+            "discount_amount":0,
+            "adult":2,
+            "child":1,
+            "package_charge_data":json.dumps([{"account_code": "10837", "posting_rule": "Everyday", "charge_rule": "Adult", "rate": 0.0, "adult_rate": 6.0, "child_rate": 0.0, "breakdown_account_code": "10119", "discount_breakdown_account_code": "40103", "tax_1_breakdown_account_code": "", "tax_2_breakdown_account_code": "", "tax_3_breakdown_account_code": "20107"}, {"account_code": "10838", "posting_rule": "Everyday", "charge_rule": "Child", "rate": 0.0, "adult_rate": 0.0, "child_rate": 3.0, "breakdown_account_code": "10119", "discount_breakdown_account_code": "40103", "tax_1_breakdown_account_code": "", "tax_2_breakdown_account_code": "", "tax_3_breakdown_account_code": "20107"}])
+        }
+    if "discount_amount" not in room_rate_data:
+        room_rate_data["discount_amount"] = 0
+        
+    account_codes = get_room_rate_account_code_breakdown(tuple(sorted(room_rate_data.items())))
+    room_rate_data["discount"] = room_rate_data["discount"] or 0
+    if room_rate_data["discount"]>0:
+        if room_rate_data["discount_type"]=="Amount":
+            discountable_amount = sum(d["amount"] for d in account_codes if d["allow_discount"]==1)
+            room_rate_data["discount"] = room_rate_data["discount"] / (1 if discountable_amount==0 else discountable_amount)
+        else:
+            # convert discount to decimal number 10%=0.1
+            room_rate_data["discount"] = room_rate_data["discount"] / 100
+        
+        for d in [x for x in account_codes if x["allow_discount"] == 1]:
+            d["discount_amount"] = d["amount"] * room_rate_data["discount"] 
+    # return account_codes
+    
+    for acc in account_codes:
+        tax_data  =  get_tax_breakdown(
+                tax_rule=acc["tax_rule"],
+                rate_include_tax=acc["rate_include_tax"], 
+                tax_1_rate=acc["tax_1_rate"],
+                tax_2_rate=acc["tax_2_rate"], 
+                tax_3_rate=acc["tax_3_rate"],
+                discount_amount=acc["discount_amount"],
+                rate=acc["amount"]
+        )
+        
+        tax_data["account_name"] = acc["account_name"]
+        tax_data["allow_discount"] = acc["allow_discount"]
+        tax_data["discount_amount"] = acc["discount_amount"]
+        tax_data["parent_account_name"] = "" if not  "parent_account_name" in acc else  acc["parent_account_name"]
+        
+        tax_data["is_package"] = 0 if not "is_package_account" in acc else  acc["is_package_account"]
+        
+        data.append(
+            tax_data
+        )
+    tax_rule_data = ""
+    if data:
+        tax_rule_data = data[0]["tax_rule_data"]
+ 
+    return {
+        "tax_rule_data":tax_rule_data,
+        "total_room_charge":sum(d["total_amount"] for d in data if d["parent_account_name"]=='Room Charge'),
+        "total_other_charge":sum(d["total_amount"] for d in data if d["parent_account_name"]!='Room Charge'),
+        "discount_amount": sum(d["discount_amount"] for d in data),
+        "total_tax": sum(d["total_tax"] for d in data),
+        "total_amount": sum(d["total_amount"] for d in data)
+    }
+

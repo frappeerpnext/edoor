@@ -14,6 +14,7 @@ frappe.ui.form.on("Reservation", {
         if (!frm.doc.__islocal) {
             getItemReservationList(frm)
             getReseravationStayList(frm)
+            getReservationRoomRate(frm)
         }
 	},
 });
@@ -32,7 +33,7 @@ function set_indicator(frm){
 }
 
 async function getItemReservationList(frm) {
-    $(frm.fields_dict["information_list"].wrapper).html("Loading folio transaction list...");
+    $(frm.fields_dict["information_list"].wrapper).html("Loading reservation data...");
     frm.refresh_field("information_list");
 
     let arr_date = new Date(frm.doc.arrival_date);
@@ -62,6 +63,9 @@ async function getItemReservationList(frm) {
 }
 
 function getReseravationStayList(frm){
+    $(frm.fields_dict["reservation_stay_list_info"].wrapper).html("Loading reservation stay list...");
+    frm.refresh_field("reservation_stay_list_info");
+
     frappe.db.get_list("Reservation Stay", 
     {
         fields:['name',
@@ -81,21 +85,57 @@ function getReseravationStayList(frm){
         'status_color',
         'reservation_status',
         'is_master',
-        'rooms_data'],
+        'rooms_data',
+        'allow_post_to_city_ledger',
+        'paid_by_master_room',
+        'require_pickup',
+        'require_drop_off'],
         filters: [['reservation', '=', frm.doc.name]],
     }).then(result=>{
             const sortedResult = result.sort((a, b) => (a.is_master === 1 ? -1 : 1));
 
-            const rooms = sortedResult.map(d => JSON.parse(d.rooms_data));
-              
-            console.log(rooms);
-
-            let html = frappe.render_template("reservation_stay_list", {data:sortedResult,rooms_data:rooms});
+            const parsedResult = sortedResult.map(item => {
+                const roomsJson = JSON.parse(item.rooms_data);
+                return { ...item, rooms_data: roomsJson };
+            });
+            let html = frappe.render_template("reservation_stay_list", {data:parsedResult});
             $(frm.fields_dict["reservation_stay_list_info"].wrapper).html(html);
-            frm.refresh_field("information_list");
+            frm.refresh_field("reservation_stay_list_info");
     })
 }
 
+
+//get reservation room rate
+function getReservationRoomRate(frm) {
+    $(frm.fields_dict["room_rate_list"].wrapper).html("Loading reservation room rate list...");
+    frm.refresh_field("room_rate_list");
+
+    frappe.db.get_list("Reservation Room Rate", {
+        fields:[
+            'name',
+            'date',
+            'reservation_stay',
+            'room_type_alias',
+            'room_number',
+            'guest_name',
+            'adult',
+            'child',
+            'rate_type',
+            'rate',
+            'discount_amount',
+            'total_tax',
+            'total_rate',
+            'is_package'
+        ],
+        filters:[['reservation','=',frm.doc.name]],
+        order_by: 'date asc'
+    }).then(result=>{
+        let html = frappe.render_template("room_rate_list", {data:result});
+        $(frm.fields_dict["room_rate_list"].wrapper).html(html);
+        frm.refresh_field("room_rate_list");
+    })
+
+}
 
 
 function getChargeSumamry(frm) {

@@ -211,63 +211,71 @@ class ReservationStay(Document):
 		if self.flags.ignore_on_update:
 			return
 		
-
-		if self.is_master:
-			reservation_stays = frappe.get_list("Reservation Stay",filters={
-				'reservation': self.reservation
-			},
-			page_length=100)
-			
-			frappe.db.sql("update `tabReservation Stay Room` set is_master = 0 where is_master = 1 and parent in('{}')".format("','".join([str(x.name) for x in reservation_stays])))
+		if self.creation !=self.modified:
+			if self.is_master:
+				reservation_stays = frappe.get_list("Reservation Stay",filters={
+					'reservation': self.reservation
+				},
+				page_length=1000)
+				
+				frappe.db.sql("""
+                  	update `tabReservation Stay Room` 
+                   	set 
+                   		is_master = 0 
+                    where 
+                    	is_master = 1 
+                     and parent in %(stay_names)s""",
+                     {"stay_names":[x.name  for x in reservation_stays]}
+                     )
+		if self.creation !=self.modified:
+			data_for_udpate = {
+				"rooms":self.rooms,
+				"note":self.note,
+				"total_credit": self.total_credit or 0,
+				"total_debit": self.total_debit or 0,
+				"balance":self.balance or 0,
+				"total_room_rate":self.total_room_rate or 0,
+				"internal_reference_number":self.internal_reference_number or '',
+				"arrival_date":self.arrival_date,
+				"departure_date":self.departure_date,
+				"is_master":self.is_master,
+				"reservation_color":self.reservation_color or '',
+				"group_color":self.group_color or '',
+				"group_code":self.group_code or '',
+				"group_name":self.group_name or '',
+				"reservation_type":self.reservation_type,
+				"paid_by_master_room":self.paid_by_master_room,
+				"reservation_stay_adr":self.adr,
+				"rate_type":self.rate_type,
+				"name": self.name
+			}
+			frappe.db.sql("""
+				update `tabReservation Stay Room` 
+				set rooms=%(rooms)s,
+				note=%(note)s,
+				total_credit=%(total_credit)s,
+				total_debit=%(total_debit)s,
+				balance=%(balance)s,
+				total_room_rate=%(total_room_rate)s,
+				internal_reference_number = %(internal_reference_number)s,
+				arrival_date=%(arrival_date)s,
+				departure_date=%(departure_date)s,
+				is_master=%(is_master)s,
+				reservation_color=%(reservation_color)s,
+				group_color=%(group_color)s,
+				group_code=%(group_code)s,
+				group_name=%(group_name)s,
+				reservation_stay_adr=%(reservation_stay_adr)s,
+				reservation_type=%(reservation_type)s,
+				paid_by_master_room=%(paid_by_master_room)s,
+				rate_type=%(rate_type)s
+			where parent=%(name)s
+			""",data_for_udpate)
 		
-		data_for_udpate = {
-			"rooms":self.rooms,
-			"note":self.note,
-			"total_credit": self.total_credit or 0,
-			"total_debit": self.total_debit or 0,
-			"balance":self.balance or 0,
-			"total_room_rate":self.total_room_rate or 0,
-			"internal_reference_number":self.internal_reference_number or '',
-			"arrival_date":self.arrival_date,
-			"departure_date":self.departure_date,
-			"is_master":self.is_master,
-			"reservation_color":self.reservation_color or '',
-			"group_color":self.group_color or '',
-			"group_code":self.group_code or '',
-			"group_name":self.group_name or '',
-			"reservation_type":self.reservation_type,
-			"paid_by_master_room":self.paid_by_master_room,
-			"reservation_stay_adr":self.adr,
-			"rate_type":self.rate_type,
-			"name": self.name
-		}
-		frappe.db.sql("""
-			update `tabReservation Stay Room` 
-			set rooms=%(rooms)s,
-			note=%(note)s,
-			total_credit=%(total_credit)s,
-			total_debit=%(total_debit)s,
-			balance=%(balance)s,
-			total_room_rate=%(total_room_rate)s,
-			internal_reference_number = %(internal_reference_number)s,
-			arrival_date=%(arrival_date)s,
-			departure_date=%(departure_date)s,
-			is_master=%(is_master)s,
-		 	reservation_color=%(reservation_color)s,
-			group_color=%(group_color)s,
-			group_code=%(group_code)s,
-			group_name=%(group_name)s,
-			reservation_stay_adr=%(reservation_stay_adr)s,
-			reservation_type=%(reservation_type)s,
-			paid_by_master_room=%(paid_by_master_room)s,
-			rate_type=%(rate_type)s
-		 where parent=%(name)s
-		""",data_for_udpate)
+			# check old doc if user change adult and child then update adult and chidl to reservation room rate
+			if self.has_value_changed("adult") or self.has_value_changed("child"):
+				frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
 	
-		# check old doc if user change adult and child then update adult and chidl to reservation room rate
-		if self.has_value_changed("adult") or self.has_value_changed("child"):
-			frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
-			frappe.db.commit()
 
 
 

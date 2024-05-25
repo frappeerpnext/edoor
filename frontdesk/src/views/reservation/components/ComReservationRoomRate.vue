@@ -7,15 +7,37 @@
           <InputText v-model="filters['global'].value" :placeholder="$t('Search')" />
         </span>
       </div>
-      <div class="">
-        <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
-          <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
-          {{ $t('Edit Rate') }}
-          
-          <template v-if="rs.selectedRoomRates.length>0">
-            ({{ rs.selectedRoomRates.length  }})
-          </template>
-        </Button>
+      <div class="flex gap-2">
+        <div>
+          <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
+            <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
+            {{ $t('Edit Rate') }}
+            
+            <template v-if="rs.selectedRoomRates.length>0">
+              ({{ rs.selectedRoomRates.length  }})
+            </template>
+          </Button>
+        </div>
+        <div>
+          <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onChangePax">
+            <i class="pi pi-user me-2" style="font-size: 1rem"></i>
+            {{ $t('Change Pax') }}
+            
+            <template v-if="rs.selectedRoomRates.length>0">
+              ({{ rs.selectedRoomRates.length  }})
+            </template>
+          </Button>
+        </div>
+        <div>
+          <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onDiscount">
+            <i class="pi pi-percentage me-2" style="font-size: 1rem"></i>
+            {{ $t('Discount') }}
+            
+            <template v-if="rs.selectedRoomRates.length>0">
+              ({{ rs.selectedRoomRates.length  }})
+            </template>
+          </Button>
+        </div>
       </div>
     </div>
       <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
@@ -73,7 +95,7 @@
       </Column>
       <Column field="rate" :header="$t('Rate')" bodyClass="text-right" headerClass="text-right">
           <template #body="{ data }">
-            <CurrencyFormat @click="onEditRoomRate(data)" :value="data.rate" class="p-0 link_line_action1"/>
+            <CurrencyFormat @click="onEditRoomRate(data)" :value="data.input_rate" class="p-0 link_line_action1"/>
           </template>
       </Column>
 
@@ -133,10 +155,50 @@
     </DataTable>
   
       </div>
+
+    <!-- show change pax -->
+    <OverlayPanel ref="showChangePax" style="max-width:70rem">
+      <div class="flex gap-2">
+        <div>
+          <label>{{$t('Adults')}}</label>
+              <InputNumber inputId="stacked-buttons" showButtons :min="1" :max="100"
+                  class="child-adults-txt w-full" inputClass="border-noround-right"/>
+        </div>
+        <div>
+          <label>{{$t('Children')}}</label>
+          <InputNumber inputId="stacked-buttons" showButtons :min="1" :max="100"
+              class="child-adults-txt w-full" inputClass="border-noround-right"/>
+        </div>
+      </div>
+    </OverlayPanel>
+
+
+    <!-- show discount -->
+    <OverlayPanel ref="showDiscount" style="max-width:70rem">
+      <div class="flex gap-2"> 
+        <div>
+          <label>{{ $t('Discount Type') }}</label>
+          <ComSelect class="w-full min-w-full" optionLabel="label" optionValue="value"
+              :clear="false" />
+        </div>
+        <div>
+          <label>{{ $t('Discount') }}</label>
+            <InputNumber class="w-full" :input-class="'w-full'" :minFractionDigits="2"
+                :maxFractionDigits="10" />
+        </div>
+        <div>
+          <label>{{ $t('Discount Amount') }}</label>
+          <div class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3" style="height: 36.5px;">
+              <CurrencyFormat />
+          </div>
+        </div>
+      </div>
+    </OverlayPanel>
 </template>
 <script setup>
 import {inject, ref, onMounted,useDialog, useToast} from "@/plugin"
 import { FilterMatchMode } from 'primevue/api';
+import InputNumber from 'primevue/inputnumber';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue";
 import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
@@ -153,6 +215,8 @@ const filters = ref(
     }
 );
 
+const showChangePax = ref()
+const showDiscount = ref()
 
 const getTotal = ref((column_name) => {
   if (rs.room_rates.length == 0) {
@@ -175,7 +239,7 @@ function onEditRoomRate(room_rate = null){
       props: {
         header: 'Edit Room Rate',
         style: {
-          width: '50vw',
+          width: '55vw',
         },
         position: "top",
         modal: true,
@@ -206,7 +270,7 @@ function onEditRoomRate(room_rate = null){
       props: {
         header: $t('Edit Room Rate '),
         style: {
-          width: '50vw',
+          width: '55vw',
         },
         position: "top",
         modal: true,
@@ -274,5 +338,32 @@ onMounted(() => {
   rs.getRoomRate(rs.reservation.name, false);
  
 });
+
+
+function onChangePax (event) { 
+  if(!gv.cashier_shift?.name){
+      gv.toast('error', 'Please Open Cashier Shift.')
+      return
+  }
+  if (rs.selectedRoomRates.length>0) {
+    showChangePax.value.toggle(event);
+  } else if (rs.selectedRoomRates.length == 0){
+    toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
+    return 
+  }
+}
+
+function onDiscount (event) { 
+  if(!gv.cashier_shift?.name){
+      gv.toast('error', 'Please Open Cashier Shift.')
+      return
+  }
+  if (rs.selectedRoomRates.length>0) {
+    showDiscount.value.toggle(event); 
+  } else if (rs.selectedRoomRates.length == 0){
+    toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
+    return 
+  }
+}
 
 </script>

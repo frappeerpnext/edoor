@@ -65,13 +65,13 @@ def get_columns(filters):
 	
 	return [
 		{"fieldname": "title", "label": "Title", "width":300, "align":"left"},
-		{"fieldname": "current", "label": "Current", "width":150, "align":"center"},
-		{"fieldname": "mtd", "label": "MTD", "width":100, "fieldtype":"Data", "align":"center"},
-		{"fieldname": "ytd", "label": "YTD", "width":100, "align":"center"},
-		{"fieldname": "last_year_current", "label": "Current({})".format(getdate(filters.date).year - 1), "width":150, "align":"center"},
-		{"fieldname": "last_year_mtd", "label": "MTD({})".format(getdate(filters.date).year - 1), "width":150, "fieldtype":"Data", "align":"center"},
-		{"fieldname": "last_year_ytd", "label": "YTD({})".format(getdate(filters.date).year - 1), "width":150, "align":"center"},
-		{"fieldname": "change_percentage", "label": "% Change", "width":150, "align":"center","fieldtype":"Percent"},
+		{"fieldname": "current", "label": "Current", "width":150, "align":"right"},
+		{"fieldname": "mtd", "label": "MTD", "width":100, "fieldtype":"Data", "align":"right"},
+		{"fieldname": "ytd", "label": "YTD", "width":100, "align":"right"},
+		{"fieldname": "last_year_current", "label": "Current({})".format(getdate(filters.date).year - 1), "width":150, "align":"right"},
+		{"fieldname": "last_year_mtd", "label": "MTD({})".format(getdate(filters.date).year - 1), "width":150, "fieldtype":"Data", "align":"right"},
+		{"fieldname": "last_year_ytd", "label": "YTD({})".format(getdate(filters.date).year - 1), "width":150, "align":"right"},
+		{"fieldname": "change_percentage", "label": "% Change", "width":150, "align":"right","fieldtype":"Percent"},
 	]
 
 
@@ -90,7 +90,6 @@ def get_report_data(filters):
 	report_data.append(taxable_room_sale[0]['total_room_posted'])
 	report_data.append(taxable_room_sale[0]['adjustment_amount'])
 	report_data.append(taxable_room_sale[0]['total_room_revenue'])
-	report_data.append(taxable_room_sale[0]['total_fb_revenue'])
 	report_data.append(taxable_room_sale[0]['tour_activitie'])
 	report_data.append(taxable_room_sale[0]['other_revenue'])
 	report_data.append(taxable_room_sale[0]['transportation_revenue'])
@@ -99,6 +98,8 @@ def get_report_data(filters):
 	report_data.append(taxable_room_sale[0]['deposit_bank'])
 	report_data.append(taxable_room_sale[0]['total_rack_room'])
 	report_data.append(taxable_room_sale[0]['total_other_room'])
+	report_data.append(taxable_room_sale[0]['other_charge_discount'])
+	report_data.append(taxable_room_sale[0]['room_tax'])
 
 
 
@@ -149,13 +150,14 @@ def get_report_data(filters):
 	weekend_percent = {"title":"Weekend %"}
 	total_payment = {"title":"Total Payment"}
 	total_room_available = {"title":"Total Rooms To Sell"}
+	fb_revenue = {"title":"Food & Beverage"}
 	
 	exp_inhouse_occ = (for_tomorrow[0]['total_exp_inhouse']['current'] / rooms_available_record[0]['total_room']['current']) * 100
 	inhouse_occ = format(exp_inhouse_occ,'.2f')
 	total_exp_inhouse['current'] = f"{int(for_tomorrow[0]['total_exp_inhouse']['current'])} ({inhouse_occ}% occ)"
 	report_data.append(total_exp_inhouse or 0)
 
-	exp_vacant_room_night['current'] =  rooms_available_record[0]['total_room']['current'] - for_tomorrow[0]['total_occupy']['current'] - for_tomorrow[0]['total_block']['current']
+	exp_vacant_room_night['current'] =  int(rooms_available_record[0]['total_room']['current']) - int(for_tomorrow[0]['total_occupy']['current']) - int(for_tomorrow[0]['total_block']['current'])
 	
 	exp_stayover_occ = (for_tomorrow[0]['exp_stay_over']['current'] / rooms_available_record[0]['total_room']['current']) * 100
 	stayover_occ = format(exp_stayover_occ,'.2f')
@@ -171,10 +173,9 @@ def get_report_data(filters):
 		room_block = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Out of Order Rooms']) or 0
 		house_use_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'House Use Rooms']) or 0
 		complimentary_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Complimentary Rooms']) or 0
-		room_charge = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Room Charge']) or 0
+		room_charge = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Room']) or 0
 		room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Room']) or 0
 		transportation = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Transportation']) or 0
-		fb = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Food/Beverage']) or 0
 		tour = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Tour activities']) or 0
 		other = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Other']) or 0
 		cl_balance = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'City Ledger']) or 0
@@ -186,19 +187,27 @@ def get_report_data(filters):
 		bank = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Bank Payment Received']) or 0
 		deposit_cash = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Deposit Cash']) or 0
 		deposit_bank = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Deposit Bank']) or 0
+		food = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Food']) or 0
+		alcohol = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Alcohol']) or 0
+		nonalcohol = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Non-Alcohol']) or 0
+		tax = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'F&B Tax']) or 0
+		discount = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'F&B Discount']) or 0
+		fb_other = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'F&B Other']) or 0
+		fb_breakfast = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'F&B Breakfast Revenue']) or 0
+		room_disc = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Room Discount']) or 0
 		start_date_str = filters.get(f)["start_date"]
 		end_date_str = filters.get(f)["end_date"]
 	
 		vacant_room_night[f] =  total_room - room_occupy - room_block
 		total_room_available[f] =  total_room - room_block
-		
-		total_sale_center[f] = room + transportation + fb + tour + other
+		fb_revenue[f] = food + alcohol + nonalcohol + tax + discount + fb_other +fb_breakfast
+		total_sale_center[f] = room + transportation + tour + other + food + alcohol + nonalcohol + tax + discount + fb_other +fb_breakfast
 		total_payment[f] = cash + bank + deposit_cash + deposit_bank
 		if calculate_adr_include_all_room_occupied==1:
-			adr[f] =  (room_charge) / (1 if room_occupy == 0 else room_occupy)
+			adr[f] =  (room_charge - room_disc) / (1 if room_occupy == 0 else room_occupy)
 			
 		else:
-			adr[f] = (room_charge) / (1 if (room_occupy - (complimentary_room + house_use_room)) == 0 else (room_occupy - (complimentary_room + house_use_room)))
+			adr[f] = (room_charge - room_disc) / (1 if (room_occupy - (complimentary_room + house_use_room)) == 0 else (room_occupy - (complimentary_room + house_use_room)))
 		if calculate_room_occupancy_include_room_block==0:
 			total_room = total_room - room_block
 		occpancy[f] =  room_occupy / (1 if total_room == 0 else total_room)
@@ -206,8 +215,8 @@ def get_report_data(filters):
 		avg_daily_gl[f] = gl_balance/(1 if date_diff(end_date_str,start_date_str)==0 else date_diff(end_date_str,start_date_str))
 		avg_daily_cl[f] = cl_balance/(1 if date_diff(end_date_str,start_date_str)==0 else date_diff(end_date_str,start_date_str))
 		avg_daily_al[f] = al_balance/(1 if date_diff(end_date_str,start_date_str)==0 else date_diff(end_date_str,start_date_str))
-		weekday_percent[f] = (weekday_sale/ (1 if room_charge == 0 else room_charge))
-		weekend_percent[f] = (weekend_sale/ (1 if room_charge == 0 else room_charge))
+		weekday_percent[f] = (weekday_sale/ (1 if (room_charge - room_disc) == 0 else (room_charge - room_disc)))
+		weekend_percent[f] = (weekend_sale/ (1 if (room_charge - room_disc) == 0 else (room_charge - room_disc)))
 		# frappe.throw(str( adr))
 	report_data.append(adr or 0)
 	report_data.append(occpancy or 0)
@@ -222,6 +231,7 @@ def get_report_data(filters):
 	report_data.append(total_payment or 0)
 	report_data.append(exp_vacant_room_night or 0)
 	report_data.append(total_room_available or 0)
+	report_data.append(fb_revenue or 0)
 
 	today =  datetime.datetime.strptime(filters.date, "%Y-%m-%d").date()
 	date = today + datetime.timedelta(days=2)
@@ -360,7 +370,6 @@ def get_taxable_room_sale(filters):
 				"total_room_posted":{"title":"Total Room Posted"},
 				"adjustment_amount":{"title":"Adjustment"},
 				"total_room_revenue":{"title":"Room"},
-				"total_fb_revenue":{"title":"Food/Beverage"},
 				"tour_activitie":{"title":"Tour activities"},
 				"other_revenue":{"title":"Other"},
 				"transportation_revenue":{"title":"Transportation"},
@@ -369,6 +378,8 @@ def get_taxable_room_sale(filters):
 				"deposit_bank":{"title":"Deposits"},
 				"total_rack_room":{"title":"Total RACK Rooms"},
 				"total_other_room":{"title":"Total Other Rooms"},
+				"other_charge_discount":{"title":"Other Charge Discount"},
+				"room_tax":{"title":"Room Tax"},
 			
 				
 	}
@@ -381,7 +392,6 @@ def get_taxable_room_sale(filters):
 		row['total_room_posted'][f] = sum([y["total_room_posted"] for y in data if y["fieldname"]==f and y["total_room_posted"] is not None]) or 0
 		row['adjustment_amount'][f] = sum([y["adjustment_amount"] for y in data if y["fieldname"]==f and y["adjustment_amount"] is not None]) or 0
 		row['total_room_revenue'][f] = sum([y["total_room_revenue"] for y in data if y["fieldname"]==f and y["total_room_revenue"] is not None]) or 0
-		row['total_fb_revenue'][f] = sum([y["total_fb_revenue"] for y in data if y["fieldname"]==f and y["total_fb_revenue"] is not None]) or 0
 		row['tour_activitie'][f] = sum([y["tour_activitie"] for y in data if y["fieldname"]==f and y["tour_activitie"] is not None]) or 0
 		row['other_revenue'][f] = sum([y["other_revenue"] for y in data if y["fieldname"]==f and y["other_revenue"] is not None]) or 0
 		row['transportation_revenue'][f] = sum([y["transportation_revenue"] for y in data if y["fieldname"]==f and y["transportation_revenue"] is not None]) or 0
@@ -390,6 +400,8 @@ def get_taxable_room_sale(filters):
 		row['deposit_bank'][f] = sum([y["deposit_bank"] for y in data if y["fieldname"]==f and y["deposit_bank"] is not None]) or 0
 		row['total_rack_room'][f] = sum([y["total_rack_room"] for y in data if y["fieldname"]==f and y["total_rack_room"] is not None]) or 0
 		row['total_other_room'][f] = sum([y["total_other_room"] for y in data if y["fieldname"]==f and y["total_other_room"] is not None]) or 0
+		row['other_charge_discount'][f] = sum([y["other_charge_discount"] for y in data if y["fieldname"]==f and y["other_charge_discount"] is not None]) or 0
+		row['room_tax'][f] = sum([y["room_tax"] for y in data if y["fieldname"]==f and y["room_tax"] is not None]) or 0
 
 	occupy_data.append(row)
 
@@ -428,21 +440,22 @@ def get_weekday_and_weekend_sale(filters):
 def get_data_transaction(filters):
 	sql="""select 
 			%(fieldname)s as fieldname, 
-    		sum(if(flash_report_revenue_group in ('Room Charge','Other Room Revenue'),amount * if(type='Debit',1,-1),0)) as total_posted,
+    		sum(if(flash_report_revenue_group in ('Room Charge','Other Room Revenue','Room Tax'),amount * if(type='Debit',1,-1),0)) as total_posted,
+    		sum(if(flash_report_revenue_group in ('Room Tax'),amount * if(type='Debit',1,-1),0)) as room_tax,
     		sum(if(flash_report_revenue_group = 'Room Charge' and discount_amount = 0 and reservation_status='In-house' and parent_reference IS NULL,1,0)) as total_rack_room,
     		sum(if(flash_report_revenue_group = 'Room Charge' and discount_amount > 0 and reservation_status='In-house' and parent_reference IS NULL,1,0)) as total_other_room,
-    		sum(if(flash_report_revenue_group in ('Room Charge','Room Discount'),amount * if(type='Debit',1,-1),0)) as total_room_revenue,
-    		sum(if(parent_account_name in ('Food & Beverage','Food & Beverage Tax','Food & Beverage Discount'),amount * if(type='Debit',1,-1),0)) as total_fb_revenue,
+    		sum(if(flash_report_revenue_group in ('Room Charge','Room Discount','Room Tax'),amount * if(type='Debit',1,-1),0)) as total_room_revenue,
     		sum(if(flash_report_revenue_group in ('Deposit Bank'),amount * if(type='Debit',1,-1),0)) as deposit_bank,
     		sum(if(flash_report_revenue_group = 'Room Charge' and parent_reference IS NULL,1,0)) as room_revenue_posted,
     		sum(if(flash_report_revenue_group = 'Other Room Revenue' and parent_reference IS NULL,1,0)) as other_room_revenue_posted,
     		sum(if(parent_reference IS NULL and flash_report_revenue_group in ('Room Charge','Other Room Revenue'),1,0)) as total_room_posted,
 			sum(if(account_category in ('Room Charge Adjustment'),amount * if (type='Debit',1,-1),0)) as adjustment_amount,
-			sum(if(account_category in ('Tour Desk & Tickets','Tour & Tickets Discount','Tour Desk & Tickets Tax'),amount * if (type='Debit',1,-1),0)) as tour_activitie,
+			sum(if(parent_account_name in ('Tour Desk','Tour & Tickets Discount','Tour Desk & Tickets Tax'),amount * if (type='Debit',1,-1),0)) as tour_activitie,
 			sum(if(account_category in ('Other Charge','Other Charge Discount'),amount * if (type='Debit',1,-1),0)) as other_revenue,
 			sum(if(account_group_name in ('Charge','Tax') and transaction_type!='Payable Ledger',amount * if (type='Debit',1,-1),0)) as income,
 			sum(if(account_group_name in ('Charge','Tax','Discount'),amount * if (type='Debit',1,-1),0)) as net_income,
-			COALESCE(SUM(IF(account_category = 'Transportation', amount * IF(type = 'Debit', 1, -1), 0)), 0) as transportation_revenue
+			COALESCE(SUM(IF(account_category = 'Transportation', amount * IF(type = 'Debit', 1, -1), 0)), 0) as transportation_revenue,
+			COALESCE(SUM(IF(account_category = 'Other Charge Discount', amount * IF(type = 'Debit', 1, -1), 0)), 0) as other_charge_discount
 		from `tabFolio Transaction` 
 		where
 			posting_date between %(start_date)s and %(end_date)s and
@@ -494,7 +507,7 @@ def get_data_field(filters):
     sql = """SELECT 
                  %(fieldname)s AS fieldname, 
 				 %(day_type)s as day_type,
-                 SUM(IF(flash_report_revenue_group = 'Room Charge', amount * IF(type='Debit',1,-1), 0)) AS sale
+                 SUM(IF(flash_report_revenue_group in ('Room Charge','Room Tax'), amount * IF(type='Debit',1,-1), 0)) AS sale
              FROM 
                  `tabFolio Transaction` 
              WHERE 
@@ -606,13 +619,13 @@ def get_forecasting(filters):
 	forecasting_data = []
 	for f in fields:
 		# frappe.throw(str(sum([y["total_occupy"] for y in data if y["fieldname"]==f ]) or 0))
-		row['total_occupy'][f] = sum([y["total_occupy"] for y in data if y["fieldname"]==f and y["total_occupy"] is not None]) or 0
-		row['total_arrival'][f] = sum([y["total_arrival"] for y in data if y["fieldname"]==f and y["total_arrival"] is not None]) or 0
-		row['total_departure'][f] = sum([y["total_departure"] for y in data if y["fieldname"]==f and y["total_departure"] is not None]) or 0
-		row['total_exp_inhouse'][f] = sum([y["total_exp_inhouse"] for y in data if y["fieldname"]==f and y["total_exp_inhouse"] is not None]) or 0
-		row['total_block'][f] = sum([y["total_block"] for y in data if y["fieldname"]==f and y["total_block"] is not None]) or 0
+		row['total_occupy'][f] = int(sum([y["total_occupy"] for y in data if y["fieldname"]==f and y["total_occupy"] is not None]) or 0)
+		row['total_arrival'][f] = int(sum([y["total_arrival"] for y in data if y["fieldname"]==f and y["total_arrival"] is not None]) or 0)
+		row['total_departure'][f] = int(sum([y["total_departure"] for y in data if y["fieldname"]==f and y["total_departure"] is not None]) or 0)
+		row['total_exp_inhouse'][f] = int(sum([y["total_exp_inhouse"] for y in data if y["fieldname"]==f and y["total_exp_inhouse"] is not None]) or 0)
+		row['total_block'][f] = int(sum([y["total_block"] for y in data if y["fieldname"]==f and y["total_block"] is not None]) or 0)
 		row['total_adult_child'][f] = "{}/{}".format(int(sum([y["total_adult"] for y in data if y["fieldname"]==f and y["total_adult"] is not None]) or 0),int(sum([y["total_child"] for y in data if y["fieldname"]==f and y["total_child"] is not None]) or 0))
-		row['exp_stay_over'][f] = sum([y["exp_stay_over"] for y in data if y["fieldname"]==f and y["exp_stay_over"] is not None]) or 0
+		row['exp_stay_over'][f] = int(sum([y["exp_stay_over"] for y in data if y["fieldname"]==f and y["exp_stay_over"] is not None]) or 0)
 		row['exp_pickup_drop_off'][f] = "{}/{}".format(int(sum([y["exp_pickup"] for y in data if y["fieldname"]==f and y["exp_pickup"] is not None]) or 0),int(sum([y["exp_drop_off"] for y in data if y["fieldname"]==f and y["exp_drop_off"] is not None]) or 0))
 
 

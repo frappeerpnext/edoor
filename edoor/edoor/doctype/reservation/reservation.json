@@ -12,6 +12,11 @@
   "information_list",
   "section_break_qdnt",
   "reservation_stay_list_info",
+  "room_rate_tab",
+  "room_rate_list",
+  "folio_tab",
+  "reservation_folio_list",
+  "document_tab",
   "details_tab",
   "naming_series",
   "reference_number",
@@ -697,12 +702,35 @@
    "fieldname": "section_break_qdnt",
    "fieldtype": "Section Break",
    "label": "Reservation Room List"
+  },
+  {
+   "fieldname": "room_rate_tab",
+   "fieldtype": "Tab Break",
+   "label": "Room Rate"
+  },
+  {
+   "fieldname": "folio_tab",
+   "fieldtype": "Tab Break",
+   "label": "Folio"
+  },
+  {
+   "fieldname": "document_tab",
+   "fieldtype": "Tab Break",
+   "label": "Document"
+  },
+  {
+   "fieldname": "room_rate_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "reservation_folio_list",
+   "fieldtype": "HTML"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-23 08:33:48.763178",
+ "modified": "2024-05-23 17:27:46.689208",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
