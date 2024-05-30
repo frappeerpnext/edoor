@@ -12,14 +12,39 @@
   "reservation_stay",
   "account_code",
   "type",
+  "quantity",
+  "input_rate",
+  "price",
   "amount",
+  "total_tax",
   "room_id",
   "room_number",
   "room_type_id",
+  "room_type_alias",
   "room_type",
   "guest",
-  "quantity",
-  "sort_order"
+  "guest_type",
+  "nationality",
+  "business_source",
+  "business_source_type",
+  "reservation_type",
+  "sort_order",
+  "is_house_use",
+  "is_complimentary",
+  "is_package",
+  "is_package_charge",
+  "is_package_breakdown",
+  "adult",
+  "child",
+  "discount_type",
+  "discount",
+  "discount_amount",
+  "tax_1_rate",
+  "tax_2_rate",
+  "tax_3_rate",
+  "total_amount",
+  "parent_reference",
+  "rate_include_tax"
  ],
  "fields": [
   {
@@ -71,6 +96,7 @@
    "search_index": 1
   },
   {
+   "description": "This field is use for revenue forecast, and post to guest folio ",
    "fieldname": "amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -119,11 +145,146 @@
    "fieldname": "sort_order",
    "fieldtype": "Int",
    "label": "Sort Order"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_house_use",
+   "fieldtype": "Check",
+   "label": "Is House Use"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_complimentary",
+   "fieldtype": "Check",
+   "label": "Is Complimentary"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_package",
+   "fieldtype": "Check",
+   "label": "Is Package"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_package_charge",
+   "fieldtype": "Check",
+   "label": "Is Package Charge"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_package_breakdown",
+   "fieldtype": "Check",
+   "label": "Is Package Breakdown"
+  },
+  {
+   "fieldname": "adult",
+   "fieldtype": "Int",
+   "label": "Adult"
+  },
+  {
+   "fieldname": "child",
+   "fieldtype": "Int",
+   "label": "Child"
+  },
+  {
+   "fieldname": "room_type_alias",
+   "fieldtype": "Data",
+   "label": "Room Type Alias"
+  },
+  {
+   "fieldname": "discount_type",
+   "fieldtype": "Data",
+   "label": "Discount Type"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Float",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount"
+  },
+  {
+   "fieldname": "tax_1_rate",
+   "fieldtype": "Float",
+   "label": "Tax 1 Rate"
+  },
+  {
+   "fieldname": "tax_2_rate",
+   "fieldtype": "Float",
+   "label": "Tax 2 Rate"
+  },
+  {
+   "fieldname": "tax_3_rate",
+   "fieldtype": "Float",
+   "label": "Tax 3 Rate"
+  },
+  {
+   "description": "This field is use for post to guest folio in field total tax and it available for base account transaction only",
+   "fieldname": "total_tax",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Tax"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Price"
+  },
+  {
+   "fieldname": "input_rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Input Rate"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
+  },
+  {
+   "fieldname": "parent_reference",
+   "fieldtype": "Data",
+   "label": "Parent Reference"
+  },
+  {
+   "fieldname": "guest_type",
+   "fieldtype": "Data",
+   "label": "Guest Type"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality"
+  },
+  {
+   "fieldname": "business_source",
+   "fieldtype": "Data",
+   "label": "Business Source"
+  },
+  {
+   "fieldname": "business_source_type",
+   "fieldtype": "Data",
+   "label": "Business Source Type"
+  },
+  {
+   "fieldname": "reservation_type",
+   "fieldtype": "Data",
+   "label": "Reservation Type"
+  },
+  {
+   "description": "Value must emply, Yes, and No",
+   "fieldname": "rate_include_tax",
+   "fieldtype": "Data",
+   "label": "Rate Include Tax"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-24 21:58:29.007423",
+ "modified": "2024-05-30 10:44:00.262686",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Revenue Forecast Breakdown",

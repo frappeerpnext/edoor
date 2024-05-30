@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-folio-cus mt-3">
-
     <div class="flex gap-2">
       <div>
         <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
@@ -16,7 +15,6 @@
         <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onChangePax">
           <i class="pi pi-user me-2" style="font-size: 1rem"></i>
           {{$t('Change Pax') }}
-        
           <template v-if="rs.selectedRoomRates.length>0">
             ({{ rs.selectedRoomRates.length  }})
           </template>
@@ -140,27 +138,31 @@
 
 
   <!-- show change pax -->
+ 
   <OverlayPanel ref="showChangePax" style="max-width:70rem">
+   <ComOverlayPanelContent  :loading="isLoading" @onSave="onSaveChangePax" @onCancel="onCloseOplaypanel">  
     <div class="flex gap-2">
       <div>
         <label>{{$t('Adults')}}</label>
-            <InputNumber inputId="stacked-buttons" showButtons :min="1" :max="100"
+            <InputNumber inputId="stacked-buttons" v-model="pax.adult" showButtons :min="1" :max="100"
                 class="child-adults-txt w-full" inputClass="border-noround-right"/>
       </div>
       <div>
         <label>{{$t('Children')}}</label>
-        <InputNumber inputId="stacked-buttons" showButtons :min="1" :max="100"
+        <InputNumber inputId="stacked-buttons" v-model="pax.child" showButtons :min="1" :max="100"
             class="child-adults-txt w-full" inputClass="border-noround-right"/>
       </div>
     </div>
+  </ComOverlayPanelContent>
   </OverlayPanel>
 
   <!-- show discount -->
   <OverlayPanel ref="showDiscount" style="max-width:70rem">
+    <ComOverlayPanelContent  :loading="isLoading" @onSave="onSaveDiscount" @onCancel="onCloseDis"> 
     <div class="flex gap-2"> 
       <div>
         <label>{{ $t('Discount Type') }}</label>
-        <ComSelect class="w-full min-w-full" optionLabel="label" optionValue="value"
+        <ComSelect class="w-full min-w-full" v-model="discountType" :options="discountTypeOp" optionLabel="label" optionValue="value"
             :clear="false" />
       </div>
       <div>
@@ -175,18 +177,20 @@
         </div>
       </div>
     </div>
+    </ComOverlayPanelContent>
   </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, useDialog,onMounted,useToast } from '@/plugin';
+import { inject, ref, useDialog,onMounted,useToast , postApi , computed } from '@/plugin';
 import ComEditReservationRoomRate from './ComEditReservationRoomRate.vue';
 import InputNumber from 'primevue/inputnumber';
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 import Message from 'primevue/message';
 import {i18n} from '@/i18n';
+import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
-
+const isLoading = ref()
 const rs = inject('$reservation_stay')
 const data = ref([])
 const setting = JSON.parse(localStorage.getItem('edoor_setting'))
@@ -195,10 +199,14 @@ const moment = inject("$moment")
 const gv = inject('$gv')
 const dialog = useDialog();
 const toast = useToast()
-
+const pax = ref({ adult: 0, child: 0 });
 const showChangePax = ref()
 const showDiscount = ref()
-
+const discountType = ref()
+const discountTypeOp = ref([
+    { label: $t('Percent'), value: 'Percent' },
+    { label: $t('Amount'), value: 'Amount' },
+]);
 const getTotal = ref((column_name) => {
   if (rs.room_rates.length == 0) {
     return 0
@@ -206,8 +214,38 @@ const getTotal = ref((column_name) => {
     return rs.room_rates.reduce((n, d) => n + d[column_name], 0)
   }
 });
+function onCloseOplaypanel(){
+  showChangePax.value.hide();
+}
+function onCloseDis(){
+  showDiscount.value.hide()
+}
+const onSaveDiscount = () => {
+  alert(3434)
+}
+const onSaveChangePax = () => {
+  isLoading.value = true
+    
+    postApi('reservation.change_pax', {
+      data:{
+        stay_name:rs.reservationStay.name,
+        adult:pax.value.adult,
+        child:pax.value.child
+    },
+    room_rates:rs.selectedRoomRates
+    }, "Edit room rate successfully")
+        .then((doc) => {
+          isLoading.value = false
+          rs.getRoomRate(rs.reservationStay.name);
+          onCloseOplaypanel()
+            
+        })
+        .catch((error) => {
+          isLoading.value = false;
 
-
+        });
+    
+}
 function onEditRoomRate(room_rate = null) {
   if(!gv.cashier_shift?.name){
         gv.toast('error', 'Please Open Cashier Shift.')
@@ -297,24 +335,41 @@ onMounted(() => {
         }
     }
   rs.getRoomRate(rs.reservationStay.name);
- 
+  discountType.value = "Amount"
 });
 
 
 function onChangePax (event) { 
+  if( rs.reservationStay?.reservation_status != 'Cancelled' && rs.reservationStay?.reservation_status != 'Void'){
   if(!gv.cashier_shift?.name){
       gv.toast('error', 'Please Open Cashier Shift.')
       return
   }
   if (rs.selectedRoomRates.length>0) {
-    showChangePax.value.toggle(event);
+    const selectedRate = rs.selectedRoomRates[0];
+        pax.value.adult = selectedRate.adult ;
+        pax.value.child = selectedRate.child;
+      showChangePax.value.toggle(event);
   } else if (rs.selectedRoomRates.length == 0){
-    toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
+    toast.add({ severity: 'warn', summary: 'Change Pax', detail: "Please select room to edit.", life: 3000 })
     return 
+  }
+}else {
+          toast.add({ severity: 'warn', summary: 'Change Pax', detail: "This Reservation Stay has been Cancelled or Void.", life: 3000 })
+          return 
   }
 }
 
 function onDiscount (event) { 
+  const hasDiscount = computed(() => 
+  rs.value.selectedRoomRates.some(rate => 
+    (Array.isArray(rate.allow_discount) && rate.allow_discount.length > 1) || rate.is_house_use
+  )
+);
+  if(!hasDiscount){
+    gv.toast('warn', 'This Rate Type Not Allow Discount')
+      return
+  }
   if(!gv.cashier_shift?.name){
       gv.toast('error', 'Please Open Cashier Shift.')
       return

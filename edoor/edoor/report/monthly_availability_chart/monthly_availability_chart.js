@@ -101,7 +101,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 		if (data.indent == 2 && column.is_date == 1) {
 			if (value) {
 				let status = reservation_status.filter(r => r.alias == value)
-				console.log(status)
+				 
 				let color = ""
 				if (status.length > 0) {
 					color = status[0].color

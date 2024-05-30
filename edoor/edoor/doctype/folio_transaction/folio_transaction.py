@@ -1,10 +1,11 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt\
 
+from edoor.api.folio_transaction import update_reservation_folio
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import add_audit_trail, check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger, update_reservation_folio, get_base_rate,update_reservation_stay_and_reservation
+from edoor.api.utils import add_audit_trail, check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger, get_base_rate,update_reservation_stay_and_reservation
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
 from epos_restaurant_2023.inventory.inventory import add_to_inventory_transaction, check_uom_conversion, get_product_cost, get_stock_location_product, get_uom_conversion, update_product_quantity
@@ -444,7 +445,7 @@ class FolioTransaction(Document):
 		frappe.db.delete("Folio Transaction", filters={"reference_folio_transaction":self.name})
 		for d in data:
 			if d["transaction_type"] =="Reservation Folio":
-				frappe.enqueue("edoor.api.utils.update_reservation_folio", queue='short', name=d["transaction_number"], doc=None, run_commit=False)
+				frappe.enqueue("edoor.api.folio_transaction.update_reservation_folio", queue='short', name=d["transaction_number"], doc=None, run_commit=False)
 			
 			reservation_names.append(d["reservation"])
 			reservation_stay_names.append(d["reservation_stay"])
@@ -508,7 +509,7 @@ class FolioTransaction(Document):
 					name = %(name)s or 
 					(
 						coalesce(reference_folio_transaction,'') =%(name)s and   
-						is_sub_package_charge = 1 and 
+						is_package_charge = 1 and 
 						coalesce(parent_reference,'') = ''
 					)
 			"""
@@ -695,7 +696,7 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						"reservation_room_rate": self.reservation_room_rate,
 						"source_reservation_stay": self.source_reservation_stay,
 						"stay_room_id": self.stay_room_id,
-						"is_sub_package_charge":self.is_sub_package_charge
+						"is_package_charge":self.is_package_charge
 					}).insert()
 					
 

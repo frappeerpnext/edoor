@@ -2,10 +2,11 @@ import functools
 import re
 
 import requests
-from edoor.api.cache_functions import get_rate_type_info_with_cache
-from edoor.api.generate_room_rate import get_room_rate_account_code_breakdown
+from edoor.api.cache_functions import get_account_code_doc, get_account_code_sub_account_information, get_base_rate_cache, get_doctype_value_cache, get_master_folio_name_cache, get_rate_type_doc, get_rate_type_info_with_cache, get_tax_rule_doc
+from edoor.api.folio_transaction import update_reservation_folio, update_reservation_folios
+from edoor.api.generate_room_rate import get_room_rate_account_code_breakdown, get_room_rate_breakdown
 from edoor.api.tax_calculation import get_tax_breakdown
-from edoor.api.utils import update_reservation, update_reservation_folio,update_reservation_folios, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate
+from edoor.api.utils import update_reservation, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in,verify_reservation_stay
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
 from frappe.utils import today,add_to_date,getdate
@@ -98,7 +99,7 @@ def re_run_fail_jobs():
         "edoor.api.reservation.post_charge_to_folio_afer_check_in",
         "edoor.api.utils.update_is_arrival_date_in_room_rate",
         "edoor.api.reservation.verify_reservation_stay",
-        "edoor.api.utils.update_reservation_folios"
+        "edoor.api.folio_transaction.update_reservation_folios"
     ]
     # append unwanted queue job from system
     job_names.append("frappe.model.delete_doc.delete_dynamic_links")
@@ -138,9 +139,9 @@ def re_run_fail_jobs():
                 generate_room_occupy(self=None if "self" not in job["kwargs"] else job["kwargs"]["self"], stay_name=None if "stay_name" not in job["kwargs"] else job["kwargs"]["stay_name"])
             elif j["job_name"] == "edoor.api.reservation.generate_room_occupies":
                 generate_room_occupies( stay_names=job["kwargs"]["stay_names"])
-            elif j["job_name"] == "edoor.api.utils.update_reservation_folio":
+            elif j["job_name"] == "edoor.api.folio_transaction.update_reservation_folio":
                 update_reservation_folio( doc=None if "doc" not in job["kwargs"] else job["kwargs"]["doc"], name=None if "name" not in job["kwargs"] else job["kwargs"]["name"], run_commit=True,ignore_validate=True)     
-            elif j["job_name"] == "edoor.api.utils.update_reservation_folios":
+            elif j["job_name"] == "edoor.api.folio_transaction.update_reservation_folios":
                 update_reservation_folios( folio_names =job["kwargs"]["folio_names"])     
             elif j["job_name"] == "edoor.api.utils.update_reservation":
                 update_reservation(name=job["kwargs"]["name"], run_commit=True,ignore_validate=True)
@@ -286,11 +287,25 @@ def remove_failed_jobs(failed_jobs):
         for job_ids in create_batch(failed_jobs, 100):
             for job in Job.fetch_many(job_ids=job_ids, connection=conn):
                 job and fail_registry.remove(job, delete_job=True)
+                
+                
+                
+@frappe.whitelist()
 def clear_cache():
     get_room_rate_account_code_breakdown.cache_clear()
     get_tax_breakdown.cache_clear()      
     get_rate_type_info_with_cache.cache_clear()
-    
+    get_room_rate_breakdown.cache_clear()
+    get_room_rate_account_code_breakdown.cache_clear()
+    get_tax_breakdown.cache_clear()
+    get_account_code_doc.cache_clear()
+    get_base_rate_cache.cache_clear()
+    get_rate_type_doc.cache_clear()
+    get_account_code_sub_account_information.cache_clear()
+    get_doctype_value_cache.cache_clear()
+    get_tax_rule_doc.cache_clear()
+    get_master_folio_name_cache.cache_clear()
+    frappe.log_error("Cache has been clear by task 5 mn job")
              
     
 @frappe.whitelist()

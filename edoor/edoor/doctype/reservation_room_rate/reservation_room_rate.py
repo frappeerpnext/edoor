@@ -12,7 +12,9 @@ import json
 from frappe.utils import getdate, now
 class ReservationRoomRate(Document):
 	def validate(self):
-		
+		if self.flags.ignore_on_validate==True:
+			return 
+
 		# track changte to imporove performance
 		if self.has_value_changed("rate_type"):
 			rate_type_doc = frappe.get_doc("Rate Type",self.rate_type,cache=True)
@@ -31,9 +33,7 @@ class ReservationRoomRate(Document):
 				room_rate = get_room_rate(self.property, self.rate_type, self.room_type_id,self.business_source,self.date)	
 				self.input_rate = room_rate['rate']
 
-
-
-   
+ 
 		if (self.has_value_changed("input_rate") or 
 			self.has_value_changed("tax_rule") or 
 			self.has_value_changed("rate_include_tax") or 
@@ -41,10 +41,15 @@ class ReservationRoomRate(Document):
 			self.has_value_changed("tax_2_rate") or 
 			self.has_value_changed("tax_3_rate") or 
 			self.has_value_changed("discount") or
+			self.has_value_changed("discount_percent") or
 			self.has_value_changed("is_manual_rate") or
-			self.has_value_changed("discount_amount")  
-      		): 
-      
+			self.has_value_changed("discount_amount")  or 
+			self.has_value_changed("adult") or   
+			self.has_value_changed("child") or   
+			self.has_value_changed("is_package") or   
+			self.has_value_changed("package_charge_data")   
+      	): 
+			
 			rate_breakdown = get_room_rate_breakdown(json.dumps({
 				"rate_type":self.rate_type,
 				"tax_rule":self.tax_rule,
@@ -56,18 +61,20 @@ class ReservationRoomRate(Document):
 				"is_package":self.is_package,
 				"discount_type":self.discount_type,
 				"discount":self.discount or 0,
-				"discount_amount":self.discount_amount or 0,
+				"discount_amount":0,
 				"adult":self.adult,
 				"child":self.child,
 				"package_charge_data":self.package_charge_data
 			}))
+
 		 
-			
 			self.total_tax =rate_breakdown["total_tax"]
 			self.total_room_charge = rate_breakdown["total_room_charge"]
 			self.total_other_charge = rate_breakdown["total_other_charge"]
 			self.total_rate = rate_breakdown["total_amount"]
+			 
 			self.discount_amount= rate_breakdown["discount_amount"]
+		 
 
 			if (self.discount_amount or 0) > (self.input_rate or 0):
 				frappe.throw("Discount amount cannot greater than total amoun")

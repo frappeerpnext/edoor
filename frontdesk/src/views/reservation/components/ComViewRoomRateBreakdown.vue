@@ -11,7 +11,7 @@
                         
                         <ComStayInfoNoBox label="Base Rate"
                             :value="data?.room_rate_data?.room_charge_data.rate" isCurrency="true" valueClass="text-end" />
-                            <ComStayInfoNoBox label="Discount" :value="data?.room_rate_data?.room_charge_data.discount_amount" isCurrency="true" valueClass="text-end" />    
+                            <ComStayInfoNoBox label="Discount" v-if="data?.room_rate_data?.room_charge_data.discount_amount" :value="data?.room_rate_data?.room_charge_data.discount_amount" isCurrency="true" valueClass="text-end" />    
                             <ComStayInfoNoBox v-if="data?.room_rate_data?.room_charge_data.rate_include_tax" label="Rate Include Tax" valueClass="text-end">
                                 <div class="flex gap-2"> 
                              <Checkbox      v-model="data.room_rate_data.room_charge_data.rate_include_tax" :binary="true"
@@ -71,7 +71,7 @@
                             <tbody>
                                 <ComStayInfoNoBox label="Base Rate"
                                     :value="item.rate" isCurrency="true" valueClass="text-end" />
-                                    <ComStayInfoNoBox label="Discount" :value="item.discount_amount" isCurrency="true" valueClass="text-end" />    
+                                    <ComStayInfoNoBox label="Discount" v-if="item.discount_amount" :value="item.discount_amount" isCurrency="true" valueClass="text-end" />    
                                 <ComStayInfoNoBox label="Rate Include Tax" valueClass="text-end">
                                         <div class="flex gap-2"> 
                                     <Checkbox  v-model="item.rate_include_tax" disabled :binary="true"

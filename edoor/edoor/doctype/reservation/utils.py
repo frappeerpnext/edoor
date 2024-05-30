@@ -44,6 +44,10 @@ def business_source_change(self):
 		# Room Occupy
 		data_for_updates.append({"doctype":"Room Occupy","update_field":"business_source='{}'".format(self.business_source)})
 		data_for_updates.append({"doctype":"Room Occupy","update_field":"business_source_type='{}'".format(self.business_source_type)})
+		#Revenue Forecast Breakdown
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"business_source='{}'".format(self.business_source)})
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"business_source_type='{}'".format(self.business_source_type)})
+
 	return data_for_updates 
 
 def reservation_type_change(self):
@@ -54,6 +58,9 @@ def reservation_type_change(self):
 		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_type='{}'".format(self.reservation_type)})
 		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"reservation_type='{}'".format(self.reservation_type)})
 		data_for_updates.append({"doctype":"Room Occupy","update_field":"reservation_type='{}'".format(self.reservation_type)})
+		#Revenue Forecast Breakdown
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"reservation_type='{}'".format(self.reservation_type)})
+		
 	return data_for_updates  
 
 def group_code_change(self):

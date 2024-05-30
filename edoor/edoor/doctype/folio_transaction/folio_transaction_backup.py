@@ -1,10 +1,11 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt\
 
+from edoor.api.folio_transaction import update_reservation_folio
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_reservation_folio, get_base_rate
+from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, get_base_rate
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
@@ -386,7 +387,7 @@ class FolioTransaction(Document):
 		frappe.db.delete("Folio Transaction", filters={"reference_folio_transaction":self.name})
 		for d in data:
 			if d["transaction_type"] =="Reservation Folio":
-				frappe.enqueue("edoor.api.utils.update_reservation_folio", queue='short', name=d["transaction_number"], doc=None, run_commit=False)
+				frappe.enqueue("edoor.api.folio_transaction.update_reservation_folio", queue='short', name=d["transaction_number"], doc=None, run_commit=False)
 			
 			reservation_names.append(d["reservation"])
 			reservation_stay_names.append(d["reservation_stay"])

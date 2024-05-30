@@ -5,10 +5,7 @@ import frappe
  
 
 def execute(filters=None):
- 
-	
-	 
-	 
+	  
 
 
 	data = get_report_data(filters)
@@ -28,7 +25,7 @@ def get_columns(filters):
 		{"fieldname":"credit", "label":"Credit","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"net_total", "label":"Net Total","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"modified_by", "label":"Modified","fieldtype":"Data", "width":150,"align":"center"},
-		{"fieldname":"modified", "label":"Modified Date","fieldtype":"Date", "width":200,"align":"center"},
+		{"fieldname":"modified", "label":"Modified Date","fieldtype":"Datetime", "width":200,"align":"center"},
 	]
 
 def get_data(filters):
@@ -75,7 +72,7 @@ def get_data(filters):
 
 	if filters.account_category:
 
-		sql = sql + " and account_category = %(account_category)s "
+		sql = sql + " and account_category in %(account_category)s "
 
 	if filters.city_ledger:
 		sql = sql + " and (transaction_number = %(city_ledger)s or (target_transaction_type='City Ledger' and target_transaction_number=%(city_ledger)s))"

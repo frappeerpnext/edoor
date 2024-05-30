@@ -1,7 +1,8 @@
 import secrets
 import time
  
-from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio, get_months, validate_role,get_breakdown_package_charge_code,add_package_inclusion_charge_to_folio
+from edoor.api.folio_transaction import get_master_folio, post_charge_to_folio_afer_after_run_night_audit
+from edoor.api.utils import get_date_range,add_room_charge_to_folio, get_months, validate_role,get_breakdown_package_charge_code,add_package_inclusion_charge_to_folio
 
 import frappe
 import datetime
@@ -2592,20 +2593,33 @@ def validate_run_night_audit(property,step):
         data = frappe.db.sql(sql, as_dict=1)
         if data:
             frappe.throw("Please check out all reservation")
-    elif step==5:
-        if frappe.db.get_single_value("eDoor Setting","auto_post_room_charge_folio_on_current_audit_date")==1:
-            data = frappe.db.sql("select   name  from `tabReservation Room Rate` where date = '{0}' and  property = '{1}' and  is_arrival = 0 and is_active_reservation=1".format(
-                    working_day["date_working_day"],
-                    property
-                    
-                ),as_dict=1)
-            if data:    
-                frappe.enqueue("edoor.api.frontdesk.post_room_change_to_folio", queue='short',
-                    working_day=  frappe.get_doc("Working Day",working_day["name"]),
-                )
+    elif step==4:
+        # update is arrival to reservation room rate
+        # we need to filter this in step 5
+        sql="select distinct reservation_stay from `tabReservation Room Rate` where property=%(property)s and date=%(date)s"
+        stay_names = frappe.db.sql(sql,{"property":property,"date":working_day["date_working_day"]})
+        # reset all room rate record with is_arrival = 0
+        frappe.db.sql("update `tabReservation Room Rate` set is_arrival=0 where reservation_stay in %(stay_names)s and is_arrival=1",{"stay_names":stay_names})
+        # get min date from room rate group by reservation stay then update is_arrival =1 
+        sql = """
+            update `tabReservation Room Rate` r 
+            join (
+                select
+                    reservation_stay,
+                    min(date) as date
+                from `tabReservation Room Rate` 
+                where
+                    reservation_stay in %(stay_names)s
+                group by
+                    reservation_stay
+            ) b 
+            on r.reservation_stay = b.reservation_stay and  r.date = b.date
+            set
+                r.is_arrival = 1
             
-                time.sleep(len(data)/5)
-        return False
+        """
+        frappe.db.sql(sql,{"stay_names":stay_names})
+        frappe.db.commit()
     elif step == 6:
         sql="select name from `tabFolio Transaction` where posting_date = '{}'  and property='{}' and ifnull(parent_reference,'') = '' and is_auto_post = 0 limit 1".format(working_day["date_working_day"], property)
         data = frappe.db.sql(sql, as_dict=1)
@@ -2614,7 +2628,7 @@ def validate_run_night_audit(property,step):
         sql="select name from `tabCashier Shift` where posting_date = '{}'  and business_branch='{}' and is_closed = 0 limit 1".format(working_day["date_working_day"], property)
         data = frappe.db.sql(sql, as_dict=1)
         if  data:
-            frappe.throw("Please close all cashier shift")
+            frappe.throw("Please close all cashier shift.")
     return False
 
 @frappe.whitelist(methods="POST")
@@ -2624,9 +2638,9 @@ def run_night_audit(property, working_day):
     #3. validate arrival to check in 
     #3. validate departure to check out 
     #validate permission
-    
+    old_working_day_data = get_working_day(property)
     validate_role("run_night_audit_role")
-
+    
     doc_property = frappe.get_doc("Business Branch", property)
     doc_working_day = frappe.get_doc("Working Day", working_day)
 
@@ -2636,6 +2650,7 @@ def run_night_audit(property, working_day):
     # if frappe.db.exists("Cashier Shift",{"working_day":working_day, "is_closed":0}):
     #     frappe.throw("Please close all cashier shift before run night audit")
     #validate room to check in
+    
     if frappe.db.exists("Reservation Stay",{"property":property, "reservation_status":["in",["Confirmed","Reserved"],], "arrival_date": doc_working_day.posting_date}):
         frappe.throw("Please check in all arrival reservation")
 
@@ -2684,15 +2699,15 @@ def run_night_audit(property, working_day):
 
     #queue post room change to folio
 
-    #post_room_change_to_folio(new_working_day)
     
-    post_on_audit_date = frappe.db.get_single_value("eDoor Setting", "auto_post_room_charge_folio_on_current_audit_date")
-    if post_on_audit_date==0:
-        frappe.enqueue("edoor.api.frontdesk.post_room_change_to_folio", queue='long',
-            working_day=  new_working_day,
-        )
-    #update room status after runight auit
-
+    # get last edoor cashier shift 
+    last_shift = frappe.db.sql("select name from `tabCashier Shift` where working_day=%(working_day)s and is_edoor_shift=1 order by creation desc limit 1",{"working_day":old_working_day_data["name"]},as_dict=1)
+    if not last_shift:
+        frappe.throw(_("There is edoor shift to posting nightly charge."))
+    old_working_day_data["cashier_shift"] = {"name": last_shift[0]["name"]}
+    
+    post_charge_to_folio_afer_after_run_night_audit(property=property, working_day=old_working_day_data)  
+    
     # update_room_status(new_working_day)
     frappe.enqueue("edoor.api.frontdesk.update_room_status", queue='long', working_day=new_working_day)
     
@@ -2700,6 +2715,7 @@ def run_night_audit(property, working_day):
     frappe.enqueue("edoor.api.frontdesk.update_daily_property_data", queue='long', working_date=doc_working_day.posting_date, property = property)
     
     working_day = get_working_day(property)
+    frappe.db.commit()
     return working_day
 
 

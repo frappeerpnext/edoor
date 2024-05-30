@@ -362,7 +362,7 @@
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-12rem text-right">
                                 <div class="box-input-detail">
-                                    <div :class="d.total_tax <= 0 ? 'pointer-events-none' : ''" class="link_line_action" @click="viewRoomRateBreakdown(d)"  >
+                                    <div  class="link_line_action" @click="viewRoomRateBreakdown(d)"  >
                                         <CurrencyFormat :value="d.total_tax * (doc.reservation.room_night||1)" />
                                     </div>
                                     
@@ -383,11 +383,12 @@
                                 </div>
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-10rem">
-                                
-                                <div @click="viewRoomRateBreakdown(d)" class="p-inputtext-pt text-end border-1 border-white h-12 white-space-nowrap"
+                                <div  class="p-inputtext-pt text-end border-1 border-white h-12 white-space-nowrap"
                                     v-if="doc.tax_rule.rate_include_tax == 'Yes'">
-
-                                    <CurrencyFormat :value="(d.rate) * (doc.reservation.room_night ?? 0)" />
+                                    <div class="link_line_action" @click="viewRoomRateBreakdown(d)">
+ <CurrencyFormat :value="(d.rate) * (doc.reservation.room_night ?? 0)" />
+                                    </div>
+                                   
                                 </div>
                                 <div class="p-inputtext-pt text-end border-1 border-white h-12 white-space-nowrap" v-else>
                                     <div class="link_line_action" @click="viewRoomRateBreakdown(d)">
@@ -404,21 +405,21 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="flex gap-3 justify-content-end mt-3">
-        <Button class="p-button p-component conten-btn ml-auto h-3rem"  @click="onViewRoomInventory" >
-          {{ $t('View Room Inventory') }}  
-        </Button>
-        <Button class="conten-btn " :label="$t('View Room Availability')" @click="onViewRoomAvailable"  />
-    </div>
+              
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between gap-2">
                 <div>
                     <Button @click="onAddRoom" class="px-4 mt-2 conten-btn">
                         <img :src="theme == 'estc' ? IconAddRoom : iconPlusSignWhite" class="btn-add_comNote__icon me-1" />
                         {{ $t('Add More Room') }}
                     </Button>
                 </div>
-
+            <div class="flex gap-2">
+        <Button class="px-4 mt-2 conten-btn"  @click="onViewRoomInventory" >
+          {{ $t('View Room Inventory') }}  
+        </Button>
+        <Button class="px-4 mt-2 conten-btn " :label="$t('View Room Availability')" @click="onViewRoomAvailable"  />
+</div>
             </div>
 
             <Message severity="warn" v-if="warningMessage" v-for="(m, index) in warningMessage" :key="index">
@@ -684,18 +685,22 @@ const getRooms = () => {
 }
 
 function onSelectedCustomer(event) {
+    
     if (event.value) {
+        const name_guest_en_ev = ref()
         getDoc('Customer', event.value)
             .then((d) => {
                 doc.value.guest_info = d
+                name_guest_en_ev.value = d?.customer_name_en
                 doc.value.guest_info.expired_date = moment(doc.value.guest_info.expired_dat).toDate()
+                console.log(d)
             })
 
         //check future reservation
         getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest", value: event.value }).then(r => {
             hasFutureResertion.value = r.message
             checkFutureReservationInfo.value = {
-                message: `This guest id ${event.value} is already exist in the system`,
+                message: `This guest Name  " ${name_guest_en_ev?.value} "  is already exist in the system`,
                 fieldname: "guest",
                 value: event.value,
             }

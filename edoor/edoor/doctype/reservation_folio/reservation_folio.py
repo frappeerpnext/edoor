@@ -59,6 +59,8 @@ class ReservationFolio(Document):
 			frappe.throw("Cannot close folio with balance is greater than 0")
 			
 	def on_update(self):
+		if self.flags.ignore_on_update:
+				return
 		if self.is_master==1:
 			#reset other is master = 0
 			frappe.db.sql("update `tabReservation Folio` set is_master=0 where is_master=1 and name<>'{}' and reservation_stay='{}'".format(self.name,self.reservation_stay))
@@ -89,6 +91,7 @@ class ReservationFolio(Document):
 
 		if (self.note):
 			comment["content"] = comment["content"] + "<br /> Note: " + self.note
+		
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
 

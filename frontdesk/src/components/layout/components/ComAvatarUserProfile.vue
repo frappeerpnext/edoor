@@ -51,7 +51,7 @@
     </Menu>
 </template>
 <script setup>
-import { ref, inject, useDialog } from '@/plugin'
+import { ref, inject, useDialog,getApi } from '@/plugin'
 import ComIFrameModal from "@/components/ComIFrameModal.vue"
 import {i18n} from '@/i18n';
 import ComChangeLanguage from '@/components/layout/components/ComChangeLanguage.vue';
@@ -83,8 +83,11 @@ const onClick = (event) => {
     show.value.toggle(event);
 };
 function onRefresh() {
-
-    window.location.reload();
+    getApi("schedule_task.clear_cache").then(r=>{
+      
+        window.location.reload();
+    })
+    
 }
 function onOpenBackend () { 
     window.open(serverUrl + '/' + 'app')

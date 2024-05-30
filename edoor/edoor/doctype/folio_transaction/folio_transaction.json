@@ -50,6 +50,8 @@
   "section_break_fcbh",
   "column_break_upli",
   "is_package",
+  "is_package_charge",
+  "is_package_breakdown",
   "account_code",
   "account_name",
   "type",
@@ -60,7 +62,6 @@
   "report_quantity",
   "amount",
   "total_sub_package_charge",
-  "is_sub_package_charge",
   "section_break_gdka",
   "item_list",
   "item_list_2",
@@ -194,6 +195,7 @@
    "fetch_from": ".",
    "fieldname": "reservation",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Reservation",
    "options": "Reservation",
    "search_index": 1
@@ -204,6 +206,7 @@
    "fetch_if_empty": 1,
    "fieldname": "reservation_stay",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Reservation Stay",
    "options": "Reservation Stay",
    "search_index": 1
@@ -366,6 +369,7 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Posting Date",
    "reqd": 1
   },
@@ -1052,12 +1056,6 @@
    "label": "Total Sub Package Charge"
   },
   {
-   "default": "0",
-   "fieldname": "is_sub_package_charge",
-   "fieldtype": "Check",
-   "label": "Is Sub Package Charge"
-  },
-  {
    "fieldname": "adult",
    "fieldtype": "Int",
    "label": "Adult"
@@ -1096,11 +1094,23 @@
    "fieldname": "is_house_use",
    "fieldtype": "Check",
    "label": "Is House Use"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_package_charge",
+   "fieldtype": "Check",
+   "label": "Is Package Charge"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_package_breakdown",
+   "fieldtype": "Check",
+   "label": "Is Package Breakdown"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-19 10:39:53.752734",
+ "modified": "2024-05-29 15:58:23.818658",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

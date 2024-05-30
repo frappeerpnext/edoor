@@ -2,6 +2,8 @@
 # For license information, please see license.txt
 from decimal import Decimal
 import json
+from edoor.api.generate_room_rate import get_package_charge_data
+from edoor.api.cache_functions import get_rate_type_doc
 from frappe.utils import get_url_to_form
 from datetime import datetime
 from edoor.api.frontdesk import get_working_day
@@ -274,6 +276,7 @@ class ReservationStay(Document):
 		
 			# check old doc if user change adult and child then update adult and chidl to reservation room rate
 			if self.has_value_changed("adult") or self.has_value_changed("child"):
+				
 				frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
 	
 
@@ -464,6 +467,7 @@ def update_reservation_stay_room_rate(data):
 	
 
 def update_reservation_stay_room_rate_after_resize(data, stay_doc):
+	
 	# date min and max date from reservation room rate
 	sql = "select min(date) as start_date, max(date) as end_date from `tabReservation Room Rate` where stay_room_id='{}'".format(data["name"]) 
 	old_stay_date = frappe.db.sql(sql, as_dict=1)
@@ -494,10 +498,9 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				room_rate = room_rate_doc[0]["input_rate"]
 				rate_type = room_rate_doc[0]["rate_type"]
 				is_manual_rate  = room_rate_doc[0]["is_manual_rate"]
-	
+	rate_type_doc = get_rate_type_doc(rate_type)
 	for d in date_range:
- 
-		frappe.get_doc({
+		doc =frappe.get_doc( {
 				"doctype":"Reservation Room Rate",
 				"reservation":stay_doc.reservation,
 				"reservation_stay":stay_doc.name,
@@ -518,12 +521,27 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				"is_active_reservation":1,
 				"is_active":1,
 				"adult":stay_doc.adult,
-				"child":stay_doc.child
-			}).insert()
-		
+				"child":stay_doc.child,
+				"is_package":rate_type_doc.is_package,
+			}
+		)
+  
+		if rate_type_doc.is_package==1:
+			package_data = get_package_charge_data(doc.rate_type)
+			if package_data:
+				if stay_doc.arrival_date == d:
+					doc.package_charge_data = json.dumps([d for d in package_data if d["posting_rule"] in ["Everyday","Checked In Date"]])
+				else:
+					doc.package_charge_data = json.dumps([d for d in package_data if d["posting_rule"] in ["Everyday"]])
+     
+		doc.flags.ignore_on_update = True
+		doc.insert()
+  
+  
 
+		
 	#update first date in reservation room is_arrival = 1
-	frappe.enqueue("edoor.api.utils.update_is_arrival_date_in_room_rate",queue='long', stay_name=stay_doc.name) 
+	frappe.enqueue("edoor.api.utils.update_is_arrival_date_in_room_rate",queue='short', stay_name=stay_doc.name) 
 
 	
 def update_reservation_stay_room_rate_after_move(data,stay_doc):

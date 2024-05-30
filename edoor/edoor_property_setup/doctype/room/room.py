@@ -56,6 +56,9 @@ def update_fetch_from_fields(self):
   
   		# room occupy
 		data_for_updates.append({"doctype":"Room Occupy","update_field":"room_number='{}'".format(self.room_number)})
+
+		#Revenue Forecast Breakdown
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"room_number='{}'".format(self.room_number)})
   
 		
 	if self.has_value_changed("room_type_id"):
@@ -92,6 +95,9 @@ def update_fetch_from_fields(self):
   		# reservation stay room
 		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
   
+		#Revenue Forecast Breakdown
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"room_type_id='{}'".format(self.room_type_id)})
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
 	if data_for_updates:
 		for d in set([x["doctype"] for x in data_for_updates]):
 			sql="update `tab{}` set {} where room_id='{}'".format(

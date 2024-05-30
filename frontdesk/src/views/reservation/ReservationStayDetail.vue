@@ -402,12 +402,15 @@ const onCheckIn = () => {
         },
         onClose: (options) => {
             const result = options.data;
+            console.log(result)
             if (result) {
                 rs.loading = true
+                
                 postApi("reservation.check_in", {
                     reservation: rs.reservation.name,
                     reservation_stays: [rs.reservationStay.name],
-                    note: result.note
+                    note: result.note,
+                    arrival_time:result.checked_in_date
                 }).then((result) => {
                     rs.loading = false
                     window.postMessage({"action":"ComHousekeepingStatus"},"*");

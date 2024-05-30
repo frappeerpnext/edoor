@@ -226,7 +226,7 @@
                     <tbody>
                         <ComStayInfoNoBox label="Base Rate"
                             :value="RoomRateCalculation.room_charge_data?.rate" isCurrency="true" valueClass="text-end" />
-                            <ComStayInfoNoBox label="Discount" :value="RoomRateCalculation.room_charge_data?.discount_amount" isCurrency="true" valueClass="text-end" />    
+                            <ComStayInfoNoBox v-if="RoomRateCalculation.room_charge_data?.discount_amount" label="Discount" :value="RoomRateCalculation.room_charge_data?.discount_amount" isCurrency="true" valueClass="text-end" />    
                             <ComStayInfoNoBox label="Rate Include Tax" valueClass="text-end">
                                 <div class="flex gap-2"> 
                              <Checkbox  v-if="RoomRateCalculation.room_charge_data?.rate_include_tax"    v-model="doc.rate_include_tax" :binary="true"
@@ -289,7 +289,7 @@ Package Charge Breakdown
                     <tbody>
                         <ComStayInfoNoBox label="Base Rate"
                             :value="item.rate" isCurrency="true" valueClass="text-end" />
-                            <ComStayInfoNoBox label="Discount" :value="item.discount_amount" isCurrency="true" valueClass="text-end" />    
+                            <ComStayInfoNoBox v-if="item.discount_amount > 0" label="Discount" :value="item.discount_amount" isCurrency="true" valueClass="text-end" />    
                           <ComStayInfoNoBox label="Rate Include Tax" valueClass="text-end">
                                 <div class="flex gap-2"> 
                              <Checkbox  v-model="item.rate_include_tax" disabled :binary="true"
@@ -304,7 +304,6 @@ Package Charge Breakdown
                                     />
                                 </div>
                             </ComStayInfoNoBox>
-                            {{ item.tax_2_name }}
                            <ComStayInfoNoBox v-if="item.tax_2_rate > 0" :label="($t(item.tax_2_name ?? '') || '') + ' ' + (item.tax_2_rate || 0) + '%'" valueClass="text-end">
                                 <div class="flex gap-2"> 
                                     <CurrencyFormat :value="item.tax_2_amount || 0 " />

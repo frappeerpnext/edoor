@@ -1,7 +1,8 @@
 import datetime
 from decimal import Decimal
 
-from edoor.api.cache_functions import get_rate_type_info_with_cache
+from edoor.api.cache_functions import get_base_rate_cache, get_rate_type_info_with_cache
+from edoor.api.folio_transaction import create_folio, update_reservation_folio
 import frappe
 import json
 import re
@@ -22,16 +23,10 @@ from edoor.api.backup import run_backup_command
 def get_theme():
     return frappe.db.get_single_value("ePOS Settings","app_theme")
 
-@frappe.whitelist(allow_guest=True)
-def x():
- 
-    doc = frappe.get_doc("ePOS Settings")
-    doc.backend_port ="8553"
-    doc.save(ignore_permissions=True)
+
 
 
 @frappe.whitelist()
-@lru_cache(maxsize=128)
 def get_room_rate(property, rate_type, room_type, business_source, date):
     sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)
     season = frappe.db.sql (sql, as_dict=1)
@@ -515,39 +510,6 @@ def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=Fal
             frappe.db.commit()
         return doc
 
-@frappe.whitelist()
-def update_reservation_folios(folio_names):
-    for f in set(folio_names):
-        update_reservation_folio(name=f, run_commit=False, ignore_validate=True)
-    frappe.db.commit()
-    
-@frappe.whitelist()
-def update_reservation_folio(name=None, doc=None,run_commit=True,ignore_validate=False):
-    if name:
-        doc = frappe.get_doc("Reservation Folio",name)
-
-    sql_folio = """
-        select 
-                sum(if(type='Debit',amount,0)) as debit,
-                sum(if(type='Credit',amount,0)) as credit
-            from `tabFolio Transaction` 
-            where
-                transaction_type = 'Reservation Folio' and 
-                transaction_number = '{}'
-        """.format(
-                doc.name
-            )
-
-    folio_data = frappe.db.sql(sql_folio, as_dict=1)
-
-    doc.total_debit =  folio_data[0]["debit"]
-    doc.total_credit=folio_data[0]["credit"]
-    doc.flags.ignore_validate = ignore_validate
-    doc.save(  ignore_permissions=True)
-    if run_commit:
-        frappe.db.commit()
-        
-    return doc
 
 
 @frappe.whitelist()
@@ -670,37 +632,9 @@ def update_city_ledger(name=None,doc=None, run_commit = True):
 
 
 @frappe.whitelist()
-@lru_cache(maxsize=128)
 def get_base_rate(amount,tax_rule,tax_1_rate, tax_2_rate,tax_3_rate):
+    return get_base_rate_cache(amount,tax_rule,tax_1_rate, tax_2_rate,tax_3_rate)
 
-	t1_r = (tax_1_rate or 0) / 100
-	t2_r = (tax_2_rate or 0)  / 100
-	t3_r = (tax_3_rate or 0)  / 100
- 
-
-
-	price = 0
-
-	t2_af_add_t1 = tax_rule.calculate_tax_2_after_adding_tax_1
-
-	t3_af_add_t1 =  tax_rule.calculate_tax_3_after_adding_tax_1
-	t3_af_add_t2 =   tax_rule.calculate_tax_3_after_adding_tax_2
-
-
-	tax_rate_con = 0
-
-
-	tax_rate_con = (1 + t1_r + t2_r 
-						+ (t1_r * t2_af_add_t1 * t2_r) 
-						+ t3_r + (t1_r * t3_af_add_t1 * t3_r) 
-						+ (t2_r * t3_af_add_t2 * t3_r)
-						+ (t1_r * t2_af_add_t1 * t2_r * t3_af_add_t2 * t3_r)
-                )
-
-	tax_rate_con = tax_rate_con or 0
-	price = amount /  tax_rate_con
-
-	return  price
 
 @frappe.whitelist(methods="DELETE")
 def delete_doc(doctype, name, note):
@@ -823,38 +757,6 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
 
     doc.insert()
     return doc
-    
- 
-    
-
-
-def get_master_folio(reservation,create_if_not_exists = False,reopen_folio_if_closed=False):
-    master_stay = frappe.db.get_list("Reservation Stay",  filters={"reservation":reservation, "is_master":"1"})
-    if master_stay:
-        master_folio = frappe.db.get_list("Reservation Folio", filters={"reservation_stay":master_stay[0].name, "is_master":1})
-        if master_folio:
-            folio_doc = frappe.get_doc("Reservation Folio", master_folio[0].name)
-            if reopen_folio_if_closed:
-                folio_doc.status="Open"
-                folio_doc.flags.ignore_validate = True
-                folio_doc.save(ignore_permissions=True)
-            return folio_doc
-    
-    if create_if_not_exists:
-        return create_folio(frappe.get_doc("Reservation Stay",master_stay))
-    
-    return None
-
-
-def create_folio(stay):
-    doc = frappe.get_doc({
-        "doctype":"Reservation Folio",
-        "reservation_stay":stay.name,
-        "guest":stay.guest
-    }).insert()
-    return doc
-
-
 
 
 @frappe.whitelist()

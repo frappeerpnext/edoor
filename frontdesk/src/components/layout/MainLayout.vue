@@ -110,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, inject, useRouter, useRoute, computed } from '@/plugin'
+import { ref, inject, useRouter, useRoute, computed, } from '@/plugin'
 import { useScreen } from 'vue-screen'
 import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
 import ProgressBar from 'primevue/progressbar'

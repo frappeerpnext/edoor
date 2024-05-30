@@ -150,8 +150,11 @@ frappe.query_reports["General Journal Transaction"] = {
 		{
 			"fieldname": "account_category",
 			"label": __("Account Category"),
-			"fieldtype": "Link",
-			"options":"Account Category",
+			"fieldtype": "MultiSelectList",
+			 
+			get_data: function(txt) {
+				return frappe.db.get_link_options('Account Category', txt);
+			},
 			"on_change": function (query_report) {},
 		},
  
@@ -170,31 +173,7 @@ frappe.query_reports["General Journal Transaction"] = {
 			"on_change": function (query_report) {},
 			hide_in_filter:1,
 		},
-		// {
-		// 	"fieldname": "parent_row_group",
-		// 	"label": __("Parent Group By"),
-		// 	"fieldtype": "Select",
-		// 	"options": "\nDate\nMonth\nYear\nReservation Type\nBusiness Source\nBusiness Source Type",
-		// 	"on_change": function (query_report) {},
-		// 	hide_in_filter:1,
-		// },
-		// {
-		// 	"fieldname": "row_group",
-		// 	"label": __("Row Group By"),
-		// 	"fieldtype": "Select",
-		// 	"options": "Date\n\Month\nYear\nReservation Type\nBusiness Source\nRoom Type\nRoom\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
-		// 	"default":"Date",
-		// 	"on_change": function (query_report) {},
-		// 	hide_in_filter:1,
-		// },
-
-		// {
-		// 	"fieldname": "column_group",
-		// 	"label": __("Column Group By"),
-		// 	"fieldtype": "Select",
-		// 	"options": "None\nDaily\nWeekly\nMonthly\nQuarterly\nHalf Yearly\nYearly",
-		// 	"default":"None"
-		// },
+		 
 		{
 			"fieldname": "show_summary",
 			"label": __("Show Summary"),
@@ -203,15 +182,7 @@ frappe.query_reports["General Journal Transaction"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
-		// {
-		// 	"fieldname": "chart_type",
-		// 	"label": __("Chart Type"),
-		// 	"fieldtype": "Select",
-		// 	"options": "None\nbar\nline\npie",
-		// 	"default":"bar",
-		// 	hide_in_filter:1,
-		// 	"on_change": function (query_report) {},
-		// },
+		 
 		 
 	],
 	onload: function(report) {

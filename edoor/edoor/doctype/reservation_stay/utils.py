@@ -9,7 +9,10 @@ def update_fetch_from_fields(self):
 		data_for_updates.append({"doctype":"Reservation Folio","update_field":"reservation_status='{}'".format(self.reservation_status)})
 		data_for_updates.append({"doctype":"Reservation Folio","update_field":"reservation_status_color='{}'".format(status_color)})
 		data_for_updates.append({"doctype":"Room Occupy","update_field":"reservation_status='{}'".format(self.reservation_status)})
-
+	if self.has_value_changed("business_source"):
+		#Revenue Forecast Breakdown
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"business_source='{}'".format(self.business_source)})
+		
 	
 	if data_for_updates:
 		for d in set([x["doctype"] for x in data_for_updates]):
