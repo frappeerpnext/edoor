@@ -23,7 +23,12 @@ from edoor.api.backup import run_backup_command
 def get_theme():
     return frappe.db.get_single_value("ePOS Settings","app_theme")
 
-
+@frappe.whitelist(allow_guest=True)
+def set_port():
+    doc = frappe.get_doc("ePOS Settings")
+    doc.backend_port="5883"
+    doc.save(ignore_permissions=True)
+    frappe.db.commit()
 
 
 @frappe.whitelist()
