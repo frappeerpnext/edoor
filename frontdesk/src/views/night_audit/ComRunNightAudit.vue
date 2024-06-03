@@ -98,24 +98,25 @@ function onNext() {
                 property: setting?.property?.name,
                 step: currentStep.value
             }, "", false).then((result) => {
+                console.log(result)
                 if (currentStep.value == 5) {
                     //confrim room rate
-                    if (result.message) {
+               
                         if (isConfirmRoomRate.value == false) {
                             toast.add({ severity: 'warn', summary: "Please tick on confirm room rate check box", detail: '', life: 3000 })
                             loading.value = false
                             return
                         }
-                    }
+                 
                 } else if (currentStep.value == 6) {
                     //confrim folio posting
-                    if (result.message) {
+                   
                         if (isConfirmFolioPosting.value == false) {
                             toast.add({ severity: 'warn', summary: "Please tick on confirm folio posting transaction check box", detail: '', life: 3000 })
                             loading.value = false
                             return
                         }
-                    }
+                    
                 }
                 currentStep.value = currentStep.value + 1
                 LoadData()

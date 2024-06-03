@@ -1,15 +1,18 @@
 <template>
     <div class="min-h-folio-cus mt-3">
-        <Button  class="conten-btn mr-1 mb-3" serverity="waring" @click="addnew()">
+
+        <!-- hide funtion -->
+        <!-- <Button  class="conten-btn mr-1 mb-3" serverity="waring" @click="addnew()">
       <i class="pi pi-plus me-2" style="font-size: 1rem"></i>
       {{$t('Add New Package') }}
-    </Button>
+    </Button> -->
     <ComPlaceholder text="No Data" :loading="loading" :isNotEmpty="data.length > 0">
         <DataTable  :value="data" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
                 <Column field="account_code" :header="$t('Account Code')" bodyClass="text-center" headerClass="text-center">
                     <template #body="slotProps">
-                        <span @click="onEdit(slotProps.data)" class="p-0 link_line_action1" >{{ slotProps.data.account_code }}-{{ slotProps.data.account_name }}</span>
+                     <!-- @click="onEdit(slotProps.data)"   link_line_action1 -->
+                        <span  class="p-0 " >{{ slotProps.data.account_code }}-{{ slotProps.data.account_name }}</span>
                     </template>
                 </Column>
                 <Column field="posting_rule" :header="$t('Posting Rule')" bodyClass="text-center" headerClass="text-center">
@@ -37,7 +40,8 @@
                         <CurrencyFormat :value="slotProps.data.child_rate" />
                     </template>
                 </Column>
-                <Column header="">
+                <!-- hide funtion -->
+                <!-- <Column header="">
                     <template #body="slotProps">
                         <div v-if="slotProps.data.name">
                             <div class="res_btn_st">
@@ -62,7 +66,7 @@
                         </Menu>
                         </div>
                     </template>
-                </Column>
+                </Column> -->
                 </DataTable>
             </ComPlaceholder>            
     </div>

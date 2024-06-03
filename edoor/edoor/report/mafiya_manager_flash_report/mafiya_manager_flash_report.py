@@ -201,7 +201,7 @@ def get_report_data(filters):
 		vacant_room_night[f] =  total_room - room_occupy - room_block
 		total_room_available[f] =  total_room - room_block
 		fb_revenue[f] = food + alcohol + nonalcohol + tax + discount + fb_other +fb_breakfast
-		total_sale_center[f] = room + transportation + tour + other + food + alcohol + nonalcohol + tax + discount + fb_other +fb_breakfast
+		total_sale_center[f] = room + transportation + tour + other
 		total_payment[f] = cash + bank + deposit_cash + deposit_bank
 		if calculate_adr_include_all_room_occupied==1:
 			adr[f] =  (room_charge - room_disc) / (1 if room_occupy == 0 else room_occupy)

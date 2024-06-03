@@ -26,7 +26,7 @@ def get_theme():
 @frappe.whitelist(allow_guest=True)
 def set_port():
     doc = frappe.get_doc("ePOS Settings")
-    doc.backend_port="5883"
+    doc.backend_port="1216"
     doc.save(ignore_permissions=True)
     frappe.db.commit()
 

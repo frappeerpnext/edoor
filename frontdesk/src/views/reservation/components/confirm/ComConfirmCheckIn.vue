@@ -31,7 +31,7 @@
         </template>
 <div class="flex-auto mb-1">
             <label for="calendar-12h" class=" block"> Check In Time </label>
-            <Calendar  id="calendar-12h" class="w-full" @update:modelValue="onchangetime" v-model="checkInTime" showTime  hourFormat="12" timeOnly  />
+            <Calendar  id="calendar-12h" class="w-full" @blur="onchangetime" v-model="checkInTime" showTime  hourFormat="12" timeOnly  />
         </div>
         <label for="reason-text" class="mb-1 font-medium block">{{ $t('Note') }} </label>
         <Textarea autofocus v-model="note" id="reason-text" rows="3" cols="50" :placeholder="$t('Please enter check in note')" class="w-full" />
@@ -70,6 +70,7 @@ const { t: $t } = i18n.global;
 function onchangetime() { 
         var parsedTime = moment(checkInTime.value, 'hh:mm a');
         CheckInTimeOnly.value =  moment(parsedTime).format('HH:mm:ss')
+
     
  }
 function onOk() {

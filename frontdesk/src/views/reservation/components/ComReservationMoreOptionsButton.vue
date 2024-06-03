@@ -275,7 +275,8 @@ function onGroupCheckIn() {
 
                     postApi("reservation.check_in", {
                         reservation: rs.reservation.name,
-                        reservation_stays: rs.selecteds.map(d => d["name"])
+                        reservation_stays: rs.selecteds.map(d => d["name"]),
+                        arrival_time:result.checked_in_date
                     }).then((result) => {
                         rs.loading = false
                         window.postMessage({action:"ReservationDetail"},"*");

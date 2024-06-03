@@ -142,7 +142,8 @@ function onCheckIn() {
 
                 postApi("reservation.check_in", {
                     reservation: rs.reservation.name,
-                    reservation_stays: [{ name: props.data.name, reservation_status: props.data.reservation_status }]
+                    reservation_stays: [{ name: props.data.name, reservation_status: props.data.reservation_status }],
+                    arrival_time:result.checked_in_date
                 })
                     .then((result) => {
                         rs.loading = false

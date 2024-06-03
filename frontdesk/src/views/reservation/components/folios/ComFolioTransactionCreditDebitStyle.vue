@@ -99,13 +99,13 @@
                     <Column footerStyle="text-align:right">
                         <template #footer>
 
-                            <CurrencyFormat  v-if="can_view_rate" :value="selectedFolio.total_debit" />
+                            <CurrencyFormat  v-if="can_view_rate" :value="totalDebit" />
                         </template>
                     </Column>
 
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat  v-if="can_view_rate" :value="selectedFolio.total_credit" />
+                            <CurrencyFormat  v-if="can_view_rate" :value="totalCredit" />
                         </template>
                     </Column>
  
@@ -200,10 +200,13 @@ function LoadFolioTransaction() {
     getApi('reservation.get_folio_transaction', {
         transaction_type: props.doctype,
         transaction_number: selectedFolio.value.name,
-        breakdown_account_code:saveDisplayViewFolioTransaction.value
+        // hide funtion
+        // saveDisplayViewFolioTransaction.value
+        breakdown_account_code:0
     })
         .then((result) => {
             folioTransactions.value = result.message
+            console.log(folioTransactions)
         })
     setTimeout(function () {
         getFolioSummary()
@@ -290,6 +293,7 @@ const totalCredit = computed(() => {
     return 0
 
 })
+
 const totalQuantity = computed(() => {
     if (folioTransactions.value) {
         return folioTransactions.value.reduce((n, d) => n + (d.quantity || 0), 0)

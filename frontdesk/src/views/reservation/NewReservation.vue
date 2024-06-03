@@ -688,23 +688,20 @@ function onSelectedCustomer(event) {
     
     if (event.value) {
         const name_guest_en_ev = ref()
-        getDoc('Customer', event.value)
-            .then((d) => {
-                doc.value.guest_info = d
-                name_guest_en_ev.value = d?.customer_name_en
-                doc.value.guest_info.expired_date = moment(doc.value.guest_info.expired_dat).toDate()
-                console.log(d)
-            })
-
         //check future reservation
         getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest", value: event.value }).then(r => {
+            getDoc('Customer', event.value)
+            .then((d) => {
+            name_guest_en_ev.value = d?.customer_name_en
+            doc.value.guest_info = d
+            doc.value.guest_info.expired_date = moment(doc.value.guest_info.expired_dat).toDate()
             hasFutureResertion.value = r.message
             checkFutureReservationInfo.value = {
-                message: `This guest Name  " ${name_guest_en_ev?.value} "  is already exist in the system`,
+                message: `This guest Name  " ${name_guest_en_ev.value} "  is already exist in the system`,
                 fieldname: "guest",
                 value: event.value,
             }
-
+})
         })
 
     } else {

@@ -1,5 +1,4 @@
 <template>
-
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
@@ -444,6 +443,7 @@ const folioNumberFilter = ref()
 function onUseTax1Change() {
     doc.value.tax_1_rate = use_tax.value.use_tax_1 ?  0 : tax_rule.value.tax_1_rate
 } 
+
 function onUseTax2Change() {
 
     doc.value.tax_2_rate = use_tax.value.use_tax_2 ?  0 : tax_rule.value.tax_2_rate
@@ -487,12 +487,13 @@ const amount = computed(() => {
         if (doc.value.rate_include_tax == "Yes") {
             let priceBefore = gv.getRateBeforeTax(((doc.value.input_amount || 0) * (doc.value.quantity)) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
             let priceAfter = priceBefore + discount_amount.value
-            return (priceAfter * doc.value.quantity)  
+            return (priceAfter)  
 
         } else {
             return ((doc.value.input_amount || 0) * (doc.value.quantity))
         }
     }
+    
     return ((doc.value.input_amount || 0) * (doc.value.quantity)) - discount_amount.value
 })
 

@@ -153,6 +153,7 @@ function setupActionMenu(frm) {
               frappe
                 .call("edoor.api.utils.generate_tax_invoice", {
                   property: frm.doc.property,
+                  document_type:'Reservation Folio',
                   folio_number: frm.doc.name,
                   tax_invoice_date: d.tax_invoice_date,
                   tax_invoice_type: d.tax_invoice_type,
