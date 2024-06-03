@@ -1627,7 +1627,7 @@ def get_pos_account_code_config(outlet, shift_name):
 
 
 @frappe.whitelist(methods="POST")
-def generate_tax_invoice(property,document_type, folio_number,tax_invoice_date,tax_invoice_type,exchange_rate):
+def generate_tax_invoice(property=None,document_type=None, folio_number=None,tax_invoice_date=None,tax_invoice_type=None,exchange_rate=4000):
     # if frappe.db.get_value("Reservation Folio",folio_number,"tax_invoice_number"):
     #     frappe.throw("This folio number is already generate tax invoice")
     # if not frappe.db.get_value("Folio Transaction",folio_number,"transaction_number"):

@@ -171,6 +171,15 @@
   "sort_order": 0
  },
  {
+  "account_category": "Package",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-04-04 17:48:01.880538",
+  "name": "Package",
+  "note": null,
+  "sort_order": 3000
+ },
+ {
   "account_category": "F&B Revenue",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -187,15 +196,6 @@
   "name": "Room Discount",
   "note": null,
   "sort_order": 1100
- },
- {
-  "account_category": "Package",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-04-04 17:48:01.880538",
-  "name": "Package",
-  "note": null,
-  "sort_order": 3000
  },
  {
   "account_category": "Room Tax",
@@ -243,13 +243,13 @@
   "sort_order": 500
  },
  {
-  "account_category": "Payment",
+  "account_category": "Room Charge",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 16:59:46.108506",
-  "name": "Payment",
-  "note": "a",
-  "sort_order": 1800
+  "modified": "2023-11-23 09:11:54.619116",
+  "name": "Room Charge",
+  "note": null,
+  "sort_order": 200
  },
  {
   "account_category": "Folio Transfer",
@@ -261,15 +261,6 @@
   "sort_order": 2800
  },
  {
-  "account_category": "Room Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:54.619116",
-  "name": "Room Charge",
-  "note": null,
-  "sort_order": 200
- },
- {
   "account_category": "Room Charge Adjustment",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -277,5 +268,14 @@
   "name": "Room Charge Adjustment",
   "note": null,
   "sort_order": 400
+ },
+ {
+  "account_category": "Payment",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 16:59:46.108506",
+  "name": "Payment",
+  "note": "a",
+  "sort_order": 1800
  }
 ]
