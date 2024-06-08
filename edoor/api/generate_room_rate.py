@@ -821,7 +821,7 @@ def get_room_rate_account_code_breakdown(room_rate_data):
             base_code["tax_1_account"] = tax_rule_doc.tax_1_account
             base_code["tax_1_rate"] = room_rate_data["tax_1_rate"] or 0
         
-        if tax_rule_doc.tax_1_account:
+        if tax_rule_doc.tax_2_account:
             base_code["tax_2_account"] = tax_rule_doc.tax_2_account
             base_code["tax_2_rate"] = room_rate_data["tax_2_rate"] or 0
         
