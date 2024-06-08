@@ -199,7 +199,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "eDoor Setting",
-   "link_count": 4,
+   "link_count": 5,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -226,6 +226,16 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Folio Type",
+   "link_count": 0,
+   "link_to": "Folio Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Reservation Color Code",
    "link_count": 0,
    "link_to": "Reservation Color Code",
@@ -244,7 +254,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-05-14 17:12:17.517781",
+ "modified": "2024-06-08 11:37:22.546006",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Property Setup",

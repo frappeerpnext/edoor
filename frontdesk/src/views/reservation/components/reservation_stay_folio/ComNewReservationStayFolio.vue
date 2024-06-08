@@ -85,7 +85,7 @@ onMounted(() => {
         }
         
     })   
-    doc.value.show_in_pos_transfer = 1
+ 
 });
 
 

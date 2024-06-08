@@ -468,7 +468,8 @@ function EditFolio() {
             name:selectedFolio.value.name,
             reservation_stay: selectedFolio.value.reservation_stay,
             guest: selectedFolio.value.guest,
-            note: selectedFolio.value.note
+            note: selectedFolio.value.note,
+            show_in_pos_transfer:selectedFolio.value.show_in_pos_transfer
         },
         props: {
             header: $t('Edit Folio') + ' ' + selectedFolio.value.name,

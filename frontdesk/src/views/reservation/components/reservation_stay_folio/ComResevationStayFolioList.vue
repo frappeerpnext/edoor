@@ -152,7 +152,8 @@ function onAddCreatNewFolio() {
             guest: rs.reservationStay.guest,
             reservation: rs.reservationStay.reservation,
             reservation_stay: rs.reservationStay.name,
-            property: window.property_name
+            property: window.property_name,
+            show_in_pos_transfer:1
         },
         props: {
 
