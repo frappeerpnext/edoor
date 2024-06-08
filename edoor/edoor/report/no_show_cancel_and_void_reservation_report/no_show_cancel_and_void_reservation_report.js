@@ -15,6 +15,14 @@ frappe.query_reports["No Show Cancel and Void Reservation Report"] = {
 			},
 		},
 		{
+			"fieldname": "filter_date_by",
+			"label": __("Filter Date By"),
+			"fieldtype": "Select",
+			"options":"Cancelled Date\nArrival Date\nStay Date\nDeparture Date",
+			"default":"Cancelled Date",
+			"on_change": function (query_report) {},
+		} ,
+		{
 			"fieldname":"start_date",
 			"label": __("Start Date"),
 			"fieldtype": "Date",

@@ -7,7 +7,7 @@ import frappe
 from frappe import _ 
 
 from frappe.utils.data import add_to_date, getdate,now,date_diff
-from edoor.api.generate_room_rate import group_change_stay_generate_room_rate
+from edoor.api.generate_room_rate import generate_forecast_revenue, group_change_stay_generate_room_rate
 
 @frappe.whitelist(methods="POST")
 def group_change_stay(data):
@@ -104,6 +104,8 @@ def group_change_stay(data):
     # frappe.throw(str(can_change_stay_data))
     if len(can_change_stay_data)> 0:
         group_change_stay_generate_room_rate(can_change_stay_data,run_commit=False)
+        generate_forecast_revenue(stay_names=[d["parent"] for d in data_for_change_stays if d["can_change_stay"] == True],run_commit=False)
+        
         frappe.db.sql("update `tabReservation` set arrival_date='{}', departure_date='{}' where name='{}'".format( data["arrival"],data["departure"],data["reservation"]))
         update_data = {"arrival":data["arrival"],"departure":data["departure"],"stay_names":[d["parent"] for d in can_change_stay_data],
                        "nights":frappe.utils.date_diff(data["departure"], data["arrival"])}
@@ -325,15 +327,34 @@ def group_change_rate_type(data):
                 doc.rate_include_tax = data["rate_include_tax"]
             doc.save()
 
-    frappe.db.commit()
+    # update room rate type to reservation stay
+    for s in [d["reservation_stay"] for d in room_rate_names]:
+        stay_doc = frappe.get_doc("Reservation Stay", s)
+        stay_doc.rate_type = data["rate_type"]
+        for r in stay_doc.stays:
+            r.rate_type = data["rate_type"]
+        stay_doc.flags.ignore_validate = True
+        stay_doc.flags.ignore_on_update = True
+        stay_doc.save()
+    # chekc if reservation stay have only 1 rate type then update rate type to reservation doc
+    rate_type_data = frappe.db.sql("select distinct rate_type from `tabReservation Stay` where is_active_reservation = 1 and reservation='{}'".format(data["reservation"]),as_dict=1)
+    if len(rate_type_data)==1:
+        reservation_doc  = frappe.get_doc("Reservation", data["reservation"])
+        reservation_doc.rate_type = rate_type_data[0]["rate_type"]
+        reservation_doc.flags.ignore_validate = True
+        reservation_doc.flags.ignore_on_update = True
+        reservation_doc.save()
+        
+        
     if len(room_rate_names) :
+        generate_forecast_revenue(stay_names=[d["name"] for d in active_stays],run_commit=False)
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=[d["name"] for d in active_stays])
     else:
         frappe.throw("There are no data change")
 
     frappe.msgprint("Change rate type successfully")
 
-
+    frappe.db.commit()
 
 
 @frappe.whitelist(methods="POST")
@@ -375,14 +396,17 @@ def group_change_rate(data):
 
             doc.save()
 
-    frappe.db.commit()
+    
     if len(room_rate_names) :
+        generate_forecast_revenue(stay_names=[d["name"] for d in active_stays], run_commit=False)
+        
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=[d["name"] for d in active_stays])
     else:
         frappe.throw("There are no data change")
 
     frappe.msgprint("Change new rate  successfully")
-
+    frappe.db.commit()
+    
 
 
 
@@ -423,14 +447,16 @@ def group_room_rate_discount(data):
             doc.discount = data["discount"]
             doc.save()
 
-    frappe.db.commit()
+    
     if len(room_rate_names) :
+        generate_forecast_revenue(stay_names=[d["name"] for d in active_stays],run_commit=False)
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=[d["name"] for d in active_stays])
     else:
         frappe.throw("There are no data change discount")
 
     frappe.msgprint("Change group discount successfully")
-
+    frappe.db.commit()
+    
 
 @frappe.whitelist(methods="POST")
 def group_change_tax(data):

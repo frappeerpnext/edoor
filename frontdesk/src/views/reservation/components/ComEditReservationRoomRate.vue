@@ -1,6 +1,7 @@
 <template>
     <ComDialogContent @onOK="onSave" v-model:visible="visible" modal header="Edit Rate" :loading="isSaving" hideButtonClose>
-     <div class="grid">
+       
+        <div class="grid">
         <div class="col-12">
             <div v-if="current_date >= moment(stay?.arrival_date).toDate() && stay?.reservation_status == 'In-house'">
             <Message severity="info">
@@ -61,6 +62,7 @@
                     <tbody>
                         <ComStayInfoNoBox label="Guest" :value="stay?.guest_name + ' (' + stay?.guest + ')'" />
                         <ComStayInfoNoBox label="Pax(A/C)" :value="stay?.adult + '/' + stay?.child" />
+                         
                         <ComStayInfoNoBox label="Phone Number" :value="stay?.guest_phone_number" />
                     </tbody>
                 </table>

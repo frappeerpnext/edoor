@@ -1,7 +1,7 @@
 import datetime
 from decimal import Decimal
 
-from edoor.api.cache_functions import get_base_rate_cache, get_rate_type_info_with_cache
+from edoor.api.cache_functions import get_base_rate_cache, get_doctype_tree_name, get_rate_type_info_with_cache
 from edoor.api.folio_transaction import create_folio, update_reservation_folio
 import frappe
 import json
@@ -793,6 +793,7 @@ def clear_reservation():
         # frappe.db.sql("delete from `tabAdditional Stay Guest`")
         # frappe.db.sql("delete from `tabReservation Stay Package Items`")
         # frappe.db.sql("delete from `tabRevenue Forecast Breakdown`")
+        # frappe.db.sql("delete from `tabTax Invoice`")
 
         # frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
         # frappe.db.sql("delete from `tabComment` where custom_is_note=1")
@@ -800,6 +801,8 @@ def clear_reservation():
         # frappe.db.sql("delete from `tabFile` where attached_to_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
         # frappe.db.sql("delete from `tabVersion` where ref_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
 
+        # frappe.db.sql("update `tabCity Ledger` set total_debit = 0, total_credit=0, balance=0")
+        
 
 
 
@@ -1292,7 +1295,7 @@ def get_current_exchange_rate(property, base_currency, second_currency):
         return 1
     
 
-def update_is_arrival_date_in_room_rate(stay_name):
+def update_is_arrival_date_in_room_rate(stay_name,run_commit = True):
     sql ="""
         update `tabReservation Room Rate` 
         set is_arrival = 0 
@@ -1308,7 +1311,9 @@ def update_is_arrival_date_in_room_rate(stay_name):
             name='{}'
         """.format(first_stay_date[0]["name"])
         frappe.db.sql(sql)
-    frappe.db.commit()
+        
+    if run_commit:
+        frappe.db.commit()
 
 
 @frappe.whitelist()
@@ -1371,7 +1376,7 @@ def get_tax_invoice_data(folio_number,document_type,date = None):
         date = working_day["date_working_day"]
     if (exchange_rate or 0) == 0:
         exchange_rate = get_exchange_rate(property,date)
-# xxxxxxx
+
     tax_summary = get_tax_summary(data + pos_tax_data["tax_summary_raw_data"])
     
     
@@ -1502,7 +1507,7 @@ def get_tax_summary(data):
             
             raw_data.append(record)
 
-    tax_summary_group = frappe.db.sql("select total_label,alias,is_group, parent_tax_invoice_summary_group, name, label from `tabTax Invoice Summary Group` order by sort_order",as_dict=1)
+    tax_summary_group = frappe.db.sql("select total_label,alias,is_group, parent_tax_invoice_summary_group, name, label,tax_report_fieldname from `tabTax Invoice Summary Group` order by sort_order",as_dict=1)
     
     # return data
     # loop group
@@ -1527,6 +1532,7 @@ def get_tax_summary(data):
                 if value>0:
                     children.append({
                         "label":c["label"],
+                        "fieldname":c["tax_report_fieldname"],
                         "value":value
                     })
             if children:
@@ -1659,12 +1665,60 @@ def generate_tax_invoice(property=None,document_type=None, folio_number=None,tax
     tax_invoice_doc.insert()
     
     
+    
     sql="update `tab{}` set is_generate_tax_invoice=1, tax_invoice_number=%(tax_invoice_number)s, tax_invoice_date=%(tax_invoice_date)s , exchange_rate=%(exchange_rate)s where name=%(name)s".format(document_type)
     frappe.db.sql(sql,{ "name":folio_number,"tax_invoice_number":tax_invoice_doc.name, "exchange_rate":exchange_rate,"tax_invoice_date":tax_invoice_date})
     
+    update_tax_invoice_data_to_tax_invoice(tax_invoice_name=tax_invoice_doc.name,run_commit=False)
+    
+    
     frappe.db.commit()
     frappe.msgprint(_("Generate tax invoice successfully"))
+    
+    
     return tax_invoice_doc
+
+@frappe.whitelist()
+def update_tax_invoice_data_to_tax_invoice(tax_invoice_name,run_commit=True):
+    doc = frappe.get_doc("Tax Invoice",tax_invoice_name)
+    tax_data = get_tax_invoice_data(folio_number = doc.document_name, document_type=doc.document_type, date= doc.tax_invoice_date)
+    
+    doc.sub_total = sum([d["amount"] for d in tax_data["data"]])
+    
+    # service charge
+    doc.service_charge = sum(
+                d["value"]
+                for entry in tax_data["summary"] if "children" in  entry
+                for d in entry["children"] if d["fieldname"] =='service_charge'
+            )
+    
+    # accommodation_tax
+    doc.accommodation_tax = sum(
+                d["value"]
+                for entry in tax_data["summary"] if "children" in  entry
+                for d in entry["children"] if d["fieldname"] =='accommodation_tax'
+            )
+    
+    # specific_tax
+    doc.specific_tax = sum(
+                d["value"]
+                for entry in tax_data["summary"] if "children" in  entry
+                for d in entry["children"] if d["fieldname"] =='specific_tax'
+            )
+    
+   
+    doc.vat = tax_data["vat"]["value"]
+    
+    doc.grand_total = tax_data["grand_total"]
+    doc.flags.ignore_validate = True
+    doc.flags.ignore_on_update = True
+    
+    doc.save(ignore_permissions=True)
+    if run_commit:
+        frappe.db.commit()
+    return doc
+    
+    
 
 @frappe.whitelist()
 def get_generate_tax_invoice_information(property,posting_date=None):
@@ -1786,8 +1840,61 @@ def get_reservation_stay_additional_information(stay_names):
     where name in %(stay_names)s"""
     return frappe.db.sql(sql,{"stay_names":stay_names},as_dict=1)
     
+
     
 
+@frappe.whitelist()
+def get_folio_transaction_without_breakdown(property, start_date,end_date,account_code=None):
+    sql = """
+        select 
+            name,
+            posting_date,
+            is_base_transaction,
+            account_code,
+            account_name,
+            amount,
+            parent_reference,
+            type,
+            folio_type,
+            guest,
+            guest_name,
+            cashier_shift,
+            business_source,
+            room_number,
+            room_type,
+            room_type_alias,
+            account_code_sort_order,
+            creation,
+            owner,
+            coalesce(note,'') as note
+        from `tabFolio Transaction`
+        where
+            coalesce(reference_folio_transaction,'') = '' and 
+            property = %(property)s and 
+            posting_date between %(start_date)s and %(end_date)s
+        
+    """
+    account_codes=[]
+    if account_code:
+        account_codes = get_doctype_tree_name("Account Code" ,account_code ,"parent_account_code")
+        account_codes.append(account_code)
+        sql = sql +  " and account_code in %(account_codes)s"
+    
+    data = frappe.db.sql(sql,{"property":property,"start_date":start_date,"end_date":end_date,"account_codes":account_codes},as_dict=1)
+    
+    return_data = [d for d in data if d["is_base_transaction"]==1]
+    for t in return_data:
+        t["amount"] = t["amount"]  + sum([d["amount"] * (1 if d["type"]=='Debit' else -1)  for d in data  if d["is_base_transaction"] == 0 and d["parent_reference"] ==t["name"]])
+        
+    group_data = { (item["account_code"], item["account_name"], item["account_code_sort_order"], item["posting_date"]) for item in return_data }
+    sorted_group_data = sorted(group_data, key=lambda x: x[2])
+    sorted_group_data =[
+                    {"account_code": item[0], "account_name": item[1],"posting_date":item[3]}
+                    for item in sorted_group_data
+                ]
+     
+    return {"group_data": sorted_group_data, "data":return_data}
+    
 @frappe.whitelist()
 def ping():
     return "pong"

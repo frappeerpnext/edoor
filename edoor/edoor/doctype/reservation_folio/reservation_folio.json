@@ -37,9 +37,7 @@
   "folio_summary",
   "other_infoadmin_only_tab",
   "status",
-  "deleted_note",
   "reservation_status",
-  "room_data",
   "tax_invoice_number",
   "reservation_status_color",
   "is_active_reservation",
@@ -47,6 +45,12 @@
   "is_generate_tax_invoice",
   "is_master",
   "tax_invoice_date",
+  "folio_type",
+  "folio_type_color",
+  "show_in_pos_transfer",
+  "column_break_gnup",
+  "deleted_note",
+  "room_data",
   "summary_section",
   "total_debit",
   "column_break_24",
@@ -318,11 +322,33 @@
    "fieldtype": "HTML",
    "label": "Room Type",
    "options": "<div class=\"frappe-control input-max-width custom_control\" data-fieldtype=\"Data\" data-fieldname=\"rooms\">\n\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t<div class=\"clearfix\">\n\t\t\t\t\t\t<label class=\"control-label\" style=\"padding-right: 0px;\">Room Types</label>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"control-input-wrapper\">\n\t\t\t\t\t\t<div class=\"control-input\" style=\"display: none;\"></div>\n\t\t\t\t\t\t<div class=\"control-value like-disabled-input\" style=\"\">{{doc.room_types}} ({{doc.room_types_alias}})</div>\n\t\t\t\t\t\t<p class=\"help-box small text-muted\"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t</div>"
+  },
+  {
+   "fieldname": "folio_type",
+   "fieldtype": "Link",
+   "label": "Folio Type",
+   "options": "Folio Type"
+  },
+  {
+   "fetch_from": "folio_type.color",
+   "fieldname": "folio_type_color",
+   "fieldtype": "Color",
+   "label": "Folio Type Color"
+  },
+  {
+   "fieldname": "column_break_gnup",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_in_pos_transfer",
+   "fieldtype": "Check",
+   "label": "Show in POS Transfer"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-05 10:29:06.953110",
+ "modified": "2024-06-06 09:02:51.891289",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

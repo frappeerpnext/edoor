@@ -150,11 +150,12 @@ scheduler_events = {
 	# "all": [
 	# 	"edoor.tasks.all"
 	# ],
-	# "daily": [
-	# 	"edoor.tasks.daily"
-	# ],
+	"daily": [
+		"edoor.api.schedule_task.update_tax_invoice_summary_to_open_folio"
+	],
 	"hourly": [
-		"edoor.api.schedule_task.validate_property_data"
+		"edoor.api.schedule_task.validate_property_data",
+		"edoor.api.schedule_task.update_tax_invoice_summary_to_open_folio"
 	],
 	# "weekly": [
 	# 	"edoor.tasks.weekly"

@@ -28,6 +28,12 @@
                                         {{ doc.guest }} - {{ doc.guest_name }}
                                     </span>
                                 </ComStayInfoNoBox>
+                                <ComStayInfoNoBox label="Business Source">
+                                    <span 
+                                        class="text-right -ml-2">
+                                        {{ doc.business_source }}
+                                    </span>
+                                </ComStayInfoNoBox>
                                 <ComStayInfoNoBox label="Room(s)">
                                     <span class="font-semibold text-right -ml-2">
                                         {{ doc.room_number }} <span v-if="doc.room_number">({{ doc.room_type }})</span>

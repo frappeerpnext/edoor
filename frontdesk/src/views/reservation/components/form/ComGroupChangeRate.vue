@@ -334,7 +334,7 @@ function onChangeRateType() {
             window.postMessage({"action":"ReservationStayDetail"},"*")
         })
         
-        dialogRef.value.close(reservation.value)
+  
         
     }).catch(err => {
         loading.value = false
@@ -397,7 +397,7 @@ function onSubmitChangeRate(){
         stays.value.forEach(s => {
             window.postMessage({"action":"ReservationStayDetail"},"*")
         })
-        dialogRef.value.close(reservation.value)
+        // dialogRef.value.close(reservation.value)
         
     }).catch(err => {
         loading.value = false
@@ -443,7 +443,7 @@ function onGroupDiscount(){
         stays.value.forEach(s => {
             window.postMessage({"action":"ReservationStayDetail"},"*")
         })
-        dialogRef.value.close(reservation.value)
+        // dialogRef.value.close(reservation.value)
         
     }).catch(err => {
         loading.value = false

@@ -13,10 +13,10 @@ def execute(filters=None):
 
 	 
 
-	tran_date = get_data(filters)
-	reserved = get_no_show_reserved_room(filters)
-	report_data = get_report_data(filters,tran_date,reserved)
-	Summary = get_summary(filters,tran_date)
+	data = get_data(filters)
+	
+	report_data = get_report_data(data)
+	# Summary = get_summary(filters,data)
 	return get_columns(filters),report_data,None,None, None
 
 def validate(filters):
@@ -36,17 +36,17 @@ def get_columns(filters):
 		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
 		{"fieldname":"arrival_date", 'align':'center',"label":"Arrival", "fieldtype":"Date","width":95,"show_in_report":1},
 		{"fieldname":"departure_date",'align':'center', "label":"Departure", "fieldtype":"Date","width":95,"show_in_report":1},
-		{'fieldname':'room_nights','label':'Room Night',"width":40,"show_in_report":1,'align':'center',"fieldtype":"Int"},
-		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
+		{'fieldname':'room_nights','label':'Nights',"width":75,"show_in_report":1,'align':'center',"fieldtype":"Int"},
+		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":65,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
 		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'reservation_status','label':'Status','align':'left',"width":95,"show_in_report":1},
 		{'fieldname':'adr','label':'ADR','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		{'fieldname':'total_room_rate','label':'Total Room Rate','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'cancelled_by','label':'By','align':'right', 'fieldtype':'Data',"show_in_report":1,"width":90},
+		{'fieldname':'cancelled_by','label':'By','align':'left', 'fieldtype':'Data',"show_in_report":1,"width":90},
 		{'fieldname':'cancelled_date','label':'Date', 'align':'right', 'fieldtype':'Date',"show_in_report":1,"width":90},
-		{'fieldname':'cancelled_note','label':'Note', 'align':'right', 'fieldtype':'Data',"show_in_report":1,"width":90},
+		{'fieldname':'cancelled_note','label':'Note', 'align':'left', 'fieldtype':'Data',"show_in_report":1,"width":90},
 	]
 	return columns
 
@@ -62,20 +62,7 @@ def get_summary(filters,data):
 		]
 
 
-def get_filters(filters):
-	sql = " and property=%(property)s and reservation_status in ('No Show','Cancelled','Void')"
-	if filters.business_source:
-		sql = sql + " and rst.business_source = %(business_source)s "
-	
-	if filters.reservation_type:
-		sql = sql + " and rst.reservation_type = %(reservation_type)s"
 
-	sql = sql + " order by {} {}".format(
-		[d for d in  get_order_field() if d["label"] == filters.order_by][0]["field"],
-		filters.sort_order
-	)
-
-	return sql
 
 def get_order_field():
 	return [
@@ -91,172 +78,118 @@ def get_order_field():
 		]
 
 def get_data(filters):
+	
 	sql="""
 			select 
-            name,
-            reservation,
-            arrival_date,
-            departure_date,
-            room_nights,
-            guest,
-            guest_name,
-            reservation_status,
-            cancelled_note,
-            business_source,
-            room_nights,
-            rooms,
+			name,
+			reservation,
+			arrival_date,
+			departure_date,
+			room_nights,
+			guest,
+			guest_name,
+			reservation_status,
+			cancelled_note,
+			business_source,
+			room_nights,
+			rooms,
 			concat(adult,'/',child) as total_pax,
-            room_type_alias,
-            reservation_type,
-            reference_number,
-            cancelled_by,
-            cancelled_date,
-            total_room_rate,
-            adult,
-            child,
+			room_type_alias,
+			reservation_type,
+			reference_number,
+			cancelled_by,
+			cancelled_date,
+			total_room_rate,
+			adult,
+			child,
 			is_reserved_room,
-            adr
-        from `tabReservation Stay` rst
+			adr,
+   			is_reserved_room,
+			if(is_reserved_room=1 and reservation_status='No Show' ,'No Show Reserved Room',reservation_status) as status
+		from `tabReservation Stay` rst
 			where
 				1=1  
 				{}
 			
 		""".format(get_filters(filters))
 
-	
+	 
 
 	data =   frappe.db.sql(sql,filters,as_dict=1)
 	return data
 
-def get_filters_data(filters):
-	sql = " and property=%(property)s and reservation_status in ('No Show') and is_reserved_room = 1 and arrival_date <= %(start_date)s and departure_date > %(end_date)s "
+def get_filters(filters):
+	sql = " and property=%(property)s and reservation_status in ('No Show','Void','Cancelled') "
 	if filters.business_source:
 		sql = sql + " and rst.business_source = %(business_source)s "
 	
 	if filters.reservation_type:
 		sql = sql + " and rst.reservation_type = %(reservation_type)s"
+	 
+	if filters.filter_date_by =='Cancelled Date':
+		sql = sql + " and rst.cancelled_date between %(start_date)s and %(end_date)s " 
+	elif filters.filter_date_by =='Arrival Date':
+		sql = sql + " and rst.arrival_date between %(start_date)s and %(end_date)s "  
+	elif filters.filter_date_by =='Departure Date':
+		sql = sql + " and rst.depareture_date between %(start_date)s and %(end_date)s " 
+	else:
+		stay_name_sql = "select  distinct reservation_stay from `tabReservation Room Rate` where is_active_reservation = 0 and date between %(start_date)s and %(end_date)s and property=%(property)s "
+		if filters.reservation_type:
+			stay_name_sql = stay_name_sql + " and reservation_type = %(reservation_type)s"
 	
+		if filters.business_source:
+			stay_name_sql = stay_name_sql + " and business_source = %(reservation_type)s"
+	
+		stay_names = frappe.db.sql(stay_name_sql,filters,as_dict=1)
+		
+		filters.stay_names = set([d["reservation_stay"] for d in stay_names])
+		
+		sql = sql + " and rst.name in %(stay_names)s"
+  
 	sql = sql + " order by {} {}".format(
 		[d for d in  get_order_field() if d["label"] == filters.order_by][0]["field"],
 		filters.sort_order
 	)
-
-	return sql
-
-def get_no_show_reserved_room(filters):
-	sql="""
-			select 
-            name,
-            reservation,
-            arrival_date,
-            departure_date,
-            room_nights,
-            guest,
-            guest_name,
-            reservation_status,
-            cancelled_note,
-            business_source,
-            room_nights,
-            rooms,
-			concat(adult,'/',child) as total_pax,
-            room_type_alias,
-            reservation_type,
-            reference_number,
-            cancelled_by,
-            cancelled_date,
-            total_room_rate,
-            adult,
-            child,
-			is_reserved_room,
-            adr
-        from `tabReservation Stay` rst
-			where
-				1=1  
-				{}
-			
-		""".format(get_filters_data(filters))
-
 	
-
-	data1 =   frappe.db.sql(sql,filters,as_dict=1)
-	return data1
-
-def get_report_data(filters,data,data1):
-	start_date = datetime.strptime(filters.start_date, '%Y-%m-%d').date()
-	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d').date()
+	return sql
+ 
+def get_report_data(data):
+ 
 	report_data = []
-	tran_date = sorted(set([d['reservation_status'] for d in data if 'cancelled_date' in d and d['cancelled_date'] >= start_date and d['cancelled_date'] <= end_date]))
-	if tran_date:
-		report_data.append({
-			"indent":0,
-			"reservation":"Today No Show, Cancel & Void",
-			"is_group":1
-		})
-		for g in tran_date:
-			d = g
+	reservation_status = ["No Show Reserved Room",'No Show','Cancelled','Void']
+	for s in reservation_status:
+		if [d for d in data if d["status"] == s]:
 			report_data.append({
-				"indent":1,
-				"reservation": d,
+				"indent":0,
+				"reservation": s,
 				"is_group":1,
 			})
-			report_data = report_data +  [d.update({"indent":1}) or d for d in data if d["reservation_status"]==g]
-			report_data.append({
-				"indent":1,
-				"reservation": "Total",
-				"room_nights":sum([d["room_nights"] for d in data if d["reservation_status"]==g]),
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["reservation_status"]==g]),sum([d["child"] for d in data if d["reservation_status"]==g])),
-				"adr":sum([d["adr"] for d in data if d["reservation_status"]==g]),
-				"is_total_row":1,
-				"is_group":1,
-			})
-	arrival = sorted(set([d['reservation_status'] for d in data if d['arrival_date'] >= start_date and d['arrival_date'] <= end_date]))
-	if arrival:
-		report_data.append({
-			"indent":0,
-			"reservation":"No Show, Cancel & Void",
-			"is_group":1
-		})
-		for g in arrival:
-			d = g
-			report_data.append({
-				"indent":1,
-				"reservation": d,
-				"is_group":1,
-			})
-			report_data = report_data +  [d.update({"indent":1}) or d for d in data if d["reservation_status"]==g]
-			report_data.append({
-				"indent":1,
-				"reservation": "Total",
-				"room_nights":sum([d["room_nights"] for d in data if d["reservation_status"]==g]),
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["reservation_status"]==g]),sum([d["child"] for d in data if d["reservation_status"]==g])),
-				"adr":sum([d["adr"] for d in data if d["reservation_status"]==g]),
-				"is_total_row":1,
-				"is_group":1,
-			})
-	reserved_room = sorted(set([d['reservation_status'] for d in data1]))
-	if reserved_room:
-		report_data.append({
-			"indent":0,
-			"reservation":"No Show(Reserved)",
-			"is_group":1
-		})
-		for g in reserved_room:
-			d = g
-			report_data.append({
-				"indent":1,
-				"reservation": d,
-				"is_group":1,
-			})
-			report_data = report_data +  [d.update({"indent":1}) or d for d in data1 if d["reservation_status"]==g]
-			report_data.append({
-				"indent":1,
-				"reservation": "Total",
-				"room_nights":sum([d["room_nights"] for d in data1 if d["reservation_status"]==g]),
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data1 if d["reservation_status"]==g]),sum([d["child"] for d in data1 if d["reservation_status"]==g])),
-				"adr":sum([d["adr"] for d in data1 if d["reservation_status"]==g]),
-				"is_total_row":1,
-				"is_group":1,
-			})
+
+			# render sub record
+			sub_record = [d.update({"indent":1}) or d for d in data if d["status"]==s]
+			report_data = report_data +  sub_record
+			if len(sub_record)>1:
+				report_data.append({
+					"indent":0,
+					"reservation": "Total",
+					"reservation_type":len(sub_record),
+					"room_nights":sum([d["room_nights"] for d in sub_record ]),
+					"total_pax":"{}/{}".format(sum([d["adult"] for d in sub_record ]),sum([d["child"] for d in sub_record])),
+					"total_room_rate":sum([d["total_room_rate"] for d in sub_record]),
+					"is_total_row":1,
+					"is_group":1,
+				})
+
+	report_data.append({})
+	report_data.append({
+					"indent":0,
+					"reservation": "Grand Total",
+					"reservation_type":len(data),
+     				"is_total_row":1,
+					"room_nights":sum([d["room_nights"] for d in data ]),
+					"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
+					"total_room_rate":sum([d["total_room_rate"] for d in data]),
+				})
 	return report_data
 
 	

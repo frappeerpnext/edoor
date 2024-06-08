@@ -1,3 +1,4 @@
+from edoor.api.cache_functions import get_rate_type_doc
 from edoor.api.utils import get_date_range,get_reservation_stay_additional_information
 import frappe
 import uuid  
@@ -6,6 +7,8 @@ from frappe.utils import getdate
 
 @frappe.whitelist()
 def generate_room_occupies(stay_names,run_commit = True):
+    get_rate_type_doc.cache_clear()
+    
     if not stay_names:
         return
     
@@ -46,9 +49,12 @@ def generate_room_occupy(stays_info):
 def get_room_occupy_record(stays_info):
     reservation_stays_info = get_reservation_stay_additional_information([d["reservation_stay"] for d in stays_info])
     rooms_info = get_rooms_info([d["room_id"] for d in stays_info])
+    
+    
     for stay in stays_info:
         # get stay record informaation for update to room occupy
         reservation_stay_info = [d for d in reservation_stays_info if d["name"]==stay["reservation_stay"]][0]
+        rate_type_doc = get_rate_type_doc(reservation_stay_info["rate_type"])
         room_info = [d for d in rooms_info if d["name"]==stay["room_id"]]
         if room_info:
             room_info = room_info[0]
@@ -80,9 +86,11 @@ def get_room_occupy_record(stays_info):
             doc.is_active =1 if (getdate(d)<getdate(reservation_stay_info["departure_date"]) or reservation_stay_info["is_early_checked_out"]) and getdate(d)>=getdate(reservation_stay_info["checked_in_system_date"] or reservation_stay_info["arrival_date"]) else 0 
             doc.pick_up =  1 if getdate(d)==getdate(reservation_stay_info["arrival_date"]) and reservation_stay_info["is_pickup"]==1 else 0
             doc.drop_off = 1 if getdate(d)==getdate(reservation_stay_info["departure_date"]) and reservation_stay_info["is_drop_off"] ==1 else 0 
-            doc.rate_type =reservation_stay_info["rate_type"]
+            doc.rate_type = reservation_stay_info["rate_type"]
+            
             doc.is_complimentary =reservation_stay_info["is_complimentary"]
             doc.is_house_use =reservation_stay_info["is_house_use"]
+            doc.is_breakfast_include = rate_type_doc.is_breakfast_include
             doc.is_walk_in =reservation_stay_info["is_walk_in"]
             doc.reservation_type =reservation_stay_info["reservation_type"]
             doc.reservation_status =reservation_stay_info["reservation_status"]

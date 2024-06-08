@@ -306,7 +306,7 @@ onMounted(() => {
             'title',
             'attach_to_doctype'
         ],
-        filters: [["property", "=", window.property_name], ["attach_to_doctype", "=", "Reservation Stay"]]
+        filters: [["property", "=", window.property_name],["visible_in_dynamic_report", "=", 1], ["attach_to_doctype", "=", "Reservation Stay"]]
     })
         .then((doc) => {
             doc.forEach(d => {

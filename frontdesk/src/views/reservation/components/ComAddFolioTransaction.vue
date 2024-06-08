@@ -784,7 +784,10 @@ onMounted(() => {
     } else {
         //when user add new folio transaction
         reservation = dialogRef.value.data.new_doc.reservation
-        doc.value = dialogRef.value.data.new_doc     
+        doc.value = dialogRef.value.data.new_doc  
+        
+        doc.value.is_base_transaction = 1
+
         extra_account_code_filter.value = dialogRef.value.data.account_code_filter
 
         doc.value.posting_date = moment(working_day.date_working_day).toDate();

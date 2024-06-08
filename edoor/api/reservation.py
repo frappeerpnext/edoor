@@ -48,14 +48,14 @@ def get_reservation_folio_list(reservation):
         """.format(reservation)
     
     data = frappe.db.sql(sql,as_dict=1)
-    sql = "select name, reservation_stay,reservation, posting_date, guest,guest_name, total_credit,total_debit,balance ,status,is_master,note,business_source from `tabReservation Folio` where reservation='{}'".format(reservation)
+    sql = "select name, reservation_stay,reservation, posting_date, guest,guest_name, total_credit,total_debit,balance ,status,is_master,note,business_source,folio_type,folio_type_color from `tabReservation Folio` where reservation='{}'".format(reservation)
     folios = frappe.db.sql(sql,as_dict=1)
     
     if folios:
         for d in data:
             d["folios"]=[f.update({"allow_post_to_city_ledger":d["allow_post_to_city_ledger"]}) or f for f in folios if f["reservation_stay"]==d["name"]]
  
-   
+    
     return data
 
 @frappe.whitelist()
@@ -1873,9 +1873,10 @@ def delete_stay_room(parent,name, note):
     if stay:
         frappe.db.sql("delete from `tabReservation Room Rate` where stay_room_id='{}'".format(name))
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = stay.reservation, reservation_stay=stay.name)
-        generate_room_occupies(stay_names=[stay.name])
+        generate_room_occupies(stay_names=[stay.name],run_commit=False)
+        generate_forecast_revenue(stay_names=[stay.name], run_commit=False)
         
-    update_is_arrival_date_in_room_rate(stay.name)
+    update_is_arrival_date_in_room_rate(stay.name, run_commit=False)
 
     frappe.db.commit()
     return stay
@@ -1984,6 +1985,9 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
 
         #close all folio
         if status in ["Cancelled","No Show","Void"]:
+            # delete revenue from revenue forecast breakdown
+            frappe.db.sql("delete from `tabRevenue Forecast Breakdown` where reservation_stay=%(reservation_stay)s",
+                          {"reservation_stay":stay.name}) 
             color = frappe.db.get_value("Reservation Status",status,"color")
             
             frappe.db.sql("update `tabReservation Folio` set status = 'Closed', reservation_status_color='{1}' where reservation_stay='{0}'".format(stay.name,color))
@@ -2243,7 +2247,7 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
         folio_transactions.append({ 
             "reservation":d["reservation"],
             "name":d["name"],
-            "room_number":d.room_number,
+            "room_number":d['room_number'],
             "account_name": "{}-{}".format(d.account_code, d.report_description or d.account_name)  if show_account_code else (d.report_description or d.account_name) ,
             "quantity": d["report_quantity"],
             "note":d["note"],
@@ -2827,11 +2831,13 @@ def upgrade_room(doc,regenerate_rate=False):
     last_stay = data.stays[len(data.stays)-1]
     generate_new_room_rate_by_stay_room_id(reservation_stay=data.name, stay_room_id=last_stay.name)
 
-    generate_room_occupies(stay_names=[data.name])
-    update_reservation_stay_and_reservation(reservation=data.reservation, reservation_stay=[data.name], ignore_validate=True, run_commit=True)
+    generate_room_occupies(stay_names=[data.name], run_commit=False)
+    generate_forecast_revenue(stay_names=[data.name], run_commit=False)
+    update_reservation_stay_and_reservation(reservation=data.reservation, reservation_stay=[data.name], ignore_validate=True, run_commit=False)
     
     frappe.enqueue("edoor.api.utils.update_room_status_by_reservation_stay", queue='long', name=data.name)
     
+    frappe.db.commit()
 
     return data
 
@@ -2871,7 +2877,18 @@ def unassign_room(reservation_stay, room_stay):
             doc.reservation_status ="Confirmed"
 
     doc.save()
-
+    # update room id room number to forecase revenue
+    
+    sql = """
+        update `tabRevenue Forecast Breakdown` a
+        join `tabReservation Room Rate` b on b.name = a.room_rate_id
+        SET
+            a.room_id ='',
+            a.room_number = ''
+        where
+            a.reservation_stay = %(reservation_stay)s
+    """
+    frappe.db.sql(sql, {"reservation_stay": doc.name})
     
     if doc:
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = doc.reservation, reservation_stay=doc.name)
@@ -2941,9 +2958,25 @@ def assign_room(data):
                             })
                                 
     doc.save()
+    
     if doc:
         update_reservation_stay_and_reservation(reservation_stay=doc.name, reservation=doc.reservation, run_commit=False)
-        
+    
+    # update room type room id room number to revenue forecast breakdown
+    sql = """
+        update `tabRevenue Forecast Breakdown` a
+        join `tabReservation Room Rate` b on b.name = a.room_rate_id
+        SET
+            a.room_type_id = b.room_type_id ,
+            a.room_type = b.room_type,
+            a.room_type_alias = b.room_type_alias,
+            a.room_id = b.room_id,
+            a.room_number = b.room_number
+        where
+            a.reservation_stay = %(reservation_stay)s
+    """
+    frappe.db.sql(sql, {"reservation_stay": doc.name})
+    
     frappe.db.commit()
     frappe.msgprint(_("Assign room successfully"))
     return doc

@@ -34,6 +34,7 @@
   "is_package",
   "is_package_charge",
   "is_package_breakdown",
+  "is_base_transaction",
   "adult",
   "child",
   "discount_type",
@@ -44,7 +45,8 @@
   "tax_3_rate",
   "total_amount",
   "parent_reference",
-  "rate_include_tax"
+  "rate_include_tax",
+  "rate_type"
  ],
  "fields": [
   {
@@ -280,11 +282,23 @@
    "fieldname": "rate_include_tax",
    "fieldtype": "Data",
    "label": "Rate Include Tax"
+  },
+  {
+   "fieldname": "rate_type",
+   "fieldtype": "Link",
+   "label": "Rate Type",
+   "options": "Rate Type"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_base_transaction",
+   "fieldtype": "Check",
+   "label": "Is Base Transaction"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-30 10:44:00.262686",
+ "modified": "2024-06-07 10:44:54.104962",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Revenue Forecast Breakdown",

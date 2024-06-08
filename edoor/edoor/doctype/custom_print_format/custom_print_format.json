@@ -13,7 +13,8 @@
   "print_format",
   "custom_print_format",
   "attach_to_doctype",
-  "icon"
+  "icon",
+  "visible_in_dynamic_report"
  ],
  "fields": [
   {
@@ -54,11 +55,18 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Title"
+  },
+  {
+   "default": "0",
+   "description": "If we check this option, this report will display in dynamic custom report in front desk, like Reservation Stay Print or Reservation Printz",
+   "fieldname": "visible_in_dynamic_report",
+   "fieldtype": "Check",
+   "label": "Visible in Dynamic Report"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-19 10:39:39.416930",
+ "modified": "2024-06-05 09:53:01.869584",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Custom Print Format",

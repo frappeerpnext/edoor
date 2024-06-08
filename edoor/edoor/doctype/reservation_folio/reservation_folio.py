@@ -3,6 +3,7 @@
 
 from decimal import Decimal
 from edoor.api.frontdesk import get_working_day
+from edoor.edoor.doctype.reservation_folio.utils import update_fetch_from_fields
 import frappe
 from frappe.model.document import Document
 
@@ -61,9 +62,15 @@ class ReservationFolio(Document):
 	def on_update(self):
 		if self.flags.ignore_on_update:
 				return
+		
 		if self.is_master==1:
 			#reset other is master = 0
 			frappe.db.sql("update `tabReservation Folio` set is_master=0 where is_master=1 and name<>'{}' and reservation_stay='{}'".format(self.name,self.reservation_stay))
+   
+		if self.creation!=self.modified:
+			update_fetch_from_fields(self)
+   
+		
 	def on_trash(self):
 		
 		if self.is_master and not frappe.session.user == "Administrator":

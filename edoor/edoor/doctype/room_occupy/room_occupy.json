@@ -36,6 +36,7 @@
   "building",
   "is_house_use",
   "is_complimentary",
+  "is_breakfast_include",
   "rate_type",
   "is_active_reservation",
   "is_walk_in",
@@ -49,7 +50,8 @@
   {
    "fieldname": "stay_room_id",
    "fieldtype": "Data",
-   "label": "Stay Room ID"
+   "label": "Stay Room ID",
+   "search_index": 1
   },
   {
    "fieldname": "date",
@@ -284,11 +286,17 @@
    "fieldname": "is_walk_in",
    "fieldtype": "Check",
    "label": "Is Walk-In"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_breakfast_include",
+   "fieldtype": "Check",
+   "label": "Is Breakfast Include"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-19 11:31:03.569936",
+ "modified": "2024-06-06 11:40:42.002745",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

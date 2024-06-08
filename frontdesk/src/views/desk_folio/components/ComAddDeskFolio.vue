@@ -23,6 +23,11 @@
             <ComAutoComplete v-model="data.guest" placeholder="Select Guest" doctype="Customer" :isAddNew="true" @onAddNew="onAddNewGuest"
                 class="auto__Com_Cus w-full"/>
         </div>
+        <div class="col-6">
+            <label >{{$t('Business Source')}}<span class="text-red-500">*</span></label>
+            <ComAutoComplete v-model="data.business_source" placeholder="Select Business Source" doctype="Business Source"  
+                class="auto__Com_Cus w-full"/>
+        </div>
         <div class="col-12">
         <label>{{ $t('Note') }} </label>
         <div class=" card w-full flex justify-content-left">
@@ -58,6 +63,7 @@ function onOK() {
         posting_date: gv.dateApiFormat(data.value.posting_date),
         room_id: data.value.room_id,
         note: data.value.note,
+        business_source:data.value.business_source,
         property: property.name,
         guest:data.value.guest
     }

@@ -33,6 +33,7 @@
   "room_number",
   "business_source",
   "business_source_type",
+  "folio_type",
   "stay_information_section",
   "room_type_id",
   "room_type_alias",
@@ -52,6 +53,7 @@
   "is_package",
   "is_package_charge",
   "is_package_breakdown",
+  "is_base_transaction",
   "account_code",
   "account_name",
   "type",
@@ -1106,11 +1108,23 @@
    "fieldname": "is_package_breakdown",
    "fieldtype": "Check",
    "label": "Is Package Breakdown"
+  },
+  {
+   "fieldname": "folio_type",
+   "fieldtype": "Link",
+   "label": "Folio Type",
+   "options": "Folio Type"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_base_transaction",
+   "fieldtype": "Check",
+   "label": "Is Base Transaction"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-29 15:58:23.818658",
+ "modified": "2024-06-07 10:45:43.594814",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

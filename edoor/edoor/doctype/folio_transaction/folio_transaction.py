@@ -16,10 +16,13 @@ class FolioTransaction(Document):
 		if self.flags.ingore_validate:
 			return
 
+		if not self.parent_reference and not self.is_base_transaction:
+			self.is_base_transaction = 1
+   
 		if not self.account_code:
 			frappe.throw("Please select an account code")
 		account_doc = frappe.get_doc("Account Code", self.account_code)
-  
+	
 		if frappe.session.user !="Administrator":
 			if not self.is_new():
 					if self.is_auto_post ==1:
@@ -100,7 +103,8 @@ class FolioTransaction(Document):
 				self.reservation = ref_doc.reservation
 				self.reservation_stay = ref_doc.reservation_stay
 				self.is_master_folio = ref_doc.is_master
-				 
+				self.folio_type = ref_doc.folio_type
+				
 
 			elif self.transaction_type == "Reservation":
 				self.property = ref_doc.property
@@ -506,19 +510,19 @@ class FolioTransaction(Document):
 					type
 				from `tabFolio Transaction`
 				where
-					name = %(name)s or 
-					(
-						coalesce(reference_folio_transaction,'') =%(name)s and   
-						is_package_charge = 1 and 
-						coalesce(parent_reference,'') = ''
-					)
+					name = %(name)s  or 
+					parent_reference = %(name)s
 			"""
+			
+
 			transaction_list = frappe.db.sql(sql,{"name":self.name},as_dict=1)
-			summary_list =frappe.db.sql( "select account_code,account_name, sum(total_amount) as amount from `tabFolio Transaction` where parent_reference in %(parent_references)s group by account_code,account_name order by account_category_sort_order",
+			# get sub parent reference 
+			
+			summary_list =frappe.db.sql( "select account_code,account_name, sum(amount*if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where parent_reference in %(parent_references)s group by account_code,account_name order by account_category_sort_order",
                                {"parent_references":[d["name"] for d in transaction_list]},as_dict=1)
    
 			return {
-				"transaction_list":transaction_list,
+				"transaction_list":[d for d in transaction_list if d["name"]==self.name],
 				"summary":summary_list
 			}
 			

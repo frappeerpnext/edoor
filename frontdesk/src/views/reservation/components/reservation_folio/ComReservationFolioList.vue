@@ -55,20 +55,25 @@
                                 <div class="flex align-items-center gap-3 line-height-2">
                                     <ComIcon v-if="d.is_master" style="height: 14px;" icon="iconCrown" />
                                     <div class="text-start">
-                                        <div>
-                                            {{ d.name }}
-                                        </div>
                                         <div class="flex">
-                                            <div v-tippy="d.guest_name.length > 25 ? d.guest_name : ''" class="white-space-nowrap text-gray-600 line-height-2 
+                                            {{ d.name }}
+
+                                            <span class="line-height-2 ms-2 text-sm folio-remark me-1 overflow-hidden text-overflow-ellipsis"
+                                                :class="d.status == 'Open' ? '' : 'closed'">{{ d.status }}</span>
+                                        </div>
+                                        <div class="flex mt-1">
+                                            <div v-tippy="d.guest_name.length > 25 ? d.guest_name : ''" class="white-space-nowrap text-gray-600 line-height-1 py-1 
                                         text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis"
                                                 style="max-width: 125px;">
                                                 <img :src="guest_svg"
                                                     style="display:inline-block; width: 10px; margin:-2px -2px 0 0;">
                                                 <spa class="ms-1">{{ d.guest_name }}</spa>
                                             </div>
-                                            <span class="line-height-2 text-sm folio-remark me-1"
-                                                :class="d.status == 'Open' ? '' : 'closed'">{{ d.status }}</span>
-
+                                            
+                                                <span v-tippy="'Folio Type'" v-if="d.folio_type" class="white-space-nowrap text-white line-height-1 py-1
+                                        text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis" :style="{ backgroundColor: d.folio_type_color }"
+                                                >{{ d.folio_type }}</span> 
+                                           
                                         </div>
                                     </div>
                                 </div>

@@ -1,0 +1,48 @@
+{% var index = 1 %}
+<div class="form-grid-container">
+    <div class="form-grid">
+        <div class="grid-heading-row" style="height: auto !important;">
+            <div class="grid-row">
+                <div class="data-row row">
+                    <div class="col text-center" style="max-width: 3%;">
+                        <span>No.</span>
+                    </div> 
+                    <div class="col text-center" style="max-width: 3%;"></div>
+                    <div class="col text-center">Date</div>
+                    <div class="col">Room</div>
+                    <div class="col text-center">Pax(A/C)</div>
+                    <div class="col">Rate Type</div>
+                    <div class="col text-right">Rate</div>
+                    <div class="col text-right">Discount Amount</div>
+                    <div class="col text-right">Total Tax</div>
+                    <div class="col text-right">Total Amount</div>
+                </div>
+            </div>
+        </div>
+        <div class="grid-body">
+            <div class="rows"> 
+                {% for d in data %} 
+                    <div class="grid-row"> 
+                        <div class="data-row row">
+                            <div class="col text-center" style="max-width: 3%;">{{index}}</div>
+                            <div class="col text-center" style="max-width: 3%;">
+                                {% if d.is_package == 1 %}
+                                    <svg style="height: 20px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 13H14M19 9V20H5V9M19 9H5M19 9C19.5523 9 20 8.55228 20 8V5C20 4.44772 19.5523 4 19 4H5C4.44772 4 4 4.44772 4 5V8C4 8.55228 4.44772 9 5 9" stroke="#6366f2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                                {% endif %}
+                            </div>
+                            <div class="col text-center">{{ frappe.format(d.date,{"fieldtype":"Date"})}}</div>
+                            <div class="col">{{d.room_type_alias}}/{{d.room_number}}</div>
+                            <div class="col text-center">{{d.adult}}/{{d.child}}</div>
+                            <div class="col">{{d.rate_type}}</div>
+                            <div class="col text-right">{{ frappe.format(d.input_rate,{"fieldtype":"Currency"})}}</div>
+                            <div class="col text-right">{{ frappe.format(d.discount_amount,{"fieldtype":"Currency"})}}</div>
+                            <div class="col text-right">{{ frappe.format(d.total_tax,{"fieldtype":"Currency"})}}</div>
+                            <div class="col text-right">{{ frappe.format(d.total_rate,{"fieldtype":"Currency"})}}</div>
+                        </div>
+                    </div>
+                    {% var index = index + 1 %}
+                {% endfor %} 
+            </div>
+        </div>
+    </div>
+</div>

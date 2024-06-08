@@ -196,6 +196,8 @@ def get_new_rate_doc(stay_info, stay_room_info, date,rate=0,discount_amount = 0)
     doc.child = stay_room_info["child"]
     doc.is_house_use = stay_info["is_house_use"]
     doc.is_complimentary = stay_info["is_complimentary"]
+    doc.is_breakfast_include = rate_type_doc.is_breakfast_include
+    
     if doc.is_package==1:
         
         package_data = get_package_charge_data(doc.rate_type)
@@ -434,23 +436,28 @@ def get_new_revenue_forecast_records(room_rate_data):
        
         # 3 breakdown account
         account_code_breakdown["breakdown_accounts"] = group_breakdown_breakdown_account_code(account_code_breakdown["breakdown_accounts"])
+        
+        
         for b in account_code_breakdown["breakdown_accounts"]:
             b["name"] = str(uuid.uuid4())
             b["parent_reference"] = account_code_breakdown["base_account"]["name"] 
             new_records_data.append(b)
             for s in [d for d in b["sub_account"] if d["amount"]>0]:
                 s["name"] = str(uuid.uuid4())
-                s["parent_reference"] = b["name"] 
+                # we set parent reference to base account name 
+                # because we need this to generate report jurnal posting with out breakdown account code
+                
+                s["parent_reference"] = account_code_breakdown["base_account"]["name"]
                 new_records_data.append(s)
                 
         new_records_data = sorted(new_records_data, key=lambda x: x["sort_order"])
-
+         
  
         for acc in  new_records_data:
             doc = frappe.new_doc("Revenue Forecast Breakdown")
             
             doc.name  =acc["name"]
-             
+            doc.is_base_transaction = 0 if not "is_base_transaction" in acc else acc["is_base_transaction"]
             doc.parent_reference = acc["parent_reference"]
             
             doc.room_rate_id =  rate["name"]
@@ -472,6 +479,7 @@ def get_new_revenue_forecast_records(room_rate_data):
             doc.reservation= rate["reservation"]
             doc.reservation_stay= rate["reservation_stay"]
             doc.reservation_type= rate["reservation_type"]
+            doc.rate_type= rate["rate_type"]
             doc.account_code = acc["account_code"]
             doc.input_rate = acc["amount"] if not "input_rate" in acc else acc["input_rate"]
             doc.quantity = 0 if not "quantity" in acc else  acc["quantity"]
@@ -577,6 +585,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
      
     base_charge = {
         "account_code":base_account["account_code"],
+        "is_base_transaction":1,
         "type":base_account["type"],
         "input_rate":base_account["input_rate"],
         "amount":sum([d["rate"] for d in tax_data_breakdown]),
@@ -606,6 +615,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
             "amount":discount_amount,
             "note":"Base Discount"  ,
             "sort_order":2  ,
+            
             # "is_package": base_account["is_package"]     
         })
          
@@ -661,6 +671,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
             # frappe.throw(str(package_account))
             package_charge ={
                 "account_code":p["account_code"],
+                "is_base_transaction":1,
                 "type":p["type"],
                 "input_rate":p["input_rate"],
                 "amount":package_account["rate"],

@@ -161,7 +161,10 @@ def update_reservation_stay(stay_names,run_commit=True):
                 rate_type,
                 date,
                 is_complimentary,
-                is_house_use 
+                is_house_use ,
+                is_breakfast_include,
+                adult,
+                child
             FROM `tabReservation Room Rate` 
             WHERE reservation_stay IN %(stay_names)s
         ) AS b
@@ -169,7 +172,11 @@ def update_reservation_stay(stay_names,run_commit=True):
         SET 
             a.rate_type = b.rate_type,
             a.is_complimentary = b.is_complimentary,
-            a.is_house_use = b.is_house_use
+            a.is_house_use = b.is_house_use,
+            a.is_breakfast_include = b.is_breakfast_include,
+            a.adult=b.adult,
+            a.child = b.child,
+            a.pax = b.adult + b.child
     """
     frappe.db.sql(sql,{"stay_names":stay_names})
     
@@ -185,7 +192,10 @@ def update_reservation_stay(stay_names,run_commit=True):
                 DATE_ADD(MAX(rrr.date), INTERVAL 1 DAY) AS date,
                 rrr.rate_type,
                 rrr.is_complimentary,
-                rrr.is_house_use
+                rrr.is_house_use,
+                rrr.is_breakfast_include,
+                rrr.adult,
+                rrr.child
             FROM `tabReservation Room Rate` AS rrr
             JOIN (
                 SELECT 
@@ -200,7 +210,11 @@ def update_reservation_stay(stay_names,run_commit=True):
         SET
             occ.rate_type = b.rate_type,
             occ.is_complimentary = b.is_complimentary,
-            occ.is_house_use = b.is_house_use
+            occ.is_house_use = b.is_house_use,
+            occ.is_breakfast_include = b.is_breakfast_include,
+            occ.adult = b.adult,
+            occ.child = b.child,
+            occ.pax = b.adult + b.child
         WHERE occ.reservation_stay IN %(stay_names)s;
 
     """

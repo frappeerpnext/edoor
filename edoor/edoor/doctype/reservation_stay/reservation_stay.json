@@ -8,6 +8,11 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "general_information_tab",
+  "information_list",
+  "room_rate_tab",
+  "room_rate_list",
+  "details_tab",
   "html_general_information",
   "section_break_wfqt",
   "reference_number",
@@ -912,12 +917,35 @@
    "fieldtype": "Table",
    "label": "Package and Inclusion Items",
    "options": "Reservation Stay Package Items"
+  },
+  {
+   "fieldname": "general_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "General Information"
+  },
+  {
+   "fieldname": "information_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "room_rate_tab",
+   "fieldtype": "Tab Break",
+   "label": "Room Rate"
+  },
+  {
+   "fieldname": "room_rate_list",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-25 18:04:19.426192",
+ "modified": "2024-06-07 17:20:02.182801",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

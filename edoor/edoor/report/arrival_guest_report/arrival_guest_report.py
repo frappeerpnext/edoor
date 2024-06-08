@@ -6,7 +6,6 @@ import frappe
 
 def execute(filters=None):
 	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Arrival Guest Report"} )
-	
 	report_data = get_report_data(filters, report_config.report_fields)
 	summary = get_report_summary(filters, report_config.report_fields, report_data)
 	columns = get_report_columns(filters, report_config.report_fields)
@@ -70,6 +69,7 @@ def get_data (filters,report_fields):
 
 	sql = "{} from `tabReservation Stay`  ".format(sql)
 	sql = "{} {}".format(sql, get_filters(filters))
+	
 	data = frappe.db.sql(sql, filters ,as_dict=1)
 	return data
 
@@ -107,9 +107,9 @@ def get_room_rate_filters(filters):
 def get_report_summary(filters,report_fields, data):
 	summary = []
 	summary_fields = [d for d in report_fields if d.show_in_summary==1 ]
+
 	if filters.show_in_summary:
 		summary_fields = [d for d in summary_fields if d.fieldname in filters.show_in_summary]
-
 	for x in summary_fields:
 		summary.append({
         "value": sum([d[x.fieldname] for d in data if d["is_group"] == 0 and x.fieldname in d]),

@@ -162,3 +162,22 @@ def get_base_rate_cache(amount,tax_rule,tax_1_rate, tax_2_rate,tax_3_rate):
 	price = amount /  tax_rate_con
 
 	return  price
+
+@lru_cache(maxsize=128)
+def get_doctype_tree_name(doctype, parent=None, parent_field='parent', name_field='name'):
+    tree = []
+    filters = {}
+    if parent:
+        filters[parent_field] = parent
+    else:
+        filters[parent_field] = ('is', 'null')  # Root nodes typically have no parent
+    children = frappe.get_all(doctype, filters=filters, fields=[name_field])
+    
+    for child in children:
+        node =child[name_field]
+        
+        tree.append(node)
+        tree = tree + get_doctype_tree_name(doctype, child[name_field], parent_field, name_field)
+    
+    return tree
+

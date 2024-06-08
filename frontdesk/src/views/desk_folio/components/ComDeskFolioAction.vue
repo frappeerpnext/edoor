@@ -1,5 +1,6 @@
 <template>
     <div class="flex pb-1 md:pb-0 overflow-auto justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
+        
         <div class="flex">
             <template
                 v-for="(d, index) in accountGroups"
@@ -262,7 +263,10 @@ function onAddFolioTransaction(account_code) {
                         transaction_type: "Desk Folio",
                         transaction_number: selectedFolio.value.name,
                         property: window.property_name,
-                        account_group: account_code.name
+                        account_group: account_code.name,
+                        room_id:selectedFolio.value.room_id,
+                        business_source:selectedFolio.value.business_source,
+                        guest:selectedFolio.value.guest
                     },
                     balance: selectedFolio.value.balance,
                     account_code_filter:{is_desk_folio_account:1}

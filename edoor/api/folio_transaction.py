@@ -180,7 +180,8 @@ def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rat
             total_tax,
             is_package_charge,
             is_package_breakdown,
-            room_rate_id
+            room_rate_id,
+            is_base_transaction
         from `tabRevenue Forecast Breakdown`
         where
             date=%(date)s
@@ -240,6 +241,7 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
     result = []
 
     for t in data:
+        
         doc = frappe.new_doc("Folio Transaction") 
         if not parent_doc:        
             doc.name = make_autoname(doc.naming_series)
@@ -257,6 +259,7 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
         doc.is_house_use = t["is_house_use"]
         doc.is_complimentary = t["is_complimentary"]
         doc.type=t["type"]
+        doc.is_base_transaction = t["is_base_transaction"]
         
         # room inforation
         doc.room_type_id = t["room_type_id"]
@@ -440,3 +443,5 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
         
         if run_commit:
             frappe.db.commit()
+            
+            

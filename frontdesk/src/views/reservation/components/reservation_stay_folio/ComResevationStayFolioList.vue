@@ -18,17 +18,9 @@
                                 style="height: 13px;"></span>
                         <span class="flex flex-column align-items-start w-full">
                             <span class="flex justify-content-between w-full">
-                                <span class="line-height-2">{{ item.name }}</span>
-                                <span v-if="can_view_rate" class="line-height-2">
-                                    <CurrencyFormat :value="item.balance" class="white-space-nowrap" />
-                                </span>
-                            </span>
-                            <span class="flex justify-content-between w-full">
-                                <span class="flex text-left line-height-2">
-                                    <span style="display:inline-block;max-width: 95px;" v-tippy="item.guest_name" class="white-space-nowrap text-gray-600 line-height-2 
-                                        text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis">
-                                        <img :src="guest_svg" style="display:inline-block; width: 10px; margin:-2px -2px 0 0;">
-                                        <span class="ms-1">{{ item.guest_name }}</span>
+                                <span class="line-height-2">
+                                    <span class="me-2">
+                                         {{ item.name }}
                                     </span>
                                     <span style="display:inline-block;"
                                         class="text-sm folio-remark closed me-1"
@@ -36,9 +28,26 @@
                                     <span style="display:inline-block;"
                                         class="text-sm folio-remark me-1"
                                         v-else> {{$t('Open')}} </span>
+                                    </span>
+                                
+                                <span v-if="can_view_rate" class="line-height-2">
+                                    <CurrencyFormat :value="item.balance" class="white-space-nowrap" />
                                 </span>
-                                <span class="flex align-items-end h-full">
-                                    <span class="text-xs">
+                            </span>
+                            <span class="flex justify-content-between w-full mt-1">
+                                <div class="flex text-left line-height-2">
+                                    <span style="display:inline-block;max-width: 95px;" v-tippy="item.guest_name" class="white-space-nowrap text-gray-600 line-height-1 py-1
+                                        text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis">
+                                        <img :src="guest_svg" style="display:inline-block; width: 10px; margin:-2px -2px 0 0;">
+                                        <span class="ms-1">{{ item.guest_name }}</span>
+                                    </span>
+                                    <span v-tippy="'Folio Type'" :style="{backgroundColor:item.folio_type_color}" v-if="item.folio_type" class="white-space-nowrap text-white line-height-1 py-1
+                                        text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis"
+                                                >{{ item.folio_type }}</span>           
+                                    
+                                </div>
+                                <span class="flex align-items-center h-full ">
+                                    <span class="text-xs white-space-nowrap">
                                         {{ moment(item.creation).format("DD-MM-YYYY") }}
                                     </span>
                                 </span>

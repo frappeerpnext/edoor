@@ -1,16 +1,37 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+    
         <div class="grid">
-            <div class="col-4" v-if="guests && doc">
+       
+
+            <div class="col-6 pb-0" v-if="guests && doc">
                 <label>
                     {{ $t('Stay Guest') }}
                     </label><br/>
                 <ComSelect class="mb-3 w-full" v-model="doc.guest" :options="guests" optionLabel="guest_name" optionValue="name" :clear="false" />
+            </div>    
+             <div class="col-6 pb-0">
+                <label>
+                    {{ $t('Folio Type') }}
+                    </label><br/>
+                    <ComAutoComplete v-model="doc.folio_type" 
+                           placeholder="Select Folio Type"
+                           doctype="Folio Type"
+                           class="auto__Com_Cus w-full" 
+                           />
             </div>
            
-            <div class="col-8">
-                <label hidden>{{$t('Note')}}</label><br/>
-                <InputText :placeholder="$t('Note')" class="w-full" type="text" v-model="doc.note" />
+            <div class="col-12 pt-0">
+                <label >{{$t('Note')}}</label><br/>
+                <Textarea v-model="doc.note" rows="3"  class="w-full"/>
+            </div>
+            <div class="col-12">
+                <div class="flex justify-item-center">
+                  <Checkbox v-model="doc.show_in_pos_transfer" inputId="show_in_pos_transfer" :binary="true" :trueValue="1" :falseValue="0" />
+                  <label class="white-space-nowrap ms-2 cursor-pointer" for="show_in_pos_transfer">Show In Pos Transfer</label>
+                  
+                </div>
+                
             </div>
         </div>
     </ComDialogContent>
@@ -21,10 +42,9 @@ import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const dialogRef = inject("dialogRef");
 const isSaving = ref(false)
-const doc = ref({})
+const doc = ref({show_in_pos_transfer:1})
 const guests = ref([])
 const gv = inject("$gv")
-
 function onSave() {
   
     if(!gv.cashier_shift?.name){
@@ -64,7 +84,8 @@ onMounted(() => {
             });
         }
         
-    })
+    })   
+    doc.value.show_in_pos_transfer = 1
 });
 
 

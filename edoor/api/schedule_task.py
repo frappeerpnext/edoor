@@ -2,11 +2,11 @@ import functools
 import re
 
 import requests
-from edoor.api.cache_functions import get_account_code_doc, get_account_code_sub_account_information, get_base_rate_cache, get_doctype_value_cache, get_master_folio_name_cache, get_rate_type_doc, get_rate_type_info_with_cache, get_tax_rule_doc
+from edoor.api.cache_functions import get_account_code_doc, get_account_code_sub_account_information, get_base_rate_cache, get_doctype_tree_name, get_doctype_value_cache, get_master_folio_name_cache, get_rate_type_doc, get_rate_type_info_with_cache, get_tax_rule_doc
 from edoor.api.folio_transaction import update_reservation_folio, update_reservation_folios
 from edoor.api.generate_room_rate import get_room_rate_account_code_breakdown, get_room_rate_breakdown
 from edoor.api.tax_calculation import get_tax_breakdown
-from edoor.api.utils import update_reservation, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate
+from edoor.api.utils import update_reservation, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate,update_tax_invoice_data_to_tax_invoice
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in,verify_reservation_stay
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
 from frappe.utils import today,add_to_date,getdate
@@ -305,6 +305,7 @@ def clear_cache():
     get_doctype_value_cache.cache_clear()
     get_tax_rule_doc.cache_clear()
     get_master_folio_name_cache.cache_clear()
+    get_doctype_tree_name.cache_clear()
     frappe.log_error("Cache has been clear by task 5 mn job")
              
     
@@ -649,7 +650,18 @@ def validate_reservation_stay_balance():
     return "Done"
 
 
+   
+@frappe.whitelist()
+def update_tax_invoice_summary_to_open_folio():
+    sql="select tax_invoice_number from `tabReservation Folio` where status='Open' and coalesce(tax_invoice_number,'') !=''"
+    data = frappe.db.sql(sql)
+    for d in data:
+        update_tax_invoice_data_to_tax_invoice(tax_invoice_name=d["tax_invoice_number"], run_commit=False)
     
+    if data:
+        frappe.db.commit()
+        
+     
 
 @frappe.whitelist()
 def validate_reservation_balance():
@@ -691,3 +703,4 @@ def validate_reservation_balance():
             frappe.db.commit()
 
     return "Done"
+
