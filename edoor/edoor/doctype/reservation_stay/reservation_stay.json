@@ -354,6 +354,7 @@
    "label": "Balance"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "pickup_and_drop_off_tab",
    "fieldtype": "Tab Break",
    "label": "Pickup and Drop Off"
@@ -435,6 +436,7 @@
    "options": "Additional Stay Guest"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "additional_guests_tab",
    "fieldtype": "Tab Break",
    "label": "Additional Guests"
@@ -510,6 +512,7 @@
    "label": "ADR"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "room_rate_section",
    "fieldtype": "Tab Break",
    "label": "Room Rate & Summary"
@@ -561,6 +564,7 @@
    "label": "Room Type Alias"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "notice_tab",
    "fieldtype": "Tab Break",
    "label": "Notice"
@@ -908,6 +912,7 @@
    "label": "Is Package"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "package_and_inclusion_tab",
    "fieldtype": "Tab Break",
    "label": "Package and Inclusion"
@@ -937,6 +942,7 @@
    "fieldtype": "HTML"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "details_tab",
    "fieldtype": "Tab Break",
    "label": "Details"
@@ -945,7 +951,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-07 17:20:02.182801",
+ "modified": "2024-06-08 09:28:29.316852",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
