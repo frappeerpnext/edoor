@@ -1108,7 +1108,7 @@ def get_room_rate_breakdown(room_rate_data=None,rate=100):
         )
     tax_rule_data = ""
     if data:
-        tax_rule_data = data[0]["tax_rule_data"]
+        tax_rule_data = '{}' if not "tax_rule_data" in   data[0] else  data[0]["tax_rule_data"]
  
     return {
         "tax_rule_data":tax_rule_data,

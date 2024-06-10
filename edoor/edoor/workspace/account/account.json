@@ -110,7 +110,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-06-07 16:20:07.047122",
+ "modified": "2024-06-10 16:47:33.105693",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Account",
@@ -164,7 +164,7 @@
    "doc_view": "List",
    "label": "POS Sale Invoice",
    "link_to": "Sale",
-   "stats_filter": "[[\"Sale\",\"posting_date\",\"Timespan\",\"today\",false],[\"POS Sale Payment\",\"payment_type\",\"!=\",\"Pay to Room\",false],[\"Sale\",\"is_generate_tax_invoice\",\"=\",0,false]]",
+   "stats_filter": "[[\"POS Sale Payment\",\"payment_type\",\"!=\",\"Pay to Room\",false],[\"Sale\",\"is_generate_tax_invoice\",\"=\",0,false]]",
    "type": "DocType"
   },
   {

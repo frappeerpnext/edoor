@@ -95,7 +95,7 @@ def get_tax_breakdown(tax_rule,rate_include_tax="Yes", tax_1_rate=0, tax_2_rate=
             "tax_1_name":"",
             "tax_2_name":"",
             "tax_3_name":"",
-            "rate": rate,
+            "total_amount":rate,
             "total_amount":0,
             "tax_rule_data":"{}"
         }
