@@ -130,6 +130,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                 s["reservation_folio"] = folio.name
             
     charge_list = get_charge_list_for_posting_room_charge(stay_names=[d["name"] for d in stays_info], working_day=working_day)
+    
     folio_transaction_list = get_folio_transaction_new_record(stays_infor=stays_info,charge_list=charge_list, working_day = working_day)
     bulk_insert("Folio Transaction",folio_transaction_list , chunk_size=10000)
     
@@ -191,7 +192,7 @@ def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rat
     if reservation_room_rate_names:
         sql = sql + " and room_rate_id in %(reservation_room_rate_names)s "
     sql = sql + " order by room_rate_id, sort_order"
-     
+    
     return  frappe.db.sql(sql,{"stay_names":stay_names, "reservation_room_rate_names":reservation_room_rate_names,"date":working_day["date_working_day"]},as_dict=1)
 
 def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
@@ -392,7 +393,8 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
                                 where 
                                     property=%(property)s and 
                                     date=%(date)s and 
-                                    is_arrival=0
+                                    is_arrival=0 and 
+                                    is_active_reservation = 1
                                 """,{"property":property,"date": working_day["date_working_day"]},as_dict=1) 
     stay_names = list(set([d["reservation_stay"] for d in room_rate_datas]))
     
@@ -401,6 +403,7 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
         stays_info = get_reservation_stay_list_infor(stay_names =stay_names)
         
         reservation_room_rate_names = [d["name"] for d in room_rate_datas]
+        
         for s in stays_info:
             folio = {}
             if s["paid_by_master_room"] == 1:
@@ -418,6 +421,7 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
                         "reservation_stay":s["name"],
                         "guest":s["guest"]
                     })
+                    
                     s["reservation_folio"] = folio.name
                     s["folio_transaction_reservation_stay"] = folio.reservation_stay
                     folio_names.append(folio.name)

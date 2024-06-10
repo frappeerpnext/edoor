@@ -145,7 +145,7 @@ function getReservationFolio(frm) {
     frm.refresh_field("reservation_folio_list"); 
 
     frappe.call({
-        method: 'edoor.api.reservation.get_reservation_folio_list', // Replace with your actual method path
+        method: 'edoor.api.reservation.get_reservation_folio_list', 
         args: {
             reservation: frm.doc.name
         },
@@ -153,15 +153,29 @@ function getReservationFolio(frm) {
             if (response.message) {
                 const html = frappe.render_template("reservation_folio",{data:response.message})
                 let dom = parser.parseFromString(html, "text/html").querySelector("#wrapper_folio_list")
+                const buttons = dom.querySelectorAll("button.child-folio-present");
+
                 if (dom){
-                    dom.querySelectorAll("button.child-folio-present").forEach(r=>{
+                    dom.querySelector("#wrapper_folio_detail").innerHTML = '<div>Please select folio!</div>'
+                    buttons.forEach(r=>{
                         r.addEventListener('click',function(){
+                            buttons.forEach(btn => {
+                                btn.classList.remove('show')
+                                btn.style.color = '#4338ca'
+                                btn.style.borderColor = '#dfdfdf'
+                                
+                            });
+                            this.classList.add('show');
+                            this.style.color = '#ff3720'
+                            this.style.borderColor = '#ff3720'
+
+                            
+
                             folioDetailClick(this.dataset.id)
                         })
                     })
                 }
                 $(frm.fields_dict["reservation_folio_list"].wrapper).html(dom);
-                console.log(response.message)
             }
         }
     })
@@ -169,7 +183,7 @@ function getReservationFolio(frm) {
 
 function folioDetailClick(folio_number){
     frappe.call({
-        method: 'edoor.api.reservation.get_folio_transaction', // Replace with your actual method path
+        method: 'edoor.api.reservation.get_folio_transaction', 
         args: {
             transaction_type:"Reservation Folio",
             transaction_number:folio_number,
@@ -178,8 +192,15 @@ function folioDetailClick(folio_number){
         callback: function(response) { 
             if (response.message) {
                 const html = frappe.render_template("folio_detail",{data:response.message})
-                console.log(document.querySelector("#wrapper_folio_detail"))
                 document.querySelector("#wrapper_folio_detail").innerHTML = (html)
+
+                document.querySelectorAll(".time_creation").forEach(r=> {
+                    let timestamp = r.textContent
+                    let date = new Date(timestamp);
+
+                    let prettyDates = prettyDate(date)
+                    r.textContent = prettyDates
+                }) 
             }
         }
     })
@@ -202,4 +223,29 @@ function getChargeSumamry(frm) {
             }
         })
     });
-  }
+}
+
+
+
+function prettyDate(date) {
+    var diff = Math.floor((new Date() - date) / 1000);
+    var dayDiff = Math.floor(diff / 86400);
+
+    if (isNaN(dayDiff) || dayDiff < 0) {
+        return '';
+    }
+
+    if (dayDiff === 0) {
+        if (diff < 60) return 'Just now';
+        if (diff < 120) return '1 minute ago';
+        if (diff < 3600) return Math.floor(diff / 60) + ' minutes ago';
+        if (diff < 7200) return '1 hour ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' hours ago';
+    }
+
+    if (dayDiff === 1) return 'Yesterday';
+    if (dayDiff < 7) return dayDiff + ' days ago';
+    if (dayDiff < 31) return Math.ceil(dayDiff / 7) + ' weeks ago';
+    if (dayDiff < 365) return Math.ceil(dayDiff / 30) + ' months ago';
+    return Math.ceil(dayDiff / 365) + ' years ago';
+}

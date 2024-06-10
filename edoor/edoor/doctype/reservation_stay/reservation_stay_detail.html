@@ -267,8 +267,8 @@
         </div>
         <div class="grid-body">
             <div class="rows"> 
-                <div class="grid-row"> 
-                    {% for d in  data.doc.stays%}
+                {% for d in  data.doc.stays%}
+                <div class="grid-row">  
                     <div class="data-row row">
                         <div class="col">{{frappe.format(data.doc.arrival_date,{"fieldtype":"Date"})}} - {{frappe.format(data.doc.departure_date,{"fieldtype":"Date"})}}</div>
                         <div class="col text-center" style="max-width: 4%;">{{data.doc.room_nights}}</div>
@@ -278,8 +278,8 @@
                         <div class="col text-right">{{frappe.format(data.doc.total_room_rate_tax,{"fieldtype":"Currency"})}}</div>
                         <div class="col text-right">{{frappe.format(data.doc.total_room_rate,{"fieldtype":"Currency"})}}</div>
                     </div>
-                    {%endfor%}
                 </div>
+                {%endfor%}
             </div>
         </div>
     </div>

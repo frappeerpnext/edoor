@@ -431,7 +431,7 @@ def add_new_reservation(doc):
                     "input_rate":d["rate"] or 0,
                     "guest":reservation.guest,
                     "reservation_status":"Reserved" if (room or '') !='' else "Confirmed",
-                    
+                    "business_source":reservation.business_source,
                     "start_date":reservation.arrival_date,
                     "end_date":reservation.departure_date,
                     "start_time":reservation.arrival_time,
@@ -799,15 +799,15 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note="",arrival_
 @frappe.whitelist()
 def update_sub_package_charge_to_folio_transaction(folio_transaction_name=None, folio_transaction_names=None, reservation_stay=None, reservation=None,reservation_folio=None,reservation_folios=None):
     if folio_transaction_name:
-        data =frappe.db.sql("select sum(total_amount) as amount from `tabFolio Transaction` where is_sub_package_charge=1 and reference_folio_transaction='{}'".format(folio_transaction_name) ,as_dict=1)
+        data =frappe.db.sql("select sum(total_amount) as amount from `tabFolio Transaction` where  reference_folio_transaction='{}'".format(folio_transaction_name) ,as_dict=1)
         if data:
             frappe.db.sql("update `tabFolio Transaction` set total_sub_package_charge={} where name='{}'", data[0]["amount"],folio_transaction_name)
     elif reservation_folio:
-        data =frappe.db.sql("select reference_folio_transaction, sum(total_amount) as amount from `tabFolio Transaction` where is_sub_package_charge=1 and coalesce(reference_folio_transaction,'')!='' and transaction_number='{}' and transaction_type='Reservation Folio' group by reference_folio_transaction".format(reservation_folio) ,as_dict=1)
+        data =frappe.db.sql("select reference_folio_transaction, sum(total_amount) as amount from `tabFolio Transaction` where  coalesce(reference_folio_transaction,'')!='' and transaction_number='{}' and transaction_type='Reservation Folio' group by reference_folio_transaction".format(reservation_folio) ,as_dict=1)
         for d in data:
             frappe.db.sql("update `tabFolio Transaction` set total_sub_package_charge={} where name='{}'", d["amount"],d["reference_folio_transaction"])
     elif reservation_folios:
-        data =frappe.db.sql("select reference_folio_transaction, sum(total_amount) as amount from `tabFolio Transaction` where is_sub_package_charge=1 and coalesce(reference_folio_transaction,'')!='' and transaction_number in %(reservation_folio)s and transaction_type='Reservation Folio' group by reference_folio_transaction",{"reservation_folio":reservation_folios} ,as_dict=1)
+        data =frappe.db.sql("select reference_folio_transaction, sum(total_amount) as amount from `tabFolio Transaction` where coalesce(reference_folio_transaction,'')!='' and transaction_number in %(reservation_folio)s and transaction_type='Reservation Folio' group by reference_folio_transaction",{"reservation_folio":reservation_folios} ,as_dict=1)
         for d in data:
             frappe.db.sql("update `tabFolio Transaction` set total_sub_package_charge={} where name='{}'".format( d["amount"],d["reference_folio_transaction"]))
         
@@ -2405,9 +2405,7 @@ def get_folio_transaction_summary_without_breadwon_account_code( transaction_typ
                         transaction_type = '{transaction_type}' and 
                         reservation_stay = if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') and 
                         reservation = if('{reservation}'='',reservation,'{reservation}') and
-                        coalesce(parent_reference,'') = '' and 
-                        coalesce(is_sub_package_charge,'') = 0
-                        
+                        coalesce(parent_reference,'') = '' 
                     group by 
                         account_code,
                         ifnull(report_description,account_name),

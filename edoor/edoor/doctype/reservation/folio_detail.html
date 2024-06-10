@@ -1,5 +1,62 @@
-<h1>Folio Detail</h1>
-
-{%for d in data%}
-{{d.name}} <br/>
-{%endfor%}
+<h4>Folio Detail</h4> 
+<div class="form-grid-container" style="min-width: max-content;">
+    <div class="form-grid">
+        <div class="grid-heading-row" style="height: auto !important;">
+            <div class="grid-row">
+                <div class="data-row row">
+                    <div class="col text-center" style="max-width: 3%;"></div>
+                    <div class="col text-center" style="min-width: 10%;">Name</div> 
+                    <div class="col text-center" style="min-width: 6%;">Room#</div> 
+                    <div class="col text-center" style="min-width: 10%;">Post Date</div> 
+                    <div class="col text" style="min-width: 10%;">Account Name</div> 
+                    <div class="col text-center" style="min-width: 5%;">Qty</div> 
+                    <div class="col text-right" style="min-width: 13%;">Debit(Charges)</div> 
+                    <div class="col text-right" style="min-width: 13%;">Credit(Payments)</div> 
+                    <div class="col text-right" style="min-width: 10%;">Balance</div> 
+                    <div class="col" style="min-width: 10%;">Made By</div> 
+                    <div class="col" style="min-width: 10%;">Created</div> 
+                </div>
+            </div>
+        </div>
+        <div class="grid-body">
+            <div class="rows">
+                {% for d in  data %}
+                {% let owner = d.owner %}
+                {% let owner_un = owner.split('@')[0] %}
+                <div class="grid-row">  
+                    <div class="data-row row">
+                        <div class="col text-center" style="max-width: 3%;">
+                            {% if d.is_package == 1 %}
+                                <svg style="height: 20px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 13H14M19 9V20H5V9M19 9H5M19 9C19.5523 9 20 8.55228 20 8V5C20 4.44772 19.5523 4 19 4H5C4.44772 4 4 4.44772 4 5V8C4 8.55228 4.44772 9 5 9" stroke="#6366f2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                            {% endif %}
+                        </div>
+                        {% if d.is_auto_post == 1 %}
+                        <div class="col text-center" style="min-width: 10%;">
+                            <a style="border: 1px dashed #ff3720;border-radius: 10px;padding: 0 5px;color: #ff3720;cursor: pointer;display: inline-block;text-decoration: none;" href="/app/folio-transaction/{{d.name}}">
+                                {{d.name}}
+                            </a>
+                        </div>
+                        {% else %}
+                            <div class="col text-center" style="min-width: 10%;">
+                                <a style="border: 1px dashed #4338ca;border-radius: 10px;padding: 0 5px;color: #4338ca;cursor: pointer;display: inline-block;text-decoration: none;" href="/app/folio-transaction/{{d.name}}">
+                                    {{d.name}}
+                                </a>
+                            </div>
+                        {% endif %}
+                        <div class="col text-center" style="min-width: 6%;">{{d.room_number}}</div>
+                        <div class="col text-center" style="min-width: 10%;">{{frappe.format(d.posting_date,{"fieldtype":"Date"})}}</div>
+                        <div class="col" style="min-width: 10%;">{{d.account_name}}</div>
+                        <div class="col text-center" style="min-width: 5%;">{{d.quantity}}</div>
+                        <div class="col text-right" style="min-width: 13%;">{{frappe.format(d.debit,{"fieldtype":"Currency"})}}</div>
+                        <div class="col text-right" style="min-width: 13%;">{{frappe.format(d.credit,{"fieldtype":"Currency"})}}</div>
+                        <div class="col text-right" style="min-width: 10%;">{{frappe.format(d.balance,{"fieldtype":"Currency"})}}</div>
+                        <div class="col" style="min-width: 10%;">{{owner_un}}</div>
+                        <div class="col time_creation" style="min-width: 10%;">{{d.creation}}</div>
+                    </div>
+                    
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+    </div>
+</div> 

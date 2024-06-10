@@ -1,10 +1,12 @@
 <template> 
     <ComDialogContent dialogClass="max-h-screen-newres overflow-auto" @onOK="onSave" :loading="isSaving" hideButtonClose>
+        <div class="ms_message_cs_edoor">
         <Message v-if="hasFutureResertion" >
             {{ checkFutureReservationInfo.message }} <br/>
         
             <Button class="border-none" @click="onViewFutureReservation"> {{ $t('View Reservation') }} </Button>
         </Message>
+        </div>
         <div class="n__re-custom grid">
             <div class="col-12 md:col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -855,22 +857,24 @@ function onViewFutureReservation(){
 
 function onSelectedCustomer(event) {
     if (event.value) {
-        getDoc('Customer', event.value)
-            .then((d) => {
-
-                doc.value.guest_info = d
-                doc.value.guest_info.expired_date = moment(d.expired_date).toDate()
-
-            })
+        const name_guest_en_ev = ref()
+        
         
             //check future reservation
         getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest",value:event.value}).then(r=>{
-            hasFutureResertion.value = r.message
+        getDoc('Customer', event.value)
+            .then((d) => {
+                name_guest_en_ev.value = d?.customer_name_en
+                doc.value.guest_info = d
+                doc.value.guest_info.expired_date = moment(d.expired_date).toDate()
+ hasFutureResertion.value = r.message
             checkFutureReservationInfo.value = {
-                    message: `This guest id ${event.value} is already exist in the system`,
+                    message: `This guest Name "${name_guest_en_ev.value}"  is already exist in the system`,
                     fieldname:"guest",
                     value:event.value,
                 }
+            })    
+           
 
         })
 

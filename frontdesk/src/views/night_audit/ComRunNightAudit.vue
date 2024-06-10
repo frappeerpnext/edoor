@@ -1,4 +1,5 @@
     <template>
+        <BlockUI unstyled :blocked="blockui">
     <div class="wrape-step-night-audit flex justify-between aj relative mb-5">
         <span class="step-life-time"><!--NA--></span>
         <template v-for="(step, index) in steps" :key="index">
@@ -20,7 +21,7 @@
     <div v-if="currentStep == 9" style="height: 100vh;">
         <ComNightAuditReport />
     </div>
-    <div v-else class="wrp-night-audit-content w-full view-table-iframe" style="overflow: auto;
+    <div v-else :class="blockui ? 'pointer-events-none' : ''" class="wrp-night-audit-content w-full view-table-iframe" style="overflow: auto;
     max-width: 100%;
     max-height: 70vh;">
     <div v-html="html" class="view_table_style run_night_ui_frame"></div>
@@ -30,7 +31,7 @@
     <div class="wrp-action-btn-in-night-audit pb-2">
         <hr class="mb-2" />
         <div class="flex items-center flex-row-reverse flex-wrap">
-            <div class="md:order-0 order-1">
+            <div :class="blockui ? 'pointer-events-none' : ''" class="md:order-0 order-1">
                 <Button class="border-none mr-2" type="button" :label="$t('Back')" icon="pi pi-arrow-left" :loading="loading"
                     :disabled="currentStep == 1" v-if="currentStep < 9" @click="onBack" />
                 <Button type="button" :label="$t('Next')" icon="pi pi-arrow-right" class="border-none" :loading="loading"
@@ -55,10 +56,12 @@
             </div>
         </div>
     </div>
+</BlockUI>
 </template>
 <script setup>
 import { ref, onMounted, postApi, useToast, onUnmounted, inject, useConfirm } from '@/plugin';
 import ComNightAuditReport from './components/ComNightAuditReport.vue'
+import BlockUI from 'primevue/blockui';
 const toast = useToast();
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
  
@@ -69,6 +72,7 @@ const gv = inject("$gv")
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
 const dialogRef = inject("dialogRef");
+const blockui = ref(false);
 const currentStep = ref(1)
 const loading = ref(false)
 const frappe = inject("$frappe")
@@ -134,6 +138,7 @@ function onNext() {
 
 function onFinish() {
     loading.value = true;
+    blockui.value = true;
     confirm.require({
         message: 'Are you sure you want to process run night audit?',
         header: 'Run Night Audit',
@@ -150,6 +155,7 @@ function onFinish() {
                 currentStep.value = 9
                 LoadData()
                 loading.value = false;
+                blockui.value = false;
                 window.socket.emit("RunNightAudit", { property: window.property_name, action: "reload_page", session_id: window.session_id })
                 gv.cashier_shift = result.message.cashier_shift
                 localStorage.setItem("edoor_working_day", JSON.stringify(result.message))

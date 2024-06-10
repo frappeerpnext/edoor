@@ -59,19 +59,19 @@
                 <tr class="table-rs-de">
                     <td>{{ $t('Arrival') }}</td>
                     <td class="px-2">:</td>
-                    <td>{{ moment(event.extendedProps?.arrival_date).format('DD-MM-YYYY') }} -
+                    <td>{{ moment(event.start_date).format('DD-MM-YYYY') }} -
                         {{ moment(event.extendedProps?.start_time, "HH:mm:ss").format("h:mm A") }}</td>
                 </tr>
                 <tr class="table-rs-de">
                     <td>{{ $t('Departure') }}</td>
                     <td class="px-2">:</td>
-                    <td>{{ moment(event.extendedProps?.departure_date).format('DD-MM-YYYY') }} -
+                    <td>{{ moment(event.end_date).format('DD-MM-YYYY') }} -
                         {{ moment(event.extendedProps?.end_time, "HH:mm:ss").format("h:mm A") }}</td>
                 </tr>
                 <tr class="table-rs-de">
                     <td>{{ $t('Nights') }}</td>
                     <td class="px-2">:</td>
-                    <td>{{ moment(event.extendedProps?.departure_date).diff(event.extendedProps?.arrival_date, 'days') }}
+                    <td>{{ moment(event.end_date).diff(event.start_date, 'days') }}
                     </td>
                 </tr>
                 <tr class="table-rs-de">
