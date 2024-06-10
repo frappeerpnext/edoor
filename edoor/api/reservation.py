@@ -587,6 +587,7 @@ def stay_add_more_rooms(reservation=None, data=None):
                 "reservation_status":"Reserved" if ((d["room_id"] or None) if 'room_id' in d else None)  else "Confirmed",
                 "start_date":data["arrival_date"],
                 "end_date":data["departure_date"],
+                "business_source":reservation.business_source,
                 "child":d["child"],
                 "adult":d["adult"],
                 "start_time":reservation.arrival_time,

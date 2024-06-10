@@ -1379,8 +1379,14 @@ def get_tax_invoice_data(folio_number,document_type,date = None):
 
     tax_summary = get_tax_summary(data + pos_tax_data["tax_summary_raw_data"])
     
+    if document_type == 'Reservation Folio':
+        total_vat = get_tax_invoice_vat_amount(data) 
+    elif document_type == 'Sale':
+        # tax 3 is alway vat
+        total_vat = sale[0]["tax_3_amount"] or 0
+        
+        
     
-    total_vat = get_tax_invoice_vat_amount(data) 
     # total tax vat from pos bill to room
     total_vat = total_vat + sum([d["tax_3_amount"] for d in pos_tax_data["revenue_data"]])
     
@@ -1551,6 +1557,7 @@ def get_tax_summary(data):
 
 
 def get_tax_invoice_vat_amount(data):
+    # xxx
     amount = 0
     for d in data:
         if frappe.db.get_value("Account Code",d["account_code"], "is_vat")==1:
@@ -1682,7 +1689,6 @@ def generate_tax_invoice(property=None,document_type=None, folio_number=None,tax
 def update_tax_invoice_data_to_tax_invoice(tax_invoice_name,run_commit=True):
     doc = frappe.get_doc("Tax Invoice",tax_invoice_name)
     tax_data = get_tax_invoice_data(folio_number = doc.document_name, document_type=doc.document_type, date= doc.tax_invoice_date)
-    
     doc.sub_total = sum([d["amount"] for d in tax_data["data"]])
     
     # service charge
