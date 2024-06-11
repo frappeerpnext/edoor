@@ -33,7 +33,9 @@
                                 {% endif %}
                             </div>
                             <div class="col text-center">{{ frappe.format(d.date,{"fieldtype":"Date"})}}</div>
-                            <div class="col text-center"><a href="/app/reservation-stay/{{d.reservation_stay}}">{{d.reservation_stay}}</a></div>
+                            <div class="col text-center">
+                                <a style="border: 1px dashed #4338ca;border-radius: 10px;padding: 0 5px;color: #4338ca;cursor: pointer;display: inline-block;text-decoration: none;" href="/app/reservation-stay/{{d.reservation_stay}}">{{d.reservation_stay}}</a>
+                            </div>
                             <div class="col">{{d.room_type_alias}}/{{d.room_number}}</div>
                             <div class="col">{{d.guest_name}}</div>
                             <div class="col text-center">{{d.adult}}/{{d.child}}</div>
