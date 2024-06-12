@@ -79,8 +79,9 @@ def get_report_data(filters,report_config):
         else:
             sub_report_data =copy.deepcopy( report_group_data)
 
-        
+          
         for row in sub_report_data:
+            
             row["is_group"] = 0 
             row["is_total_row"] = 0 
             row["indent"] = 1 if parent["parent_row_group"] else 0
@@ -127,15 +128,16 @@ def get_report_data(filters,report_config):
             # end reed occupy data
                                 
             # get data from folio folio transaction
-                                
+                          
             if len(room_rate_data)> 0:
                 folio_transaction_records  = [d for d in room_rate_data if str(d["row_group"]) == str(row["row_group"]) and str(d["parent_row_group"]) == str(parent["parent_row_group"])]
-                 
+                
                 if len(folio_transaction_records)> 0:
                     folio_transaction_record  = folio_transaction_records[0]
                     for f in report_config.report_fields :
-                        if f.show_in_report==1 and f.reference_doctype=="Reservation Room Rate":
-                            #f.fildname is from report config
+                        # frappe.throw(str(f.fieldname))
+                        if f.show_in_report==1 and f.reference_doctype=="Revenue Forecast Breakdown":
+                        #f.fildname is from report config
                             if f.fieldname=='adr':
                                 occupy = row["occupy"] or 0
                                 occupy = occupy -  row["complimentary"] or 0 
@@ -143,6 +145,7 @@ def get_report_data(filters,report_config):
                                 if occupy<=0:
                                     occupy =1
                                 row['adr'] = (row["total_rate"] or 0) /  occupy
+                                
                             else:
                                 row[f.fieldname] =   folio_transaction_record[f.fieldname]
 
@@ -325,10 +328,10 @@ def get_room_rate_data(filters, report_config):
     sql = "select date_format(date,'%%b-%%Y')  as row_group,"
     sql = "{} {} as parent_row_group,".format(sql,get_room_rate_group_by_field(filters))
         
-    sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Reservation Room Rate' and d.sql_expression]) )
+    sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Revenue Forecast Breakdown' and d.sql_expression]) )
     
     #filter
-    sql = sql+ " from `tabReservation Room Rate` a where 1=1 "
+    sql = sql+ " from `tabRevenue Forecast Breakdown` a where 1=1 "
     sql = "{} {}".format(sql, get_room_rate_filters(filters))
 
     # group by
