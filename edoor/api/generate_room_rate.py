@@ -366,7 +366,12 @@ def generate_forecast_revenue(stay_names=None,run_commit=True):
         update `tabRevenue Forecast Breakdown` a 
         JOIN `tabAccount Code` b on b.name = a.account_code
         SET
-            a.type=b.type
+            a.type=b.type,
+            a.parent_account_code = b.parent_account_code,
+            a.parent_account_name = b.parent_account_name,
+            a.account_group_code = b.account_group,
+            a.account_group_name = b.account_group_name,
+            a.account_category = b.account_category
         where 
             reservation_stay in %(stay_names)s
     """
@@ -382,7 +387,6 @@ def generate_forecast_revenue(stay_names=None,run_commit=True):
 def get_new_revenue_forecast_records(room_rate_data):
 
     for rate in room_rate_data:
-        
         # we create this to usful with cache
         rate_breakdown_param = {
             "rate_type":rate["rate_type"],
@@ -588,7 +592,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
         "is_base_transaction":1,
         "type":base_account["type"],
         "input_rate":base_account["input_rate"],
-        "amount":sum([d["rate"] for d in tax_data_breakdown]),
+        "amount":sum([d["rate"] for d in tax_data_breakdown if 'rate' in d]) or 0,
         "quantity":1,
         "sort_order":1,
         "parent_reference": "",

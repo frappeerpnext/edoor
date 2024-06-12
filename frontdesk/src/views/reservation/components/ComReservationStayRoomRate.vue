@@ -114,7 +114,7 @@
           </Column>
           <Column footerStyle="text-align:right">
             <template #footer>
-              <CurrencyFormat :value="getTotal('rate')" />
+              <CurrencyFormat :value="getTotal('input_rate')" />
             </template>
           </Column>
           <Column footerStyle="text-align:right">

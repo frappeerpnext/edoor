@@ -1,4 +1,5 @@
 <template>
+    
     <div v-if="showFilter">
         <div class="">
             <ComReportFilterOnly v-if="!isMobile" :filter="filter" :selectedReport="selectedReport" />
@@ -92,8 +93,8 @@ const advanceFilter = (event) => {
 
 const filter = ref({
     _lang: user.language || "en",
-    start_date: moment(window.current_working_date).toDate(),
-    end_date: moment(window.current_working_date).toDate(),
+    start_date: moment.utc(window.current_working_date).toDate(),
+    end_date: moment.utc(window.current_working_date).toDate(),
     order_by: "Last Update On",
     audit_order: "Last Update On",
     is_active_reservation: "1",
@@ -129,16 +130,20 @@ function onSearch() {
 
         })
     }
-
+ 
+    
     if (f.start_date) {
-        f.start_date = moment(f.start_date).format("YYYY-MM-DD")
+        f.start_date = moment( moment.utc(moment(f.start_date).format("YYYY-MM-DD")).toDate()).format("YYYY-MM-DD")
     }
 
     if (f.end_date) {
-        f.end_date = moment(f.end_date).format("YYYY-MM-DD")
+        f.end_date = moment( moment.utc(moment(f.end_date).format("YYYY-MM-DD")).toDate()).format("YYYY-MM-DD")
     }
+    
     window.report_filter = filter.value
+ 
     emit("onFilter", f)
+ 
 }
 
 onMounted(() => {

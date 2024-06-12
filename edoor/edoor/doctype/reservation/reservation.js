@@ -141,7 +141,7 @@ function getReservationRoomRate(frm) {
 
 function getReservationFolio(frm) {
     let parser = new DOMParser()
-    $(frm.fields_dict["reservation_folio_list"].wrapper).html("Loading reservation room rate list...");
+    $(frm.fields_dict["reservation_folio_list"].wrapper).html("Loading reservation folio list...");
     frm.refresh_field("reservation_folio_list"); 
 
     frappe.call({
@@ -168,8 +168,6 @@ function getReservationFolio(frm) {
                             this.classList.add('show');
                             this.style.color = '#ff3720'
                             this.style.borderColor = '#ff3720'
-
-                            
 
                             folioDetailClick(this.dataset.id)
                         })

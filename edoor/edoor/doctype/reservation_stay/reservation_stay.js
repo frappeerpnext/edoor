@@ -15,6 +15,7 @@ frappe.ui.form.on("Reservation Stay", {
                 if (!frm.doc.__islocal) {
                         getItemReservationStayList(frm) 
                         getReservationRoomRate(frm) 
+                        getReservationStayFolio(frm)
                 }
                 
         },
@@ -86,8 +87,6 @@ async function getItemReservationStayList(frm) {
         $(frm.fields_dict["information_list"].wrapper).html(html);
         frm.refresh_field("information_list");
 
-
-        console.log(frm)
 }
 
 
@@ -121,6 +120,68 @@ function getReservationRoomRate(frm) {
         })
     
 } 
+
+function getReservationStayFolio(frm) {
+        let parser = new DOMParser()
+        $(frm.fields_dict["reservation_stay_folio_list"].wrapper).html("Loading reservation stay folio list...");
+        frm.refresh_field("reservation_stay_folio_list"); 
+
+        frappe.db.get_list("Reservation Folio", {
+                fields:["name","status","is_master","rooms","note","room_types","guest","guest_name","phone_number","email","photo","status","balance","owner","creation","reservation","reservation_stay","business_source","doctype","total_credit","total_debit","tax_invoice_number","folio_type","folio_type_color"],
+                filters:[['reservation_stay','=',frm.doc.name]]
+        }).then(result=>{
+                const html = frappe.render_template("reservation_stay_folio",{data:result})
+                let dom = parser.parseFromString(html, "text/html").querySelector("#wrapper_folio_list")
+                const buttons = dom.querySelectorAll("button.child-folio-present")
+
+                if (dom){
+                dom.querySelector("#wrapper_folio_detail").innerHTML = '<div>Please select folio!</div>'
+                        buttons.forEach(r=>{
+                                r.addEventListener('click',function(){
+                                buttons.forEach(btn => {
+                                        btn.classList.remove('show')
+                                        btn.style.color = '#4338ca'
+                                        btn.style.borderColor = '#dfdfdf'
+                                        
+                                });
+                                this.classList.add('show');
+                                this.style.color = '#ff3720'
+                                this.style.borderColor = '#ff3720'
+
+                                folioDetailClick(this.dataset.id)
+                                })
+                        })
+                }
+                $(frm.fields_dict["reservation_stay_folio_list"].wrapper).html(dom);
+        })
+}
+
+function folioDetailClick(folio_number){
+        frappe.call({
+            method: 'edoor.api.reservation.get_folio_transaction', 
+            args: {
+                transaction_type:"Reservation Folio",
+                transaction_number:folio_number,
+                breakdown_account_code:0
+            },
+            callback: function(response) { 
+                if (response.message) {
+                    const html = frappe.render_template("folio_detail",{data:response.message})
+                    document.querySelector("#wrapper_folio_detail").innerHTML = (html)
+    
+                    document.querySelectorAll(".time_creation").forEach(r=> {
+                        let timestamp = r.textContent
+                        let date = new Date(timestamp);
+    
+                        let prettyDates = prettyDate(date)
+                        r.textContent = prettyDates
+                    }) 
+                }
+            }
+        })
+}
+
+
 function getChargeSumamry(frm) {
         return new Promise((resolve, reject) => {
             frappe.call({

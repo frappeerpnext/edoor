@@ -12,6 +12,8 @@
   "information_list",
   "room_rate_tab",
   "room_rate_list",
+  "folio_tab",
+  "reservation_stay_folio_list",
   "details_tab",
   "html_general_information",
   "section_break_wfqt",
@@ -946,12 +948,21 @@
    "fieldname": "details_tab",
    "fieldtype": "Tab Break",
    "label": "Details"
+  },
+  {
+   "fieldname": "folio_tab",
+   "fieldtype": "Tab Break",
+   "label": "Folio"
+  },
+  {
+   "fieldname": "reservation_stay_folio_list",
+   "fieldtype": "HTML"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-08 09:28:29.316852",
+ "modified": "2024-06-11 10:52:54.788612",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

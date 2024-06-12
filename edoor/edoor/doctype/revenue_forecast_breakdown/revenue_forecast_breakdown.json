@@ -46,7 +46,15 @@
   "total_amount",
   "parent_reference",
   "rate_include_tax",
-  "rate_type"
+  "rate_type",
+  "account_code_information_tab",
+  "parent_account_code",
+  "parent_account_name",
+  "column_break_dxui",
+  "account_group_code",
+  "account_group_name",
+  "column_break_dbbc",
+  "account_category"
  ],
  "fields": [
   {
@@ -294,11 +302,52 @@
    "fieldname": "is_base_transaction",
    "fieldtype": "Check",
    "label": "Is Base Transaction"
+  },
+  {
+   "fieldname": "account_code_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "Account Code Information"
+  },
+  {
+   "fieldname": "parent_account_name",
+   "fieldtype": "Data",
+   "label": "Parent Account Name"
+  },
+  {
+   "fieldname": "column_break_dxui",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "account_group_name",
+   "fieldtype": "Data",
+   "label": "Account Group Name"
+  },
+  {
+   "fieldname": "column_break_dbbc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "account_category",
+   "fieldtype": "Link",
+   "label": "Account Category",
+   "options": "Account Category"
+  },
+  {
+   "fieldname": "parent_account_code",
+   "fieldtype": "Link",
+   "label": "Parent Account Code",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "account_group_code",
+   "fieldtype": "Link",
+   "label": "Account Group Code",
+   "options": "Account Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-07 10:44:54.104962",
+ "modified": "2024-06-12 14:33:07.203633",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Revenue Forecast Breakdown",

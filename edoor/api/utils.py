@@ -1120,9 +1120,32 @@ def update_account_code_to_folio_transaction():
          join `tabAccount Code` b on a.parent_account_code = b.name
          set
             a.parent_account_name = b.account_name
+            
     """
     frappe.db.sql(sql)
+    sql="""
+         update `tabAccount Code` a
+         join `tabAccount Code` b on a.account_group = b.name
+         set
+            a.account_group_name = b.account_name
+            
+    """
+    frappe.db.sql(sql)
+    sql = """
+        update `tabRevenue Forecast Breakdown` a 
+        join `tabAccount Code` b on b.name = a.account_code
+        SET
+            a.account_category = b.account_category,
+            a.type = b.type,
+            a.parent_account_code = b.parent_account_code,
+            a.parent_account_name = b.parent_account_name,
+            a.account_group_code = b.account_group,
+            a.account_group_name = b.account_group_name
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
 
+  
 
     frappe.db.commit()
     return "Done"
@@ -1687,6 +1710,7 @@ def generate_tax_invoice(property=None,document_type=None, folio_number=None,tax
 
 @frappe.whitelist()
 def update_tax_invoice_data_to_tax_invoice(tax_invoice_name,run_commit=True):
+    
     doc = frappe.get_doc("Tax Invoice",tax_invoice_name)
     tax_data = get_tax_invoice_data(folio_number = doc.document_name, document_type=doc.document_type, date= doc.tax_invoice_date)
     doc.sub_total = sum([d["amount"] for d in tax_data["data"]])
