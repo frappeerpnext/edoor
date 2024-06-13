@@ -318,6 +318,7 @@ def generate_forecast_revenue(stay_names=None,run_commit=True):
     sql="""
         select 
             name,
+            stay_room_id,
             property,
             date,
             room_type_id,
@@ -406,7 +407,7 @@ def get_new_revenue_forecast_records(room_rate_data):
         account_code_breakdown = get_room_rate_account_code_breakdown(tuple(sorted(rate_breakdown_param.items())))
         
         account_code_breakdown =[d for d in account_code_breakdown if d["amount"]>0 or d["is_package_account"]==0]
-     
+        
         account_code_breakdown = get_charge_breakdown_by_account_code_breakdown(json.dumps(account_code_breakdown)) 
         
         # apply discount discount info to base account
@@ -456,13 +457,14 @@ def get_new_revenue_forecast_records(room_rate_data):
                 
         new_records_data = sorted(new_records_data, key=lambda x: x["sort_order"])
          
- 
+        
         for acc in  new_records_data:
             doc = frappe.new_doc("Revenue Forecast Breakdown")
             
             doc.name  =acc["name"]
             doc.is_base_transaction = 0 if not "is_base_transaction" in acc else acc["is_base_transaction"]
             doc.parent_reference = acc["parent_reference"]
+            doc.stay_room_id = rate["stay_room_id"],
             
             doc.room_rate_id =  rate["name"]
             doc.property = rate["property"]
@@ -577,6 +579,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
                                          discount_amount=acc["discount_amount"],
                                          rate=acc["amount"]
                                         )
+        
         tax_data["account_code"] = acc["account_code"]
          
         
@@ -586,7 +589,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
     # 1 Base Account
     base_account = account_code_breakdown[0]
    
-     
+   
     base_charge = {
         "account_code":base_account["account_code"],
         "is_base_transaction":1,

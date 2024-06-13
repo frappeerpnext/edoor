@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "room_rate_id",
+  "stay_room_id",
   "property",
   "date",
   "reservation",
@@ -343,11 +344,16 @@
    "fieldtype": "Link",
    "label": "Account Group Code",
    "options": "Account Code"
+  },
+  {
+   "fieldname": "stay_room_id",
+   "fieldtype": "Data",
+   "label": "Stay Room ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-12 14:33:07.203633",
+ "modified": "2024-06-13 10:55:46.466923",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Revenue Forecast Breakdown",
