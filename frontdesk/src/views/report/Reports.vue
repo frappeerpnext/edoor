@@ -139,13 +139,13 @@ const setIframeHeight = (f) => {
 function loadIframe() {
 
     if (selectedReport.value) {
-        url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting.property.name + "&format=" + gv.getCustomPrintFormat(selectedReport.value.report_name) + "&&settings=%7B%7D&show_toolbar=0"
+        url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + encodeURIComponent(setting.property.name) + "&format=" + gv.getCustomPrintFormat(selectedReport.value.report_name) + "&&settings=%7B%7D&show_toolbar=0"
 
 
         if (Object.keys(filters.value)) {
             Object.keys(filters.value).forEach(p => {
                 if (filters.value[p]) {
-                    url.value = url.value + "&" + p + "=" + filters.value[p]
+                    url.value = url.value + "&" + p + "=" + encodeURIComponent(filters.value[p])
                 }
             });
         }

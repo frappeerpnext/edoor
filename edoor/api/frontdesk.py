@@ -1975,7 +1975,6 @@ def get_room_chart_data(property,group_by,start_date,end_date):
     return []
 
 
-
 @frappe.whitelist()
 def get_working_day(property = ''):
     
