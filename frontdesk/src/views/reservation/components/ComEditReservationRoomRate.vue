@@ -111,7 +111,7 @@
         </div>
         <hr class="my-1">   
     </div>
-        <div class="col-8">
+        <div :class="(doc.is_house_use +doc.is_complimentary )==0 || doc.tax_rule || doc.is_package?'col-8':'col-12'">
         <!--  -->
      
         <div class="grid">
@@ -173,7 +173,7 @@
                         </div>
                     </div>
                     </template>
-                    <div class="col-12 lg:col-6 text-right">
+                    <div class="col-12 lg:col-6 text-right" v-if="doc.tax_rule">
                         <label class="font-bold" >{{ $t('Total Tax') }}</label>
                         <div
                             class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
@@ -215,7 +215,8 @@
 
         </div>
         </div>
-<div class="col-4">
+        
+<div class="col-4" v-if="(doc.is_house_use +doc.is_complimentary )==0 ||  doc.tax_rule || doc.is_package">
     <div class="card">
         <Accordion :activeIndex="0">
             <AccordionTab header="Room Rate Breakdown">
@@ -379,9 +380,16 @@ const roomData = computed(() => {
 })
 
 function checkChangePax(){
+    console.log(selectedRoomRates.value[0])
     if (doc.value.is_manual_change_pax) {
-        doc.value.adult = stay.value.adult
-        doc.value.child = stay.value.child
+        if(stay.value){
+           doc.value.adult = stay.value.adult
+           doc.value.child = stay.value.child  
+        }else{
+            doc.value.adult = selectedRoomRates.value[0].adult
+            doc.value.child = selectedRoomRates.value[0].child 
+        }
+       
         get_room_rate_breakdown()
     }
 }

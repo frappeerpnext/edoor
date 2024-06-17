@@ -608,6 +608,17 @@ def group_transfer_stay_to_other_reservation(data):
     #update room rate
     sql = "update `tabReservation Room Rate` set {} where reservation_stay in %(stays)s".format(",".join(update_fields))
     frappe.db.sql(sql,{"stays":data["stays"]})
+    
+    #update reservation to revenue forecast breakdown
+    update_fields = []
+    update_fields.append("reservation='{}'".format(data["target_reservation"]))
+    update_fields.append("business_source='{}'".format(target_doc.business_source))
+    update_fields.append("reservation_type='{}'".format(target_doc.reservation_type))
+
+    sql = "update `tabRevenue Forecast Breakdown` set {} where reservation_stay in %(stays)s".format(",".join(update_fields))
+ 
+    frappe.db.sql(sql,{"stays":data["stays"]})
+    
 
 
     #update to folio 

@@ -621,6 +621,8 @@ def stay_add_more_rooms(reservation=None, data=None):
     # frappe.enqueue("edoor.api.generate_occupy_record.generate_room_occupies",queue='default', stay_names=stay_doc_names)
     generate_room_occupies(stay_names = stay_doc_names,run_commit=False)
     generate_new_room_rate(stay_names = stay_doc_names,run_commit=False)
+    generate_forecast_revenue(stay_names = stay_doc_names,run_commit=False)
+    
     update_reservation_stay_and_reservation( reservation = reservation.name, reservation_stay=stay_doc_names,run_commit=False)
     frappe.db.commit()
     return reservation
@@ -2623,7 +2625,6 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
     #reservation_stays is array string
     if reservation_stays:
         for s in reservation_stays:
-          
             status = frappe.db.get_value("Reservation Stay",s,"reservation_status")
             if frappe.db.get_value("Reservation Status",status, "allow_user_to_edit_information")==0:
                 frappe.throw("Reservation Stay: {0} is {1}. {1} reservation is not allow to change information".format(s, status) )
@@ -2644,6 +2645,7 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
         doc.discount_type = data["discount_type"] 
         doc.discount = data["discount"] 
         doc.tax_rule = data["tax_rule"]
+        doc.tax_rule_data = "{}" if "tax_rule_data" in data else d["tax_rule_data"]
         doc.tax_1_rate = data["tax_1_rate"]
         doc.tax_2_rate = data["tax_2_rate"]
         doc.tax_3_rate = data["tax_3_rate"]
@@ -2654,7 +2656,17 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
         doc.flags.ignore_on_update = True
         doc.save()
     generate_forecast_revenue(reservation_stays, run_commit=False)
+    
+    # check if room rate have only 1 rate type then update rate type to stay and stay room
+    for s in reservation_stays:
+        rate_type_data = frappe.db.sql("select distinct rate_type from `tabReservation Room Rate` where reservation_stay='{}'".format(s),as_dict =1)
+        
+        if len(rate_type_data)==1:
+            frappe.db.sql("update `tabReservation Stay` set rate_type='{}' where name='{}'".format(rate_type_data[0]["rate_type"],s))
+            frappe.db.sql("update `tabReservation Stay Room` set rate_type='{}' where parent='{}'".format(rate_type_data[0]["rate_type"],s))
+            
     frappe.db.commit()
+    
     
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=reservation_stays)
     # frappe.enqueue("edoor.api.generate_room_rate.generate_forecast_revenue",queue='short', stay_names=reservation_stays, run_commit = True )
@@ -2913,10 +2925,8 @@ def assign_room(data):
     for s in doc.stays:
           
         if s.name == data['stay_room']:
-
             s.room_id = data['room_id'] or None
             s.room_type_id = data['room_type_id']
-
             #update room number to room room occupy and temp room occupy
             room_number = frappe.db.get_value("Room", data["room_id"],"room_number")
             frappe.db.sql("update `tabTemp Room Occupy`  set room_type_id=%(room_type_id)s, room_type=%(room_type)s , room_id = %(room_id)s,room_number=%(room_number)s where stay_room_id=%(stay_room_id)s", 
@@ -2940,7 +2950,7 @@ def assign_room(data):
                 )
            
             if   'is_override_rate' in data and  data['is_override_rate'] and  data['rate'] != data["old_rate"]:
-                #update room infor and rate
+              
                 s.input_rate = data['rate']
                 update_reservation_stay_room_rate(data = {"rate": data["rate"], "stay_room_id":  s.name,"room_type":data["room_type"],"room_type_id":data["room_type_id"], "room_id":data["room_id"],"room_number":room_number  })
             else:
@@ -2954,26 +2964,13 @@ def assign_room(data):
                                 "room_id":data["room_id"],
                                 "room_number":room_number
                             })
-                                
+                
     doc.save()
     
     if doc:
+        generate_forecast_revenue(stay_names=[doc.name], run_commit=False)
         update_reservation_stay_and_reservation(reservation_stay=doc.name, reservation=doc.reservation, run_commit=False)
     
-    # update room type room id room number to revenue forecast breakdown
-    sql = """
-        update `tabRevenue Forecast Breakdown` a
-        join `tabReservation Room Rate` b on b.name = a.room_rate_id
-        SET
-            a.room_type_id = b.room_type_id ,
-            a.room_type = b.room_type,
-            a.room_type_alias = b.room_type_alias,
-            a.room_id = b.room_id,
-            a.room_number = b.room_number
-        where
-            a.reservation_stay = %(reservation_stay)s
-    """
-    frappe.db.sql(sql, {"reservation_stay": doc.name})
     
     frappe.db.commit()
     frappe.msgprint(_("Assign room successfully"))
@@ -3238,10 +3235,13 @@ def bulk_assign_room(reservation, reservation_stays):
                 occupy_stays.append({"stay":s, "room_number":room_number, "room_type":room_type } )
                 
                 
-
+                if   'is_override_rate' in stay and  stay['is_override_rate'] and  stay['rate'] != stay["old_rate"]:
+                    s.input_rate = stay['rate']
+                    frappe.throw(str(stay["rate"]))
+                    update_reservation_stay_room_rate(data = {"rate": stay["rate"], "stay_room_id":  s.name,"room_type":stay["room_type"],"room_type_id":stay["room_type_id"], "room_id":stay["room_id"],"room_number":room_number  })
+                    
                 if not stay["is_generate_rate"] == 1:
                     #update room to room rate
-                    
                     room_rate_stays.append({"stay":s, "room_number":room_number, "room_type":room_type, "room_type_alias":room_type_alias } )
                     
 
