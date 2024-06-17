@@ -1,12 +1,5 @@
-frappe.listview_settings['Room'] = {
+frappe.listview_settings['Room Type'] = {
     onload: function(listview) {
-        listview.page.add_inner_button(__('Sort Order Room'), function() {
-            let msg = frappe.msgprint(
-                '<iframe src="/frontdesk/room-sort-order" frameBorder="0" width="100%" height="650" title="Sort Order Account Code"></iframe>',
-                'Sort Order Room'
-            );
-            msg.$wrapper.find('.modal-dialog').css("max-width", "90%");
-        });
         // update to related transaction
         listview.page.add_inner_button(__('Update to Related Transaction'), function() {
             var d = new frappe.ui.Dialog({

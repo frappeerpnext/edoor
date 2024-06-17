@@ -89,6 +89,8 @@
   "column_break_46",
   "adr",
   "total_room_rate",
+  "total_room_charge",
+  "total_other_charge",
   "room_charge_and_payment_section",
   "total_debit",
   "column_break_5100",
@@ -535,21 +537,25 @@
    "label": "Room Rate Discount"
   },
   {
+   "description": "Not Use",
    "fieldname": "room_rate_tax_1_amount",
    "fieldtype": "Currency",
    "label": "Room Rate Tax 1 Amount"
   },
   {
+   "description": "Not Use",
    "fieldname": "room_rate_tax_2_amount",
    "fieldtype": "Currency",
    "label": "Room Rate Tax 2 Amount"
   },
   {
+   "description": "Not Use",
    "fieldname": "room_rate_tax_3_amount",
    "fieldtype": "Currency",
    "label": "Room Rate Tax 3 Amount"
   },
   {
+   "description": "Not Use",
    "fieldname": "total_room_rate_tax",
    "fieldtype": "Currency",
    "label": "Total Room Rate Tax"
@@ -957,12 +963,22 @@
   {
    "fieldname": "reservation_stay_folio_list",
    "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "total_room_charge",
+   "fieldtype": "Currency",
+   "label": "Total Room Charge"
+  },
+  {
+   "fieldname": "total_other_charge",
+   "fieldtype": "Currency",
+   "label": "Total Other Charge"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-11 10:52:54.788612",
+ "modified": "2024-06-14 15:55:33.145000",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

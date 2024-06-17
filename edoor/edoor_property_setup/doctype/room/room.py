@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
-
+import json
 class Room(Document):
 	def validate(self): 
 		if not self.reservation_stay:
@@ -34,7 +34,100 @@ class Room(Document):
 	def on_update(self):
 		if self.creation != self.modified:
 			update_fetch_from_fields(self)
-   
+
+@frappe.whitelist()
+def update_to_related_transaction(param):
+    param = json.loads(param)
+    if  param["option_type"]=="All":
+        sql="""
+			update `tabReservation Stay` s
+			join (
+				select 
+    				group_concat(room_number) as  room_number,
+       				group_concat(distinct  room_type) as room_type,
+           			group_concat(distinct room_type_alias) as room_type_alias, 
+              		parent 
+                from `tabReservation Stay Room` 
+                group by  parent
+       		) b
+			on s.name = b.parent
+			SET 
+				s.rooms = b.room_number,
+				s.room_types = b.room_type,
+				s.room_type_alias = b.room_type_alias
+
+        """
+        frappe.db.sql(sql)
+        # udpate to reservation
+        sql="""
+			update `tabReservation` s
+			join (
+				select 
+    				group_concat(room_number) as  room_number,
+       				group_concat(distinct  room_type) as room_type,
+           			group_concat(distinct room_type_alias) as room_type_alias, 
+              		reservation 
+                from `tabReservation Stay Room` 
+                group by  reservation
+       		) b
+			on s.name = b.reservation
+			SET 
+				s.room_numbers = b.room_number,
+				s.room_types = b.room_type,
+				s.room_type_alias = b.room_type_alias
+
+        """
+        frappe.db.sql(sql)
+    else:
+        
+        sql="""
+			update `tabReservation Stay` s
+			join (
+				select 
+    				group_concat(room_number) as  room_number,
+       				group_concat(distinct  room_type) as room_type,
+           			group_concat(distinct room_type_alias) as room_type_alias, 
+              		parent 
+                from `tabReservation Stay Room` 
+                where
+					is_active_reservation = 1
+                group by  parent
+       		) b
+			on s.name = b.parent
+			SET 
+				s.rooms = b.room_number,
+				s.room_types = b.room_type,
+				s.room_type_alias = b.room_type_alias
+
+        """
+        frappe.db.sql(sql)
+        # udpate to reservation
+        sql="""
+			update `tabReservation` s
+			join (
+				select 
+    				group_concat(room_number) as  room_number,
+       				group_concat(distinct  room_type) as room_type,
+           			group_concat(distinct room_type_alias) as room_type_alias, 
+              		reservation 
+                from `tabReservation Stay Room` 
+                where
+					is_active_reservation = 1
+                group by  reservation
+       		) b
+			on s.name = b.reservation
+			SET 
+				s.room_numbers = b.room_number,
+				s.room_types = b.room_type,
+				s.room_type_alias = b.room_type_alias
+
+        """
+        frappe.db.sql(sql)
+    frappe.db.commit()
+    
+    frappe.msgprint("Update room information to related transaction successfully.")
+    
+ 
 def update_fetch_from_fields(self):
 	data_for_updates = []
 
@@ -67,6 +160,8 @@ def update_fetch_from_fields(self):
 		# stay room
 		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type_id='{}'".format(self.room_type_id)})
 		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type='{}'".format(self.room_type)})
+		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
+
 		# temp room occupy
 		data_for_updates.append({"doctype":"Temp Room Occupy","update_field":"room_type_id='{}'".format(self.room_type_id)})
 		# Room Occupy
@@ -92,8 +187,7 @@ def update_fetch_from_fields(self):
 		data_for_updates.append({"doctype":"Folio Transaction","update_field":"room_type_id='{}'".format(self.room_type_id)})
 		data_for_updates.append({"doctype":"Folio Transaction","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
 		
-  		# reservation stay room
-		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type_alias='{}'".format(self.room_type_alias)})
+  		
   
 		#Revenue Forecast Breakdown
 		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"room_type_id='{}'".format(self.room_type_id)})
