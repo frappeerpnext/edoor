@@ -33,6 +33,7 @@
 
                     </div>
                     <div v-if="rate_type_data.tax_rule.tax_2_rate">
+                     
                         <Checkbox v-model="rate_type_data.tax_2_rate" :binary="true"
                             :trueValue="rate_type_data.tax_rule.tax_2_rate" :falseValue="0" />
                         <label> {{ rate_type_data.tax_rule.tax_2_name }} {{ rate_type_data.tax_rule.tax_2_rate }}%</label>
@@ -55,6 +56,7 @@ import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue
 import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
 import {i18n} from '@/i18n';
+import { onMounted } from "vue";
 const { t: $t } = i18n.global; 
 const rs = inject('$reservation_stay');
 const emit = defineEmits(['onClose', 'onSave'])
@@ -126,7 +128,13 @@ function onSave() {
         rate_type: rateType.value,
         apply_to_all_stay: applyToAllStay.value,
         regenerate_new_rate: regenerateNewRate.value,
-        update_reservation: props.update_reservation
+        update_reservation: props.update_reservation,
+        tax_rule:rate_type_data.value.tax_rule.name,
+        rate_include_tax:(rate_type_data.value.tax_rule?.is_rate_include_tax || 1)==1?'Yes':'No',
+        tax_1_rate:rate_type_data.value.tax_1_rate || 0,
+        tax_2_rate:rate_type_data.value.tax_2_rate || 0,
+        tax_3_rate:rate_type_data.value.tax_3_rate || 0
+
     })
         .then((result) => {
             isLoading.value = false
@@ -139,4 +147,8 @@ function onSave() {
             isLoading.value = false
         })
 }
+
+onMounted(()=>{
+    onRateTypeChange(props.rate_type)
+})
 </script>

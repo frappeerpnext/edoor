@@ -149,13 +149,9 @@ class ReservationStay(Document):
 		self.room_rate= Enumerable(self.stays).min(lambda x: x.rate or 0)
 		self.room_rate_discount= Enumerable(self.stays).sum(lambda x: x.discount_amount or 0)
  
-		self.room_rate_tax_1_amount= Enumerable(self.stays).sum(lambda x: x.tax_1_amount or 0)
-		self.room_rate_tax_2_amount= Enumerable(self.stays).sum(lambda x: x.tax_2_amount or 0)
-		self.room_rate_tax_3_amount= Enumerable(self.stays).sum(lambda x: x.tax_3_amount or 0)
-		
 	
 
-		self.total_room_rate_tax= Enumerable(self.stays).sum(lambda x: x.total_tax or 0)
+		self.total_tax= Enumerable(self.stays).sum(lambda x: x.total_tax or 0)
 
 		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
 		self.adr = Enumerable(self.stays).avg(lambda x: (x.adr or 0)) 

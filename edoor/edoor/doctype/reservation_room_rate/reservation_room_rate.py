@@ -28,9 +28,9 @@ class ReservationRoomRate(Document):
 		self.input_rate =float(self.input_rate or 0)
 		
 		if not self.is_manual_rate:
-			if hasattr(self,"regenerate_rate") and  self.regenerate_rate:
-				
-				room_rate = get_room_rate(self.property, self.rate_type, self.room_type_id,self.business_source,self.date)	
+			if (hasattr(self,"regenerate_rate") and  self.regenerate_rate)  or self.flags.regenerate_rate:
+				room_rate = get_room_rate(self.property, self.rate_type, self.room_type_id,self.business_source,self.date)
+		 
 				self.input_rate = room_rate['rate']
 
  
@@ -47,9 +47,11 @@ class ReservationRoomRate(Document):
 			self.has_value_changed("adult") or   
 			self.has_value_changed("child") or   
 			self.has_value_changed("is_package") or   
-			self.has_value_changed("package_charge_data")   
+			self.has_value_changed("package_charge_data")   or 
+			self.flags.regenerate_rate == True 
+       
       	): 
-			
+      
 			rate_breakdown = get_room_rate_breakdown(json.dumps({
 				"rate_type":self.rate_type,
 				"tax_rule":self.tax_rule,
@@ -66,14 +68,14 @@ class ReservationRoomRate(Document):
 				"child":self.child,
 				"package_charge_data":self.package_charge_data
 			}))
-
-		 
+   
+			self.tax_rule_data = rate_breakdown["tax_rule_data"]
 			self.total_tax =rate_breakdown["total_tax"]
 			self.total_room_charge = rate_breakdown["total_room_charge"]
 			self.total_other_charge = rate_breakdown["total_other_charge"]
 			self.total_rate = rate_breakdown["total_amount"]
-			 
 			self.discount_amount= rate_breakdown["discount_amount"]
+
 		 
 
 			if (self.discount_amount or 0) > (self.input_rate or 0):

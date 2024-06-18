@@ -387,17 +387,20 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
     folio_names=[]
     # get stay names 
     room_rate_datas = frappe.db.sql("""select 
-                                    name,
-                                    reservation_stay
-                                from `tabReservation Room Rate` 
+                                    a.name,
+                                    a.reservation_stay
+                                from `tabReservation Room Rate` a
+                                inner join `tabReservation Stay` b on b.name = a.reservation_stay
                                 where 
-                                    property=%(property)s and 
-                                    date=%(date)s and 
-                                    is_arrival=0 and 
-                                    is_active_reservation = 1
+                                    a.property=%(property)s and 
+                                    a.date=%(date)s and 
+                                    a.is_arrival=0 and 
+                                    a.is_active_reservation = 1 and 
+                                    b.reservation_status = 'In-house'
+                                    
                                 """,{"property":property,"date": working_day["date_working_day"]},as_dict=1) 
     stay_names = list(set([d["reservation_stay"] for d in room_rate_datas]))
-    
+   
     if stay_names:
         
         stays_info = get_reservation_stay_list_infor(stay_names =stay_names)
@@ -438,7 +441,7 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
                     s["reservation_folio"] = folio.name
             
         charge_list = get_charge_list_for_posting_room_charge(reservation_room_rate_names= reservation_room_rate_names, working_day=working_day)
-
+ 
         folio_transaction_list = get_folio_transaction_new_record(stays_infor=stays_info, charge_list=charge_list , working_day = working_day)
         bulk_insert("Folio Transaction",folio_transaction_list , chunk_size=10000)
         

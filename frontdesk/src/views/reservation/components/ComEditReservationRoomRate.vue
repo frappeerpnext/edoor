@@ -216,7 +216,7 @@
         </div>
         </div>
         
-<div class="col-4" v-if="(doc.is_house_use +doc.is_complimentary )==0 ||  doc.tax_rule || doc.is_package">
+<div class="col-4" v-if="((doc.is_house_use +doc.is_complimentary )==0 &&  doc.tax_rule) || ((doc.is_house_use +doc.is_complimentary )==0 &&  doc.is_package)">
     <div class="card">
         <Accordion :activeIndex="0">
             <AccordionTab header="Room Rate Breakdown">

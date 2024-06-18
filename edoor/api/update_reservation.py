@@ -76,9 +76,6 @@ def update_reservation_stay(stay_names,run_commit=True):
                 MIN(CASE WHEN input_rate <> 0 THEN input_rate END)   as input_rate,
                 sum(total_rate)/count(name) as adr,
                 sum(discount_amount) as discount_amount,
-                sum(tax_1_amount) as tax_1_amount,
-                sum(tax_2_amount) as tax_2_amount,
-                sum(tax_3_amount) as tax_3_amount,
                 sum(total_tax) as total_tax,
                 sum(total_rate) as total_rate,
                 max(is_complimentary) as is_complimentary,
@@ -95,9 +92,6 @@ def update_reservation_stay(stay_names,run_commit=True):
             st.total_room_rate = coalesce(a.total_rate,0), 
             st.adr = coalesce(a.adr,0), 
             st.room_rate_discount = coalesce(a.discount_amount,0), 
-            st.room_rate_tax_1_amount = coalesce(a.tax_1_amount,0), 
-            st.room_rate_tax_2_amount = coalesce(a.tax_2_amount,0), 
-            st.room_rate_tax_3_amount = coalesce(a.tax_3_amount,0), 
             st.total_room_rate_tax = coalesce(a.total_tax,0)
         where
             st.name in %(stay_names)s

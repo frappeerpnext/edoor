@@ -89,7 +89,7 @@ def get_master_folio_name_cache(reservation):
 def get_rate_type_info_with_cache(name):
     doc = frappe.get_doc("Rate Type", name)
     if not doc.account_code:
-        frappe.throw("This account does not have account code")
+        frappe.throw("This rate type does not have account code")
     
     account_doc =frappe.get_doc("Account Code", doc.account_code)
     tax_rule=None
@@ -99,6 +99,7 @@ def get_rate_type_info_with_cache(name):
 
     if doc.is_house_use==1 or doc.is_complimentary==1:
         tax_rule = None
+    
     package_data = []
     if account_doc.is_package:
         if account_doc.packages:

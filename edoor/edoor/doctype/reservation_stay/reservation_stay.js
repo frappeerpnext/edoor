@@ -12,24 +12,25 @@ frappe.ui.form.on("Reservation Stay", {
 
                 }
 
-                if (!frm.doc.__islocal) {
-                        getItemReservationStayList(frm) 
-                        getReservationRoomRate(frm) 
-                        getReservationStayFolio(frm)
-                }
+                
                 
         },
         refresh(frm) {
 
-                // set_indicator(frm);
-                if (frappe.session.user != "Administrator") {
+                // // set_indicator(frm);
+                // if (frappe.session.user != "Administrator") {
                         
-                        for (const field of frm.meta.fields) {
-                                 if(field.fieldtype!="HTML" &&  field.fieldtype!="Tab Break"){ 
-                                        frm.set_df_property(field.fieldname, "hidden", 1);
-                                }
+                //         for (const field of frm.meta.fields) {
+                //                  if(field.fieldtype!="HTML" &&  field.fieldtype!="Tab Break"){ 
+                //                         frm.set_df_property(field.fieldname, "hidden", 1);
+                //                 }
 
-                        }
+                //         }
+                // }
+                if (!frm.doc.__islocal) {
+                        getItemReservationStayList(frm) 
+                        getReservationRoomRate(frm) 
+                        getReservationStayFolio(frm)
                 }
                 renderGeneralInforamtion(frm);
 

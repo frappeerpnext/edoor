@@ -86,6 +86,8 @@
   "room_rate_tax_2_amount",
   "room_rate_tax_3_amount",
   "total_room_rate_tax",
+  "total_tax",
+  "total_service_charge",
   "column_break_46",
   "adr",
   "total_room_rate",
@@ -973,12 +975,22 @@
    "fieldname": "total_other_charge",
    "fieldtype": "Currency",
    "label": "Total Other Charge"
+  },
+  {
+   "fieldname": "total_tax",
+   "fieldtype": "Currency",
+   "label": "Total Tax"
+  },
+  {
+   "fieldname": "total_service_charge",
+   "fieldtype": "Currency",
+   "label": "Total Service Charge"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-14 15:55:33.145000",
+ "modified": "2024-06-18 15:29:04.767718",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
