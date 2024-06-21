@@ -119,6 +119,8 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const isLoading = ref(false)
 
 function onSave() {
+    
+    
     isLoading.value = true
 
     postApi('reservation.change_rate_type', {
@@ -130,7 +132,7 @@ function onSave() {
         regenerate_new_rate: regenerateNewRate.value,
         update_reservation: props.update_reservation,
         tax_rule:rate_type_data.value.tax_rule.name,
-        rate_include_tax:(rate_type_data.value.tax_rule?.is_rate_include_tax || 1)==1?'Yes':'No',
+        rate_include_tax:rate_type_data.value.is_rate_include_tax==1?'Yes':'No',
         tax_1_rate:rate_type_data.value.tax_1_rate || 0,
         tax_2_rate:rate_type_data.value.tax_2_rate || 0,
         tax_3_rate:rate_type_data.value.tax_3_rate || 0

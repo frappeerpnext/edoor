@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 import json
+
 class Room(Document):
 	def validate(self): 
 		if not self.reservation_stay:

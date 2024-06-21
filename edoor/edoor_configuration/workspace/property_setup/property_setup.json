@@ -199,7 +199,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "eDoor Setting",
-   "link_count": 5,
+   "link_count": 4,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -242,19 +242,9 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "User Permission",
-   "link_count": 0,
-   "link_to": "Predefine User Permission",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2024-06-08 11:37:22.546006",
+ "modified": "2024-06-19 09:33:22.012679",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Property Setup",

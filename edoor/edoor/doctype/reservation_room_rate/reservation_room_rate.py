@@ -33,7 +33,7 @@ class ReservationRoomRate(Document):
 		 
 				self.input_rate = room_rate['rate']
 
- 
+
 		if (self.has_value_changed("input_rate") or 
 			self.has_value_changed("tax_rule") or 
 			self.has_value_changed("rate_include_tax") or 
@@ -48,6 +48,7 @@ class ReservationRoomRate(Document):
 			self.has_value_changed("child") or   
 			self.has_value_changed("is_package") or   
 			self.has_value_changed("package_charge_data")   or 
+	
 			self.flags.regenerate_rate == True 
        
       	): 
@@ -68,6 +69,8 @@ class ReservationRoomRate(Document):
 				"child":self.child,
 				"package_charge_data":self.package_charge_data
 			}))
+
+			# frappe.throw(str(rate_breakdown))
    
 			self.tax_rule_data = rate_breakdown["tax_rule_data"]
 			self.total_tax =rate_breakdown["total_tax"]

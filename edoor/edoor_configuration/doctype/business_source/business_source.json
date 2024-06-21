@@ -13,12 +13,13 @@
   "business_source",
   "country",
   "city",
-  "contact_name",
-  "phone_number",
-  "email",
   "auto_create_city_ledger_account",
   "city_ledger_type",
   "is_walk_in_business_source",
+  "column_break_nyis",
+  "contact_name",
+  "phone_number",
+  "email",
   "credit_card_information_section",
   "bank_name",
   "credit_card_number",
@@ -30,6 +31,7 @@
    "fieldname": "business_source_type",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Business Source Type",
    "options": "Business Source Type",
    "reqd": 1
@@ -37,6 +39,7 @@
   {
    "fieldname": "business_source",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Business Source",
    "unique": 1
   },
@@ -54,11 +57,13 @@
   {
    "fieldname": "contact_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Contact Name"
   },
   {
    "fieldname": "phone_number",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Phone Number"
   },
   {
@@ -89,6 +94,8 @@
   {
    "fieldname": "property",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Property",
    "options": "Business Branch",
    "reqd": 1
@@ -96,6 +103,7 @@
   {
    "fieldname": "keyword",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Keyword "
   },
   {
@@ -116,11 +124,15 @@
    "fieldname": "is_walk_in_business_source",
    "fieldtype": "Check",
    "label": "Is Walk-In Business Source"
+  },
+  {
+   "fieldname": "column_break_nyis",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-23 16:28:06.233102",
+ "modified": "2024-06-20 14:58:02.490115",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

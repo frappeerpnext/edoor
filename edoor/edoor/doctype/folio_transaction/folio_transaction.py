@@ -377,6 +377,9 @@ class FolioTransaction(Document):
 
 
 	def on_update(self):
+		if self.flags.ingore_on_update:
+			return 
+
 		if not hasattr(self,"ignore_update_folio_transaction"):
 			update_folio_transaction(self)
 

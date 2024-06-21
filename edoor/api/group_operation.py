@@ -3,11 +3,12 @@ from edoor.api.frontdesk import get_working_day
 from edoor.api.reservation import check_room_type_availability, post_room_charge_to_folio_after_extend_stay
 from edoor.api.utils import update_reservation, validate_role,update_reservation_stay_and_reservation
 from py_linq import Enumerable
+import json
 import frappe
 from frappe import _ 
 
 from frappe.utils.data import add_to_date, getdate,now,date_diff
-from edoor.api.generate_room_rate import generate_forecast_revenue, group_change_stay_generate_room_rate
+from edoor.api.generate_room_rate import generate_forecast_revenue, get_package_charge_data, group_change_stay_generate_room_rate
 
 @frappe.whitelist(methods="POST")
 def group_change_stay(data):
@@ -281,6 +282,7 @@ def can_change_stay_date(data):
 
 @frappe.whitelist(methods="POST")
 def group_change_rate_type(data):
+    get_package_charge_data.cache_clear()
     #data is 
     # {
     #     "start_date", "end_date", "rate_type", "is_override_rate"
@@ -308,8 +310,11 @@ def group_change_rate_type(data):
         "end_date":data["end_date"]
     }, as_dict=1)
 
-
-
+    package_data = []
+    if rate_type.is_package==1:
+        package_data = get_package_charge_data(rate_type.name)
+    
+    
     for d in room_rate_names:
         if frappe.db.get_value("Reservation Stay", d["reservation_stay"],"reservation_status")=='In-house' and  getdate(d["date"]) == getdate(working_day["date_working_day"]): 
             pass
@@ -325,6 +330,15 @@ def group_change_rate_type(data):
                 doc.tax_2_rate = data["tax_2_rate"]
                 doc.tax_3_rate = data["tax_3_rate"]
                 doc.rate_include_tax = data["rate_include_tax"]
+            
+            if package_data:
+                if doc.is_arrival:
+                    doc.package_charge_data = json.dumps([d for d in package_data if d["posting_rule"] in ["Everyday","Checked In Date"]])
+                    
+                else:
+                    doc.package_charge_data = json.dumps([d for d in package_data if d["posting_rule"] in ["Everyday"]])
+
+        
             doc.save()
 
     # update room rate type to reservation stay

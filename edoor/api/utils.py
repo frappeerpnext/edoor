@@ -1450,8 +1450,8 @@ def get_exchange_rate(property,date=None):
 def get_tax_from_sale(data):
     sql ="""
             select 
-                product_name,
-                product_name_kh as description ,
+                product_name  as description,
+                product_name_kh ,
                 `portion`,
                 is_free,
                 modifiers,

@@ -134,7 +134,7 @@ function viewfoliotaxinvoicedetail() {
 				{key:'date',value: moment(tax_invoice_date.value).format("YYYY-MM-DD")},
 			],
              name: dialogRef.value.data.name,
-             report_name: gv.getCustomPrintFormat("Folio Tax Invoice Detail"),
+             report_name: gv.getCustomPrintFormat("Invoice"),
              letterhead:"Tax Letterhead",
              filter_options:["show_vattin"]
             

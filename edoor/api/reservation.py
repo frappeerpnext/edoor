@@ -1388,23 +1388,36 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
 
     is_complimentary, is_house_use = frappe.db.get_value("Rate Type", rate_type,["is_complimentary","is_house_use"])
     
-    
+    package_data = []
+    rate_type_doc = get_rate_type_doc(rate_type)
+    if rate_type_doc.is_package==1:
+        package_data = get_package_charge_data(rate_type)
+        
     for r in room_rates:
         doc = frappe.get_doc("Reservation Room Rate",r.name)
         doc.rate_type = rate_type
-        doc.package_charge_data = json.dumps( get_package_charge_data(doc.rate_type))
+        
+        
+         
         
         doc.tax_rule = tax_rule
         doc.tax_1_rate = tax_1_rate
         doc.tax_2_rate = tax_2_rate
         doc.tax_3_rate = tax_3_rate
-    
+        doc.rate_include_tax = rate_include_tax
         doc.regenerate_rate = regenerate_new_rate
         doc.flags.regenerate_rate = regenerate_new_rate
         
         if is_complimentary ==1 or is_house_use==1:
             doc.input_rate = 0
+            doc.package_charge_data = "[]"
             
+        if package_data:
+            if doc.is_arrival:
+                doc.package_charge_data = json.dumps([d for d in package_data if d["posting_rule"] in ["Everyday","Checked In Date"]])
+            else:
+                doc.package_charge_data = json.dumps([d for d in package_data if d["posting_rule"] in ["Everyday"]])
+                    
         doc.flags.ignore_on_update = True
         doc.save(ignore_permissions=True)
 
@@ -3506,6 +3519,9 @@ def folio_transfer(data):
         folio_transaction_doc.ignore_validate_auto_post = 1
         folio_transaction_doc.ignore_update_folio_transaction = 1
         folio_transaction_doc.valiate_input_amount = 0
+        folio_transaction_doc.flags.ingore_validate = True
+        folio_transaction_doc.flags.ignore_on_update = True
+        
         
         #check if user want to change room
         if data["change_room"] ==1:
@@ -3533,9 +3549,15 @@ def folio_transfer(data):
                 "content":f'Folio Transfer from room # {old_folio_doc.rooms}. Folio Number  {data["folio_number"]}, Reservation Stay # {old_folio_doc.reservation}, Reservation # {old_folio_doc.reservation_stay}, Note: {data["note"]}'
             }
         )
-
+ 
+   
+       
         #update sub record
         sub_transaction = frappe.db.sql("select name from `tabFolio Transaction` where parent_reference='{}'".format(d), as_dict=1)
+        # sub transaction second level
+        if sub_transaction:
+            sub_transaction = sub_transaction +  frappe.db.sql("select name from `tabFolio Transaction` where parent_reference in %(parent_references)s",{"parent_references":[d["name"] for d in sub_transaction]}, as_dict=1)
+ 
         for s in sub_transaction:
             sub_transaction_doc = frappe.get_doc("Folio Transaction", s["name"])
             sub_transaction_doc.transaction_number = new_folio_doc.name
@@ -3544,6 +3566,8 @@ def folio_transfer(data):
             sub_transaction_doc.ignore_validate_auto_post = 1
             sub_transaction_doc.ignore_update_folio_transaction = 1
             sub_transaction_doc.valiate_input_amount = 0
+            sub_transaction_doc.flags.ingore_validate = True
+            sub_transaction_doc.flags.ignore_on_update = True
 
 
             #check if user want to change room
@@ -3559,13 +3583,33 @@ def folio_transfer(data):
                 sub_transaction_doc.guest = new_folio_doc.guest
 
             sub_transaction_doc.save()
-        #end updatre sub
-
-        #enque update job source folio
-        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["folio_number"] , reservation = data["reservation"], reservation_stay=data["reservation_stay"])
-        #enque update target folio
-        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["new_folio_number"] , reservation = new_folio_doc.reservation, reservation_stay=new_folio_doc.reservation_stay)    
-        frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
+        
+    #end updatre sub
+    update_reservation_folio(name=data["folio_number"],run_commit=False,ignore_validate=True)
+    # update folio balance to source folio
+    
+    update_reservation_folio(name=data["new_folio_number"],run_commit=False,ignore_validate=True)
+    
+    
+    frappe.db.commit()
+    
+    # add audit trail to source reservation stay
+    comment_doc.append(
+        {
+            "reference_doctype":"Reservation Stay",
+            "reference_name":data["reservation_stay"],
+            "subject":"Transfer folio item",
+            "custom_audit_trail_type":"Folio",
+            "custom_icon":"pi pi-dollar",
+            "content": f'Folio transaction numbers: {", ".join(data["folio_transaction"])} has been transfer to Folio #: {data["new_folio_number"]}, Stay #: {new_folio_doc.reservation_stay}, Guest: {new_folio_doc.guest_name}, Room #: {new_folio_doc.rooms},Note: {data["note"]}'
+        }
+    )
+        
+    #enque update job source folio
+    frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["folio_number"] , reservation = data["reservation"], reservation_stay=data["reservation_stay"])
+    #enque update target folio
+    frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["new_folio_number"] , reservation = new_folio_doc.reservation, reservation_stay=new_folio_doc.reservation_stay)    
+    frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
 
 
     frappe.msgprint("Folio transfer successfully")

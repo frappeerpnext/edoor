@@ -839,7 +839,8 @@ def get_room_rate_account_code_breakdown(room_rate_data):
     if account_code_doc.allow_discount and account_code_doc.discount_account:
         base_code["discount_account"]=account_code_doc.discount_account     
     base_account_codes.append(base_code)    
-    if room_rate_data["is_package"] ==1:
+    if room_rate_data["is_package"] ==1 and (room_rate_data["input_rate"] or 0)>0:
+ 
         package_account_codes =   package_base_account_code_charge_breakdown( tuple(sorted(room_rate_data.items())))
         base_code["amount"] = room_rate_data["input_rate"] - sum([d["amount"] for d in package_account_codes if d["is_package_account"]==1])
         base_account_codes =  base_account_codes + package_account_codes
@@ -862,7 +863,9 @@ def get_room_rate_account_code_breakdown(room_rate_data):
 
 @lru_cache(maxsize=128)
 def package_base_account_code_charge_breakdown(room_rate_data):
+    
     room_rate_data = {key: value for key, value in room_rate_data}
+    
     data = []
     for p in json.loads( room_rate_data["package_charge_data"]) or []:
         account_code_doc = get_account_code_doc(p["account_code"])
@@ -965,6 +968,7 @@ def get_room_rate_calculation(room_rate_data=None,rate=100):
             }
     if "discount_amount" not in room_rate_data:
         room_rate_data["discount_amount"] = 0
+    room_rate_data["discount"] = room_rate_data["discount"] or 0
         
     account_codes = get_room_rate_account_code_breakdown(tuple(sorted(room_rate_data.items())))
     if room_rate_data["discount"]>0:
@@ -1015,18 +1019,12 @@ def get_room_rate_calculation(room_rate_data=None,rate=100):
         "total_amount": sum(d["total_amount"] for d in data)
     }
 
-# this function is use to test performance
 
+# this function is use to test performance
 @frappe.whitelist()
 def test_rate_breakdown():
     start_time = time.time()
-
-
-
-
- 
     # get_room_rate_breakdown.cache_clear()
-    
     data = frappe.db.sql("""select  
                          rate_type,
                          tax_rule,
@@ -1057,6 +1055,7 @@ def test_rate_breakdown():
 def get_room_rate_breakdown(room_rate_data=None,rate=100):
     data = []
     room_rate_data = json.loads(room_rate_data)
+
     if not room_rate_data:
         room_rate_data = {
             "rate_type":"Rate Include B/F",
@@ -1074,6 +1073,7 @@ def get_room_rate_breakdown(room_rate_data=None,rate=100):
             "child":1,
             "package_charge_data":json.dumps([{"account_code": "10837", "posting_rule": "Everyday", "charge_rule": "Adult", "rate": 0.0, "adult_rate": 6.0, "child_rate": 0.0, "breakdown_account_code": "10119", "discount_breakdown_account_code": "40103", "tax_1_breakdown_account_code": "", "tax_2_breakdown_account_code": "", "tax_3_breakdown_account_code": "20107"}, {"account_code": "10838", "posting_rule": "Everyday", "charge_rule": "Child", "rate": 0.0, "adult_rate": 0.0, "child_rate": 3.0, "breakdown_account_code": "10119", "discount_breakdown_account_code": "40103", "tax_1_breakdown_account_code": "", "tax_2_breakdown_account_code": "", "tax_3_breakdown_account_code": "20107"}])
         }
+
     if "discount_amount" not in room_rate_data:
         room_rate_data["discount_amount"] = 0
         
@@ -1108,7 +1108,7 @@ def get_room_rate_breakdown(room_rate_data=None,rate=100):
         tax_data["discount_amount"] = acc["discount_amount"]
         tax_data["parent_account_name"] = "" if not  "parent_account_name" in acc else  acc["parent_account_name"]
         
-        tax_data["is_package"] = 0 if not "is_package_account" in acc else  acc["is_package_account"]
+        tax_data["is_package"] = 0 if not "is_package_account" in acc      else  acc["is_package_account"]
         
         data.append(
             tax_data
