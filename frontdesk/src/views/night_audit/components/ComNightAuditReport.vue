@@ -85,7 +85,7 @@ function showReport() {
         date = moment(date).add(-1, 'Days').format("YYYY-MM-DD")
     }
 
-    url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + window.property_name + "&format=" + gv.getCustomPrintFormat(decodeURI(selectedReport.value.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0&start_date="+ date +"&cashier_shift="+ cashier_shift + "&end_date=" + date + "&" + selectedReport.value.default_filter
+    url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + encodeURIComponent(window.property_name) + "&format=" + gv.getCustomPrintFormat(decodeURI(selectedReport.value.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0&start_date="+ date +"&cashier_shift="+ cashier_shift + "&end_date=" + date + "&" + selectedReport.value.default_filter
 
     const el = document.getElementById("iframe_night_audit_report")
 

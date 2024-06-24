@@ -1413,14 +1413,14 @@ def get_tax_invoice_data(folio_number,document_type,date = None):
     # total tax vat from pos bill to room
     total_vat = total_vat + sum([d["tax_3_amount"] for d in pos_tax_data["revenue_data"]])
     
-    grand_total = sum(d["amount"] for d in tax_data) + sum(d["child_total"] for d in tax_summary)  + total_vat
+    grand_total = sum(d["quantity"] * d["price"]  for d in tax_data) + sum(d["child_total"] for d in tax_summary)  + total_vat
     
     return_data = {
         "property":property,
         "document_type":document_type,
         "data":tax_data,
         "summary":tax_summary,
-        "taxable_amount": sum(d["amount"] for d in tax_data),
+        "taxable_amount": sum(d["quantity"] * d["price"]  for d in tax_data),
         "vat":{
             "description":"អាករលើតម្លៃបន្ថែម/VAT (10%)",
             "value":total_vat
@@ -1707,13 +1707,13 @@ def generate_tax_invoice(property=None,document_type=None, folio_number=None,tax
     
     
     return tax_invoice_doc
-
 @frappe.whitelist()
 def update_tax_invoice_data_to_tax_invoice(tax_invoice_name,run_commit=True):
     
     doc = frappe.get_doc("Tax Invoice",tax_invoice_name)
     tax_data = get_tax_invoice_data(folio_number = doc.document_name, document_type=doc.document_type, date= doc.tax_invoice_date)
-    doc.sub_total = sum([d["amount"] for d in tax_data["data"]])
+    
+    doc.sub_total = sum([d["quantity"] * d["price"]  for d in tax_data["data"]])
     
     # service charge
     doc.service_charge = sum(

@@ -32,15 +32,16 @@ class FolioTransaction(Document):
 			
 		if self.required_select_product and not self.product:
 			frappe.throw("Please select product code.")
-			
-		 
+
+
 		#validate folio status
 		 
 		if not  self.flags.ignore_validate_close_folio:
 			if self.transaction_type =='Reservation Folio' :
 				if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
 					frappe.throw(f"This folio {self.transaction_number} is already closed")
-				
+
+	
 		# when update note
 		if hasattr(self,"is_update_note") and self.is_update_note:
 			self.note_by = frappe.session.user
@@ -104,6 +105,8 @@ class FolioTransaction(Document):
 				self.reservation_stay = ref_doc.reservation_stay
 				self.is_master_folio = ref_doc.is_master
 				self.folio_type = ref_doc.folio_type
+				if not self.source_reservation_stay:
+					self.source_reservation_stay = self.reservation_stay
 				
 
 			elif self.transaction_type == "Reservation":

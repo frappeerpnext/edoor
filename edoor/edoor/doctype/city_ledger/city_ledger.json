@@ -49,12 +49,15 @@
   {
    "fieldname": "city_ledger_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "City Ledger Name",
    "reqd": 1
   },
   {
    "fieldname": "city_ledger_type",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "City Ledger Type",
    "options": "City Ledger Type",
    "reqd": 1
@@ -69,11 +72,13 @@
   {
    "fieldname": "company_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Company Name"
   },
   {
    "fieldname": "phone_number",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Phone Number"
   },
   {
@@ -89,6 +94,7 @@
   {
    "fieldname": "contact_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Contact Name"
   },
   {
@@ -124,7 +130,8 @@
   {
    "fieldname": "total_debit",
    "fieldtype": "Currency",
-   "label": "Total Debit"
+   "label": "Total Debit",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_14",
@@ -133,7 +140,8 @@
   {
    "fieldname": "total_credit",
    "fieldtype": "Currency",
-   "label": "Total Credit"
+   "label": "Total Credit",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_16",
@@ -142,7 +150,9 @@
   {
    "fieldname": "balance",
    "fieldtype": "Currency",
-   "label": "Balance"
+   "in_list_view": 1,
+   "label": "Balance",
+   "read_only": 1
   },
   {
    "fieldname": "bank_account_information_tab",
@@ -196,14 +206,8 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [
-  {
-   "group": "Transaction",
-   "link_doctype": "Folio Transaction",
-   "link_fieldname": "transaction_number"
-  }
- ],
- "modified": "2023-12-24 21:04:57.587002",
+ "links": [],
+ "modified": "2024-06-21 12:00:25.169046",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger",

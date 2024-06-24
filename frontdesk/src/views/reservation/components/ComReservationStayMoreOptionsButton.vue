@@ -397,7 +397,7 @@ function onNoShowReservationStay() {
             confirm_message:"You are about to mark this reservation as No Show.<br/> If you have a No Show charge, please update the folio transaction first. <br/> If you want to sell this room, please untick on check box <strong>Reserved room for this reservation</strong>",
             data: {
                 reservation: rs.reservationStay.reservation,
-                reserved_room: true,
+                reserved_room: false,
                 show_reserved_room:true,
                 status: "No Show",
                 stays: [{

@@ -1080,6 +1080,7 @@
    "fieldtype": "HTML"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "section_break_fcbh",
    "fieldtype": "Section Break"
   },
@@ -1124,7 +1125,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-07 10:45:43.594814",
+ "modified": "2024-06-22 11:40:08.799772",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

@@ -493,9 +493,9 @@ const viewSummary = (name) => {
     ]
     if (name == "Arrival") {
         onViewData(
-            'Business%20Branch',
+            'Business Branch',
             // "eDoor%20Dashboard%20Arrival%20Guest",
-            gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest"),
+            "eDoor Dashboard Arrival Guest",
             'Arrival Guest',
             [{ key: 'action', value: "view_arrival" }, { key: "date", value: selected_date.value }],
             ['keyword', 'building', 'floor', 'room_type', 'reservation_status']

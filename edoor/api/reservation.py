@@ -217,8 +217,8 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
             room_number
         from `tabRoom` 
         where 
-            property = '{0}' and 
-            room_type_id = if('{1}'='', room_type_id, '{1}') and
+            property = %(property)s and 
+            room_type_id = if(%(room_type_id)s='', room_type_id, %(room_type_id)s) and
             name not in (
                 select 
                     distinct
@@ -226,7 +226,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
                 from `tabTemp Room Occupy` 
                 where
                     is_departure = 0 and
-                    date between '{2}' and '{3}' {4}
+                    date between '{0}' and '{1}' {2}
             )   
     """
     #check if arrival date is equal to current system date then check room availabityy is check with house keeping status
@@ -234,9 +234,9 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
     if str(start_date) == str(working_day["date_working_day"]):
         sql = "{} and coalesce(show_in_room_availability,0)  = 1".format(sql)
    
-    sql = sql.format(property,room_type_id,start_date, end_date,sql_except)
+    sql = sql.format(start_date, end_date,sql_except)
  
-    data = frappe.db.sql(sql,as_dict=1)
+    data = frappe.db.sql(sql,{"property":property,"room_type_id":room_type_id},as_dict=1)
     return data
 
 @frappe.whitelist()
@@ -248,11 +248,11 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
         start_date = working_day["date_working_day"]
 
     #get all room type and total room 
-    sql_room_type = "select a.room_type_id as name, a.room_type, count(a.name) as total_room, 0 as occupy from `tabRoom` a inner join `tabRoom Type` rt on rt.name = a.room_type_id where a.disabled = 0 and a.property='{}'  group by a.room_type_id,a.room_type order by rt.sort_order".format(property)
+    sql_room_type = "select a.room_type_id as name, a.room_type, count(a.name) as total_room, 0 as occupy from `tabRoom` a inner join `tabRoom Type` rt on rt.name = a.room_type_id where a.disabled = 0 and a.property=%(property)s  group by a.room_type_id,a.room_type order by rt.sort_order"
     if room_type_id:
-        sql_room_type = "select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property='{}' and room_type_id = '{}'  group by room_type_id,room_type order by sort_order".format(property,room_type_id)
+        sql_room_type = "select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property=%(property)s and room_type_id = %(room_type_id)s  group by room_type_id,room_type order by sort_order"
     
-    room_type = frappe.db.sql(sql_room_type,as_dict=1)
+    room_type = frappe.db.sql(sql_room_type,{"property":property,"room_type_id":room_type_id},as_dict=1)
     
     for t in room_type:
         #get total room occupy from temp room occupy 
@@ -2954,8 +2954,8 @@ def unassign_room(reservation_stay, room_stay):
 @frappe.whitelist(methods="POST")
 def assign_room(data):
     doc = frappe.get_doc('Reservation Stay', data['reservation_stay'])
-    if  not doc.reservation_status == "No Show":
-        doc.reservation_status = 'Reserved'
+    old_status = doc.reservation_status
+    doc.reservation_status = 'Reserved'
 
     if 'room_id' in data:
         if not data['room_id']:
@@ -3012,10 +3012,14 @@ def assign_room(data):
     if doc:
         generate_forecast_revenue(stay_names=[doc.name], run_commit=False)
         update_reservation_stay_and_reservation(reservation_stay=doc.name, reservation=doc.reservation, run_commit=False)
-    
+    if old_status=="No Show":
+        generate_room_occupies(stay_names=[doc.name], run_commit=False)
+        
     
     frappe.db.commit()
     frappe.msgprint(_("Assign room successfully"))
+    if old_status=='No Show':
+        frappe.msgprint(_("Reservation has been change from No Show to Reserved"))
     return doc
 
 @frappe.whitelist()
@@ -3691,7 +3695,10 @@ def verify_reservation_stay(stay_name= None):
         data = frappe.db.sql(sql,as_dict=1)
         if len(data)>0:
             if stay.room_nights !=  data[0]["total"]:
-                generate_room_rate(self = stay, run_commit=False)
+               pass
+        #    generate missing rate and revenue forecase breakdown
+        
+            
 
 @frappe.whitelist(methods="POST")
 def make_as_verify_folio_transaction(name):

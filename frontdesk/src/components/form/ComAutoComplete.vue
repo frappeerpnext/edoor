@@ -5,6 +5,7 @@
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
             :placeholder="$t(placeholder ?? '')" :multiple="isMultiple">
             <template #option="slotProps">
+                
                 <template v-if="slotProps.option.description == addNewKey || slotProps.option.description == AdvancedSearchKey">
                     <div v-if="slotProps.option.description == addNewKey">
                         <div class="font-bold text-blue-600"><i class="pi pi-plus"></i> {{ addNewTitle || 'Add New' }}</div>
@@ -21,6 +22,19 @@
                     </div>
                 </div>
             </template> 
+            <template #empty>
+                <div class="px-3 py-1">
+                    <div class="w-full text-center">
+                        No Results Found
+                    </div> 
+                    <hr class="my-2">
+                    <div class="surface-200 border-round-lg p-2" v-if="filters" >
+                        Filters applied for <span v-html="getFilterText()"></span> 
+                    </div>
+                </div>
+                
+            </template>
+           
         </AutoComplete>
         <button v-if="!isHideClearButton && selected != '' && !disabled" type="button" class="absolute right-0 top-0 bottom-0 px-3 py-2" @click="onClear"><i class="pi pi-times text-gray-400" style="font-size: 1rem"></i></button>
     </div> 
@@ -123,7 +137,29 @@ if (props.suggestions){
     options.value = props.suggestions
 }
 
- 
+
+function getFilterText() {
+    if (!props.filters){
+        return ""
+    }
+    let formattedText = '';
+    const keys = Object.keys(props.filters);
+
+    // Iterate over each key in the object
+    keys.forEach((key, index) => {
+        // Transform key for formatting
+        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+        
+        // Append formatted key and value to the formatted text
+        formattedText += `<strong>${formattedKey}</strong> = <strong>${props.filters[key]}</strong>`;
+        if (index < keys.length - 1) {
+            formattedText += ', ';
+        }
+        
+    });
+
+    return formattedText;
+}
 
 
 const search = (event) => {

@@ -1,17 +1,42 @@
 import frappe
 def update_fetch_from_fields(self):
 	data_for_updates = []
+	data_value_for_update ={}
+ 
 	if self.has_value_changed("reservation_status"):
+     
 		status_color=frappe.db.get_value("Reservation Status",self.reservation_status,"color")
-		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_status='{}'".format(self.reservation_status)})
-		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_status_color='{}'".format(status_color)})
+		data_value_for_update["reservation_status"] = self.reservation_status
+		data_value_for_update["status_color"] = status_color
+
+  
+		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_status=%(reservation_status)s"})
+		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_status_color=%(status_color)s"})
 		
-		data_for_updates.append({"doctype":"Reservation Folio","update_field":"reservation_status='{}'".format(self.reservation_status)})
-		data_for_updates.append({"doctype":"Reservation Folio","update_field":"reservation_status_color='{}'".format(status_color)})
-		data_for_updates.append({"doctype":"Room Occupy","update_field":"reservation_status='{}'".format(self.reservation_status)})
+		data_for_updates.append({"doctype":"Reservation Folio","update_field":"reservation_status=%(reservation_status)s"})
+		data_for_updates.append({"doctype":"Reservation Folio","update_field":"reservation_status_color=%(status_color)s"})
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"reservation_status=%(reservation_status)s"})
 	if self.has_value_changed("business_source"):
 		#Revenue Forecast Breakdown
-		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"business_source='{}'".format(self.business_source)})
+		data_value_for_update["business_source"] = self.business_source
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"business_source=%(business_source)s"})
+		
+	# guest
+	if self.has_value_changed("guest"):		
+		data_value_for_update["guest"] = self.guest
+		data_value_for_update["guest_name"] = self.guest_name
+		data_value_for_update["guest_type"] = self.guest_type
+		data_value_for_update["nationality"] = self.nationality
+  
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"guest=%(guest)s"})
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"guest_type=%(guest_type)s"})
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"nationality=%(nationality)s"})
+		
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"guest=%(guest)s"})
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"guest_name=%(guest_name)s"})
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"guest_type=%(guest_type)s"})
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"nationality=%(nationality)s"})
+
 		
 	
 	if data_for_updates:
@@ -21,6 +46,6 @@ def update_fetch_from_fields(self):
 				",".join([x["update_field"] for x in data_for_updates if x["doctype"]==d]),
 				self.name
 			)
-			frappe.db.sql(sql)	
+			frappe.db.sql(sql,data_value_for_update)	
 		
     

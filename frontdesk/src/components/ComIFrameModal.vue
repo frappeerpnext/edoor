@@ -326,15 +326,15 @@ const loadIframe = () => {
     param.value.settings = decodeURIComponent("%7B%7D")
 
     if (view.value) {
-        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
+        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + encodeURIComponent(decodeURI( dialogRef.value.data.name)) + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
 
     } else {
-        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0"
+        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + encodeURIComponent(decodeURI( dialogRef.value.data.name)) + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0"
     }
     if (extra_params.value) {
         extra_params.value.forEach(p => {
-            url.value = url.value + "&" + p.key + "=" + p.value
-            param.value[p.key] = decodeURIComponent(p.value)
+            url.value = url.value + "&" + p.key + "=" + encodeURIComponent(decodeURI( p.value))
+            param.value[p.key] = p.value
         });
     }
 
@@ -349,7 +349,7 @@ const loadIframe = () => {
                 } else if (p == "end_date") {
                     end_date = moment(filters.value[p]).format("YYYY-MM-DD")
                 } else {
-                    url.value = url.value + "&" + p + "=" + filters.value[p]
+                    url.value = url.value + "&" + p + "=" + encodeURIComponent(decodeURI( filters.value[p]))
                     param.value[p] = filters.value[p]
                 }
             }
@@ -378,6 +378,7 @@ const loadIframe = () => {
             loading.value = false
         })
     } else {
+ 
         document.getElementById(iframe_id).contentWindow.location.replace(url.value)
 
     }

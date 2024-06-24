@@ -112,7 +112,7 @@ def get_dashboard_data_by_timespan(property,timespan="today"):
 # Get the current date
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None,room_type_id=None,include_reservation_by_business_source=0,include_reservation_by_room_type=0):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
 
     if data:
@@ -122,8 +122,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         date = working_date 
 
     # get total_room
-    sql = "select count(name) as total from `tabRoom` where property='{0}' and room_type_id=if('{1}'='',room_type_id,'{1}')".format(property,room_type_id or '')
-    data = frappe.db.sql(sql, as_dict=1)
+    sql = "select count(name) as total from `tabRoom` where property=%(property)s and room_type_id=if('{0}'='',room_type_id,'{0}')".format(room_type_id or '')
+    data = frappe.db.sql(sql,{"property":property}, as_dict=1)
     total_room = 0
     if data:
         total_room = data[0]["total"] or 0
@@ -139,11 +139,11 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         FROM `tabRoom Occupy` 
         WHERE 
             is_active = 1 and
-            `date` = '{0}' AND 
-            property = '{1}' and 
+            `date` = %(date)s AND 
+            property = %(property)s and 
             type='Reservation' and 
-            room_type_id=if('{2}'='',room_type_id,'{2}');
-    """.format(date,property, room_type_id or '')
+            room_type_id=if('{0}'='',room_type_id,'{0}');
+    """.format( room_type_id or '')
  
 
     #get all totoal unassign room
@@ -156,13 +156,13 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
             FROM `tabRoom Occupy` 
             WHERE 
                 is_active= 1 and  
-                `date` >= '{0}' AND 
-                property = '{1}' and 
+                `date` >= %(date)s AND 
+                property = %(property)s and 
                 type='Reservation' and 
-                room_type_id=if('{2}'='',room_type_id,'{2}') and 
+                room_type_id=if('{0}'='',room_type_id,'{0}') and 
                 ifnull(room_id,'') = ''
         ) and is_active_reservation = 1
-        """.format(date,property, room_type_id or ''), as_dict =1)
+        """.format( room_type_id or ''),{"property":property,"date":date}, as_dict =1)
 
     
     if total_unassign_room:
@@ -173,7 +173,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
    
  
     
-    room_operation = frappe.db.sql(sql, as_dict=1)
+    room_operation = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
 
 
 
@@ -186,21 +186,21 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     #filter base on arrival date
     stay = []
     stay_sql = """SELECT
-                    SUM(if(reservation_status = 'Cancelled' and arrival_date='{1}',1,0)) AS `total_cancelled`, 
-                    SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`
+                    SUM(if(reservation_status = 'Cancelled' and arrival_date=%(date)s,1,0)) AS `total_cancelled`, 
+                    SUM(if(reservation_status = 'Void' and arrival_date=%(date)s,1,0)) AS `total_void`
                 FROM `tabReservation Stay` 
                 WHERE  
                     name in (
                         select reservation_stay from `tabReservation Room Rate`
                         where
-                            date = '{1}' and 
-                            property = '{0}' and 
-                            room_type_id = if('{2}'='',room_type_id,'{2}')
+                            date = %(date)s and 
+                            property = %(property)s and 
+                            room_type_id = if('{0}'='',room_type_id,'{0}')
                     )  and
-                    property = '{0}';""".format(property,date, room_type_id or '')
+                    property = %(property)s;""".format(room_type_id or '')
     
     
-    stay = frappe.db.sql(stay_sql, as_dict=1)
+    stay = frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)
     
     #get data from occupy data 
     stay_sql = """SELECT
@@ -219,12 +219,12 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                     SUM( type='Reservation' and  is_active_reservation=1 and is_stay_over=1 ) AS `total_stay_over`
                 FROM `tabRoom Occupy` 
                 WHERE  
-                    date = '{1}' and 
-                    property = '{0}'  and 
-                    room_type_id = if('{2}'='',room_type_id,'{2}')
-        """.format(property,date, room_type_id or '')
+                    date = %(date)s and 
+                    property = %(property)s  and 
+                    room_type_id = if('{0}'='',room_type_id,'{0}')
+        """.format(room_type_id or '')
 
-    stay =[stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
+    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)[0]]
     
     # get today cancell by cannel date
 
@@ -236,12 +236,12 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                     inner join `tabReservation Stay Room` b on b.parent = a.name
                     
                 WHERE  
-                    b.room_type_id = if('{2}'='',room_type_id,'{2}') and 
-                    a.cancelled_date = '{1}' and 
-                    a.property = '{0}';""".format(property,date, room_type_id or '')
+                    b.room_type_id = if('{0}'='',room_type_id,'{0}') and 
+                    a.cancelled_date = %(date)s and 
+                    a.property = %(property)s;""".format( room_type_id or '')
     
     
-    stay =[stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
+    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)[0]]
 
     #filter base on departure date
     stay_sql = """SELECT 
@@ -252,18 +252,18 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                      name in (
                         select reservation_stay from `tabRoom Occupy`
                         where
-                            date = '{1}' and 
-                            room_type_id = if('{2}'='',room_type_id,'{2}') and 
-                            property='{0}' and 
+                            date = %(date)s and 
+                            room_type_id = if('{0}'='',room_type_id,'{0}') and 
+                            property=%(property)s and 
                             is_departure = 1 and 
                             is_active_reservation= 1
 
                     ) and 
                     
-                    property = '{0}';""".format(property,date, room_type_id or '')
+                    property = %(property)s;""".format(room_type_id or '')
     
  
-    stay =[stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
+    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)[0]]
 
 
 
@@ -277,9 +277,9 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                             is_active_reservation=1 and 
                             reservation_status   in ('Reserved','Confirmed','In-house','Checked Out') and
                             reservation_type = 'GIT' and 
-                            arrival_date = '{0}' and
-                            property = '{1}'
-                    """.format(date, property)
+                            arrival_date = %(date)s and
+                            property = %(property)s
+                    """
     fit_reservation_sql = """
                         select 
                             count(distinct reservation)   as total
@@ -288,44 +288,44 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                             is_active_reservation=1 and 
                             reservation_status   in ('Reserved','Confirmed','In-house','Checked Out') and
                             reservation_type = 'FIT' and 
-                            arrival_date = '{0}' and
-                            property = '{1}'
-                    """.format(date, property)
+                            arrival_date = %(date)s and
+                            property = %(property)s
+                    """
     daily_reservation_sql = """
                         select 
                             count(distinct reservation)   as total
                         from `tabReservation Stay`
                         where 
-                            reservation_date = '{0}' and
-                            property = '{1}'
-                    """.format(date, property) 
+                            reservation_date = %(date)s and
+                            property = %(property)s
+                    """
     daily_reservation_stay_sql = """
                         select 
                             count( reservation)   as total
                         from `tabReservation Stay`
                         where 
-                            reservation_date = '{0}' and
-                            property = '{1}'
-                    """.format(date, property)    
+                            reservation_date = %(date)s and
+                            property = %(property)s
+                    """ 
     in_house_guest = """
                         select 
                             count(reservation)   as total
                         from `tabReservation Stay`
                         where 
-                            property = '{0}' and
+                            property = %(property)s and
                             reservation_status = 'In-house'
-                    """.format(property)    
+                    """    
     
     
     #count upcommintg note
-    upcoming_note = frappe.db.sql("select count(name) as total  from `tabComment` where custom_is_note=1 and  custom_note_date>='{}' and custom_property='{}'".format(date,property), as_dict=1)
+    upcoming_note = frappe.db.sql("select count(name) as total  from `tabComment` where custom_is_note=1 and  custom_note_date>=%(date)s and custom_property=%(property)s",{"property":property,"date":date}, as_dict=1)
     
     #count desk folio
-    desk_folio = frappe.db.sql("select count(name) as total  from `tabDesk Folio` where posting_date = '{}' and property='{}'".format(date,property), as_dict=1)
+    desk_folio = frappe.db.sql("select count(name) as total  from `tabDesk Folio` where posting_date = %(date)s and property=%(property)s",{"property":property,"date":date}, as_dict=1)
     
     #get total room block 
-    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block' and room_type_id = if('{2}'='',room_type_id,'{2}');".format(date,property,room_type_id or '')
-    total_room_block = frappe.db.sql(sql,as_dict=1)
+    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = %(date)s AND property = %(property)s and type='Block' and room_type_id = if('{0}'='',room_type_id,'{0}');".format(room_type_id or '')
+    total_room_block = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
     total_room_block = total_room_block[0]["total_room_block"] or 0
     
     vacant_room =  frappe.db.sql("""select count(name) as total_room from `tabRoom` where name not in (
@@ -335,12 +335,12 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
             where 
                 is_active = 1 and
                 is_departure = 0 and 
-                `date` = '{1}' AND 
-                room_type_id = if('{2}'='',room_type_id,'{2}') and 
-                property = '{0}'
+                `date` = %(date)s AND 
+                room_type_id = if('{0}'='',room_type_id,'{0}') and 
+                property = %(property)s
         ) and 
-        room_type_id = if('{2}'='',room_type_id,'{2}')                      
-        """.format(property, date,room_type_id or ''),as_dict=1)
+        room_type_id = if('{0}'='',room_type_id,'{0}')                      
+        """.format(room_type_id or ''),{"property":property,"date":date},as_dict=1)
     
     if len(vacant_room)>0:
         vacant_room = vacant_room[0]["total_room"]
@@ -381,20 +381,20 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         "total_cancelled":stay[0]["total_cancelled"] or 0,
         "total_void":stay[0]["total_void"] or 0,
         "stay_over":stay[0]["total_stay_over"] or 0,
-        "git_reservation_arrival": frappe.db.sql(git_reservation_sql,as_dict=1)[0]["total"] or 0,
-        "fit_reservation_arrival": frappe.db.sql(fit_reservation_sql,as_dict=1)[0]["total"] or 0,
+        "git_reservation_arrival": frappe.db.sql(git_reservation_sql,{"property":property, "date":date},as_dict=1)[0]["total"] or 0,
+        "fit_reservation_arrival": frappe.db.sql(fit_reservation_sql,{"property":property, "date":date},as_dict=1)[0]["total"] or 0,
         "git_stay_arrival":stay[0]["total_git_stay_arrival"] or 0,
         "upcoming_note":upcoming_note[0]["total"] or 0,
         "desk_folio":desk_folio[0]["total"] or 0,
         "total_unassign_room":total_unassign_room,
         "total_room_block": total_room_block,
-        "in_house": frappe.db.sql(in_house_guest,as_dict=1)[0]["total"] or 0,
+        "in_house": frappe.db.sql(in_house_guest,{"property":property, "date":date},as_dict=1)[0]["total"] or 0,
         "occupancy":occupancy,
         "fit_stay_arrival":stay[0]["total_fit_stay_arrival"] or 0,
         "total_git_stay":stay[0]["total_git_stay"] or 0,
         "total_fit_stay":stay[0]["total_fit_stay"] or 0,
-        "daily_reservation": frappe.db.sql(daily_reservation_sql,as_dict=1)[0]["total"] or 0 ,
-        "daily_reservation_stay":frappe.db.sql(daily_reservation_stay_sql,as_dict=1)[0]["total"] or 0 ,
+        "daily_reservation": frappe.db.sql(daily_reservation_sql,{"property":property, "date":date},as_dict=1)[0]["total"] or 0 ,
+        "daily_reservation_stay":frappe.db.sql(daily_reservation_stay_sql,{"property":property, "date":date},as_dict=1)[0]["total"] or 0 ,
         "reservation_by_business_source":reservation_by_business_source,
         "reservation_by_room_type":reservation_by_room_type,
         "total_in_house":stay[0]["total_in_house"] or 0,
@@ -402,7 +402,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
 
 @frappe.whitelist()
 def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
     
     if data:
@@ -415,46 +415,46 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
                 sum(amount * if(type='Debit',1,-1)) as room_revenue 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date = '{}' and
+            property=%(property)s and posting_date = %(date)s and
             flash_report_revenue_group in ('Room Charge')
-        """.format(property,end_date)
-    today_revenue = frappe.db.sql(revenue_sql, as_dict=1)[0]["room_revenue"] or 0
+        """
+    today_revenue = frappe.db.sql(revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["room_revenue"] or 0
     other_room_revenue_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as other_room_revenue 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date = '{}' and
+            property=%(property)s and posting_date = %(date)s and
             flash_report_revenue_group in ('Other Room Revenue')
-        """.format(property,end_date)
-    today_room_other_revenue = frappe.db.sql(other_room_revenue_sql, as_dict=1)[0]["other_room_revenue"] or 0
+        """
+    today_room_other_revenue = frappe.db.sql(other_room_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["other_room_revenue"] or 0
     other_revenue_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as other_revenue 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date = '{}' and
+            property= %(property)s and posting_date = %(date)s and
             flash_report_revenue_group in ('Other Revenue')
-        """.format(property,end_date)
-    today_other_revenue = frappe.db.sql(other_revenue_sql, as_dict=1)[0]["other_revenue"] or 0
+        """
+    today_other_revenue = frappe.db.sql(other_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["other_revenue"] or 0
 
     payment_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as payment 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date = '{}' and
+            property=%(property)s and posting_date = %(date)s and
             account_group_name in ('Payment & Refund')
-        """.format(property,end_date)
-    today_payment = frappe.db.sql(payment_sql, as_dict=1)[0]["payment"] or 0
+        """
+    today_payment = frappe.db.sql(payment_sql,{"property":property,"date":end_date}, as_dict=1)[0]["payment"] or 0
 
-    exp_revenue_sql = "select sum(total_rate) as expected_revenue from `tabReservation Room Rate` where property = '{}' and date = '{}' and is_active = 1".format(property,end_date)
-    today_exp_revenue = frappe.db.sql(exp_revenue_sql, as_dict=1)[0]["expected_revenue"] or 0
+    exp_revenue_sql = "select sum(amount * if(type='Debit',1,-1)) as expected_revenue from `tabRevenue Forecast Breakdown` where property = %(property)s and date = %(date)s"
+    today_exp_revenue = frappe.db.sql(exp_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["expected_revenue"] or 0
     expense_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as expense 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date = '{}' and
+            property=%(property)s and posting_date = %(date)s and
             transaction_type = 'Payable Ledger'
-        """.format(property,end_date)
-    today_expense = frappe.db.sql(expense_sql, as_dict=1)[0]["expense"] or 0
+        """
+    today_expense = frappe.db.sql(expense_sql,{"property":property,"date":end_date}, as_dict=1)[0]["expense"] or 0
     total_rooms =frappe.db.count('Room', {'property': property, "disabled":0})
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
     if calculate_room_occupancy_include_room_block==0:
@@ -468,10 +468,10 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
                 sum(amount * if(type='Debit',1,-1)) as room_revenue 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date between '{}' and '{}' and
+            property=%(property)s and posting_date between '{}' and '{}' and
             flash_report_revenue_group in ('Room Charge')
-        """.format(property,start_date ,end_date)
-    mtd_room_revenue = frappe.db.sql(mtd_revenue_sql, as_dict=1)[0]["room_revenue"] or 0
+        """.format(start_date ,end_date)
+    mtd_room_revenue = frappe.db.sql(mtd_revenue_sql,{"property":property}, as_dict=1)[0]["room_revenue"] or 0
     mtd_other_room_revenue_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as other_room_revenue 
             from `tabFolio Transaction` 
@@ -568,7 +568,7 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
     }
 @frappe.whitelist()
 def get_chart_list_data(property=None,date=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
     
     if data:
@@ -584,13 +584,13 @@ def get_chart_list_data(property=None,date=None):
                 account_name 
             from `tabFolio Transaction` 
             where 
-                property = '{}' and
-                posting_date = '{}' and
+                property = %(property)s and
+                posting_date = %(date)s and
                 account_group_name in ('Payment & Refund')
             group by
                 account_code,account_name
-        """.format(property,date)
-    payment_breakdown = frappe.db.sql(sql, as_dict=1)
+        """
+    payment_breakdown = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
 
     # Charge List
     charge_sql="""
@@ -599,13 +599,13 @@ def get_chart_list_data(property=None,date=None):
                 parent_account_name
             from `tabFolio Transaction`
             where 
-                property = '{}' and
-                posting_date = '{}' and
+                property = %(property)s and
+                posting_date = %(date)s and
                 account_group_name in ('Charge')
             group by
                 parent_account_name
-        """.format(property,date)
-    charge_list = frappe.db.sql(charge_sql, as_dict=1)
+        """
+    charge_list = frappe.db.sql(charge_sql,{"property":property,"date":date}, as_dict=1)
 
     # Business Source List
     sql="""
@@ -614,13 +614,13 @@ def get_chart_list_data(property=None,date=None):
                 business_source
             from `tabFolio Transaction`
             where 
-                property = '{}' and
-                posting_date = '{}' and
+                property = %(property)s and
+                posting_date = %(date)s and
                 business_source != ''
             group by
                 business_source
-        """.format(property,date)
-    business_source_list = frappe.db.sql(sql, as_dict=1)
+        """
+    business_source_list = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     return {
         "payment_breakdown":payment_breakdown,
         "charge_list":charge_list,
@@ -628,7 +628,7 @@ def get_chart_list_data(property=None,date=None):
     }
 @frappe.whitelist()
 def get_paymet_chart_data(property=None,date=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
 
     if data:
@@ -643,13 +643,13 @@ def get_paymet_chart_data(property=None,date=None):
                 account_name 
             from `tabFolio Transaction` 
             where 
-                property = '{}' and
-                posting_date = '{}' and
+                property = %(property)s and
+                posting_date = %(date)s and
                 account_group_name in ('Payment & Refund')
             group by
                 account_code,account_name
-        """.format(property,date)
-    data = frappe.db.sql(sql, as_dict=1)
+        """
+    data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     chart_data = {
             "labels":[d['account_name'] for d in data],
             "datasets":[d['payment'] for d in data]
@@ -670,7 +670,7 @@ def get_paymet_chart_data(property=None,date=None):
     return chart_data
 @frappe.whitelist()
 def get_charge_chart_data(property=None,date=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
 
     if data:
@@ -684,13 +684,13 @@ def get_charge_chart_data(property=None,date=None):
                 parent_account_name
             from `tabFolio Transaction`
             where 
-                property = '{}' and
-                posting_date = '{}' and
+                property = %(property)s and
+                posting_date = %(date)s and
                 account_group_name in ('Charge')
             group by
                 parent_account_name
-        """.format(property,date)
-    data = frappe.db.sql(sql, as_dict=1)
+        """
+    data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     chart_data = {
             "labels":[d['parent_account_name'] for d in data],
             "datasets":[d['charge'] for d in data],
@@ -711,7 +711,7 @@ def get_charge_chart_data(property=None,date=None):
     return chart_data
 @frappe.whitelist()
 def get_f_and_b_chart_data(property=None,date=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
 
     if data:
@@ -725,13 +725,13 @@ def get_f_and_b_chart_data(property=None,date=None):
                 parent_account_name
             from `tabFolio Transaction`
             where 
-                property = '{}' and
-                posting_date = '{}' and
+                property = %(property)s and
+                posting_date = %(date)s and
                 account_group_name in ('Charge')
             group by
                 parent_account_name
-        """.format(property,date)
-    data = frappe.db.sql(sql, as_dict=1)
+        """
+    data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     chart_data = {
             "labels":[d['parent_account_name'] for d in data],
             "datasets":[d['charge'] for d in data],
@@ -752,7 +752,7 @@ def get_f_and_b_chart_data(property=None,date=None):
     return chart_data
 @frappe.whitelist()
 def get_business_source_chart_data(property=None,date=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
 
     if data:
@@ -766,26 +766,26 @@ def get_business_source_chart_data(property=None,date=None):
                 business_source
             from `tabFolio Transaction`
             where 
-                property = '{}' and
-                posting_date = '{}' and
+                property = %(property)s and
+                posting_date = %(date)s and
                 coalesce(business_source,'') !=''
             group by
                 business_source
-        """.format(property,date)
-    data = frappe.db.sql(sql, as_dict=1)
+        """
+    data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     epx_sql="""
             select 
-                sum(total_rate) as amount,
+                sum(amount * if(type='Debit',1,-1)) as amount,
                 business_source
-            from `tabReservation Room Rate`
+            from `tabRevenue Forecast Breakdown`
             where 
-                property = '{}' and
-                date = '{}' and
+                property = %(property)s and
+                date = %(date)s and
                 coalesce(business_source,'') !=''
             group by
                 business_source
-        """.format(property,date)
-    epx_data = frappe.db.sql(epx_sql, as_dict=1)
+        """
+    epx_data = frappe.db.sql(epx_sql,{"property":property,"date":date}, as_dict=1)
     chart_data = {
             "labels":[d['business_source'] for d in data]
             # "colors": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
@@ -814,8 +814,61 @@ def get_business_source_chart_data(property=None,date=None):
   
     return chart_data
 @frappe.whitelist()
+def get_owner_dashboard_current_mount_chart(property=None):
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
+    working_date =  frappe.utils.today() 
+    currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+    working_day = get_working_day(property)
+    now = getdate(working_day["date_working_day"])
+    start_date = getdate( datetime(now.year, now.month, 1))
+    end_date = getdate( now + relativedelta(day=1, months=1, days=-1))
+    group_by_field =  "date"
+    group_by_field_actual =  "posting_date"
+    series_label =  [{"series_label":getdate(d)} for d in  get_date_range(start_date, end_date, False)]
+    forcast_revenue_sql = "select {0} as group_by, sum(amount * if(type='Debit',1,-1)) as forcast_revenue from `tabRevenue Forecast Breakdown` where property = %(property)s and date between %(start_date)s and %(end_date)s group by {0}"    
+    forcast_data = frappe.db.sql(forcast_revenue_sql.format(group_by_field),{"property":property,"start_date":start_date,"end_date":end_date},as_dict=1)
+    actual_revenue_sql = """select 
+                {0} as group_by,
+                sum(amount * if(type='Debit',1,-1)) as actual_revenue 
+            from `tabFolio Transaction` 
+            where 
+            property=%(property)s and posting_date between %(start_date)s and %(end_date)s
+            group by
+                {0}
+        """.format(group_by_field_actual)
+    actual_data = frappe.db.sql(actual_revenue_sql,{"property":property,"start_date":start_date,"end_date":end_date}, as_dict=1)
+    actual_revenue = []
+    forcast_revenue = []
+    for d in series_label:
+        actual_revenue.append(sum([x["actual_revenue"] for x in actual_data if x["group_by"] == d["series_label"]]))
+        forcast_revenue.append(sum([x["forcast_revenue"] for x in forcast_data if x["group_by"] == d["series_label"]]))
+    chart_data = {
+            "labels":[getdate(x["series_label"]).strftime('%d/%b') for x in series_label]
+            # "colors": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
+    }
+    colors = ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
+    chart_data["datasets"] = []
+
+    datasets_actual = {
+        "chartType": 'bar',
+        "name": 'Actual Revenue',
+        "values": actual_revenue,
+        "colors":'#306ec5',
+    }
+    chart_data["datasets"].append(datasets_actual)
+
+    datasets_forcast = {
+        "chartType": 'bar',
+        "name": 'Forcast Revenue',
+        "values": forcast_revenue,
+        "colors":'#e0453a',
+    }
+    chart_data["datasets"].append(datasets_forcast)
+  
+    return chart_data
+@frappe.whitelist()
 def get_room_type_chart_data(property=None,date=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
 
     if data:
@@ -829,27 +882,27 @@ def get_room_type_chart_data(property=None,date=None):
                 room_type
             from `tabFolio Transaction`
             where 
-                property = '{}' and
-                posting_date = '{}' and
+                property = %(property)s and
+                posting_date = %(date)s and
                 room_type != '' and
                 flash_report_revenue_group in ('Room Charge')
             group by
                 room_type
-        """.format(property,date)
-    data = frappe.db.sql(sql, as_dict=1)
+        """
+    data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     epx_sql="""
             select 
-                sum(total_rate) as amount,
+                sum(amount * if(type='Debit',1,-1)) as amount,
                 room_type
-            from `tabReservation Room Rate`
+            from `tabRevenue Forecast Breakdown`
             where 
-                property = '{}' and
-                date = '{}' and
+                property = %(property)s and
+                date = %(date)s and
                 room_type != ''
             group by
                 room_type
-        """.format(property,date)
-    epx_data = frappe.db.sql(epx_sql, as_dict=1)
+        """
+    epx_data = frappe.db.sql(epx_sql,{"property":property,"date":date}, as_dict=1)
 
     #get total room in each room type
     sql = """
@@ -858,23 +911,23 @@ def get_room_type_chart_data(property=None,date=None):
             room_type 
         from `tabRoom` 
         where 
-            property = '{}' and
+            property = %(property)s and
             disabled != 1 
         group by room_type        
         """.format(property)
-    room_type = frappe.db.sql(sql, as_dict=1)
+    room_type = frappe.db.sql(sql,{"property":property}, as_dict=1)
     sql = """
             select 
                 count(room_id) as total_room_sold,
                 room_type 
             from `tabRoom Occupy` 
             where 
-                property = '{}' and
-                date='{}' and 
+                property = %(property)s and
+                date=%(date)s and 
                 is_departure = 0 
             group by room_type      
-        """.format(property,date)
-    room_sold = frappe.db.sql(sql, as_dict=1)
+        """
+    room_sold = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     chart_data = {
             "labels":[d['room_type'] for d in data]
             # "colors": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
@@ -1399,15 +1452,15 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
             0 as total_rate
         from `tabRoom Occupy`
         WHERE 
-            `date` = '{0}' AND 
-            property = '{1}' and 
+            `date` = %(date)s AND 
+            property = %(property)s and 
             is_active=1 and 
-            room_type_id=if('{2}'='',room_type_id,'{2}')
+            room_type_id=if('{0}'='',room_type_id,'{0}')
         group by
             room_type_id
-    """.format(date,property, room_type_id or '') 
+    """.format(room_type_id or '') 
 
-    occupy_data = frappe.db.sql(sql, as_dict=1)
+    occupy_data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     
     #get room rate 
     sql="""
@@ -1417,15 +1470,15 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
         from `tabReservation Room Rate`
         WHERE 
             is_active = 1 and 
-            `date` = '{0}' AND 
-            property = '{1}' and 
-            room_type_id=if('{2}'='',room_type_id,'{2}')
+            `date` = %(date)s AND 
+            property = %(property)s and 
+            room_type_id=if('{0}'='',room_type_id,'{0}')
         group by
             room_type,
             room_type_id,
             room_type_alias
-    """.format(date,property, room_type_id or '')
-    room_rate_data = frappe.db.sql(sql,as_dict=1)
+    """.format( room_type_id or '')
+    room_rate_data = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
 
 
     calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
@@ -1487,17 +1540,17 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
             0 as total_rate
         from `tabRoom Occupy`
         WHERE 
-            `date` = '{0}' AND 
-            property = '{1}' and 
+            `date` = %(date)s AND 
+            property = %(property)s and 
             type='Reservation' and
             is_active=1 and 
-            room_type_id=if('{2}'='',room_type_id,'{2}')
+            room_type_id=if('{0}'='',room_type_id,'{0}')
         group by
             business_source
-    """.format(date,property, room_type_id or '') 
+    """.format(room_type_id or '') 
 
     
-    data = frappe.db.sql(sql, as_dict=1)
+    data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     
     #get room rate 
     sql="""
@@ -1507,23 +1560,23 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
         from `tabReservation Room Rate`
         WHERE 
             is_active = 1 and 
-            `date` = '{0}' AND 
-            property = '{1}' and 
-            room_type_id=if('{2}'='',room_type_id,'{2}')
+            `date` = %(date)s AND 
+            property = %(property)s and 
+            room_type_id=if('{0}'='',room_type_id,'{0}')
         group by
            business_source
-    """.format(date,property, room_type_id or '')
-    room_rate_data = frappe.db.sql(sql,as_dict=1)
+    """.format( room_type_id or '')
+    room_rate_data = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
 
 
     calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
     #get total room from daily property data 
-    sql = "select sum(total_room) as total from `tabDaily Property Data` where  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
-    total_rooms  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    sql = "select sum(total_room) as total from `tabDaily Property Data` where  `date` = %(date)s AND property = %(property)s and room_type_id=if('{0}'='',room_type_id,'{0}')"
+    total_rooms  = frappe.db.sql(sql.format( room_type_id or ''),{"property":property,"date":date},as_dict=1)[0]["total"]
     
     #get total room block
-    sql = "select count(name) as total from `tabRoom Occupy` where type='Block' and  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
-    room_block  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    sql = "select count(name) as total from `tabRoom Occupy` where type='Block' and  `date` = %(date)s AND property = %(property)s and room_type_id=if('{0}'='',room_type_id,'{0}')"
+    room_block  = frappe.db.sql(sql.format( room_type_id or ''),{"property":property,"date":date},as_dict=1)[0]["total"]
     
     for d in data:
         d["total_room"] = total_rooms
@@ -1568,17 +1621,17 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
             0 as total_rate
         from `tabRoom Occupy`
         WHERE 
-            `date` = '{0}' AND 
-            property = '{1}' and 
+            `date` = %(date)s AND 
+            property = %(property)s and 
             type='Reservation' and 
             is_active=1 and 
-            room_type_id=if('{2}'='',room_type_id,'{2}')
+            room_type_id=if('{0}'='',room_type_id,'{0}')
         group by
             reservation_type
-    """.format(date,property, room_type_id or '') 
+    """.format( room_type_id or '') 
 
     
-    data = frappe.db.sql(sql, as_dict=1)
+    data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     
     #get room rate 
     sql="""
@@ -1588,23 +1641,23 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
         from `tabReservation Room Rate`
         WHERE 
             is_active = 1 and 
-            `date` = '{0}' AND 
-            property = '{1}' and 
-            room_type_id=if('{2}'='',room_type_id,'{2}')
+            `date` = %(date)s AND 
+            property = %(property)s and 
+            room_type_id=if('{0}'='',room_type_id,'{0}')
         group by
            reservation_type
-    """.format(date,property, room_type_id or '')
-    room_rate_data = frappe.db.sql(sql,as_dict=1)
+    """.format(room_type_id or '')
+    room_rate_data = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
 
 
     calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
     #get total room from daily property data 
-    sql = "select sum(total_room) as total from `tabDaily Property Data` where  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
-    total_rooms  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    sql = "select sum(total_room) as total from `tabDaily Property Data` where  `date` = %(date)s AND property = %(property)s and room_type_id=if('{0}'='',room_type_id,'{0}')"
+    total_rooms  = frappe.db.sql(sql.format( room_type_id or ''),{"property":property,"date":date},as_dict=1)[0]["total"]
         
     #get total room block
-    sql = "select count(name) as total from `tabRoom Occupy` where type='Block' and  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
-    room_block  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    sql = "select count(name) as total from `tabRoom Occupy` where type='Block' and  `date` = %(date)s AND property = %(property)s and room_type_id=if('{0}'='',room_type_id,'{0}')"
+    room_block  = frappe.db.sql(sql.format(  room_type_id or ''),{"property":property,"date":date},as_dict=1)[0]["total"]
     
 
     for d in data:
@@ -1631,9 +1684,9 @@ def get_house_keeping_status(property, working_day):
     hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
     housekeeping_status = []
     for d in hk_data:
-        total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
+        total  = frappe.db.sql("select count(name) as total from `tabRoom` where property=%(property)s and housekeeping_status='{}'".format(d.name),{"property":property},as_dict=1)[0]["total"] or 0
         
-        total_room_block  = frappe.db.sql("select count(name) as total from `tabRoom Block` where property='{}' and end_date >= '{}' and is_unblock = 0 and docstatus = 1".format(property,working_day),as_dict=1)[0]["total"] or 0
+        total_room_block  = frappe.db.sql("select count(name) as total from `tabRoom Block` where property=%(property)s and end_date >= %(end_date)s and is_unblock = 0 and docstatus = 1",{"property":property,"end_date":working_day},as_dict=1)[0]["total"] or 0
 
         housekeeping_status.append({
             "status":d.name,
@@ -1703,9 +1756,9 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
                 sum(type='Reservation' and is_stay_over = 1 and is_active_reservation=1) as  stay_over ,
                 sum(type='Reservation' and is_active = 1 and is_active_reservation=0 and reservation_status='No Show') as  no_show ,
                 sum(type='Block') as  block 
-            from `tabRoom Occupy` where property='{1}' and date between '{2}' and '{3}'  group by {0} """
+            from `tabRoom Occupy` where property=%(property)s and date between '{1}' and '{2}'  group by {0} """
     
-    data = frappe.db.sql(sql.format(group_by_field, property, start_date,end_date),as_dict=1) 
+    data = frappe.db.sql(sql.format(group_by_field, start_date,end_date),{"property":property},as_dict=1) 
  
     
     occupancy_data = []
@@ -1718,10 +1771,10 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
     #get total room by room type
     total_rooms_list= []
     if view_chart_by == "Room Type":
-        total_rooms_list = frappe.db.sql("select room_type_id ,sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}' group by room_type_id".format(property, start_date,end_date), as_dict=1)
+        total_rooms_list = frappe.db.sql("select room_type_id ,sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between '{}' and '{}' group by room_type_id".format( start_date,end_date),{"property":property}, as_dict=1)
     elif view_chart_by == "Time Series":
         if duration_type=="Daily":
-            total_rooms_list = frappe.db.sql("select date ,sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}' group by date".format(property, start_date,end_date), as_dict=1)
+            total_rooms_list = frappe.db.sql("select date ,sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between '{}' and '{}' group by date".format( start_date,end_date),{"property":property}, as_dict=1)
         else:
             total_rooms_list = frappe.db.sql("select date_format(date,'%M') as date ,sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}' group by date_format(date,'%M')".format(property, start_date,end_date), as_dict=1)
 
@@ -1837,7 +1890,7 @@ def get_edoor_setting(property = None):
     edoor_setting_doc = frappe.get_doc("eDoor Setting")
      
     epos_setting = frappe.get_doc('ePOS Settings')
-    custom_print_format = frappe.db.sql("select   print_format as name, custom_print_format as print_format from `tabCustom Print Format` where (ifnull(property,'')='' or property='{}') and ifnull(attach_to_doctype,'')!='' and ifnull(custom_print_format,'')!=''".format(property),as_dict=1)
+    custom_print_format = frappe.db.sql("select   print_format as name, custom_print_format as print_format from `tabCustom Print Format` where (ifnull(property,'')='' or property=%(property)s) and ifnull(attach_to_doctype,'')!='' and ifnull(custom_print_format,'')!=''",{"property":property},as_dict=1)
     
 
 
@@ -1978,12 +2031,12 @@ def get_room_chart_data(property,group_by,start_date,end_date):
 @frappe.whitelist()
 def get_working_day(property = ''):
     
-    working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}'  order by posting_date desc, creation desc limit 1".format(property),as_dict=1)
+    working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = %(property)s  order by posting_date desc, creation desc limit 1",{"property":property},as_dict=1)
 
     cashier_shift = None
     
     if len(working_day)>0:
-        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' and is_closed =0 and is_edoor_shift =1  ORDER BY posting_date desc, creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
+        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = %(property)s and working_day='{}' and pos_profile='{}' and is_closed =0 and is_edoor_shift =1  ORDER BY posting_date desc, creation desc limit 1".format(working_day[0]["name"],working_day[0]["pos_profile"]),{"property":property},as_dict=1)
     
         
         if len(data)>0:
@@ -2127,7 +2180,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
                 "children": rooms
             })
     else:
-        resources = resources +  frappe.db.sql("select name as id,coalesce(room_type_color,'#FFFFFF') as room_type_color,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type from `tabRoom` where property='{0}' and  disabled = 0 {1} {2} order by room_number".format( property, filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
+        resources = resources +  frappe.db.sql("select name as id,coalesce(room_type_color,'#FFFFFF') as room_type_color,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type from `tabRoom` where property=%(property)s and  disabled = 0 {0} {1} order by room_number".format(  filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),{"property":property},as_dict=1)
     
 
 
@@ -2421,7 +2474,7 @@ def get_room_block_event(start,end,property):
             name in (
                 select distinct stay_room_id from `tabRoom Occupy` where date between '{2}' and '{3}' 
             ) and 
-            property = '{4}'
+            property = %(property)s
 
     """
     sql = sql.format(
@@ -2429,10 +2482,10 @@ def get_room_block_event(start,end,property):
             "12:00:00" if slot_duration=="12" else "00:00:00",
             getdate(start), 
             getdate(end)
-            ,property)
+            )
     
         
-    data = frappe.db.sql(sql, as_dict=1)
+    data = frappe.db.sql(sql,{"property":property}, as_dict=1)
     
     for d in data:
         d["can_resize"] = True
@@ -2516,67 +2569,12 @@ def get_calendar_event_for_room_type_resource(start,end,property):
         #add event for Vacant Room 
         total_room = Enumerable(room_type_data).sum(lambda r:r.total_room)
 
-        future_arrival_data = get_future_arrival_data(
-                                property,
-                                future_dates[0].strftime('%Y-%m-%d'),
-                                future_dates[len(future_dates)-1].strftime('%Y-%m-%d')
-                            )
-        
-        future_departure_data = get_future_departure_data(
-                                property,
-                                future_dates[0].strftime('%Y-%m-%d'),
-                                future_dates[len(future_dates)-1].strftime('%Y-%m-%d')
-                            )
+      
+ 
 
     return events
-
  
-def get_future_arrival_data(property,start,end):
-    #get arrival and departure event
-    sql = """
-            select 
-                arrival_date as date,
-                count(name) as total_room
-            from `tabReservation Stay` 
-            where 
-                is_active_reservation = 1 and 
-                property = '{}' and 
-                arrival_date between '{}' and '{}'  
-            group by
-                arrival_date
-
-        """
-    sql = sql.format(
-            property, 
-            start,
-            end
-        )
-    
-def get_future_departure_data(property,start,end):
-    #get arrival and departure event
-    sql = """
-            select 
-                departure_date as date,
-                count(name) as total_room
-            from `tabReservation Stay` 
-            where 
-                is_active_reservation = 1 and 
-                property = '{}' and 
-                departure_date between '{}' and '{}'  
-            group by
-                departure_date
-
-        """
-    sql = sql.format(
-            property, 
-            start,
-            end
-        )
-    
  
-
-    
-    return  frappe.db.sql(sql,as_dict=1)
 @frappe.whitelist(methods="POST")
 def validate_run_night_audit(property,step):
     working_day = get_working_day(property)
@@ -2598,27 +2596,29 @@ def validate_run_night_audit(property,step):
         sql="select distinct reservation_stay from `tabReservation Room Rate` where property=%(property)s and date=%(date)s"
         stay_names = frappe.db.sql(sql,{"property":property,"date":working_day["date_working_day"]})
         # reset all room rate record with is_arrival = 0
-        frappe.db.sql("update `tabReservation Room Rate` set is_arrival=0 where reservation_stay in %(stay_names)s and is_arrival=1",{"stay_names":stay_names})
-        # get min date from room rate group by reservation stay then update is_arrival =1 
-        sql = """
-            update `tabReservation Room Rate` r 
-            join (
-                select
-                    reservation_stay,
-                    min(date) as date
-                from `tabReservation Room Rate` 
-                where
-                    reservation_stay in %(stay_names)s
-                group by
-                    reservation_stay
-            ) b 
-            on r.reservation_stay = b.reservation_stay and  r.date = b.date
-            set
-                r.is_arrival = 1
-            
-        """
-        frappe.db.sql(sql,{"stay_names":stay_names})
-        frappe.db.commit()
+        stay_names = stay_names or []
+        if stay_names: 
+            frappe.db.sql("update `tabReservation Room Rate` set is_arrival=0 where reservation_stay in %(stay_names)s and is_arrival=1",{"stay_names":stay_names})
+            # get min date from room rate group by reservation stay then update is_arrival =1 
+            sql = """
+                update `tabReservation Room Rate` r 
+                join (
+                    select
+                        reservation_stay,
+                        min(date) as date
+                    from `tabReservation Room Rate` 
+                    where
+                        reservation_stay in %(stay_names)s
+                    group by
+                        reservation_stay
+                ) b 
+                on r.reservation_stay = b.reservation_stay and  r.date = b.date
+                set
+                    r.is_arrival = 1
+                
+            """
+            frappe.db.sql(sql,{"stay_names":stay_names})
+            frappe.db.commit()
     elif step == 6:
         sql="select name from `tabFolio Transaction` where posting_date = '{}'  and property='{}' and ifnull(parent_reference,'') = '' and is_auto_post = 0 limit 1".format(working_day["date_working_day"], property)
         data = frappe.db.sql(sql, as_dict=1)
@@ -2731,14 +2731,14 @@ def update_room_status(working_day=None,working_day_name=None):
             name not in (
                 select room_id from `tabRoom Occupy` 
                 where
-                    property = '{0}' and 
-                    date = '{1}' and 
+                    property = %(property)s and 
+                    date = %(date)s and 
                     is_active=1 and 
                     ifnull(room_id,'') !=''
             )  and
-            property = '{0}'
-    """.format(working_day.business_branch, working_day.posting_date)
-    room_list = frappe.db.sql(sql,as_dict=1)
+            property = %(property)s
+    """
+    room_list = frappe.db.sql(sql,{"property":working_day.business_branch,"date":working_day.posting_date},as_dict=1)
     for d in room_list:
         room_doc = frappe.get_doc("Room", d["name"])
         room_doc.room_status = "Vacant" 
@@ -3109,13 +3109,13 @@ def get_day_end_summary_report(property, date):
             sum(amount * if(type='Debit',1,-1)) as opening
         from `tabFolio Transaction`
         where
-            property = '{}' and 
-            posting_date<'{}'
+            property = %(property)s and 
+            posting_date<%(date)s
         group by
             transaction_type
-    """.format(property,date)
+    """
 
-    opening_data = frappe.db.sql(sql,as_dict=1)
+    opening_data = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
 
     #get current date transaction
 
@@ -3126,13 +3126,13 @@ def get_day_end_summary_report(property, date):
             sum(amount * if(type='Debit',0,1)) as credit
         from `tabFolio Transaction`
         where
-            property = '{}' and 
-            posting_date = '{}'
+            property = %(property)s and 
+            posting_date = %(date)s
         group by
             transaction_type
-    """.format(property,date)
+    """
 
-    current_date_transaction  = frappe.db.sql(sql,as_dict=1)
+    current_date_transaction  = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
 
     for l in ledger_types:
         opening_record = [d for d in opening_data if d["transaction_type"] == l["value"]]
@@ -3197,9 +3197,9 @@ def get_recent_audit_trail():
         if len(data)>0:
             property = data[0].name
     if property:
-        sql = "select name,creation,comment_by,content,reference_doctype,reference_name,subject,custom_comment_by_photo from `tabComment` where custom_property = '{}' and custom_is_audit_trail=1 order by creation desc limit 20"
+        sql = "select name,creation,comment_by,content,reference_doctype,reference_name,subject,custom_comment_by_photo from `tabComment` where custom_property = %(property)s and custom_is_audit_trail=1 order by creation desc limit 20"
 
-        data =  frappe.db.sql(sql.format(property), as_dict=1)
+        data =  frappe.db.sql(sql,{"property":property}, as_dict=1)
         for d in data:
             d["creation"] = frappe.utils.pretty_date(d["creation"])
         return data
@@ -3220,8 +3220,8 @@ def get_house_keeping_status_backend():
         hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
         housekeeping_status = []
         for d in hk_data:
-            total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
-            total_room  = frappe.db.sql("select count(name) as total_room from `tabRoom` where property='{}' ".format(property,d.name),as_dict=1)[0]["total_room"] or 0
+            total  = frappe.db.sql("select count(name) as total from `tabRoom` where property=%(property)s and housekeeping_status='{}'".format(d.name),{"property":property},as_dict=1)[0]["total"] or 0
+            total_room  = frappe.db.sql("select count(name) as total_room from `tabRoom` where property=%(property)s ".format(d.name),{"property":property},as_dict=1)[0]["total_room"] or 0
             housekeeping_status.append({
                 "status":d.name,
                 "color":d.status_color,
@@ -3255,8 +3255,8 @@ def get_arrival_stay_over_departure_backend():
                 date = frappe.utils.today()
             doc = frappe.get_doc("Business Branch",property)
             
-            sql = "SELECT name,reference_number,room_type_alias,rooms,arrival_date,departure_date,business_source,room_nights,reservation_type,reservation_status,guest,guest_name,status_color from `tabReservation Stay` where property = '{}' and is_active_reservation = 1 and arrival_date = '{}'".format(property,date)
-            data["arrival"] = frappe.db.sql(sql,as_dict=1)
+            sql = "SELECT name,reference_number,room_type_alias,rooms,arrival_date,departure_date,business_source,room_nights,reservation_type,reservation_status,guest,guest_name,status_color from `tabReservation Stay` where property = %(property)s and is_active_reservation = 1 and arrival_date = %(date)s"
+            data["arrival"] = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
             sql = """SELECT 
                         name,
                         reference_number,
@@ -3276,13 +3276,13 @@ def get_arrival_stay_over_departure_backend():
                         name in (
                         select reservation_stay from `tabRoom Occupy`
                         where
-                            date = '{1}' and 
-                            property='{0}' and 
+                            date = %(date)s and 
+                            property=%(property)s and 
                             is_departure = 1 and 
                             is_active_reservation= 1 
                         )
-                    """.format(property,date)
-            data["departure"] = frappe.db.sql(sql,as_dict=1)
+                    """
+            data["departure"] = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
              
             sql = """SELECT 
                         name,
@@ -3300,17 +3300,17 @@ def get_arrival_stay_over_departure_backend():
                         status_color
                     from `tabReservation Stay` 
                     where 
-                        property = '{0}' and 
+                        property = %(property)s and 
                         name in (
                             select reservation_stay from `tabRoom Occupy`
                             where
                             type='Reservation' and  
                             is_stay_over = 1 and 
                             is_active_reservation= 1 and 
-                            date = '{1}' 
+                            date = %(date)s
                         ) 
-                    """.format(property,date)
-            data["stay_over"] = frappe.db.sql(sql,as_dict=1)
+                    """
+            data["stay_over"] = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
 
 
     
