@@ -436,7 +436,7 @@ def add_new_reservation(doc):
                     "end_date":reservation.departure_date,
                     "start_time":reservation.arrival_time,
                     "end_time":reservation.departure_time,
-
+                    "is_master":d["is_master"] ,
                     "is_manual_rate":d["is_manual_rate"]
                 }
             ],
@@ -1122,7 +1122,7 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
 
         if (stay_doc.reservation_status =="Checked Out" and stay_doc.departure_date >= working_day["date_working_day"] ) or (stay_doc.reservation_status =="Checked Out" and int(allow_back_date)==1):
             stay_doc.reservation_status = "In-house"
-            stay_doc.is_undo_check_out = True
+            stay_doc.flags.is_undo_check_out = True
             stay_doc.is_early_checked_out =0
             stay_doc.checked_out_system_date = None
 
@@ -1271,7 +1271,7 @@ def get_reservation_folio(reservation=None, reservation_stay=None):
         return frappe.db.sql(sql, as_dict=1)
 
 @frappe.whitelist(methods="POST")
-@lru_cache(maxsize=128)
+
 def get_room_rate(property, rate_type, room_type, business_source, date,include_tax_rule=False):
     rate_type_doc = None
     if rate_type:
@@ -1281,23 +1281,31 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
     season = frappe.db.sql (sql, as_dict=1)
     room_type_rate  = frappe.get_value("Room Type", room_type,"rate")
     rate = 0
-   
+    filter_data = {
+        "property":property, 
+       
+        "room_type":room_type,
+        "rate_type":rate_type,
+        "business_source":business_source
+    }
+    
     if season and rate_type:
         season_id = season[0]["name"]
-       
+        filter_data["season_id"] = season_id
+        
         sql = """select 
                     max(rate) as rate 
                 from `tabRate Plan` 
                 where 
-                    property='{}' and
-                    season = '{}' and 
-                    room_type_id = '{}' and 
-                    rate_type = '{}' 
-                """.format(property, season_id,room_type, rate_type)
+                    property=%(property)s and
+                    season = %(season_id)s and 
+                    room_type_id = %(room_type)s and 
+                    rate_type = %(rate_type)s 
+                """
  
         if business_source:
-            sql_with_business_source = "{} and business_source = '{}'".format(sql, business_source)
-            data = frappe.db.sql(sql_with_business_source, as_dict=1)
+            sql_with_business_source = "{} and business_source = %(business_source)s".format(sql)
+            data = frappe.db.sql(sql_with_business_source,filter_data, as_dict=1)
             rate = data[0]["rate"] or 0
             
             
@@ -1305,7 +1313,7 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
             #check rate from rate that dont have business source
             sql = "{} and ifnull(business_source,'') = '' ".format(sql) 
            
-            data = frappe.db.sql(sql, as_dict=1)
+            data = frappe.db.sql(sql,filter_data, as_dict=1)
            
             rate = data[0]["rate"] or 0
 
@@ -2710,8 +2718,7 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
     
     
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=reservation_stays)
-    # frappe.enqueue("edoor.api.generate_room_rate.generate_forecast_revenue",queue='short', stay_names=reservation_stays, run_commit = True )
-    
+
     
     
     
@@ -2943,7 +2950,28 @@ def unassign_room(reservation_stay, room_stay):
     
     if doc:
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = doc.reservation, reservation_stay=doc.name)
-         
+    
+    sql = """
+        update `tabFolio Transaction` ft 
+        SET
+            ft.room_id = %(room_id)s,
+            ft.room_number = %(room_number)s,
+            ft.room_type_id = %(room_type_id)s,
+            ft.room_type_alias = %(room_type_alias)s,
+            ft.room_type = %(room_type)s
+        where
+            source_reservation_stay = %(reservation_stay)s 
+    """
+    
+    frappe.db.sql(sql,{
+        "reservation_stay":doc.name, 
+        "room_id":doc.stays[0].room_id,
+        "room_number":doc.stays[0].room_number,
+        "room_type_id":doc.stays[0].room_type_id,
+        "room_type_alias":doc.stays[0].room_type_alias,
+        "room_type":doc.stays[0].room_type,
+    })
+    
     
     frappe.db.commit()
 
@@ -3017,7 +3045,28 @@ def assign_room(data):
     
     # update room number to folio trsansaction base on source reservation stay and date 
     # we we get room number from reservattion stay
-
+    sql = """
+        update `tabFolio Transaction` ft 
+        SET
+            ft.room_id = %(room_id)s,
+            ft.room_number = %(room_number)s,
+            ft.room_type_id = %(room_type_id)s,
+            ft.room_type_alias = %(room_type_alias)s,
+            ft.room_type = %(room_type)s
+        where
+            source_reservation_stay = %(reservation_stay)s and 
+            coalesce(ft.room_id,'') = '' 
+    """
+    
+    frappe.db.sql(sql,{
+        "reservation_stay":doc.name, 
+        "room_id":doc.stays[0].room_id,
+        "room_number":doc.stays[0].room_number,
+        "room_type_id":doc.stays[0].room_type_id,
+        "room_type_alias":doc.stays[0].room_type_alias,
+        "room_type":doc.stays[0].room_type,
+    })
+    
     
     frappe.db.commit()
     frappe.msgprint(_("Assign room successfully"))
@@ -3692,16 +3741,7 @@ def verify_reservation_stay(stay_name= None):
                
                 frappe.db.sql("update `tabReservation Stay` set total_credit={0} , total_debit={1}, balance={1}-{0} where name='{2}'".format(folio_data[0]["credit"],folio_data[0]["debit"], stay_name))
 
-        #validate room room rate generate
-        sql="select count(name) as  total from `tabReservation Room Rate` where reservation_stay='{}' and date between '{}' and '{}'".format(stay_name,stay.arrival_date, add_to_date(stay.departure_date,days=-1))
-        
-        data = frappe.db.sql(sql,as_dict=1)
-        if len(data)>0:
-            if stay.room_nights !=  data[0]["total"]:
-               pass
-        #    generate missing rate and revenue forecase breakdown
-        
-            
+ 
 
 @frappe.whitelist(methods="POST")
 def make_as_verify_folio_transaction(name):

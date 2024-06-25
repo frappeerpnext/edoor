@@ -1,12 +1,11 @@
 <template>
-
     <div class="group relative h-full p-1" :class="event.extendedProps.type + ' ' + (event.extendedProps.reservation_stay || '')" style="height: 36px ">
         <div :style="event.extendedProps.group_color ? 'padding-right:16px' : ''" :class="(event.extendedProps.type=='room_type_event' || event.extendedProps.type=='property_summary') ? 'flex justify-content-center' : 'flex'">
             <span class="ml-1 display-block stay-identify-position border-1" :style="{backgroundColor:event.extendedProps.group_color}" v-if="event.extendedProps.group_color">
                 <!-- GIT/FIT Color -->
             </span>
             <span class="wrp-statu-icon">
-                <span v-if="event.extendedProps.is_master" class="stay-bar-status mr-1">
+                <span v-if="event.extendedProps.is_master && event.extendedProps.reservation_type=='GIT'" class="stay-bar-status mr-1">
                     <img :src="iconCrown" style="height: 12px"/>
                 </span>
                 <span v-if="event.extendedProps.reservation_type=='GIT'" class="stay-bar-status mr-1">
@@ -16,7 +15,6 @@
                     <img :src="iconSplitRoom" style="height: 12px"/>
                 </span>
             </span>
-            
             <div class="guest-title">
                 <template v-if="event.extendedProps.type=='room_type_event'">
                     <span :style="event.extendedProps.room_available < 0 ? 'color:#FFF' : 'color:#000'">{{event.extendedProps.room_available}}</span>

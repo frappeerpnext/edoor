@@ -22,9 +22,7 @@ def dome():
 
  
 def update_reservation_stay(stay_names,run_commit=True):
-     
     #1 update stay_room rate information like rate, tax, discount...
-    
     sql = """
         UPDATE `tabReservation Stay Room` sr
         JOIN 
@@ -77,7 +75,6 @@ def update_reservation_stay(stay_names,run_commit=True):
                 sum(total_rate)/count(name) as adr,
                 sum(discount_amount) as discount_amount,
                 sum(total_tax) as total_tax,
-                sum(total_rate) as total_rate,
                 max(is_complimentary) as is_complimentary,
                 max(is_house_use) as is_house_use
             from `tabReservation Room Rate`
@@ -89,10 +86,9 @@ def update_reservation_stay(stay_names,run_commit=True):
         SET 
             st.room_nights = coalesce(a.total_night,0), 
             st.room_rate = coalesce(a.rate,0), 
-            st.total_room_rate = coalesce(a.total_rate,0), 
             st.adr = coalesce(a.adr,0), 
-            st.room_rate_discount = coalesce(a.discount_amount,0), 
-            st.total_room_rate_tax = coalesce(a.total_tax,0)
+            st.total_discount= coalesce(a.discount_amount,0), 
+            st.total_tax = coalesce(a.total_tax,0)
         where
             st.name in %(stay_names)s
     """

@@ -2580,14 +2580,14 @@ def validate_run_night_audit(property,step):
     working_day = get_working_day(property)
     if step ==2:
         #valdate if have check room vaivable
-        sql="select name from `tabReservation Stay` where is_active_reservation=1 and reservation_status in ('Confirmed','Reserved') and arrival_date='{}' and property='{}' limit 1".format(working_day["date_working_day"],property)
-        data = frappe.db.sql(sql, as_dict=1)
+        sql="select name from `tabReservation Stay` where is_active_reservation=1 and reservation_status in ('Confirmed','Reserved') and arrival_date='{}' and property=%(property)s limit 1".format(working_day["date_working_day"])
+        data = frappe.db.sql(sql,{"property":property}, as_dict=1)
         if data:
             frappe.throw("Please check in or cancel the Confirmed and Reserved")
     elif step==3:
         #validate check out guest
-        sql="select name from `tabReservation Stay` where is_active_reservation=1 and reservation_status in ('In-house','Reserved','Confirmed') and departure_date='{}' and property='{}' limit 1".format(working_day["date_working_day"], property)
-        data = frappe.db.sql(sql, as_dict=1)
+        sql="select name from `tabReservation Stay` where is_active_reservation=1 and reservation_status in ('In-house','Reserved','Confirmed') and departure_date='{}' and property=%(property)s limit 1".format(working_day["date_working_day"])
+        data = frappe.db.sql(sql,{"property":property}, as_dict=1)
         if data:
             frappe.throw("Please check out all reservation")
     elif step==4:
@@ -2620,12 +2620,12 @@ def validate_run_night_audit(property,step):
             frappe.db.sql(sql,{"stay_names":stay_names})
             frappe.db.commit()
     elif step == 6:
-        sql="select name from `tabFolio Transaction` where posting_date = '{}'  and property='{}' and ifnull(parent_reference,'') = '' and is_auto_post = 0 limit 1".format(working_day["date_working_day"], property)
-        data = frappe.db.sql(sql, as_dict=1)
+        sql="select name from `tabFolio Transaction` where posting_date = '{}'  and property=%(property)s and ifnull(parent_reference,'') = '' and is_auto_post = 0 limit 1".format(working_day["date_working_day"])
+        data = frappe.db.sql(sql,{"property":property}, as_dict=1)
         return True if data else False
     elif step == 7:
-        sql="select name from `tabCashier Shift` where posting_date = '{}'  and business_branch='{}' and is_closed = 0 limit 1".format(working_day["date_working_day"], property)
-        data = frappe.db.sql(sql, as_dict=1)
+        sql="select name from `tabCashier Shift` where posting_date = '{}'  and business_branch=%(property)s and is_closed = 0 limit 1".format(working_day["date_working_day"])
+        data = frappe.db.sql(sql,{"property":property}, as_dict=1)
         if  data:
             frappe.throw("Please close all cashier shift.")
     return False

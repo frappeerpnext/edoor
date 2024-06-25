@@ -71,10 +71,10 @@ def get_room_rate(property, rate_type, room_type, business_source, date):
 
 @frappe.whitelist()
 def get_working_day(property = ''):
-    working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}' order by creation desc limit 1".format(property),as_dict=1)
+    working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = %(property)s order by creation desc limit 1",{"property":property},as_dict=1)
     cashier_shift = None
     if len(working_day)>0:
-        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' ORDER BY creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
+        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = %(property)s and working_day='{}' and pos_profile='{}' ORDER BY creation desc limit 1".format(working_day[0]["name"],working_day[0]["pos_profile"]),{"property":property},as_dict=1)
         
         if len(data)>0:
             cashier_shift = data[0]
@@ -1198,11 +1198,11 @@ def get_cashier_shift_summary(name,property):
             sum(amount * if(type='Debit',0,1)) as cash_credit
         from   `tabFolio Transaction`
         where
-            cashier_shift = '{}' and 
+            cashier_shift = %(cashier_shift)s and 
             payment_type_group ='Cash' and 
-            property='{}'
-        """.format(name,property)
-    data = frappe.db.sql(sql,as_dict=1)
+            property=%(property)s
+        """
+    data = frappe.db.sql(sql,{"property":property,"cashier_shift":name},as_dict=1)
     sql = """
         select 
             payment_type_group,
@@ -1213,14 +1213,14 @@ def get_cashier_shift_summary(name,property):
             0 as actual_close_amount
         from   `tabFolio Transaction`
         where
-            cashier_shift = '{}' and 
+            cashier_shift = %(cashier_shift)s and 
             payment_type <> '' and  
-            property='{}'
+            property=%(property)s
         group by 
             payment_type_group,
             payment_type
-    """.format(name,property)
-    summary_by_payment_type = frappe.db.sql(sql, as_dict=1) 
+    """
+    summary_by_payment_type = frappe.db.sql(sql,{"property":property,"cashier_shift":name}, as_dict=1) 
 
     #payment transaction summary
     sql = """
@@ -1231,15 +1231,15 @@ def get_cashier_shift_summary(name,property):
             sum(amount * if(type='Debit',0,1)) as total_credit
         from   `tabFolio Transaction`
         where
-            cashier_shift = '{}' and 
+            cashier_shift = %(cashier_shift)s and 
             ifnull(payment_type,'') <> '' and  
-            property='{}'
+            property=%(property)s
         group by 
             account_code,
             account_name,
             type
-    """.format(name,property)
-    payment_transaction_summary = frappe.db.sql(sql, as_dict=1) 
+    """
+    payment_transaction_summary = frappe.db.sql(sql,{"property":property,"cashier_shift":name}, as_dict=1) 
     
 
     expected_cash = []
@@ -1310,8 +1310,8 @@ def get_cash_count_setting(property):
     }
 
 def get_current_exchange_rate(property, base_currency, second_currency):
-    sql = "select exchange_rate from `tabCurrency Exchange` where custom_business_branch='{}' and  from_currency='{}' and to_currency = '{}' and docstatus=1  order by posting_date desc, modified desc limit 1"
-    data = frappe.db.sql(sql.format(property, base_currency, second_currency),as_dict=1)
+    sql = "select exchange_rate from `tabCurrency Exchange` where custom_business_branch=%(property)s and  from_currency='{}' and to_currency = '{}' and docstatus=1  order by posting_date desc, modified desc limit 1"
+    data = frappe.db.sql(sql.format(base_currency, second_currency),{"property":property},as_dict=1)
     if len(data)> 0:
         return data[0]["exchange_rate"]
     else:
@@ -1441,7 +1441,7 @@ def get_exchange_rate(property,date=None):
         
     main_currency = frappe.db.get_single_value("ePOS Settings","currency")
     second_currency = frappe.db.get_single_value("ePOS Settings","second_currency")    
-    data=frappe.db.sql("select exchange_rate from `tabCurrency Exchange` where from_currency='{}' and to_currency='{}' and custom_business_branch='{}' and posting_date<='{}'".format(main_currency, second_currency, property,date),as_dict=1)
+    data=frappe.db.sql("select exchange_rate from `tabCurrency Exchange` where from_currency='{}' and to_currency='{}' and custom_business_branch=%(property)s and posting_date<='{}'".format(main_currency, second_currency,date),{"property":property},as_dict=1)
     if data:
         return data[0]["exchange_rate"] or 1 
     else:
@@ -1588,7 +1588,87 @@ def get_tax_invoice_vat_amount(data):
             
     return amount or 0
         
+
+@frappe.whitelist()
+def get_commercial_tax_invoice_data(folio_number,document_type,date = None):
+    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio' and is_base_transaction=1 and coalesce(parent_reference,'') = '' and account_group_name='Charge'".format(folio_number),as_dict=1)
+    
+    tax_data = []
+    if document_type == 'Reservation Folio':
+        tax_data = get_commercial_tax_data(data)
+    property = frappe.db.get_value("Tax Invoice", {'document_name':folio_number},"property")
+    exchange_rate = frappe.db.get_value("Tax Invoice",{'document_name':folio_number},"exchange_rate")
+    if not date:
+        working_day = get_working_day(property)
+        date = working_day["date_working_day"]
+    if (exchange_rate or 0) == 0:
+        exchange_rate = get_exchange_rate(property,date)
+
+    
+    
+    if document_type == 'Reservation Folio':
+        total_vat = get_tax_invoice_vat_amount(data) 
         
+        
+
+    return_data = {
+        "property":property,
+        "document_type":document_type,
+        "data":tax_data,
+
+        "exchange_rate":exchange_rate ,
+
+    }
+    
+    return return_data
+   
+   
+
+def get_commercial_tax_data(data):
+    from itertools import groupby
+
+    raw_data = []
+    for d in data:
+        tax_invoice_group_by_key , tax_invoice_description_template,show_in_tax_invoice,sort_order = frappe.db.get_value("Account Code",d["account_code"], ["tax_invoice_group_by_key ", "tax_invoice_description_template","show_in_tax_invoice","sort_order"])
+        
+        if show_in_tax_invoice:
+            record = {}
+            if tax_invoice_group_by_key:
+                record["group_by_key"] = frappe.render_template(tax_invoice_group_by_key,{"doc":d})
+            else:
+                record["group_by_key"] = d["report_description"]
+                
+            if tax_invoice_description_template:
+                record["description"] = frappe.render_template(tax_invoice_description_template,{"doc":d,"frappe":frappe})
+            else:
+                record["description"] = d["report_description"]
+                
+            record["quantity"] = d["report_quantity"] * (1 if d["type"] =="Debit" else -1) 
+            record["amount"] = (d["total_amount"] - d["discount"]) * (1 if d["type"] =="Debit" else -1) 
+            record["sort_order"] = sort_order 
+            
+            raw_data.append(record)
+            
+            
+    raw_data.sort(key=lambda x: x["group_by_key"])
+    # Group the data by the group_by_key field
+    grouped_data = {key: list(group) for key, group in groupby(raw_data, key=lambda x: x["group_by_key"])}
+    
+    return_data =[]
+    for key, group in grouped_data.items():
+        record={
+            "description":group[0]["description"],
+            "sort_order":group[0]["sort_order"],
+            "quantity":sum(d["quantity"] for d in group),
+            "amount":sum(d["amount"] for d in group)
+        }
+        record["price"] =  record["amount"] /(1 if (record["quantity"] or 0 )==0 else record["quantity"])
+       
+        
+        return_data.append(record)
+        
+    return  sorted(return_data, key=lambda x: x['sort_order'])
+     
 def get_comma_and(data):
     return frappe.utils.comma_and(data, add_quotes=False).replace(" and ", " & ")
 

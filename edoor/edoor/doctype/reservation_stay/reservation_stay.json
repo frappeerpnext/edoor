@@ -81,6 +81,7 @@
   "rate_type",
   "room_rate",
   "room_rate_discount",
+  "total_discount",
   "column_break_43",
   "room_rate_tax_1_amount",
   "room_rate_tax_2_amount",
@@ -534,6 +535,7 @@
    "label": "Room Charge And Payment"
   },
   {
+   "description": "Not Use will delete in future",
    "fieldname": "room_rate_discount",
    "fieldtype": "Currency",
    "label": "Room Rate Discount"
@@ -985,12 +987,17 @@
    "fieldname": "total_service_charge",
    "fieldtype": "Currency",
    "label": "Total Service Charge"
+  },
+  {
+   "fieldname": "total_discount",
+   "fieldtype": "Currency",
+   "label": "Total Discount"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-18 15:29:04.767718",
+ "modified": "2024-06-25 15:30:28.468220",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
