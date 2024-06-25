@@ -20,6 +20,7 @@
   "contact_name",
   "phone_number",
   "email",
+  "vattin_number",
   "credit_card_information_section",
   "bank_name",
   "credit_card_number",
@@ -128,11 +129,16 @@
   {
    "fieldname": "column_break_nyis",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vattin_number",
+   "fieldtype": "Data",
+   "label": "Vattin Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-20 14:58:02.490115",
+ "modified": "2024-06-24 14:58:08.929177",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

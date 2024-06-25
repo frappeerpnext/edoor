@@ -3014,7 +3014,10 @@ def assign_room(data):
         update_reservation_stay_and_reservation(reservation_stay=doc.name, reservation=doc.reservation, run_commit=False)
     if old_status=="No Show":
         generate_room_occupies(stay_names=[doc.name], run_commit=False)
-        
+    
+    # update room number to folio trsansaction base on source reservation stay and date 
+    # we we get room number from reservattion stay
+
     
     frappe.db.commit()
     frappe.msgprint(_("Assign room successfully"))

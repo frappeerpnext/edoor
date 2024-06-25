@@ -69,6 +69,7 @@
    "label": "Room Inventory link btn"
   }
  ],
+ "custom_menu_icon": "<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n\t width=\"16px\" height=\"30px\" viewBox=\"0 0 16 39.5\" style=\"enable-background:new 0 0 16 39.5;\" xml:space=\"preserve\">\n<style type=\"text/css\">\n\t.st0{fill:#FFFFFF;stroke:#FFFFFF}\n</style>\n<path class=\"st0\" d=\"M0,0v33.7l16,5.8V5.8L0,0z M15,28.1V38L1.6,33.2L15,28.1z M1,32.3V1.5l14,5.1V27L1,32.3z\"/>\n</svg>",
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -78,7 +79,7 @@
  "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2024-06-21 15:32:43.140222",
+ "modified": "2024-06-24 16:00:35.724494",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
