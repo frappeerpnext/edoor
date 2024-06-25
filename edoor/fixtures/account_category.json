@@ -90,15 +90,6 @@
   "sort_order": 800
  },
  {
-  "account_category": "Other Charge Tax",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 17:15:06.433142",
-  "name": "Other Charge Tax",
-  "note": null,
-  "sort_order": 1700
- },
- {
   "account_category": "POS Bill to City Ledger",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -115,6 +106,15 @@
   "name": "F&B Bill to Room",
   "note": null,
   "sort_order": 2100
+ },
+ {
+  "account_category": "Other Charge Tax",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:15:06.433142",
+  "name": "Other Charge Tax",
+  "note": null,
+  "sort_order": 1700
  },
  {
   "account_category": "POS Bill to Desk Folio",
