@@ -19,7 +19,14 @@ def dome():
     duration = end_time - start_time
     return("Duration:", duration, "seconds")
 
-
+@frappe.whitelist()
+def update_all_reservation_stays():
+    data = frappe.db.sql('select name from `tabReservation Stay`')
+    for d in data:
+        update_reservation_stay(stay_names=[d["name"]], run_commit=False)
+    frappe.db.commit()
+    return "done"
+    
  
 def update_reservation_stay(stay_names,run_commit=True):
     #1 update stay_room rate information like rate, tax, discount...
@@ -75,6 +82,7 @@ def update_reservation_stay(stay_names,run_commit=True):
                 sum(total_rate)/count(name) as adr,
                 sum(discount_amount) as discount_amount,
                 sum(total_tax) as total_tax,
+                sum(total_rate) as total_amount,
                 max(is_complimentary) as is_complimentary,
                 max(is_house_use) as is_house_use
             from `tabReservation Room Rate`
@@ -85,13 +93,20 @@ def update_reservation_stay(stay_names,run_commit=True):
         ON st.name = a.reservation_stay
         SET 
             st.room_nights = coalesce(a.total_night,0), 
-            st.room_rate = coalesce(a.rate,0), 
+            st.room_rate = coalesce(a.input_rate,0), 
             st.adr = coalesce(a.adr,0), 
             st.total_discount= coalesce(a.discount_amount,0), 
-            st.total_tax = coalesce(a.total_tax,0)
+            st.total_tax = coalesce(a.total_tax,0),
+            st.total_amount =coalesce(a.total_amount,0),
+            st.is_complimentary = a.is_complimentary,
+            st.is_house_use = a.is_house_use
+            
         where
             st.name in %(stay_names)s
     """
+     
+    
+ 
     frappe.db.sql(sql,{"stay_names":stay_names})
     
     #3 update credit debit and balance
@@ -119,28 +134,6 @@ def update_reservation_stay(stay_names,run_commit=True):
             s.name in %(stay_names)s
     """
     frappe.db.sql(sql,{"stay_names":stay_names})
-    
-    
-    #03 update is complimentary and house use get form reservtion room rate list
-    sql = """
-        update `tabReservation Stay` s
-        JOIN (
-            select 
-                reservation_stay,
-                coalesce(max(is_complimentary),0) as is_complimentary, 
-                coalesce(max(is_house_use),0) as is_house_use 
-            from `tabReservation Room Rate`    
-            where name in %(stay_names)s
-            group by
-            reservation_stay
-        ) as a 
-        ON s.name = a.reservation_stay
-        SET 
-            s.is_complimentary = a.is_complimentary,
-            s.is_house_use = a.is_house_use
-    """
-    frappe.db.sql(sql,{"stay_names":stay_names})
-    
     
     # update field like room type, is com, and is house from room rate to room occupy
     sql = """

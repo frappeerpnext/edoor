@@ -450,15 +450,12 @@ def add_new_reservation(doc):
     #update summary to reservation stay
     from edoor.api.generate_room_rate import generate_new_room_rate
     generate_new_room_rate(stay_names=stay_names,run_commit=False)
-    update_reservation_stay_and_reservation(reservation = reservation.name, reservation_stay=stay_names,run_commit=False)
-    
-    
     generate_room_occupies(stay_names,run_commit=False)
-    
     # frappe.enqueue("edoor.api.generate_room_rate.generate_forecast_revenue",queue='short', stay_names=stay_names, run_commit = False )
     generate_forecast_revenue(stay_names=stay_names,run_commit=False)
     
-   
+    update_reservation_stay_and_reservation(reservation = reservation.name, reservation_stay=stay_names,run_commit=False)
+    
     frappe.db.commit()
 
     
@@ -2713,8 +2710,10 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
             frappe.db.sql("update `tabReservation Stay` set rate_type=%(rate_type)s,tax_rule=%(tax_rule)s, tax_1_rate=%(tax_1_rate)s, tax_2_rate = %(tax_2_rate)s,tax_3_rate = %(tax_3_rate)s where name=%(stay_name)s",update_data)
             frappe.db.sql("update `tabReservation Stay Room` set   rate_type=%(rate_type)s   where parent=%(stay_name)s",update_data)
             
-
+    update_reservation_stay_and_reservation( reservation = data["reservation"], reservation_stay=reservation_stays,run_commit=False)
+    
     frappe.db.commit()
+    
     
     
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=reservation_stays)
