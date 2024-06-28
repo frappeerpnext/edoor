@@ -123,11 +123,11 @@ MyPage = Class.extend({
 		// ];
 		if(this.property.get_value() != '' && this.cashier_shift.get_value() != ''){
 			if (this.report_name.get_value()=="Cashier Shift Transaction Detail"){
-				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURI(this.property.get_value()) +"&format=Night%20Audit%20Cashier%20Shift%20Transaction%20Detail&&settings=%7B%7D&show_toolbar=0&start_date="+this.date.get_value() +"&cashier_shift="+ encodeURI(this.cashier_shift.get_value()) 
+				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURIComponent((this.property.get_value())) +"&format=Night%20Audit%20Cashier%20Shift%20Transaction%20Detail&&settings=%7B%7D&show_toolbar=0&start_date="+this.date.get_value() +"&cashier_shift="+ encodeURI(this.cashier_shift.get_value()) 
 						+"&group_by_ledger_type="+ ledgerGroup +"&show_account_code="+ showAccount +"&show_cash_float="+ cashFloat +"&show_cash_count="+ cashCount +"&_lang=en&refresh=13.978092580913248"
 				this.iframe.src = newUrl;
 			}else if (this.report_name.get_value()=="Cashier Shift Transaction Summary"){
-				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURI(this.property.get_value()) +"&format=Night%20Audit%20Cashier%20Shift%20Transaction%20Summary&&settings=%7B%7D&show_toolbar=0&start_date="+this.date.get_value() +"&cashier_shift="+ encodeURI(this.cashier_shift.get_value())  
+				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURIComponent((this.property.get_value())) +"&format=Night%20Audit%20Cashier%20Shift%20Transaction%20Summary&&settings=%7B%7D&show_toolbar=0&start_date="+this.date.get_value() +"&cashier_shift="+ encodeURI(this.cashier_shift.get_value())  
 				+"&group_by_ledger_type="+ ledgerGroup +"&show_account_code="+ showAccount +"&show_cash_float="+ cashFloat +"&show_cash_count="+ cashCount +"&_lang=en&refresh=13.978092580913248"
 				this.iframe.src = newUrl;
 			}else{

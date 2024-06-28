@@ -3039,10 +3039,10 @@ def get_day_end_summary_report(property, date):
                 sum(amount * if(type='Debit',1,-1)) as room_revenue 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date = '{}' and
+            property=%(property)s and posting_date = '{}' and
             account_category in ('Room Charge','Room Tax','Room Discount','Service Charge')
-        """.format(property, date)
-    data = frappe.db.sql(sql,as_dict=1)
+        """.format(date)
+    data = frappe.db.sql(sql,{'property':property},as_dict=1)
     room_revenue = 0
     if len(data)>0:
         room_revenue = data[0]["room_revenue"]
@@ -3063,10 +3063,10 @@ def get_day_end_summary_report(property, date):
                 sum(if(type='Reservation' and is_departure=1,child,0)) as departure_child
             from `tabRoom Occupy` 
             where 
-            property='{}' and date= '{}'  
-        """.format(property, date)
+            property=%(property)s and date= '{}'  
+        """.format(date)
     
-    occupy_data = frappe.db.sql(sql,as_dict=1)
+    occupy_data = frappe.db.sql(sql,{'property':property},as_dict=1)
     calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
     room_sold = 0
     complimentary = 0
@@ -3158,14 +3158,14 @@ def get_day_end_summary_report(property, date):
             count(name) as total_room
         from `tabRoom Occupy` 
         where  
-            property= '{}' and 
+            property= %(property)s and 
             date = '{}' and
             is_active = 1  and 
             type='Reservation'
         group by
             rate_type 
-    """.format(property,date)
-    room_sold_by_rate_type = frappe.db.sql(sql,as_dict=1)
+    """.format(date)
+    room_sold_by_rate_type = frappe.db.sql(sql,{'property':property},as_dict=1)
 
     data = {
         "room_revenue": room_revenue,

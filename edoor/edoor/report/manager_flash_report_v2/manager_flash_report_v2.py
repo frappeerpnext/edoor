@@ -77,7 +77,7 @@ def get_columns(filters):
 
 def get_report_data(filters):
 	
-	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Mafiya Manager Flash Report"} )
+	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Manager Flash Report V2"} )
 	report_data =  []
 	rooms_available_record = get_current_room_in_property(filters)
 	report_data.append(rooms_available_record[0]['total_room'])

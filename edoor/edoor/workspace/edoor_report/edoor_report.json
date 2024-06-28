@@ -494,7 +494,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-06-24 17:41:42.376625",
+ "modified": "2024-06-26 14:02:25.846010",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",
@@ -503,11 +503,7 @@
  "parent_page": "",
  "public": 1,
  "quick_lists": [],
- "roles": [
-  {
-   "role": "eDoor Report Workspace"
-  }
- ],
+ "roles": [],
  "sequence_id": 16.0,
  "shortcuts": [
   {

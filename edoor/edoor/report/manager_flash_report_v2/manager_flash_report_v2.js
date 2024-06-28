@@ -1,7 +1,7 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Mafiya Manager Flash Report"] = {
+frappe.query_reports["Manager Flash Report V2"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -97,7 +97,7 @@ function setLinkField() {
 
 			args: {
 				property: property,
-				report: "Manager Flash Report"
+				report: "Manager Flash Report V2"
 			},
 			callback: function (r) {
 				const show_columns = frappe.query_report.get_filter('show_columns');

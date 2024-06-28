@@ -66,10 +66,10 @@ MyPage = Class.extend({
 		let newUrl;
 		if(this.property.get_value() != ''){
 			if (this.report_name.get_value()=="End of Day Detail"){
-				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURI(this.property.get_value()) +"&format=eDoor%20Working%20Day%20Transaction%20Detail%20Report&&settings=%7B%7D&show_toolbar=0&start_date="+ encodeURI(this.date.get_value()) +"&group_by_ledger_type="+ ledgerGroup +"&show_account_code="+ showAccount +"&_lang=en&refresh=2.886933436472656"
+				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURIComponent(this.property.get_value()) +"&format=eDoor%20Working%20Day%20Transaction%20Detail%20Report&&settings=%7B%7D&show_toolbar=0&start_date="+ encodeURIComponent(this.date.get_value()) +"&group_by_ledger_type="+ ledgerGroup +"&show_account_code="+ showAccount +"&_lang=en&refresh=2.886933436472656"
 				this.iframe.src = newUrl;
 			}else if (this.report_name.get_value()=="End of Day Summary"){
-				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURI(this.property.get_value()) +"&format=eDoor%20Working%20Day%20Transaction%20Summary%20Report&&settings=%7B%7D&show_toolbar=0&start_date="+ encodeURI(this.date.get_value()) +"&group_by_ledger_type="+ ledgerGroup +"&show_account_code="+ showAccount +"&_lang=en&refresh=2.886933436472656"
+				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURIComponent(this.property.get_value()) +"&format=eDoor%20Working%20Day%20Transaction%20Summary%20Report&&settings=%7B%7D&show_toolbar=0&start_date="+ encodeURIComponent(this.date.get_value()) +"&group_by_ledger_type="+ ledgerGroup +"&show_account_code="+ showAccount +"&_lang=en&refresh=2.886933436472656"
 				this.iframe.src = newUrl;
 			}else{
 				this.iframe.src = this.iframe.src + "&refresh=" + (Math.random() * 16)
