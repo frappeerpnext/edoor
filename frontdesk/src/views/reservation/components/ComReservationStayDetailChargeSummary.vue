@@ -48,7 +48,7 @@
               <OverlayPanel ref="opTax">
                 <div class="table-order-tax">
                 <table>
-                        <tr v-for="(d, index) in taxData" :key="index" ><td class='p-2 text-right border-top-1'> {{$t(d.tax_name)}} - {{$t(d.tax_rate)}} % : </td><td class='p-2 border-top-1'> <CurrencyFormat :value="d.tax_amount"/> </td></tr>
+                        <tr v-for="(d, index) in taxData" :key="index" ><td class='p-2 text-right border-top-1'> {{$t(d.tax_name)}} : </td><td class='p-2 border-top-1'> <CurrencyFormat :value="d.tax_amount"/> </td></tr>
                 </table>    
                 </div>
                 </OverlayPanel>

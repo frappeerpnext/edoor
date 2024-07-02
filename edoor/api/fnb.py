@@ -24,13 +24,13 @@ def get_fnb_revenue(property, date):
 		inner join `tabSale` s on s.name = sp.parent
 		inner join `tabRevenue Group` r on sp.revenue_group = r.name
 		where
-            s.business_branch = '{}' and
-			s.posting_date='{}' and 
+            s.business_branch = %(property)s and
+			s.posting_date=%(date)s and 
 			s.docstatus=1 and 
 			coalesce(sp.is_combo_menu,0) = 0
 		group by 
-			sp.revenue_group""".format(property,date)
-	data = frappe.db.sql(sql,as_dict=1)
+			sp.revenue_group"""
+	data = frappe.db.sql(sql,{'property':property,'date':date},as_dict=1)
 	labels = []
 	datasets = []
 	result = data + get_combo_menu_revenue(property, date)
@@ -57,13 +57,13 @@ def get_fnb_payment(property, date):
 	inner join `tabSale` as s on s.name = sp.sale
 	inner join `tabPayment Type` as pt on sp.payment_type = pt.name
 	where
-		s.business_branch = '{}' and
-		sp.posting_date='{}' and 
+		s.business_branch = %(property)s and
+		sp.posting_date=%(date)s and 
 		sp.docstatus = 1 
 	group by
 		payment_type
-	""".format(property,date )
-	data = frappe.db.sql(sql,as_dict=1)
+	"""
+	data = frappe.db.sql(sql,{'property':property,'date':date},as_dict=1)
 	labels = []
 	datasets = []
 	for d in data:
@@ -91,16 +91,16 @@ def get_combo_menu_revenue(property, date):
 		from `tabSale Product` sp 
 		inner join `tabSale` s on s.name = sp.parent
 		where
-			s.business_branch = '{}' and
-			s.posting_date='{}' and 
+			s.business_branch = %(property)s and
+			s.posting_date=%(date)s and 
 			s.docstatus=1  and 
 			sp.is_combo_menu = 1
 		
-		""".format(property,date)
+		"""
 	
 	
  
-	data = frappe.db.sql(sql, as_dict=1)
+	data = frappe.db.sql(sql, {'property':property,'date':date},as_dict=1)
 	revenue_data = []
 	for d in data:
 		revenue_data = revenue_data  + get_combo_menu_data_revenue_breakdown(d)

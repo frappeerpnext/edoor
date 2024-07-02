@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
+      
     <div>
         <ComReservationStayPanel title="Change Stay">
             <template #content> 
@@ -37,7 +38,19 @@
                                 <InputNumber v-model="stay.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :max="maxNight" :min="1" class="child-adults-txt w-full" />
                             </td>
                             <td class="px-2"> 
-                                <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex white-space-nowrap">{{ stay.room_type }}</span>
+                                <Dropdown v-model="stay.room_type_id" :options="room_types" optionValue="name"
+                                     optionLabel="room_type" :placeholder="$t('Select Room Type')"
+                                    class="w-full">
+                                    <template #option="slotProps">
+                                        <div class="flex align-items-center">
+
+                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room ||
+                                                0 }})</div>
+                                        </div>
+                                    </template>
+                                </Dropdown>
+
+                               
                             </td>
                             <td class="ps-2">
                                 <span class="p-inputtext-pt text-start border-1 border-white h-12 lg:w-full flex w-10rem">
@@ -94,7 +107,7 @@ const { t: $t } = i18n.global;
     stay.value.generate_rate_type  = "stay_rate"
     const stays = Enumerable.from(rs.reservationStay.stays).orderBy("$.start_date").toArray()
     const index = stays.findIndex(p => p.name == stay.value.name)
-     
+    const room_types = ref([])
     const minStartDate = computed(()=>{
         if(index > 0){
             const prevStay = stays[index - 1]
@@ -127,14 +140,36 @@ const { t: $t } = i18n.global;
             stay.value.end_date = moment(newValue).add(1,'days').toDate()
         }
         stay.value.room_nights = moment(stay.value.end_date).diff(moment(newValue), 'days') 
+        getRoomType()
     }
 
     function onNight(newValue){
         stay.value.end_date = new Date(moment(stay.value.start_date).add(newValue,'days').toDate())
+        getRoomType()
     }
     function onEndDate(newValue){
         stay.value.room_nights = moment(newValue).diff(moment(stay.value.start_date), 'days')
+        getRoomType()
+
     }
+
+    
+const getRoomType = () => {
+
+getApi("reservation.check_room_type_availability", {
+    property: property.name,
+    start_date: moment( stay.value.start_date).format("yyyy-MM-DD"),
+    end_date: moment( stay.value.end_date).format("yyyy-MM-DD"),
+    rate_type:  stay.value.rate_type,
+    business_source: stay.value.business_source
+
+})
+    .then((result) => {
+        room_types.value = result.message;
+        updateRate()
+    })
+}
+
     const onClose = () =>{
         dialogRef.value.close();
     }
@@ -151,6 +186,8 @@ const { t: $t } = i18n.global;
         newData.rate = newData.input_rate
         newData.is_override_rate = generate_new_room_rate.value
         newData.is_move = 0
+ 
+        
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false
             
@@ -181,6 +218,8 @@ const { t: $t } = i18n.global;
         }).then((result) => {
             working_day.value = (result.message)
             loading.value= false
+            getRoomType();
+
         })
 });
 </script>

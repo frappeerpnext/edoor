@@ -1624,7 +1624,30 @@ def change_stay(data):
         else:
             update_reservation_stay_room_rate_after_move(data=data,stay_doc= doc)
             
- 
+        # update room_type and room type to reservatio reservation room rate
+        room_type, room_type_alias  = frappe.db.get_value("Room Type",data["room_type_id"],["room_type","alias"])
+        
+        sql ="""
+            update `tabReservation Room Rate` 
+            set
+                room_type_id = %(room_type_id)s,
+                room_type = %(room_type)s,
+                room_type_alias = %(room_type_alias)s
+            where stay_room_id = %(stay_room_id)s
+        """
+        frappe.db.sql(sql,{"room_type_id":data["room_type_id"],"room_type":room_type,"room_type_alias":room_type_alias,"stay_room_id":data["name"]})
+        # update to revenue breakdown
+        sql ="""
+            update `tabRevenue Forecast Breakdown` 
+            set
+                room_type_id = %(room_type_id)s,
+                room_type = %(room_type)s,
+                room_type_alias = %(room_type_alias)s
+            where stay_room_id = %(stay_room_id)s
+        """
+        frappe.db.sql(sql,{"room_type_id":data["room_type_id"],"room_type":room_type,"room_type_alias":room_type_alias,"stay_room_id":data["name"]})
+        
+        
         # post_room_charge_to_folio_after_extend_stay(stays=[doc.name])
         generate_room_occupies(stay_names = [doc.name],run_commit=False)
         generate_forecast_revenue (stay_names = [doc.name],run_commit=False)
@@ -3521,11 +3544,9 @@ def get_room_tax_summary(reservation=None, reservation_stay=None):
         return frappe.db.sql(sql,as_dict=1)
     else:
         sql="""
-            select tax_1_name as tax_name, tax_1_rate as tax_rate, sum(tax_1_amount) as tax_amount  from `tabReservation Room Rate` where reservation_stay = '{0}'  and tax_1_rate> 0  and is_active_reservation = 1 group by tax_1_name, tax_1_rate
-            union all 
-            select tax_2_name as tax_name, tax_2_rate as tax_rate, sum(tax_2_amount) as tax_amount  from `tabReservation Room Rate` where reservation_stay = '{0}'   and tax_2_rate> 0 and is_active_reservation = 1 group by tax_2_name, tax_2_rate
-            union all
-            select tax_3_name as tax_name, tax_3_rate as tax_rate, sum(tax_3_amount) as tax_amount  from `tabReservation Room Rate` where reservation_stay= '{0}'  and tax_3_rate> 0 and is_active_reservation = 1 group by tax_3_name, tax_3_rate
+            SELECT account_category as tax_name , SUM(CASE WHEN type = 'debit' THEN amount WHEN type = 'credit' THEN -amount END) tax_amount
+            FROM `tabRevenue Forecast Breakdown`
+            WHERE reservation_stay = '{0}' and account_group_name = 'Tax' group by account_category ORDER BY sort_order ASC
         """.format(reservation_stay)
         return frappe.db.sql(sql,as_dict=1)
 

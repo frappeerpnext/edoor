@@ -476,35 +476,35 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
                 sum(amount * if(type='Debit',1,-1)) as other_room_revenue 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date between '{}' and '{}' and
+            property=%(property)s and posting_date between '{}' and '{}' and
             flash_report_revenue_group in ('Other Room Revenue')
-        """.format(property, start_date,end_date)
-    mtd_other_room_revenue = frappe.db.sql(mtd_other_room_revenue_sql, as_dict=1)[0]["other_room_revenue"] or 0
+        """.format(start_date,end_date)
+    mtd_other_room_revenue = frappe.db.sql(mtd_other_room_revenue_sql,{'property':property}, as_dict=1)[0]["other_room_revenue"] or 0
     mtd_other_revenue_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as other_revenue 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date between '{}' and '{}' and
+            property=%(property)s and posting_date between '{}' and '{}' and
             flash_report_revenue_group in ('Other Revenue')
-        """.format(property, start_date,end_date)
-    mtd_other_revenue = frappe.db.sql(mtd_other_revenue_sql, as_dict=1)[0]["other_revenue"] or 0
+        """.format(start_date,end_date)
+    mtd_other_revenue = frappe.db.sql(mtd_other_revenue_sql,{'property':property}, as_dict=1)[0]["other_revenue"] or 0
 
     mtd_payment_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as payment 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date between '{}' and '{}' and
+            property=%(property)s and posting_date between '{}' and '{}' and
             account_group_name in ('Payment & Refund')
-        """.format(property, start_date,end_date)
-    mtd_payment = frappe.db.sql(mtd_payment_sql, as_dict=1)[0]["payment"] or 0
+        """.format(start_date,end_date)
+    mtd_payment = frappe.db.sql(mtd_payment_sql, {'property':property},as_dict=1)[0]["payment"] or 0
     mtd_expense_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as expense 
             from `tabFolio Transaction` 
             where 
-            property='{}' and posting_date between '{}' and '{}' and
+            property=%(property)s and posting_date between '{}' and '{}' and
             transaction_type = 'Payable Ledger'
-        """.format(property, start_date,end_date)
-    mtd_expense = frappe.db.sql(mtd_expense_sql, as_dict=1)[0]["expense"] or 0
+        """.format(start_date,end_date)
+    mtd_expense = frappe.db.sql(mtd_expense_sql,{'property':property}, as_dict=1)[0]["expense"] or 0
 
     sql = """select 
                 sum(is_active=1 and type='Reservation') as total_room_sold ,
@@ -513,10 +513,10 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
                 sum(type='Block') as total_block
             from `tabRoom Occupy` 
             where 
-            property='{}' and date between '{}' and '{}'  
-        """.format(property, start_date,end_date)
+            property=%(property)s and date between '{}' and '{}'  
+        """.format( start_date,end_date)
     
-    occupy_data = frappe.db.sql(sql,as_dict=1)
+    occupy_data = frappe.db.sql(sql,{'property':property},as_dict=1)
     calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
     room_sold = 0
     complimentary = 0
@@ -2193,7 +2193,7 @@ def get_room_inventory_resource(property = ''):
     
     resources = []
 
-    resources = frappe.db.sql("select name as id,room_type as title,alias,(select count(name) from `tabRoom` where room_type_id=t.name) as total_room ,sort_order from `tabRoom Type` t where property='{0}'  order by sort_order".format(property),as_dict=1)
+    resources = frappe.db.sql("select name as id,room_type as title,alias,(select count(name) from `tabRoom` where room_type_id=t.name) as total_room ,sort_order from `tabRoom Type` t where property=%(property)s order by sort_order",{'property':property},as_dict=1)
     
     resources.append({
         "id": "vacant_room",
@@ -2382,14 +2382,14 @@ def get_room_inventory_calendar_event(property, start=None,end=None, keyword=Non
             sum(child) as child 
         from `tabRoom Occupy` 
         where 
-            property='{}' and 
-            date between '{}' and '{}'  
+            property=%(property)s and 
+            date between %(start)s and %(end)s  
         group by 
             room_type_id, 
             date
-        """.format(property,start,end)
+        """
     data = {
-        "room_occupy": frappe.db.sql(sql,as_dict=1)
+        "room_occupy": frappe.db.sql(sql,{'property':property,'start':start,'end':end},as_dict=1)
     }
     return data
    

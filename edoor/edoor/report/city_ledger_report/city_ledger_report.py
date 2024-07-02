@@ -56,16 +56,16 @@ def get_folio_transaction_amount(filters):
 			sum(if(type='Credit',0,amount)) as debit
 		from `tabFolio Transaction`
 		where
-			posting_date between '{}' and '{}' and 
+			posting_date between %(start_date)s and %(end_date)s and 
 			transaction_type='City Ledger' and 
-			property='{}'
+			property=%(property)s
 		group by
 			transaction_number
-	""".format(filters.start_date,filters.end_date,filters.property)
+	"""
 
  
 	 
-	return frappe.db.sql(sql, as_dict=1)
+	return frappe.db.sql(sql,filters, as_dict=1)
 
 
 def get_report_data(folio_transaction_amount,filters):
