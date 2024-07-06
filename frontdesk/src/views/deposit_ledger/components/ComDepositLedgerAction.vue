@@ -197,7 +197,7 @@ function onAddFolioTransaction(account_code) {
             props: {
                 header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,
                 style: {
-                    width: '750px',
+                    width: '60vw',
                 },
 
                 modal: true,

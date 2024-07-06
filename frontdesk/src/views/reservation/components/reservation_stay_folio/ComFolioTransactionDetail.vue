@@ -1,200 +1,9 @@
 <template>
   <ComDialogContent :loading="loading" :hideButtonOK="true" @onClose="onClose">
-    <div class="border-round-xl h-full">
-      <div class="grid">
-        <div class="col-12 md:col-6">
-          <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">
-          {{ $t('Transaction Detail') }}
-            </h2>
-          <table class="">
-            <tbody>
-              <ComStayInfoNoBox label="Room Number" v-if="doc?.room_number" :value="doc.room_number" />
-              <ComStayInfoNoBox v-tippy="doc.guest_name.length > 20 ? doc.guest_name : ''" label="Guest" class="w-full"
-                v-if="doc?.guest_name">
-                <span @click="onViewCustomerDetail(doc.guest)"
-                  class="-ml-2 overflow-hidden white-space-nowrap text-right link_line_action1 text-overflow-ellipsis">
-                  {{ doc.guest }} - {{ doc.guest_name }}
-                </span>
-              </ComStayInfoNoBox>
-
-              <ComStayInfoNoBox label="Sale Number" class="w-full" v-if="doc?.sale">
-                <span @click="onViewSaleDetail()"
-                  class="-ml-2 overflow-hidden white-space-nowrap text-right link_line_action1 text-overflow-ellipsis">
-                  {{ doc.sale }}
-                </span>
-              </ComStayInfoNoBox>
-
-              <ComStayInfoNoBox label="Folio Number" v-if="doc?.transaction_number" :value="doc.transaction_number" />
-              <ComStayInfoNoBox label="Type" v-if="doc?.type" :value="doc?.type" />
-              <ComStayInfoNoBox label="Bank Name" v-if="doc?.bank_name" :value="doc?.bank_name" />
-              <ComStayInfoNoBox label="Credit Card Number" v-if="doc?.credit_card_number"
-                :value="doc?.credit_card_number" />
-              <ComStayInfoNoBox label="Account Code" v-if="doc?.account_code" :value="doc?.account_code" />
-              <ComStayInfoNoBox label="Account Name" v-if="doc?.account_name" :value="doc?.account_name" />
-              <ComStayInfoNoBox label="Payment By" v-if="doc?.payment_by" :value="doc?.payment_by" />
-              <ComStayInfoNoBox label="Phone Number" v-if="doc?.payment_by_phone_number"
-                :value="doc?.payment_by_phone_number" />
-
-
-              <ComStayInfoNoBox :label="doc.target_transaction_type" isSlot :fill="false"
-                v-if="doc.target_transaction_type">
-
-                <Button class="p-0 link_line_action1" @click="onOpenLink()" link>
-                  <span>{{ doc?.target_transaction_number }}</span>
-
-                </Button>
-              </ComStayInfoNoBox>
-              <ComStayInfoNoBox label="Post Amount" v-if="doc?.input_amount" :value="doc?.input_amount" isCurrency />
-              <ComStayInfoNoBox label="Qty"
-                v-if="account_code?.allow_enter_quantity == 1 || doc?.allow_enter_quantity == 1 && doc?.account_code"
-                :value="doc?.quantity" />
-              <ComStayInfoNoBox label="Amount/Rate" v-if="doc?.amount" :value="doc?.amount" isCurrency />
-              <ComStayInfoNoBox label="Card Holder Name" v-if="doc?.card_holder_name" :value="doc?.card_holder_name" />
-              <ComStayInfoNoBox label="Credit Expired Date" v-if="doc?.credit_expired_date"
-                :value="gv.datetimeFormat(doc?.credit_expired_date)" />
-              <ComStayInfoNoBox label="Bank Fee" v-if="doc?.bank_fee" :value="doc?.bank_fee + ' %'" />
-              <ComStayInfoNoBox label="Bank Fee Amount" v-if="doc?.bank_fee_amount"
-                :value="'$ ' + doc?.bank_fee_amount" />
-              <ComStayInfoNoBox label="Rate Include Tax" v-if="doc?.rate_include_tax != 'No' && account_code.allow_tax"
-                :value="doc?.rate_include_tax" />
-              <ComStayInfoNoBox label="Rate Include Tax" v-if="doc?.rate_include_tax != 'Yes' && account_code.allow_tax"
-                :value="doc?.rate_include_tax" />
-              <ComStayInfoNoBox label="Rate Before Tax"
-                v-if="doc?.tax_rule_data && (doc?.tax_rule_data?.tax_1_rate + doc?.tax_rule_data?.tax_2_rate + doc?.tax_rule_data?.tax_3_rate > 0) && doc?.account_code"
-                :value="doc?.amount" isCurrency />
-              <ComStayInfoNoBox label="Total Tax" v-if="account_code?.allow_tax && doc?.account_code"
-                :value="doc?.total_tax" isCurrency isSlot>
-                <Button @click="toggleTAX" icon="pi pi-question text-xs"
-                  class="float-left w-1rem h-1rem -ms-1 surface-border" severity="secondary" rounded outlined
-                  aria-label="Total Tax" />
-                <OverlayPanel ref="opTax">
-                  <div class="table-order-tax">
-                    <table class="inner-tip-tab">
-                      <tr v-if="doc?.tax_rule_data && doc?.tax_rule_data?.tax_1_rate > 0">
-                        <td class='p-2'>{{ doc?.tax_rule_data?.tax_1_name || '' }} - {{ doc?.tax_rule_data?.tax_1_rate ||
-                          0 }}% : </td>
-                        <td class='p-2 text-end'>
-                          <CurrencyFormat :value="doc?.tax_1_amount" />
-                        </td>
-                      </tr>
-                      <tr class='border-top-1' v-if="doc?.tax_rule_data && doc?.tax_rule_data?.tax_2_rate > 0">
-                        <td class='p-2'>{{ doc?.tax_rule_data?.tax_2_name || '' }} - {{ doc?.tax_rule_data?.tax_2_rate ||
-                          0 }}% :</td>
-                        <td class='p-2 text-end'>
-                          <CurrencyFormat :value="doc?.tax_2_amount" />
-                        </td>
-                      </tr>
-                      <tr class='border-top-1' v-if="doc?.tax_rule_data && doc?.tax_rule_data?.tax_3_rate > 0">
-                        <td class='p-2'>{{ doc?.tax_rule_data?.tax_3_name || '' }} - {{ doc?.tax_rule_data?.tax_3_rate ||
-                          0 }}% :</td>
-                        <td class='p-2 text-end'>
-                          <CurrencyFormat :value="doc?.tax_3_amount" />
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                </OverlayPanel>
-              </ComStayInfoNoBox>
-
-              <ComStayInfoNoBox label="Discount Amount" v-if="doc?.discount > 0 && doc?.account_code"
-                :value="doc?.discount_amount" isCurrency>
-                <Button v-if="doc?.discount" @click="togglePostDiscountAmount" icon="pi pi-question text-xs"
-                  class="float-left w-1rem h-1rem -ms-1 surface-border" severity="secondary" rounded outlined
-                  aria-label="Total Tax" />
-                <OverlayPanel ref="opPostDiscountAmount">
-                  <div class="table-order-tax">
-                    <table class="inner-tip-tab">
-                      <tr>
-                        <td class='p-2'>Discount Type : </td>
-                        <td class='p-2 text-end'>
-                          {{ doc?.discount_type + ' ' + (doc?.discount_type == 'Percent' ? doc?.discount + '%' : '') }}
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                </OverlayPanel>
-              </ComStayInfoNoBox>
-
-              <ComStayInfoNoBox label="Total Amount" v-if="doc?.total_amount" :value="doc?.total_amount" isCurrency
-                isSlot>
-                <Button v-if="doc?.amount || doc?.total_tax || doc?.discount" @click="togglePostAmount"
-                  icon="pi pi-question text-xs" class="float-left w-1rem h-1rem -ms-1 surface-border" severity="secondary"
-                  rounded outlined aria-label="Total Tax" />
-                <OverlayPanel ref="opPostAmount">
-                  <div class="table-order-tax">
-                    <table class="inner-tip-tab">
-                      <tr v-if="doc?.amount">
-                        <td class='p-2'>Amount/Rate : </td>
-                        <td class='p-2 text-end'>
-                          <CurrencyFormat :value="doc?.amount" />
-                        </td>
-                      </tr>
-                      <tr class='border-top-1' v-if="doc?.total_tax">
-                        <td class='p-2'>Tax : </td>
-                        <td class='p-2 text-end'>
-                          <CurrencyFormat :value="doc?.total_tax" />
-                        </td>
-                      </tr>
-                      <tr class='border-top-1' v-if="doc?.discount > 0 && doc?.account_code">
-                        <td class='p-2'>Discount : </td>
-                        <td class='p-2 text-end'>
-                          -
-                          <CurrencyFormat :value="doc?.discount_amount ? doc?.discount_amount : '0'" />
-                        </td>
-                      </tr>
-                      <tr class="border-top-1 border-black-alpha-90" v-if="doc?.total_amount">
-                        <td class='p-2'>Total Amount : </td>
-                        <td class='p-2 text-end'>
-                          <CurrencyFormat :value="doc?.total_amount" />
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-                </OverlayPanel>
-              </ComStayInfoNoBox>
-              <ComStayInfoNoBox v-if="doc?.account_name == 'Folio Transfer'" :fill="false"
-                :label="doc?.account_name == 'Folio Transfer' && doc?.type == 'Credit' ? 'Folio Transfer to' : 'Folio transferred from'"
-                isSlot>
-                <Button class="p-0 link_line_action1" @click="onOpenFolioDetail(doc.folio_number)" link>{{
-                  doc.folio_number }}</Button>
-              </ComStayInfoNoBox>
-            </tbody>
-          </table>
-        </div>
-        <div class="col-12 md:col-6">
-          <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">
-            {{ $t('Creation') }}
-            </h2>
-          <table class="">
-            <tbody>
-              <ComStayInfoNoBox label="Folio Transaction No" :value="doc?.name" />
-              <ComStayInfoNoBox label="Ref. No" isSlot :fill="false">
-                <Button class="p-0 link_line_action1" @click="changeRef($event)" link>
-                  <span v-if="doc?.reference_number">{{ doc?.reference_number }}</span>
-                  <span v-else>Add Ref. No</span>
-                </Button>
-
-              </ComStayInfoNoBox>
-              <!-- <ComStayInfoNoBox v-else label="Ref. No" :value="doc?.reference_number"/> -->
-              <ComStayInfoNoBox label="Posted Date" :value="moment(doc?.posting_date).format('DD-MM-YYYY')" />
-              <ComStayInfoNoBox label="Create By" :value="doc?.owner?.split('@')[0]" />
-              <ComStayInfoNoBox label="Created Date" isSlot :fill="false">
-                <div class="font-semibold">
-                  <ComTimeago :date="doc?.creation" />
-                </div>
-              </ComStayInfoNoBox>
-              <ComStayInfoNoBox label="Last Modified by" :value="doc?.modified_by?.split('@')[0]" />
-              <ComStayInfoNoBox label="Last Modified Date" isSlot :fill="false">
-                <div class="font-semibold">
-                  <ComTimeago :date="doc?.modified" />
-                </div>
-              </ComStayInfoNoBox>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <hr class="my-2">
+    <div style="height: 100vh;">
+    <ComIframeContainer :iframeUrl="`/app/folio-transaction/${dialogRef.data.folio_transaction_number}`"/>
+  </div>
+    <!-- <hr class="my-2">
     <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="true" :attacheds="[doc?.name]" />
 
     <div v-if="doc.note" class="link_line_action_res_note px-3 mt-3">
@@ -230,7 +39,7 @@
       <Button class="border-none" @click="onPrintFolioTransaction" :label="$t('Print')" icon="pi pi-print"
         v-if="doc.print_format" />
       <Button class="border-none" @click="onAuditTrail" :label="$t('Audit Trail')" icon="pi pi-history" />
-    </template>
+    </template> -->
     <OverlayPanel ref="openNote">
       <ComOverlayPanelContent width="350px" :loading="saving" @onSave="onSaveNote" @onCancel="onCloseNote">
         <div>
@@ -260,7 +69,9 @@ import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
+import ComIframeContainer from "@/components/ComIframeContainer.vue"
 import {i18n} from '@/i18n';
+const property_name = ref(window.property_name)
 const { t: $t } = i18n.global; 
 const props = defineProps({
   doctype: String

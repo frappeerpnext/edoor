@@ -13,379 +13,70 @@ from frappe import _
 
 class FolioTransaction(Document):
 	def validate(self):
-		if self.flags.ingore_validate:
-			return
-
-		if not self.parent_reference and not self.is_base_transaction:
-			self.is_base_transaction = 1
-   
-		if not self.account_code:
-			frappe.throw("Please select an account code")
-		account_doc = frappe.get_doc("Account Code", self.account_code)
-	
-		if frappe.session.user !="Administrator":
-			if not self.is_new():
-					if self.is_auto_post ==1:
-						self.is_night_audit_posting = 1
-						if not hasattr(self,"ignore_validate_auto_post"):
-							frappe.throw("You cannot edit auto post transaction")
-			
-		if self.required_select_product and not self.product:
-			frappe.throw("Please select product code.")
-
-
-		#validate folio status
-		 
-		if not  self.flags.ignore_validate_close_folio:
-			if self.transaction_type =='Reservation Folio' :
-				if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
-					frappe.throw(f"This folio {self.transaction_number} is already closed")
-
-	
-		# when update note
-		if hasattr(self,"is_update_note") and self.is_update_note:
-			self.note_by = frappe.session.user
-			self.note_modified = now()
-		if not self.input_amount:
-			if not  account_doc.allow_zero_amount_posting:
-				if not hasattr(self,"valiate_input_amount"):
-					frappe.throw("Please enter amount")
-		
-		#pheakdey
-		if self.target_transaction_type:
-			if self.is_new():
-				if not self.target_transaction_number:
-					frappe.throw("Please select " + self.target_transaction_type)
-				target_doc = frappe.get_doc(self.target_transaction_type,self.target_transaction_number)
-				if not self.target_account_code:
-					frappe.throw("This account code does not have target account code. Please config target account in account code setting.")
-					
-				#check target document status
-				
-				if target_doc.status =='Closed':
-					frappe.throw(f"Target {self.target_transaction_type} Number {self.target_transaction_number} is already closed")
-
-				if self.target_transaction_type=="Reservation Folio":
-					self.note =   "{} Folio balance transfer to folio # {}, room:{} ".format(self.note or "", target_doc.name, target_doc.rooms),
-	
-			else:
-				frappe.throw("You cannot edit {} transaction.".format(self.account_name))
-
-			#chekc if target transaction type is city ledger then get city ledger name and city ledger type and update to table
-			if self.target_transaction_type=="City Ledger":
-				city_ledger_doc = frappe.get_doc("City Ledger", self.target_transaction_number)
-
-				self.city_ledger_name = city_ledger_doc.city_ledger_name
-				self.city_ledger_type= city_ledger_doc.city_ledger_type
-			else:
-				self.city_ledger_name =""
-				self.city_ledger_type= ""
-		else:
-			self.city_ledger_name = ""
-			self.city_ledger_type= ""
-
-		#check if doc have source transaction then then mean that this transaction is transfer from 
-		if self.source_transaction_type:
-				self.note = f"{_(self.transaction_type)} transfer from {_(self.source_transaction_type)} #: {self.source_transaction_number}, Reference Source Transaction Number: {self.reference_folio_transaction}"
-
-		#check reservation status if allow to edit
-		if self.reservation_status:
-			if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
-				frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
-
-		
-			
-		#validate working day  
 		if self.is_new():
-			
-			ref_doc = frappe.get_doc(self.transaction_type, self.transaction_number)
 			if self.transaction_type =="Reservation Folio":
-				self.property = ref_doc.property
-				self.reservation = ref_doc.reservation
-				self.reservation_stay = ref_doc.reservation_stay
-				self.is_master_folio = ref_doc.is_master
-				self.folio_type = ref_doc.folio_type
-				if not self.source_reservation_stay:
-					self.source_reservation_stay = self.reservation_stay
 				
+				self.folio_type = frappe.get_cached_value("Reservation Folio", self.transaction_number,"folio_type")  
+				self.is_master_folio =  frappe.get_cached_value("Reservation Folio", self.transaction_number,"is_master")
+			if not self.working_day or not self.cashier_shift:
+				if self.property:
+					working_day = get_working_day(self.property)
+					self.working_day = working_day["name"]
+					self.cashier_shift = working_day["cashier_shift"]["name"]
+					self.working_date = working_day["date_working_day"]
+			if not self.amount:
+				self.amount = self.input_amount
+			if not self.total_amount:
+				self.total_amount = self.input_amount
+			if not self.price:
+				self.price = self.input_amount
 
-			elif self.transaction_type == "Reservation":
-				self.property = ref_doc.property
-			elif self.transaction_type == "Deposit Ledger":
-				#set default guest and room to folio transaction when we add deposit ledger transaction
-				#validate if deposit ledger is still open
-				deposit_ledger_doc = frappe.get_doc("Deposit Ledger",self.transaction_number)
-				if deposit_ledger_doc.status =="Closed":
-					frappe.throw("You cannot post transaction to the close deposit ledger")
-
-				
-				self.guest = deposit_ledger_doc.guest
-				self.guest_name =  deposit_ledger_doc.guest_name
-				self.room_id =  deposit_ledger_doc.room_id
-				self.room_number =  deposit_ledger_doc.room_number
-
-
-			if not self.property:
-				if self.reservation:
-					self.property = frappe.db.get_value("Reservation", self.reservation, "property")
-
-			working_day = get_working_day(self.property)
-			if self.flags.ignore_validateion_cashier_shift == False:
-				if not working_day["name"]:
-					frappe.throw("Please start working day")
-				
-	
-				if not self.transaction_type =='Cashier Shift':
-					if not working_day["cashier_shift"]["name"]:
-						frappe.throw("Please start cashier shift")
-
-			#validate record for back date trasaction
-			if self.flags.ignore_validate_back_date_transaction == False:
-				if getdate(working_day["date_working_day"])> getdate(self.posting_date):
-					check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
-
-			
-			if not self.working_day:
-				self.working_day = working_day["name"]
-				self.working_date = working_day["date_working_day"]
-    
-			if not self.transaction_type =='Cashier Shift' and not self.cashier_shift:
-				self.cashier_shift = working_day["cashier_shift"]["name"]
-
-			#check if not guest selected then add reservation folio guest to this folio transaction
 			if self.transaction_type == "Reservation Folio":
-
-				if not self.guest:
-					guest, guest_name = frappe.db.get_value('Reservation Folio',self.transaction_number , ['guest', 'guest_name'])
-					self.guest = guest
-					self.guest_name = guest_name
-
-
-
-			if not self.room_id:
-				#get room info
-				#1 get room from reservation room rate
-				
-				if self.reservation_stay:
-				 	
-					room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay,"date":self.posting_date})
-				
-					if room_rate_data:
-						self.room_type_id =room_rate_data[0].room_type_id
-						self.room_id =room_rate_data[0].room_id 
-						self.room_number =room_rate_data[0].room_number 
-						self.room_type =room_rate_data[0].room_type
-					else:
-						#get first row of room rate
-						room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay}, limit_page_length=1)
-						if room_rate_data:
-							self.room_type_id =room_rate_data[0].room_type_id
-							self.room_id =room_rate_data[0].room_id 
-							self.room_number =room_rate_data[0].room_number 
-							self.room_type =room_rate_data[0].room_type
-					#end update room type and room number
-			else:
-				#room id is manually set so we need to get room type id set to this folio transaction
-				room = frappe.get_doc("Room", self.room_id)
-				self.room_type_id = room.room_type_id
-				self.room_type = room.room_type
-
-
-
-			 
-		self.discount = self.discount if (self.discount or 0) >0 else 0
-
-		if self.discount_type =="Percent" and self.discount>100:
-			if not self.flags.is_auto_post:
-				frappe.throw("Discount percent cannot greater than 100%")
-
-		self.input_amount =float( self.input_amount or 0)
-
-		self.price = self.input_amount
-		self.quantity=float( self.quantity or 1)
-		self.amount = (self.price or 0)  * self.quantity
-	
- 
-				 
-		self.discount = self.discount or 0
-		
-		if self.discount_type=="Percent":
-			self.discount_amount =(float( self.price or 0 ) * self.quantity) * ((self.discount or 0) / 100.0)
-			 
-		else:
-			self.discount_amount = self.discount or 0 
-
-		#update discount account code and bank fee account
-		
-		self.account_category = account_doc.account_category
-
-		self.discount_account = account_doc.discount_account
-		self.bank_fee_account = account_doc.bank_fee_account
-
-		if account_doc.show_quantity_in_report:
-			self.report_quantity = self.quantity
-
-		if self.tax_rule:
-			tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
-			self.tax_1_account = tax_rule.tax_1_account
-			self.tax_2_account = tax_rule.tax_2_account
-			self.tax_3_account = tax_rule.tax_3_account
-			self.tax_1_rate = self.tax_1_rate or 0
-			self.tax_2_rate = self.tax_2_rate or 0
-			self.tax_3_rate = self.tax_3_rate or 0
-
-			if self.rate_include_tax== "Yes":
-				price = get_base_rate((self.input_amount )- (self.discount_amount/ self.quantity) ,tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
-				self.price = price + self.discount_amount
-				self.amount = (self.price * self.quantity ) 
-			else:
-				self.amount = ( self.price * self.quantity)  
-			
-			#tax 1
-			self.taxable_amount_1 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_1 or 100)/100)
-			
-			self.taxable_amount_1 = self.taxable_amount_1 if tax_rule.calculate_tax_1_after_discount == 0 and self.rate_include_tax =='No'  else self.taxable_amount_1 - self.discount_amount
-		 
-			self.tax_1_amount = self.taxable_amount_1 * self.tax_1_rate / 100
-			#tax 2
-			self.taxable_amount_2 = self.amount or 0 * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
-			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  and self.rate_include_tax =='No'  else self.taxable_amount_2 - self.discount_amount
-			self.taxable_amount_2 = self.taxable_amount_2  if tax_rule.calculate_tax_2_after_adding_tax_1 == 0 else self.taxable_amount_2 + self.tax_1_amount
-			
-
-			self.tax_2_amount = self.taxable_amount_2 * self.tax_2_rate / 100
-			#tax 3
-			self.taxable_amount_3 = self.amount or 0
-			
-			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0  and self.rate_include_tax =='No'  else self.taxable_amount_3 - self.discount_amount
-			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_1 == 0 else self.taxable_amount_3 + self.tax_1_amount
-			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_2 == 0 else self.taxable_amount_3 + self.tax_2_amount
-			self.tax_3_amount = self.taxable_amount_3 * self.tax_3_rate / 100
-			
-			self.taxable_amount_3 = self.taxable_amount_3 * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
-
-			self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
-		else:
-			 
-			self.rate_include_tax = 'No'
-			self.tax_1_rate = 0
-			self.tax_2_rate = 0
-			self.tax_3_rate = 0
-			self.tax_1_amount = 0
-			self.tax_2_amount = 0
-			self.tax_3_amount = 0
-			self.taxable_amount_1 = 0
-			self.taxable_amount_2 = 0
-			self.taxable_amount_3 = 0
-			self.total_tax = 0
-   
-		if not self.flags.is_auto_post:
-			if self.discount_amount> self.input_amount:
-				frappe.throw("Discount amount cannot greater than amount")
-		
-		self.bank_fee = self.bank_fee or 0
-		
-		self.bank_fee_amount = (self.amount or 0) * (self.bank_fee or 0) / 100
-
-		self.amount = (self.amount or 0) + (self.bank_fee_amount or 0)
-		
-		
-		self.total_amount = (self.amount or 0) - (self.discount_amount or 0) + (self.total_tax or 0)  
-	
-		if not self.parent_reference:
+				validate_reservation_folio_posting(self)
+			elif self.transaction_type =="City Ledger":
+				validate_city_ledger_posting(self)
+			elif self.transaction_type =="Desk Folio":
+				validate_desk_folio_posting(self)
+    
 			update_sub_account_description(self)
-
-		#auto set room_type_alias
-		if self.room_id and not self.room_type_id:
-			room_type_id, room_type,room_type_alias = frappe.db.get_value("Room", self.room_id, ["room_type_id","room_type","room_type_alias"])
-			self.room_type_id = room_type_id
-			self.room_type = room_type
-			self.room_type_alias = room_type_alias
-
-		if self.room_type_id:
-			
-			if not self.room_type_alias:
-				
-				self.room_type_alias = frappe.db.get_value("Room Type",self.room_type_id,"alias")
-
-		else:
-			self.room_type=""
-			self.room_type_alias=""
-
-		
-
-		#udpate fetche from field
-		update_fetch_from_field(self)
-		#validate update report descript
-		update_report_description_field(self)
-
-		#check if reservation room rate is not emplty AND source reservation is emplty 
-		#then get source reservation stay from room rate
-		if self.reservation_room_rate and not self.source_reservation_stay:
-			self.source_reservation_stay = frappe.db.get_value("Reservation Room Rate", self.reservation_room_rate, "reservation_stay")
-		
-		if self.reservation_room_rate and not self.stay_room_id:
-			self.stay_room_id= frappe.db.get_value("Reservation Room Rate", self.reservation_room_rate, "stay_room_id")
-
-
-
-	
-
-		
 
 	def after_insert(self):
 		 
-		if self.target_transaction_type and  self.target_transaction_number:
-			note = ""
-			# if self.target_transaction_type:
-			# 	note = f"{_(self.transaction_type)} transfer to {_(self.target_transaction_type)} #: {self.target_transaction_number}, room: {self.room_number}"	
-	 
 
-			post_transaction_to_target_transaction_type(self)
-			
- 
 		#add audit trail
-		 
-		if not self.parent_reference:
-			content =f"Post {self.account_group_name} to {self.transaction_type}. {self.transaction_type} #: {self.transaction_number}"
-			if self.transaction_type=="Reservation Folio":
-				if self.target_transaction_type:
-					content = content +  f", {'To folio: ' + self.target_transaction_number + ',' if self.target_transaction_number else '' } Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+		if self.flags.ignore_post_audit_trail:
+			if not self.parent_reference:
+				content =f"Post {self.account_group_name} to {self.transaction_type}. {self.transaction_type} #: {self.transaction_number}"
+				if self.transaction_type=="Reservation Folio":
+					if self.target_transaction_type:
+						content = content +  f", {'To folio: ' + self.target_transaction_number + ',' if self.target_transaction_number else '' } Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
 
-				if self.source_transaction_type:
-					content = content +  f", From Folio: {self.source_transaction_number} , Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
-			
-			elif self.transaction_type=="Deposit Ledger":
-				content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
-			else:
-				content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+					if self.source_transaction_type:
+						content = content +  f", From Folio: {self.source_transaction_number} , Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+				
+				elif self.transaction_type=="Deposit Ledger":
+					content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+				else:
+					content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
 
-			 
-
-			add_audit_trail([{
-				"comment_type":"Created",
-				"custom_audit_trail_type":"Created",
-				"custom_icon":"pi pi-dollar",
-				"subject":"Post " + self.account_group_name,
-				"reference_doctype":"Folio Transaction",
-				"reference_name":self.name,
-				"content":content
-			}])
-	
+				add_audit_trail([{
+					"comment_type":"Created",
+					"custom_audit_trail_type":"Created",
+					"custom_icon":"pi pi-dollar",
+					"subject":"Post " + self.account_group_name,
+					"reference_doctype":"Folio Transaction",
+					"reference_name":self.name,
+					"content":content
+				}])
+		
 
 		#update to inventory
 		if self.product:
 			update_inventory(self)
 
-
-
 	def on_update(self):
 		if self.flags.ingore_on_update:
 			return 
-
-		if not hasattr(self,"ignore_update_folio_transaction"):
-			update_folio_transaction(self)
-
 		
 		
 		 
@@ -531,7 +222,63 @@ class FolioTransaction(Document):
 				"transaction_list":[d for d in transaction_list if d["name"]==self.name],
 				"summary":summary_list
 			}
-			
+	
+def validate_reservation_folio_posting(self):
+	if not self.reservation_stay:
+		self.reservation_stay = frappe.get_cached_value("Reservation Folio",self.transaction_number, "reservation_stay")		
+		self.source_reservation_stay = self.reservation_stay 
+		self.reservation = frappe.get_cached_value("Reservation Folio",self.transaction_number, "reservation")		
+		self.reservation_type = frappe.get_cached_value("Reservation",self.reservation,"reservation_type")
+		self.reservation_status = frappe.get_cached_value("Reservation",self.reservation,"reservation_status")
+		if self.reservation_status:
+			self.reservation_status_color = frappe.get_cached_value("Reservation Status",self.reservation_status,"color")
+	validate_room_id(self)
+
+def validate_room_id(self):
+    # room info
+	if not self.room_id:
+		room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabRoom Occupy` where reservation_stay=%(reservation_stay)s and property=%(property)s and date=%(date)s limit 1",{"property":self.property,"reservation_stay":self.reservation_stay,"date": self.posting_date},as_dict=1)
+		if room_info:
+			room_info = room_info[0]
+			self.room_id = room_info["room_id"]
+			self.room_number = room_info["room_number"]
+			self.room_type_id = room_info["room_type_id"]
+			self.room_type = room_info["room_type"]
+			self.room_type_alias = room_info["room_type_alias"]
+		else:
+			# get froom from `tabReservation Room`
+			room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabReservation Stay Room` where parent=%(reservation_stay)s and property=%(property)s  limit 1",{"property":self.property,"reservation_stay":self.reservation_stay},as_dict=1)
+			if room_info:
+				room_info = room_info[0]
+				self.room_id = room_info["room_id"]
+				self.room_number = room_info["room_number"]
+				self.room_type_id = room_info["room_type_id"]
+				self.room_type = room_info["room_type"]
+				self.room_type_alias = room_info["room_type_alias"]
+	else:
+		update_room_information(self)
+
+def update_room_information(self):
+	if self.room_id and  (not self.room_number or not self.room_type_id or not self.room_type or not self.room_type_alias):
+		self.room_number =  frappe.get_cache_value("Room",self.room_id,"room_number")
+		self.room_type_id =  frappe.get_cache_value("room_type_id",self.room_id,"room_type_id")
+		self.room_type =  frappe.get_cache_value("room_type",self.room_id,"room_type")
+		self.room_type_alias = frappe.get_cache_value("room_type_alias",self.room_id,"room_type_alias")
+        
+
+def validate_city_ledger_posting(self):
+    self.city_ledger_name = frappe.get_cached_value("City Ledger", self.transaction_number,"city_ledger_name")
+    self.city_ledger_type = frappe.get_cached_value("City Ledger", self.transaction_number,"city_ledger_type")
+
+def validate_desk_folio_posting(self):
+    self.room_id = frappe.get_cached_value("Desk Folio",self.transaction_number, "table_id") 
+    if self.room_id:
+        update_room_information(self)
+    self.business_source = frappe.get_cached_value("Desk Folio",self.transaction_number, "business_source")
+    if self.business_source:
+    	self.business_source_type = frappe.get_cached_value("Business Source",self.business_source, "business_source_type")
+     
+
 def update_fetch_from_field(self):
 	if self.guest:
 		guest_name, guest_type,nationality = frappe.db.get_value("Customer",self.guest,["customer_name_en","customer_group","country"])
@@ -560,71 +307,13 @@ def update_fetch_from_field(self):
 
 	
 
-def update_folio_transaction(self):
-
-	#we use this method add folio transaction breakown
-	#1. self is main account transaction
-	#2. Discount Account
-	#3. Tax 1 Account 
-	#4. Tax 2 Account 
-	#5. Tax 3 Account 
-	#6. Bank Fee Account
- 
-
-	account_doc = frappe.get_doc("Account Code", self.account_code)
-	#discount
-	add_sub_account_to_folio_transaction(self,account_doc.discount_account, self.discount_amount,"Discount from folio transaction: {}. Date: {}. Room: {}({})".format(self.name,self.posting_date,self.room_number,self.room_type ))
-	if account_doc.discount_account:
-		self.discount_account = account_doc.discount_account
-		if self.discount_amount == 0:
-			self.discount_description = ""
-		else:
-			account_name = frappe.db.get_value("Account Code", account_doc.discount_account,"account_name")
-			if self.discount_type=="Percent":
-				self.discount_description = '{} - {}%'.format(account_name, self.discount)
-			else:
-				self.discount_description = '{}'.format(account_name)
-	
-	#tax 
-	if self.tax_rule:
-		tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
-		add_sub_account_to_folio_transaction(self,tax_rule.tax_1_account, self.tax_1_amount,"Tax breakdown from folio transaction: {}".format(self.name))
-		add_sub_account_to_folio_transaction(self,tax_rule.tax_2_account, self.tax_2_amount,"Tax breakdown from folio transaction: {}".format(self.name))
-		add_sub_account_to_folio_transaction(self,tax_rule.tax_3_account, self.tax_3_amount,"Tax breakdown from folio transaction: {}".format(self.name))
-				
-	add_sub_account_to_folio_transaction(self,account_doc.bank_fee_account, self.bank_fee_amount,"Credit card processing fee")
-
-	
-	
-
-	#update folio transaction to reservation folio
-	if self.transaction_type=="Reservation Folio":
-		if not self.flags.ignore_update_reservation_folio:
-			update_reservation_folio(self.transaction_number, None, False)
-	elif self.transaction_type =="City Ledger":
-		update_city_ledger(self.transaction_number, None, False)
-	elif self.transaction_type =="Deposit Ledger":
-		update_deposit_ledger(self.transaction_number, None, False)
-	elif self.transaction_type=='Desk Folio':		
-		update_desk_folio(self.transaction_number, None, False)
-	elif self.transaction_type=='Payable Ledger':
-		update_payable_ledger(self.transaction_number, None, False)
-	
-	
-	#update to reservation stay and reservation
-
-	if not self.parent_reference:	
-		if self.transaction_type=="Reservation Folio": 
-			if not self.flags.ignore_update_reservation:
-				update_reservation_stay_and_reservation(reservation_stay=self.reservation_stay,reservation=self.reservation)
-
 def update_sub_account_description(self):
 	
 	if self.discount_account:
 		if self.discount_amount == 0:
 			self.discount_description = ""
 		else:
-			account_name = frappe.db.get_value("Account Code", self.discount_account,"account_name")
+			account_name = frappe.get_cached_value("Account Code", self.discount_account,"account_name")
 			if self.discount_type=="Percent":
 				self.discount_description = '{} - {}%'.format(account_name, self.discount)
 			else:
@@ -635,21 +324,21 @@ def update_sub_account_description(self):
 		if self.tax_1_rate == 0:
 			self.tax_1_description = ""
 		else:
-			account_name = frappe.db.get_value("Account Code", self.tax_1_account,"account_name")
+			account_name = frappe.get_cached_value("Account Code", self.tax_1_account,"account_name")
 			self.tax_1_description = '{} - {}%'.format(account_name, self.tax_1_rate)
 	
 	if self.tax_2_account:
 		if self.tax_2_rate == 0:
 			self.tax_2_description = ""
 		else:
-			account_name = frappe.db.get_value("Account Code", self.tax_2_account,"account_name")
+			account_name = frappe.get_cached_value("Account Code", self.tax_2_account,"account_name")
 			self.tax_2_description = '{} - {}%'.format(account_name, self.tax_2_rate)
 	
 	if self.tax_3_account:
 		if self.tax_3_rate == 0:
 			self.tax_3_description = ""
 		else:
-			account_name = frappe.db.get_value("Account Code", self.tax_3_account,"account_name")
+			account_name = frappe.get_cached_value("Account Code", self.tax_3_account,"account_name")
 			self.tax_3_description = '{} - {}%'.format(account_name, self.tax_3_rate)
 
 	if self.bank_fee_account:
@@ -657,10 +346,17 @@ def update_sub_account_description(self):
 		if self.bank_fee == 0:
 			self.bank_fee_description = ""
 		else:
-			account_name = frappe.db.get_value("Account Code", self.bank_fee_account,"account_name")
+			account_name = frappe.get_cached_value("Account Code", self.bank_fee_account,"account_name")
 			self.bank_fee_description = '{} - {}% of {}'.format(account_name, self.bank_fee, fmt_money(amount=self.input_amount, currency=frappe.db.get_default("currency")))
 
-
+	if self.target_transaction_type =="Reservation Folio" and self.target_transaction_number:
+		self.report_description = "{} (to {})".format(self.account_name, self.target_transaction_number)
+	elif self.target_transaction_type =="City Ledger" and self.target_transaction_number:
+		self.report_description = _("City Ledger Transfer ( to {city_ledger} - {city_ledger_name})".format(city_ledger = self.target_transaction_number, city_ledger_name=self.city_ledger_name))
+        
+	elif self.source_transaction_type =="Reservation Folio" and self.source_transaction_number:
+   		self.report_description = _("Folio Transfer (from {source_transaction_number})".format(source_transaction_number = self.source_transaction_number))
+     
 def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 		
 		if account_code:
@@ -712,39 +408,9 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 
 
 
-@frappe.whitelist()
-def post_transaction_to_target_transaction_type(self,):
-	doc = frappe.get_doc({
-		'doctype': 'Folio Transaction',
-		'transaction_type': self.target_transaction_type,
-		'transaction_number':self.target_transaction_number,
-		'reference_number': self.name,
-		'property': self.property,
-		'posting_date': self.posting_date,
-		'working_day': self.working_day,
-		'cashier_shift': self.cashier_shift,
-		'working_date': self.working_date,
-		'account_code': self.target_account_code,
-		'account_group_name': self.account_group_name,
-		'account_group': self.account_group,
-		'type': self.target_account_type,
-		"quantity":self.quantity,
-		'input_amount': self.input_amount,
-		"is_auto_post":1,
-		"guest":self.guest,
-		"guest_name":self.guest_name,
-		"room_number":self.room_number,
-		"room_type":self.room_type,
-		"room_id":self.room_id,
-		"room_type_id":self.room_type_id,
-		"reservation_stay":self.reservation_stay,
-		"reservation":self.reservation,
-		"reference_folio_transaction":self.name,
-		"source_transaction_number": self.transaction_number,
-		"source_transaction_type": self.transaction_type
-	}).insert()
 
 def update_report_description_field(self):
+ 
 	self.report_description = self.account_name
 	if self.target_transaction_type:
 		if self.target_transaction_type=='City Ledger':

@@ -20,7 +20,7 @@ frappe.ui.form.on("Reservation Folio", {
     frm.add_custom_button(
       __("View Reservation Stay"),
       function () {
-        window.open("/frontdesk/stay-detail/" + frm.doc.reservation_stay);
+        window.open("/app/reservation-stay/" + frm.doc.reservation_stay);
       },
       __("View")
     );
@@ -28,7 +28,7 @@ frappe.ui.form.on("Reservation Folio", {
     frm.add_custom_button(
       __("View Reservation"),
       function () {
-        window.open("/frontdesk/reservation-detail/" + frm.doc.reservation);
+        window.open("/app/reservation/" + frm.doc.reservation);
       },
       __("View")
     );

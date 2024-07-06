@@ -150,7 +150,7 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
     #if doc have property field then update property, audit_date and is audit trail to true
     update_files = ["comment_by='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"))]
     update_files.append("custom_comment_by_photo='{}'".format(frappe.db.get_value("User",doc.owner, "user_image") or ""))
-    
+    updated_data = {}
     if not doc.custom_icon:
         icon_data = frappe.db.sql("select icon from `tabApp Icons` where name='{}'".format(doc.custom_audit_trail_type), as_dict=1)
         icon = 'pi pi-stop'
@@ -164,7 +164,8 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
         if doc.reference_name and not doc.custom_property:
             if hasattr(ref_doc, "property"):
                 working_day = get_working_day(ref_doc.property)
-                update_files.append("custom_property='{}'".format(ref_doc.property))
+                update_files.append("custom_property=%(property)s")
+                updated_data["property"] = ref_doc.property
                 update_files.append("custom_posting_date='{}'".format(working_day["date_working_day"] or frappe.utils.now()))
                 update_files.append("custom_is_audit_trail=1")
                 
@@ -242,8 +243,9 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
                 update_files.append("subject='Adding {}'".format(doc.comment_type))
 
     
-    
-    frappe.db.sql("update `tabComment` set {} where name='{}'".format(",".join(update_files), doc.name))
+   
+    frappe.db.sql("update `tabComment` set {} where name='{}'".format(",".join(update_files), doc.name),updated_data)
+ 
     frappe.db.commit()
 
 def update_comment_keyword(doc, method=None, *args, **kwargs):
@@ -518,7 +520,7 @@ def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=Fal
 
 
 @frappe.whitelist()
-def update_deposit_ledger(name=None, doc=None,run_commit=True):
+def update_deposit_ledger(name=None, doc=None,run_commit=True,ignore_validate=False, ignore_on_update=False):
 
     if name:
         doc = frappe.get_doc("Deposit Ledger",name)
@@ -540,7 +542,10 @@ def update_deposit_ledger(name=None, doc=None,run_commit=True):
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
     doc.balance= (doc.total_debit or 0) - (doc.total_credit or 0)
+    doc.flags.ignore_validate = ignore_validate
+    doc.flags.ignore_on_update = ignore_on_update
     doc.save(ignore_permissions=True)
+    
     if run_commit:
         frappe.db.commit()
         
@@ -548,7 +553,7 @@ def update_deposit_ledger(name=None, doc=None,run_commit=True):
 
 
 @frappe.whitelist()
-def update_desk_folio(name=None, doc=None,run_commit=True):
+def update_desk_folio(name=None, doc=None,run_commit=True,ignore_validation = False, ignore_on_update=False):
 
     if name:
         doc = frappe.get_doc("Desk Folio",name)
@@ -569,6 +574,8 @@ def update_desk_folio(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+    doc.flags.ignore_validate = ignore_validation
+    doc.flags.ignore_on_update = ignore_on_update
     doc.save(ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
@@ -577,7 +584,7 @@ def update_desk_folio(name=None, doc=None,run_commit=True):
 
 
 @frappe.whitelist()
-def update_payable_ledger(name=None, doc=None,run_commit=True):
+def update_payable_ledger(name=None, doc=None,run_commit=True,ignore_validate = False, ignore_on_update=False):
 
     if name:
         doc = frappe.get_doc("Payable Ledger",name)
@@ -598,6 +605,8 @@ def update_payable_ledger(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+    doc.flags.ignore_validate = ignore_validate
+    doc.flags.ignore_on_update = ignore_on_update
     doc.save(ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
@@ -606,7 +615,7 @@ def update_payable_ledger(name=None, doc=None,run_commit=True):
 
 
 @frappe.whitelist()
-def update_city_ledger(name=None,doc=None, run_commit = True):
+def update_city_ledger(name=None,doc=None, run_commit = True,ignore_validate = False, ignore_on_update=False):
     if name:
         doc = frappe.get_doc("City Ledger",name)
     sql = """
@@ -626,7 +635,8 @@ def update_city_ledger(name=None,doc=None, run_commit = True):
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
     doc.balance= (doc.total_debit or 0) - (doc.total_credit or 0)
-    
+    doc.flags.ignore_validate = ignore_validate
+    doc.flags.ignore_on_update = ignore_on_update
     doc.save( ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
@@ -687,7 +697,6 @@ def add_room_charge_to_folio(folio,rate,is_package=0,is_night_audit_posing=0,not
             "tax_3_rate":rate.tax_3_rate,
             "rate_include_tax":rate.rate_include_tax,
             "is_auto_post":1,
-            "valiate_input_amount": False,
             "reservation_room_rate": rate.name,
             "source_reservation_stay": rate.reservation_stay,
             "stay_room_id": rate.stay_room_id,
@@ -699,6 +708,7 @@ def add_room_charge_to_folio(folio,rate,is_package=0,is_night_audit_posing=0,not
         }
         
         doc = frappe.get_doc(doc)
+        doc.flags.valiate_input_amount = False
         doc.flags.ignore_update_reservation = True
         doc.flags.ignore_validate_close_folio = True
         doc.flags.ignore_validateion_cashier_shift = ignore_validateion_cashier_shift
@@ -733,7 +743,6 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
         "tax_3_rate":rate["tax_3_rate"],
         "rate_include_tax":rate["rate_include_tax"],
         "is_auto_post":1,
-        "valiate_input_amount": False,
         "reservation_room_rate": rate["name"],
         "source_reservation_stay": rate["reservation_stay"],
         "stay_room_id": rate["stay_room_id"],
@@ -751,6 +760,7 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
     }
     
     doc = frappe.get_doc(doc)
+    doc.flags.valiate_input_amount = False
     doc.flags.ignore_update_reservation = True
     doc.flags.ignore_validate_close_folio = True
     doc.flags.ignore_validateion_cashier_shift = ignore_validateion_cashier_shift

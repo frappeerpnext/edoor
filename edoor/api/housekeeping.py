@@ -1,6 +1,7 @@
 from edoor.api.frontdesk import get_working_day
 import frappe
 import json
+from frappe.utils import date_diff,today ,add_months, add_days,getdate,add_years
 
 @frappe.whitelist(methods="POST")
 def update_housekeeping_status(property, rooms, status):
@@ -47,7 +48,7 @@ def get_room_list(filter):
       where
          property = %(property)s  and 
          room_number like %(keyword)s
-   """.format(filter["keyword"])
+   """
 
    if 'room_type_id' in filter and  len(filter["room_type_id"])>0:
       sql = sql + " and room_type_id in %(room_type_id)s "
@@ -145,3 +146,4 @@ def get_room_list(filter):
             room["status_color"] = frappe.db.get_single_value("eDoor Setting","room_block_color")
 
    return data
+

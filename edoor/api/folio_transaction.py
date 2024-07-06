@@ -1,8 +1,10 @@
-from edoor.api.cache_functions import get_account_code_sub_account_information, get_master_folio_name_cache
+from edoor.api.cache_functions import get_account_code_doc, get_account_code_sub_account_information, get_master_folio_name_cache
+
 import frappe
 from frappe.model.document import bulk_insert
 from frappe.model.naming import make_autoname
-
+from frappe import _
+import json
 
 def create_folio(stay=None, data=None):
     if stay:
@@ -20,7 +22,7 @@ def create_folio(stay=None, data=None):
         doc.flags.ignore_validate = True
         doc.flags.ignore_on_update = True
         return doc
- 
+   
 def get_master_folio(reservation,create_if_not_exists = False,reopen_folio_if_closed=False):
     master_stay = frappe.db.get_list("Reservation Stay",  filters={"reservation":reservation, "is_master":"1"})
     if master_stay:
@@ -230,6 +232,8 @@ def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
         # business source and type
         t.business_source = stay["business_source"]
         t.business_source_type = stay["business_source_type"]
+        
+
         yield t
         
 
@@ -314,11 +318,12 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
                     doc.discount_description = "{} - {}%".format( account_info["discount_account_name"], t["discount"] ) #Room Charge Discount - 50.0%
                 else:
                     doc.discount_description = account_info["discount_account_name"]
+                    
         doc.discount_type = "" if "discount_type" in t else t["discount_type"] 
         doc.discount = "" if "discount" in t else t["discount"] 
         doc.discount_amount= "" if "discount_amount" in t else t["discount_amount"] 
+        
         # tax 1 description
-    
         if "tax_1_account" in  account_info:
             doc.tax_1_account = account_info["tax_1_account"]
             if t["tax_1_rate"]>0:

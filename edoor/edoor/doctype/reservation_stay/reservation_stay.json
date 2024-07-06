@@ -10,6 +10,10 @@
  "field_order": [
   "general_information_tab",
   "information_list",
+  "section_break_vpel",
+  "note",
+  "column_break_hksy",
+  "housekeeping_note",
   "room_rate_tab",
   "room_rate_list",
   "folio_tab",
@@ -128,12 +132,10 @@
   "notice_tab",
   "note_by",
   "note_modified",
-  "note",
   "change_stay_note",
   "column_break_87",
   "housekeeping_note_by",
   "housekeeping_note_modified",
-  "housekeeping_note",
   "paid_by_master_room",
   "allow_post_to_city_ledger",
   "summary_data",
@@ -508,7 +510,7 @@
   {
    "fieldname": "note",
    "fieldtype": "Small Text",
-   "label": "Note"
+   "label": "Reservation Note"
   },
   {
    "fieldname": "housekeeping_note",
@@ -999,12 +1001,20 @@
    "fieldname": "total_amount",
    "fieldtype": "Currency",
    "label": "Total Amount"
+  },
+  {
+   "fieldname": "section_break_vpel",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_hksy",
+   "fieldtype": "Column Break"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-25 16:16:06.398403",
+ "modified": "2024-07-05 16:38:40.520019",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

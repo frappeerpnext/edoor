@@ -865,7 +865,6 @@ def add_room_charge_to_folio(folio,rate,is_package=0,is_night_audit_posing=0,not
             "tax_3_rate":rate.tax_3_rate,
             "rate_include_tax":rate.rate_include_tax,
             "is_auto_post":1,
-            "valiate_input_amount": False,
             "reservation_room_rate": rate.name,
             "source_reservation_stay": rate.reservation_stay,
             "stay_room_id": rate.stay_room_id,
@@ -877,6 +876,7 @@ def add_room_charge_to_folio(folio,rate,is_package=0,is_night_audit_posing=0,not
         }
         
         doc = frappe.get_doc(doc)
+        doc.flags.valiate_input_amount = False
         doc.flags.ignore_update_reservation = True
         doc.flags.ignore_validate_close_folio = True
         doc.flags.ignore_validateion_cashier_shift = ignore_validateion_cashier_shift
@@ -911,7 +911,6 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
         "tax_3_rate":rate["tax_3_rate"],
         "rate_include_tax":rate["rate_include_tax"],
         "is_auto_post":1,
-        "valiate_input_amount": False,
         "reservation_room_rate": rate["name"],
         "source_reservation_stay": rate["reservation_stay"],
         "stay_room_id": rate["stay_room_id"],
@@ -929,6 +928,7 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
     }
     
     doc = frappe.get_doc(doc)
+    doc.flags.valiate_input_amount = False
     doc.flags.ignore_update_reservation = True
     doc.flags.ignore_validate_close_folio = True
     doc.flags.ignore_validateion_cashier_shift = ignore_validateion_cashier_shift

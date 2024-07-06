@@ -380,7 +380,6 @@ const roomData = computed(() => {
 })
 
 function checkChangePax(){
-    console.log(selectedRoomRates.value[0])
     if (doc.value.is_manual_change_pax) {
         if(stay.value){
            doc.value.adult = stay.value.adult
@@ -616,6 +615,8 @@ function onSave() {
         reservation_stay_names = Array.from(new Set(selectedRoomRates.value.map(d => d["reservation_stay"])))
     }
 
+    console.log(reservation_stay_names)
+    
 
     isSaving.value = true;
     if (!doc.value.tax_rule_data){

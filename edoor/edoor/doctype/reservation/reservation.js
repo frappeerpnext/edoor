@@ -156,7 +156,9 @@ function getReservationFolio(frm) {
                 const buttons = dom.querySelectorAll("button.child-folio-present");
 
                 if (dom){
-                    dom.querySelector("#wrapper_folio_detail").innerHTML = '<div>Please select folio!</div>'
+                    if (dom.querySelector("#wrapper_folio_detail")){
+                        dom.querySelector("#wrapper_folio_detail").innerHTML = '<div>Please select folio!</div>'
+                    }
                     buttons.forEach(r=>{
                         r.addEventListener('click',function(){
                             buttons.forEach(btn => {
@@ -173,7 +175,12 @@ function getReservationFolio(frm) {
                         })
                     })
                 }
-                $(frm.fields_dict["reservation_folio_list"].wrapper).html(dom);
+                if ((response.message.length) > 0) {
+                    $(frm.fields_dict["reservation_folio_list"].wrapper).html(dom);
+                }else {
+                    $(frm.fields_dict["reservation_folio_list"].wrapper).html("<div style='padding: 8px 10px;background:#edf6fd;color:#005ca3;border-radius:8px;'>This reservation does not have a folio assigned.</div>");
+                }
+                
             }
         }
     })

@@ -1,286 +1,350 @@
 <div class="wrapper">
     <div class="row">
-        <div class="col-4 px-2">
-            <div class="bg-light rounded p-3 mb-3">
-                <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Master Guest</div>
-                <div class="guest-profile-wrapper">
-                    <div class="d-flex gap-2 align-items-center">
-                        <div class="">
-                            <div class="guest-profile rounded-circle overflow-hidden mr-3" style="width: 50px;height: 50px;border: 2px solid green;">
-                                <img class="h-100" style="object-fit: cover;" src="{{data.doc.guest_photo}}">
+        <div class="col-8">
+            <div class="row">
+                <div class="col-6 px-2">
+                    <div class="bg-light rounded p-3 mb-3">
+                        <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Master Guest</div>
+                        <div class="guest-profile-wrapper">
+                            <div class="d-flex gap-2 align-items-center">
+                                <div class="">
+                                    <div class="guest-profile rounded-circle overflow-hidden mr-3" style="width: 50px;height: 50px;border: 2px solid green;">
+                                        <img class="h-100" style="object-fit: cover;" src="{{data.doc.guest_photo}}">
+                                    </div>
+                                </div>
+                                <div>
+                                    <strong style="color:#4338ca">{{data.doc.guest_name}}</strong>
+                                    <p class="mb-0">{{data.doc.phone_number}}</p>
+                                    <p class="mb-0">{{data.doc.email_address}}</p>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <strong style="color:#4338ca">{{data.doc.guest_name}}</strong>
-                            <p class="mb-0">{{data.doc.phone_number}}</p>
-                            <p class="mb-0">{{data.doc.email_address}}</p>
+                    </div>
+                    <div class="bg-light rounded p-3">
+                        <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Business Source & Rate</div>
+                        <div class="business-rate-wrapper">
+                            <p>Business Source</p>
+                            <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.business_source}}</div>
+                            <br/>
+                            <p>Rate Type</p>
+                            <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.rate_type}}</div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="bg-light rounded p-3">
-                <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Business Source & Rate</div>
-                <div class="business-rate-wrapper">
-                    <p>Business Source</p>
-                    <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.business_source}}</div>
-                    <br/>
-                    <p>Rate Type</p>
-                    <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.rate_type}}</div>
+                <div class="col-6 px-2">
+                    <div class="bg-light rounded p-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Stay Information</div>
+                            <div class="d-flex">
+                                <p class="mr-2">Res FIT Color</p>
+                                <div style="width: 20px;height: 20px;background-color: {{data.doc.group_color}};" class="rounded-circle"></div>
+                            </div>
+                        </div>
+                        <div class="stay-detail-content">
+                            <div class="d-flex mt-2">
+                                <div class="d-flex align-items-center mr-2">
+                                    <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Res. Date</p>
+                                </div>
+                                <div class="w-100">
+                                    <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.reservation_date,{"fieldtype":"Date"})}}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex w-50 mr-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Ref. No</p>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.reference_number}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex w-50">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Int. No</p>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.internal_reference_number}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex align-items-center mr-2">
+                                    <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Res. No</p>
+                                </div>
+                                <div class="w-100">
+                                    <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.name}}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex align-items-center mr-2">
+                                    <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Room(s)</p>
+                                </div>
+                                <div class="w-100">
+                                    <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">
+                                        {% var index = 1 %}
+                                        {% for r in rooms_data %}
+                                            {% if index <= 3 %}
+                                                <span class="bg-secondary px-2 text-white rounded">{{r.room_type_alias}}/{{r.room_number}}</span>,
+                                            {% endif %}
+                                            {% var index = index + 1 %}
+                                        {% endfor %}
+                                        {% if rooms_data.length > 3 %}
+                                            <span class="bg-info px-1 text-white rounded">{{rooms_data.length - 3}} mores</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex w-50 mr-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Arrival</p>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.arrival_date,{"fieldtype":"Date"})}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex w-25 mr-2">
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.arrival_time,{"fieldtype":"Time"})}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex w-25">
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded overflow-hidden" style="white-space: nowrap;text-overflow: ellipsis;">{{day_format.arrival_day}}</div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex w-50 mr-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Departure Date</p>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.departure_date,{"fieldtype":"Date"})}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex w-25 mr-2">
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.departure_time,{"fieldtype":"Time"})}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex w-25">
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded overflow-hidden" style="white-space: nowrap;text-overflow: ellipsis;">{{day_format.departure_day}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex align-items-center mr-2">
+                                    <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Night</p>
+                                </div>
+                                <div class="w-100">
+                                    <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.room_nights}}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex w-50 mr-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Adults</p>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.adult}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex w-50">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Children</p>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.child}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 px-2">
+                    <h2 class="text-left mb-1">Room Stay</h2>
+                    <div class="form-grid-container">
+                        <div class="form-grid">
+                            <div class="grid-heading-row" style="height: auto !important;">
+                                <div class="grid-row">
+                                    <div class="data-row row">
+                                        <div class="col">Stay Date</div> 
+                                        <div class="col text-center" style="max-width: 4%;">Nights</div> 
+                                        <div class="col text-center">Room(s)</div> 
+                                        <div class="col text-right">ADR</div> 
+                                        <div class="col text-right">Discount</div> 
+                                        <div class="col text-right">Tax</div> 
+                                        <div class="col text-right">Total Rate</div> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid-body">
+                                <div class="rows"> 
+                                    {% for d in  data.doc.stays%}
+                                    <div class="grid-row">  
+                                        <div class="data-row row">
+                                            <div class="col">{{frappe.format(data.doc.arrival_date,{"fieldtype":"Date"})}} - {{frappe.format(data.doc.departure_date,{"fieldtype":"Date"})}}</div>
+                                            <div class="col text-center" style="max-width: 4%;">{{data.doc.room_nights}}</div>
+                                            <div class="col text-center">{{d.room_number}}</div>
+                                            <div class="col text-right">{{frappe.format(data.doc.adr,{"fieldtype":"Currency"})}}</div>
+                                            <div class="col text-right">{{frappe.format(data.doc.room_rate_discount,{"fieldtype":"Currency"})}}</div>
+                                            <div class="col text-right">{{frappe.format(data.doc.total_room_rate_tax,{"fieldtype":"Currency"})}}</div>
+                                            <div class="col text-right">{{frappe.format(data.doc.total_room_rate,{"fieldtype":"Currency"})}}</div>
+                                        </div>
+                                    </div>
+                                    {%endfor%}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-4 px-2">
-            <div class="bg-light rounded p-3">
-                <div class="d-flex justify-content-between">
-                    <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Stay Information</div>
-                    <div class="d-flex">
-                        <p class="mr-2">Res FIT Color</p>
-                        <div style="width: 20px;height: 20px;background-color: {{data.doc.group_color}};" class="rounded-circle"></div>
-                    </div>
-                </div>
-                <div class="stay-detail-content">
-                    <div class="d-flex mt-2">
-                        <div class="d-flex align-items-center mr-2">
-                            <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Res. Date</p>
-                        </div>
-                        <div class="w-100">
-                            <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.reservation_date,{"fieldtype":"Date"})}}</div>
-                        </div>
-                    </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex w-50 mr-2">
-                            <div class="d-flex align-items-center mr-2">
-                                <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Ref. No</p>
-                            </div>
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.reference_number}}</div>
-                            </div>
-                        </div>
-                        <div class="d-flex w-50">
-                            <div class="d-flex align-items-center mr-2">
-                                <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Int. No</p>
-                            </div>
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.internal_reference_number}}</div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-12 px-2">
+                    <div class="bg-light rounded p-3 mb-3">
+                        <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Charge Summary</div>
+                        <div class="charge-summary-cus">
+                            <div class="row">
+                                <div class="col-4 pr-2">
+                                    <div class="rounded p-2 border-info" style="background: #0F2027;background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);background: linear-gradient(to right, #2C5364, #203A43, #0F2027);">
+                                        <p class="m-0 text-right text-white">TOTAL DEBIT</p>
+                                        <div class="text-right text-white font-weight-bold m-0">{{frappe.format(data.doc.total_debit,{"fieldtype":"Currency"})}}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4 px-2 border-info">
+                                    <div class="rounded p-2 " style="background: #0F2027;background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);background: linear-gradient(to right, #2C5364, #203A43, #0F2027);">
+                                        <p class="m-0 text-right text-white">TOTAL CREDIT</p>
+                                        <div class="text-right text-white font-weight-bold m-0">{{frappe.format(data.doc.total_credit,{"fieldtype":"Currency"})}}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4 pl-2 border-info">
+                                    <div class="rounded p-2" style="background: #0F2027;background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);background: linear-gradient(to right, #2C5364, #203A43, #0F2027);">
+                                        <p class="m-0 text-right text-white">BALANCE</p>
+                                        <div class="text-right text-white font-weight-bold m-0">{{frappe.format(data.doc.balance,{"fieldtype":"Currency"})}}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex align-items-center mr-2">
-                            <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Res. No</p>
-                        </div>
-                        <div class="w-100">
-                            <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.name}}</div>
+                        <div class="brief-charge pt-2">
+                            {% for s in charge_summary %}
+                                <div class="d-flex mt-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">{{s.account_category}}</p>
+                                    </div>
+                                    <div class="w-100 d-flex justify-content-end">
+                                        <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(s.amount,{"fieldtype":"Currency"})}}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex align-items-center mr-2">
-                            <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Room(s)</p>
-                        </div>
-                        <div class="w-100">
-                            <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">
-                                {% var index = 1 %}
-                                {% for r in rooms_data %}
-                                    {% if index <= 3 %}
-                                        <span class="bg-secondary px-2 text-white rounded">{{r.room_type_alias}}/{{r.room_number}}</span>,
-                                    {% endif %}
-                                    {% var index = index + 1 %}
-                                {% endfor %}
-                                {% if rooms_data.length > 3 %}
-                                    <span class="bg-info px-1 text-white rounded">{{rooms_data.length - 3}} mores</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex w-50 mr-2">
-                            <div class="d-flex align-items-center mr-2">
-                                <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Arrival</p>
-                            </div>
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.arrival_date,{"fieldtype":"Date"})}}</div>
-                            </div>
-                        </div>
-                        <div class="d-flex w-25 mr-2">
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.arrival_time,{"fieldtype":"Time"})}}</div>
-                            </div>
-                        </div>
-                        <div class="d-flex w-25">
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded overflow-hidden" style="white-space: nowrap;text-overflow: ellipsis;">{{day_format.arrival_day}}</div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex w-50 mr-2">
-                            <div class="d-flex align-items-center mr-2">
-                                <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Departure Date</p>
-                            </div>
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.departure_date,{"fieldtype":"Date"})}}</div>
-                            </div>
-                        </div>
-                        <div class="d-flex w-25 mr-2">
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.departure_time,{"fieldtype":"Time"})}}</div>
-                            </div>
-                        </div>
-                        <div class="d-flex w-25">
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded overflow-hidden" style="white-space: nowrap;text-overflow: ellipsis;">{{day_format.departure_day}}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex align-items-center mr-2">
-                            <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Night</p>
-                        </div>
-                        <div class="w-100">
-                            <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.room_nights}}</div>
-                        </div>
-                    </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex w-50 mr-2">
-                            <div class="d-flex align-items-center mr-2">
-                                <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Adults</p>
-                            </div>
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.adult}}</div>
-                            </div>
-                        </div>
-                        <div class="d-flex w-50">
-                            <div class="d-flex align-items-center mr-2">
-                                <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:60px;">Children</p>
-                            </div>
-                            <div class="w-100">
-                                <div class="bg-white p-2 rounded" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.child}}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-4 px-2">
-            <div class="bg-light rounded p-3 mb-3">
-                <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Charge Summary</div>
-                <div class="charge-summary-cus">
-                    <div class="row">
-                        <div class="col-4 pr-2">
-                            <div class="rounded p-2 border-info" style="background: #0F2027;background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);background: linear-gradient(to right, #2C5364, #203A43, #0F2027);">
-                                <p class="m-0 text-right text-white">TOTAL DEBIT</p>
-                                <div class="text-right text-white font-weight-bold m-0">{{frappe.format(data.doc.total_debit,{"fieldtype":"Currency"})}}</div>
-                            </div>
-                        </div>
-                        <div class="col-4 px-2 border-info">
-                            <div class="rounded p-2 " style="background: #0F2027;background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);background: linear-gradient(to right, #2C5364, #203A43, #0F2027);">
-                                <p class="m-0 text-right text-white">TOTAL CREDIT</p>
-                                <div class="text-right text-white font-weight-bold m-0">{{frappe.format(data.doc.total_credit,{"fieldtype":"Currency"})}}</div>
-                            </div>
-                        </div>
-                        <div class="col-4 pl-2 border-info">
-                            <div class="rounded p-2" style="background: #0F2027;background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);background: linear-gradient(to right, #2C5364, #203A43, #0F2027);">
-                                <p class="m-0 text-right text-white">BALANCE</p>
-                                <div class="text-right text-white font-weight-bold m-0">{{frappe.format(data.doc.balance,{"fieldtype":"Currency"})}}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="brief-charge pt-2">
-                    {% for s in charge_summary %}
-                        <div class="d-flex mt-2">
-                            <div class="d-flex align-items-center mr-2">
-                                <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">{{s.account_category}}</p>
-                            </div>
-                            <div class="w-100 d-flex justify-content-end">
-                                <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(s.amount,{"fieldtype":"Currency"})}}</div>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
 
-            <div class="bg-light rounded p-3 mb-3">
-                <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Room Rate Summary</div>
-                <div class="brief-charge pt-2">
-                    <div class="d-flex mt-2">
-                        <div class="d-flex align-items-center mr-2">
-                            <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">ADR</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-end">
-                            <div class="bg-white p-2 rounded" style="width:50%;min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.adr,{"fieldtype":"Currency"})}}</div>
-                            <div class="d-flex justify-content-center align-items-center" style="width: 5%;">
-                                <div>x</div>
+                    <div class="bg-light rounded p-3 mb-3">
+                        <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Room Rate Summary</div>
+                        <div class="brief-charge pt-2">
+                            <div class="d-flex mt-2">
+                                <div class="d-flex align-items-center mr-2">
+                                    <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">ADR</p>
+                                </div>
+                                <div class="w-100 d-flex justify-content-end">
+                                    <div class="bg-white p-2 rounded" style="width:50%;min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.adr,{"fieldtype":"Currency"})}}</div>
+                                    <div class="d-flex justify-content-center align-items-center" style="width: 5%;">
+                                        <div>x</div>
+                                    </div>
+                                    <div class="bg-dark text-white text-center p-2 rounded" style="width:20%;min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.room_nights}}</div>
+                                </div>
                             </div>
-                            <div class="bg-dark text-white text-center p-2 rounded" style="width:20%;min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.room_nights}}</div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex align-items-center mr-2">
+                                    <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Discount</p>
+                                </div>
+                                <div class="w-100 d-flex justify-content-end">
+                                    <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_discount,{"fieldtype":"Currency"})}}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex align-items-center mr-2">
+                                    <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Total Tax</p>
+                                </div>
+                                <div class="w-100 d-flex justify-content-end">
+                                    <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_tax,{"fieldtype":"Currency"})}}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="d-flex align-items-center mr-2">
+                                    <p class="text-right m-0 font-weight-bold" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Total Room Rate</p>
+                                </div>
+                                <div class="w-100 d-flex justify-content-end">
+                                    <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_amount,{"fieldtype":"Currency"})}}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex align-items-center mr-2">
-                            <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Discount</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-end">
-                            <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_discount,{"fieldtype":"Currency"})}}</div>
-                        </div>
-                    </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex align-items-center mr-2">
-                            <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Total Tax</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-end">
-                            <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_tax,{"fieldtype":"Currency"})}}</div>
-                        </div>
-                    </div>
-                    <div class="d-flex mt-2">
-                        <div class="d-flex align-items-center mr-2">
-                            <p class="text-right m-0 font-weight-bold" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Total Room Rate</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-end">
-                            <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_amount,{"fieldtype":"Currency"})}}</div>
+                    <div>
+                        <div class="bg-light rounded p-3 mb-3">
+                            <div class="font-weight-bold text-green mb-2" style="color: #14b8b1;">Arrival & Departure Mode</div>
+                            <div class="brief-charge pt-2">
+                                <div class="d-flex mt-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Arrival Mode</p>
+                                    </div>
+                                    <div class="w-100 d-flex justify-content-end">
+                                        <div class="bg-white p-2 rounded w-75" style="width:50%;min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.arrival_mode}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Flight No</p>
+                                    </div>
+                                    <div class="w-100 d-flex justify-content-end">
+                                        <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.arrival_flight_number}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Location</p>
+                                    </div>
+                                    <div class="w-100 d-flex justify-content-end">
+                                        <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.pickup_location}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Pickup Time</p>
+                                    </div>
+                                    <div class="w-100 d-flex justify-content-end">
+                                        <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{frappe.format(data.doc.pickup_time,{"fieldtype":"Time"})}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Driver</p>
+                                    </div>
+                                    <div class="w-100 d-flex justify-content-end">
+                                        <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.pickup_driver_name}}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-2">
+                                    <div class="d-flex align-items-center mr-2">
+                                        <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Phone Number</p>
+                                    </div>
+                                    <div class="w-100 d-flex justify-content-end">
+                                        <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{data.doc.pickup_driver_phone_number}}</div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div>Note</div>
+                                <textarea class="w-100 border-0 rounded" readonly style="min-height: 100px;"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
         </div>
-
-        
     </div>
 </div> 
-<br/>
-<h2 class="text-left mb-1">Room Stay</h2>
-<div class="form-grid-container">
-    <div class="form-grid">
-        <div class="grid-heading-row" style="height: auto !important;">
-            <div class="grid-row">
-                <div class="data-row row">
-                    <div class="col">Stay Date</div> 
-                    <div class="col text-center" style="max-width: 4%;">Nights</div> 
-                    <div class="col text-center">Room(s)</div> 
-                    <div class="col text-right">ADR</div> 
-                    <div class="col text-right">Discount</div> 
-                    <div class="col text-right">Tax</div> 
-                    <div class="col text-right">Total Rate</div> 
-                </div>
-            </div>
-        </div>
-        <div class="grid-body">
-            <div class="rows"> 
-                {% for d in  data.doc.stays%}
-                <div class="grid-row">  
-                    <div class="data-row row">
-                        <div class="col">{{frappe.format(data.doc.arrival_date,{"fieldtype":"Date"})}} - {{frappe.format(data.doc.departure_date,{"fieldtype":"Date"})}}</div>
-                        <div class="col text-center" style="max-width: 4%;">{{data.doc.room_nights}}</div>
-                        <div class="col text-center">{{d.room_number}}</div>
-                        <div class="col text-right">{{frappe.format(data.doc.adr,{"fieldtype":"Currency"})}}</div>
-                        <div class="col text-right">{{frappe.format(data.doc.room_rate_discount,{"fieldtype":"Currency"})}}</div>
-                        <div class="col text-right">{{frappe.format(data.doc.total_room_rate_tax,{"fieldtype":"Currency"})}}</div>
-                        <div class="col text-right">{{frappe.format(data.doc.total_room_rate,{"fieldtype":"Currency"})}}</div>
-                    </div>
-                </div>
-                {%endfor%}
-            </div>
-        </div>
-    </div>
-</div>

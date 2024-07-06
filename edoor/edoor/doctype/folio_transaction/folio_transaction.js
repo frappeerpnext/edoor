@@ -3,11 +3,43 @@
 
 frappe.ui.form.on("Folio Transaction", {
 	onload(frm) {
+    if (window.self !== window.top) {
+      
+      let container = document.querySelector('div[data-page-route="Folio Transaction"]');
+      if (!container){
+        return
+      }
+      // hide share 
+      const share = container.querySelector("ul.form-shared")
+   
+     
+      if(share){
+       
+        share.remove()
+      }
+      let pageheade = container.querySelector('.custom-page-head');
+    
+      if (pageheade){
+         
+        pageheade.remove()
+
         
+      }
+      $.each(frm.fields_dict, function(fieldname, field) {
+          frm.set_df_property(fieldname, 'read_only', 1);
+          if (field.df.fieldtype === 'Link') {
+            // Change the field type to 'Data'
+            frm.set_df_property(fieldname, 'fieldtype', 'Data');
+        }
+
+      });
+      frm.refresh();
+
+    } 
 	},
   refresh(frm) {
     updateTransactionList(frm) 
-
+    
     if(frm.doc.parent_reference){
       frm.set_intro(
         "This transaction is a sub transaction of " + "<a href=" + '/app/folio-transaction/' + frm.doc.parent_reference + "><strong>" + frm.doc.parent_reference + "</strong></a>" + " folio transaction",  
@@ -37,7 +69,7 @@ frappe.ui.form.on("Folio Transaction", {
       frm.add_custom_button(
         __("View Reservation Stay"),
         function () {
-          window.open("/frontdesk/stay-detail/" + frm.doc.reservation_stay);
+          window.open("/app/reservation-stay/" + frm.doc.reservation_stay);
         },
         __("View")
       );
@@ -47,7 +79,7 @@ frappe.ui.form.on("Folio Transaction", {
       frm.add_custom_button(
         __("View Reservation"),
         function () {
-          window.open("/frontdesk/reservation-detail/" + frm.doc.reservation);
+          window.open("/app/reservation/" + frm.doc.reservation);
         },
         __("View")
       );

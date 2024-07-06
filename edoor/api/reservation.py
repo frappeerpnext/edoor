@@ -2131,7 +2131,6 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
     else:
         show_account_code = int(show_account_code)
 
-   
     filters={
         "parent_reference":""
     }
@@ -2148,8 +2147,6 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
     data = frappe.db.get_list("Folio Transaction", fields=["*"], filters=filters, page_length=1000, order_by='name')
     
  
-
-  
     # data = frappe.db.sql(sql,as_dict=1)
 
     balance = 0
@@ -2178,9 +2175,7 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
                 "total_amount":d["total_amount"]
 
             })
-
-
-      
+            
         #this is main transaction
         amount = d.total_amount
          
@@ -2270,8 +2265,7 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
         show_account_code = frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction")==1
     else:
         show_account_code = int(show_account_code)
-
-   
+        
     filters={
         "parent_reference":""
     }
@@ -2291,24 +2285,16 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
     
     data = frappe.db.get_list("Folio Transaction", fields=["*"], filters=filters, page_length=1000, order_by='name')
     
- 
-
-  
     # data = frappe.db.sql(sql,as_dict=1)
 
     balance = 0
     folio_transactions = []
-    for d in data:
-             
+    for d in data:   
         #this is main transaction
-        amount = d.total_amount + (d.total_sub_package_charge or 0)
-         
+        amount = d.total_amount 
         # if d.rate_include_tax=="Yes":
         #     amount =( amount - d.total_tax ) + d.discount_amount
-        
         balance = balance + (amount * (1 if d.type=="Debit" else -1))        
-
-
         folio_transactions.append({ 
             "reservation":d["reservation"],
             "name":d["name"],
@@ -2325,15 +2311,13 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
             "creation":d.creation,
             "show_print_preview":d.show_print_preview,
             "print_format":d.print_format,
-             "is_auto_post":d["is_auto_post"],
-             "total_amount":d["total_amount"],
-              "sale":d.sale,
-              "tbl_number":d.tbl_number,
-              "is_package":d.is_package
+            "is_auto_post":d["is_auto_post"],
+            "total_amount":d["total_amount"],
+            "sale":d.sale,
+            "tbl_number":d.tbl_number,
+            "is_package":d.is_package
         })
-        
 
-        
     return folio_transactions
 
 @frappe.whitelist()
@@ -3592,9 +3576,9 @@ def folio_transfer(data):
         folio_transaction_doc.transaction_number = new_folio_doc.name
         folio_transaction_doc.reservation = new_folio_doc.reservation
         folio_transaction_doc.reservation_stay = new_folio_doc.reservation_stay
-        folio_transaction_doc.ignore_validate_auto_post = 1
-        folio_transaction_doc.ignore_update_folio_transaction = 1
-        folio_transaction_doc.valiate_input_amount = 0
+        folio_transaction_doc.flags.ignore_validate_auto_post = True
+        folio_transaction_doc.flags.ignore_update_folio_transaction = True
+        folio_transaction_doc.flags.valiate_input_amount = False
         folio_transaction_doc.flags.ingore_validate = True
         folio_transaction_doc.flags.ignore_on_update = True
         
@@ -3639,9 +3623,9 @@ def folio_transfer(data):
             sub_transaction_doc.transaction_number = new_folio_doc.name
             sub_transaction_doc.reservation = new_folio_doc.reservation
             sub_transaction_doc.reservation_stay = new_folio_doc.reservation_stay
-            sub_transaction_doc.ignore_validate_auto_post = 1
-            sub_transaction_doc.ignore_update_folio_transaction = 1
-            sub_transaction_doc.valiate_input_amount = 0
+            sub_transaction_doc.flags.ignore_validate_auto_post = True
+            sub_transaction_doc.flags.ignore_update_folio_transaction = True
+            sub_transaction_doc.flags.valiate_input_amount = False
             sub_transaction_doc.flags.ingore_validate = True
             sub_transaction_doc.flags.ignore_on_update = True
 
@@ -3697,7 +3681,7 @@ def get_guest_by_reservation(reservation):
     guests =[frappe.db.get_value("Reservation",reservation, "guest")]
     sql = "select guest,name from `tabReservation Stay` where reservation='{}'".format(reservation)
     data = frappe.db.sql(sql,as_dict=1)   
-    
+ 
  
  
     guests = guests + [d["guest"] for d in data]

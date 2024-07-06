@@ -84,29 +84,3 @@ MyPage = Class.extend({
 		this.iframe.contentWindow.print()
 	}
 })
-
-
-// frappe.pages['end-of-day-report'].on_page_load = function(wrapper) {
-// 	var page = frappe.ui.make_app_page({
-// 		parent: wrapper,
-// 		title: 'End of Day Report',
-// 		single_column: true
-// 	});
-// 	let filters={}
-// 	let $btnViewReport = page.set_secondary_action('View Report', () => onViewReport(), 'octicon octicon-plus')
-// 	let $btnPrintReport = page.set_primary_action('Print', () => onPrintReport(), 'octicon octicon-printer')
-
-
-
-
-// 	function onViewReport(){
-// 		alert(filters.property)
-// 	}
-	
-
-// 	function onPrintReport(){
-// 		alert(123)
-// 	}
-
-
-// }

@@ -365,7 +365,7 @@ const onViewFolioDetail = (doc) => {
             props: {
                 header: 'Folio Transaction Detail - ' + doc.data.name ,
                 style: {
-                    width: '50vw',
+                    width: '90vw',
                 },
                 modal: true,
                 position:'top',

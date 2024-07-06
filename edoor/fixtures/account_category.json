@@ -99,6 +99,15 @@
   "sort_order": 2600
  },
  {
+  "account_category": "Room FOC",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-06-29 10:45:55.650124",
+  "name": "Room FOC",
+  "note": "FOC",
+  "sort_order": 0
+ },
+ {
   "account_category": "F&B Bill to Room",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -189,15 +198,6 @@
   "sort_order": 1600
  },
  {
-  "account_category": "F&B Revenue",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-02-06 17:41:22.199221",
-  "name": "F&B Revenue",
-  "note": null,
-  "sort_order": 1500
- },
- {
   "account_category": "Deposit",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -223,6 +223,15 @@
   "name": "Other Room Charge",
   "note": null,
   "sort_order": 300
+ },
+ {
+  "account_category": "F&B Revenue",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-02-06 17:41:22.199221",
+  "name": "F&B Revenue",
+  "note": null,
+  "sort_order": 1500
  },
  {
   "account_category": "Room Tax",
@@ -261,15 +270,6 @@
   "sort_order": 400
  },
  {
-  "account_category": "Room Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:54.619116",
-  "name": "Room Charge",
-  "note": null,
-  "sort_order": 200
- },
- {
   "account_category": "Payment",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -277,5 +277,14 @@
   "name": "Payment",
   "note": "a",
   "sort_order": 1800
+ },
+ {
+  "account_category": "Room Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:11:54.619116",
+  "name": "Room Charge",
+  "note": null,
+  "sort_order": 200
  }
 ]

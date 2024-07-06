@@ -2,7 +2,7 @@ import functools
 import re
 
 import requests
-from edoor.api.cache_functions import get_account_code_doc, get_account_code_sub_account_information, get_base_rate_cache, get_doctype_tree_name, get_doctype_value_cache, get_master_folio_name_cache, get_rate_type_doc, get_rate_type_info_with_cache, get_tax_rule_doc
+from edoor.api.cache_functions import get_account_code_doc, get_account_code_sub_account_information, get_base_rate_cache, get_cache_data, get_doctype_tree_name, get_doctype_value_cache, get_master_folio_name_cache, get_rate_type_doc, get_rate_type_info_with_cache, get_tax_rule_doc
 from edoor.api.folio_transaction import update_reservation_folio, update_reservation_folios
 from edoor.api.generate_room_rate import get_room_rate_account_code_breakdown, get_room_rate_breakdown
 from edoor.api.tax_calculation import get_tax_breakdown
@@ -306,7 +306,9 @@ def clear_cache():
     get_tax_rule_doc.cache_clear()
     get_master_folio_name_cache.cache_clear()
     get_doctype_tree_name.cache_clear()
-    frappe.log_error("Cache has been clear by task 5 mn job")
+    get_cache_data.cache_clear()
+    
+    # frappe.log_error("Cache has been clear by task 5 mn job")
              
     
 @frappe.whitelist()

@@ -37,11 +37,11 @@
                                 showIcon />
                         </div>
                         <!-- invoice style for print invoice document credsit debit styoe or simple style -->
-                        <div v-if="hasFilter('invoice_style')">
+                        <!-- <div v-if="hasFilter('invoice_style')">
                             <ComSelect v-model="filters.invoice_style" @onSelected="reloadIframe" :clear="false"
                                 placeholder="Invoice Style" :options="['Simple Style', 'Debit/Credit Style']">
                             </ComSelect>
-                        </div>
+                        </div> -->
                         <div v-if="hasFilter('show_rate')">
                             <div>
                                 <Checkbox v-model="filters.show_rate" :binary="true" :trueValue="1" :falseValue="0"

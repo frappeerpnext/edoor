@@ -10,6 +10,9 @@ from decimal import Decimal, ROUND_HALF_UP
 
 class PayableLedger(Document):
 	def validate(self):
+		if self.flags.ignore_validate:
+			return 
+
 		if self.is_new():
 			working_day = get_working_day(self.property)
 			if not working_day["name"]:
@@ -40,6 +43,9 @@ class PayableLedger(Document):
 
 
 	def on_update(self):
+		if self.flags.ignore_on_update:
+			return
+ 
 		if self.status == "Closed":
 			if(self.balance!=0):
 				frappe.throw("You cannot close payable ledger that have balance greater than 0")

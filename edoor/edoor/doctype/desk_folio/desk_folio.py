@@ -9,6 +9,9 @@ from edoor.edoor.doctype.desk_folio.utils import update_fetch_from_fields
 
 class DeskFolio(Document):
 	def validate(self):
+		if self.flags.ignore_validate:
+			return
+
 		self.balance = (self.total_debit or 0) - (self.total_credit or 0)
 		currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
 		if abs(round(self.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
@@ -26,6 +29,9 @@ class DeskFolio(Document):
 			self.room_type = ''
 			self.room_type_id = ''
 	def on_update(self):
+		if self.flags.ignore_on_update:
+			return
+
 		if self.status == "Closed":
 			if(self.balance!=0):
 				frappe.throw("You cannot close desk folio that have balance greater than 0")

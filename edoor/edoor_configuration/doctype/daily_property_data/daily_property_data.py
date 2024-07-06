@@ -13,7 +13,7 @@ class DailyPropertyData(Document):
 def generate_property_data(property):
 	if property:
 		working_day = get_working_day(property)
-		frappe.db.sql("delete from `tabDaily Property Data` where date>='{}' and property='{}'".format(working_day["date_working_day"], property ))
+		frappe.db.sql("delete from `tabDaily Property Data` where date>=%(working_day)s and property=%(property)s",{'property':property,'working_day':working_day["date_working_day"]})
 
 	data = frappe.db.sql("select room_type_id, count(name) as total_room from `tabRoom` where disabled = 0 group by room_type_id",as_dict=1)
 

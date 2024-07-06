@@ -172,7 +172,7 @@ function onViewFolioDetail(selected) {
 		props: {
 			header: 'Folio Transaction Detail - ' + selected,
 			style: {
-				width: '50vw',
+				width: '90vw',
 			},
 			modal: true,
 			position: 'top',

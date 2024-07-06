@@ -24,3 +24,6 @@ class BusinessSource(Document):
 				"city_ledger_type":self.city_ledger_type
 			})
 			doc.insert()
+   
+	def on_update(self):
+		frappe.clear_document_cache('Business Source', self.name)

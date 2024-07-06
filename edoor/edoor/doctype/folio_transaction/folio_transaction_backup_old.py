@@ -5,37 +5,50 @@ from edoor.api.folio_transaction import update_reservation_folio
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, get_base_rate
+from edoor.api.utils import add_audit_trail, check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger, get_base_rate,update_reservation_stay_and_reservation
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
+from epos_restaurant_2023.inventory.inventory import add_to_inventory_transaction, check_uom_conversion, get_product_cost, get_stock_location_product, get_uom_conversion, update_product_quantity
 from frappe import _
 
 class FolioTransaction(Document):
 	def validate(self):
+		 
+		if self.flags.ingore_validate:
+			return
+
+   
 		if not self.account_code:
 			frappe.throw("Please select an account code")
-
-		if not self.is_new():
-				if self.is_auto_post ==1:
-					if not hasattr(self,"ignore_validate_auto_post"):
-						frappe.throw("You cannot edit auto post transaction")
-		
- 
+		account_doc = frappe.get_doc("Account Code", self.account_code)
 	
+		if frappe.session.user !="Administrator":
+			if not self.is_new():
+					if self.is_auto_post ==1:
+						self.is_night_audit_posting = 1
+						if self.flags.ignore_validate_auto_post:
+							frappe.throw("You cannot edit auto post transaction")
 			
-			
+		if self.required_select_product and not self.product:
+			frappe.throw("Please select product code.")
 		#validate folio status
-		if self.transaction_type =='Reservation Folio':
-			if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
-				frappe.throw(f"This folio {self.transaction_number} is already closed")
-				
+
+		if not  self.flags.ignore_validate_close_folio:
+			if self.transaction_type =='Reservation Folio':
+				if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
+					frappe.throw(f"This folio {self.transaction_number} is already closed")
+
+	
 		# when update note
 		if hasattr(self,"is_update_note") and self.is_update_note:
 			self.note_by = frappe.session.user
 			self.note_modified = now()
+   
 		if not self.input_amount:
-			if not hasattr(self,"valiate_input_amount"):
-				frappe.throw("Please enter amount")
+			if not  account_doc.allow_zero_amount_posting:
+				if not self.flags.valiate_input_amount:
+					frappe.throw("Please enter amount")
+     
 		
 		#pheakdey
 		if self.target_transaction_type:
@@ -80,10 +93,7 @@ class FolioTransaction(Document):
 				frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
 
 		
-		
-		
-	
-				
+			
 		#validate working day  
 		if self.is_new():
 			
@@ -93,7 +103,10 @@ class FolioTransaction(Document):
 				self.reservation = ref_doc.reservation
 				self.reservation_stay = ref_doc.reservation_stay
 				self.is_master_folio = ref_doc.is_master
-				 
+				self.folio_type = ref_doc.folio_type
+				if not self.source_reservation_stay:
+					self.source_reservation_stay = self.reservation_stay
+				
 
 			elif self.transaction_type == "Reservation":
 				self.property = ref_doc.property
@@ -116,24 +129,27 @@ class FolioTransaction(Document):
 					self.property = frappe.db.get_value("Reservation", self.reservation, "property")
 
 			working_day = get_working_day(self.property)
-			 
-			if not working_day["name"]:
-				frappe.throw("Please start working day")
-			
-			if not working_day["cashier_shift"]["name"]:
-				frappe.throw("Please start cashier shift")
+			if self.flags.ignore_validateion_cashier_shift == False:
+				if not working_day["name"]:
+					frappe.throw("Please start working day")
+				
+	
+				if not self.transaction_type =='Cashier Shift':
+					if not working_day["cashier_shift"]["name"]:
+						frappe.throw("Please start cashier shift")
 
 			#validate record for back date trasaction
-
-			if getdate(working_day["date_working_day"])> getdate(self.posting_date):
-				check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
-
+			if self.flags.ignore_validate_back_date_transaction == False:
+				if getdate(working_day["date_working_day"])> getdate(self.posting_date):
+					check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
 
 			
-
-			self.working_day = working_day["name"]
-			self.working_date = working_day["date_working_day"]
-			self.cashier_shift = working_day["cashier_shift"]["name"]
+			if not self.working_day:
+				self.working_day = working_day["name"]
+				self.working_date = working_day["date_working_day"]
+    
+			if not self.transaction_type =='Cashier Shift' and not self.cashier_shift:
+				self.cashier_shift = working_day["cashier_shift"]["name"]
 
 			#check if not guest selected then add reservation folio guest to this folio transaction
 			if self.transaction_type == "Reservation Folio":
@@ -179,7 +195,8 @@ class FolioTransaction(Document):
 		self.discount = self.discount if (self.discount or 0) >0 else 0
 
 		if self.discount_type =="Percent" and self.discount>100:
-			frappe.throw("Discount percent cannot greater than 100%")
+			if not self.flags.is_auto_post:
+				frappe.throw("Discount percent cannot greater than 100%")
 
 		self.input_amount =float( self.input_amount or 0)
 
@@ -198,9 +215,14 @@ class FolioTransaction(Document):
 			self.discount_amount = self.discount or 0 
 
 		#update discount account code and bank fee account
-		account_doc = frappe.get_doc("Account Code", self.account_code)
+		
+		self.account_category = account_doc.account_category
+
 		self.discount_account = account_doc.discount_account
 		self.bank_fee_account = account_doc.bank_fee_account
+
+		if account_doc.show_quantity_in_report:
+			self.report_quantity = self.quantity
 
 		if self.tax_rule:
 			tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
@@ -225,16 +247,22 @@ class FolioTransaction(Document):
 		 
 			self.tax_1_amount = self.taxable_amount_1 * self.tax_1_rate / 100
 			#tax 2
-			self.taxable_amount_2 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
+			self.taxable_amount_2 = self.amount or 0 * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
 			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  and self.rate_include_tax =='No'  else self.taxable_amount_2 - self.discount_amount
 			self.taxable_amount_2 = self.taxable_amount_2  if tax_rule.calculate_tax_2_after_adding_tax_1 == 0 else self.taxable_amount_2 + self.tax_1_amount
+			
+
 			self.tax_2_amount = self.taxable_amount_2 * self.tax_2_rate / 100
 			#tax 3
-			self.taxable_amount_3 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
+			self.taxable_amount_3 = self.amount or 0
+			
 			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0  and self.rate_include_tax =='No'  else self.taxable_amount_3 - self.discount_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_1 == 0 else self.taxable_amount_3 + self.tax_1_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_2 == 0 else self.taxable_amount_3 + self.tax_2_amount
 			self.tax_3_amount = self.taxable_amount_3 * self.tax_3_rate / 100
+			
+			self.taxable_amount_3 = self.taxable_amount_3 * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
+
 			self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 		else:
 			 
@@ -249,9 +277,10 @@ class FolioTransaction(Document):
 			self.taxable_amount_2 = 0
 			self.taxable_amount_3 = 0
 			self.total_tax = 0
-		
-		if self.discount_amount> self.input_amount:
-			frappe.throw("Discount amount cannot greater than amount")
+   
+		if not self.flags.is_auto_post:
+			if self.discount_amount> self.input_amount:
+				frappe.throw("Discount amount cannot greater than amount")
 		
 		self.bank_fee = self.bank_fee or 0
 		
@@ -266,6 +295,12 @@ class FolioTransaction(Document):
 			update_sub_account_description(self)
 
 		#auto set room_type_alias
+		if self.room_id and not self.room_type_id:
+			room_type_id, room_type,room_type_alias = frappe.db.get_value("Room", self.room_id, ["room_type_id","room_type","room_type_alias"])
+			self.room_type_id = room_type_id
+			self.room_type = room_type
+			self.room_type_alias = room_type_alias
+
 		if self.room_type_id:
 			
 			if not self.room_type_alias:
@@ -276,16 +311,30 @@ class FolioTransaction(Document):
 			self.room_type=""
 			self.room_type_alias=""
 
+		
+
+		#udpate fetche from field
+		update_fetch_from_field(self)
+		#validate update report descript
+		update_report_description_field(self)
+
+		#check if reservation room rate is not emplty AND source reservation is emplty 
+		#then get source reservation stay from room rate
+		if self.reservation_room_rate and not self.source_reservation_stay:
+			self.source_reservation_stay = frappe.db.get_value("Reservation Room Rate", self.reservation_room_rate, "reservation_stay")
+		
+		if self.reservation_room_rate and not self.stay_room_id:
+			self.stay_room_id= frappe.db.get_value("Reservation Room Rate", self.reservation_room_rate, "stay_room_id")
+
 
 	def after_insert(self):
+		 
 		if self.target_transaction_type and  self.target_transaction_number:
 			note = ""
 			# if self.target_transaction_type:
 			# 	note = f"{_(self.transaction_type)} transfer to {_(self.target_transaction_type)} #: {self.target_transaction_number}, room: {self.room_number}"	
-	 
-
 			post_transaction_to_target_transaction_type(self)
-			
+
 
 		#add audit trail
 		if not self.parent_reference:
@@ -302,7 +351,7 @@ class FolioTransaction(Document):
 			else:
 				content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
 
-			frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
+			add_audit_trail([{
 				"comment_type":"Created",
 				"custom_audit_trail_type":"Created",
 				"custom_icon":"pi pi-dollar",
@@ -313,9 +362,14 @@ class FolioTransaction(Document):
 			}])
 	
 
-
+		#update to inventory
+		if self.product:
+			update_inventory(self)
 
 	def on_update(self):
+		if self.flags.ingore_on_update:
+			return 
+
 		if not hasattr(self,"ignore_update_folio_transaction"):
 			update_folio_transaction(self)
 
@@ -324,8 +378,8 @@ class FolioTransaction(Document):
 		 
 	def on_trash(self):
 		#if this transaction is auto post 
-
-		if self.is_auto_post:
+		
+		if self.is_auto_post and frappe.session.user !="Administrator":
 			if (frappe.db.get_default("allow_user_to_daddelete_auto_post_transaction") or 0)==0:
 				frappe.throw("Auto post transaction is not allow to delete.")
 		
@@ -343,14 +397,14 @@ class FolioTransaction(Document):
 		#validate delete folio transaction that have reference to folio transaction like folio transfer or city ledget
 		
 		account_doc = frappe.get_doc("Account Code",self.account_code)
-		if account_doc.require_select_a_folio:
+		if self.target_transaction_number:
 			sql = "select name, transaction_number from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
 			
 			target_folio_transaction = frappe.db.sql(sql,as_dict=1)
 
 			if target_folio_transaction:
 				#validate folio status
-				if frappe.get_value("Reservation Folio", target_folio_transaction[0]["transaction_number"], "status")=="Closed":
+				if frappe.get_value(self.target_transaction_type, target_folio_transaction[0]["transaction_number"], "status")=="Closed":
 					frappe.throw("You cannot delete this record. Because reference to Folio number {} and this folio is already closed".format( target_folio_transaction[0]["transaction_number"]))
 				
 				
@@ -371,13 +425,14 @@ class FolioTransaction(Document):
 		elif self.transaction_type=='Deposit Ledger':
 			update_deposit_ledger(self.transaction_number, None, False)
 		elif self.transaction_type=='Desk Folio':
-			update_desk_folio(self.transaction_number, None, False)
+			update_desk_folio(self.transaction_number, None, False)	
+		elif self.transaction_type=='Payable Ledger':
+			update_payable_ledger(self.transaction_number, None, False)
+
 		
 		
 		reservation_names.append(self.reservation)
 		reservation_stay_names.append(self.reservation_stay)
-
-		# frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
 
 		#update reservation stay and reservation of target folio transfer after delete
 		sql = "select distinct transaction_type, transaction_number, reservation, reservation_stay from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
@@ -391,13 +446,12 @@ class FolioTransaction(Document):
 			
 			reservation_names.append(d["reservation"])
 			reservation_stay_names.append(d["reservation_stay"])
-			# frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=d["reservation_stay"],reservation=d["reservation"])
-
+			
 		
 		#check if folio transaction is city ledger then update city leder summary
-		if self.city_ledger:
+		if self.target_transaction_type == "City Ledger" and  self.target_transaction_number :
 			frappe.db.delete("Folio Transaction", filters={"reference_folio_transaction":self.name})
-			frappe.enqueue("edoor.api.utils.update_city_ledger", queue='short', name=self.city_ledger, doc=None, run_commit=False)
+			frappe.enqueue("edoor.api.utils.update_city_ledger", queue='short', name=self.target_transaction_number, doc=None, run_commit=False)
 		
 
 		#add to audit trail
@@ -429,15 +483,72 @@ class FolioTransaction(Document):
 			comment["content"] = comment["content"] + "<br /> Note: " + self.deleted_note
 
 		if len(reservation_names)> 0 or len(reservation_stay_names)> 0:
-			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=reservation_stay_names,reservation=reservation_names)
+			update_reservation_stay_and_reservation(reservation_stay=reservation_stay_names,reservation=reservation_names)
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
 
+	@frappe.whitelist()
+	def get_package_data(self):
+		if self.is_package:
+			sql ="""
+				select 
+					name,
+					account_code,
+					account_name,
+					quantity,
+					input_amount,
+					price,
+					amount,
+					note,
+					type
+				from `tabFolio Transaction`
+				where
+					name = %(name)s  or 
+					parent_reference = %(name)s
+			"""
 			
 
-		 
+			transaction_list = frappe.db.sql(sql,{"name":self.name},as_dict=1)
+			# get sub parent reference 
+			
+			summary_list =frappe.db.sql( "select account_code,account_name, sum(amount*if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where parent_reference in %(parent_references)s group by account_code,account_name order by account_category_sort_order",
+                               {"parent_references":[d["name"] for d in transaction_list]},as_dict=1)
+   
+			return {
+				"transaction_list":[d for d in transaction_list if d["name"]==self.name],
+				"summary":summary_list
+			}
+			
+def update_fetch_from_field(self):
+	if self.guest:
+		guest_name, guest_type,nationality = frappe.db.get_value("Customer",self.guest,["customer_name_en","customer_group","country"])
+		self.guest_name = guest_name
+		self.guest_type = guest_type
+		self.nationality = nationality
+	else:
+		self.guest_name = ""
+		self.guest_type = ""
+		self.nationality = ""
+	
+
+	if self.reservation_stay:
+		if  not self.reservation_status:
+			self.reservation_status = frappe.db.get_value("Reservation Stay",self.reservation_stay,"reservation_status")
+
+		if not self.business_source:
+			self.business_source = frappe.db.get_value("Reservation Stay",self.reservation_stay,"business_source")
+
+	if self.business_source:
+		self.business_source_type = frappe.db.get_value("Business Source", self.business_source,"business_source_type")
+	else:
+		self.business_source_type = ""
+
+	
+
+	
 
 def update_folio_transaction(self):
+
 	#we use this method add folio transaction breakown
 	#1. self is main account transaction
 	#2. Discount Account
@@ -475,23 +586,24 @@ def update_folio_transaction(self):
 
 	#update folio transaction to reservation folio
 	if self.transaction_type=="Reservation Folio":
-		update_reservation_folio(self.transaction_number, None, False)
-	
-	#update to reservation stay and reservation
-	if not self.parent_reference:	
-		if self.transaction_type=="Reservation Folio": 
-			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
-
-
-	if self.transaction_type =="City Ledger":
+		if not self.flags.ignore_update_reservation_folio:
+			update_reservation_folio(self.transaction_number, None, False)
+	elif self.transaction_type =="City Ledger":
 		update_city_ledger(self.transaction_number, None, False)
 	elif self.transaction_type =="Deposit Ledger":
 		update_deposit_ledger(self.transaction_number, None, False)
-	elif self.transaction_type=='Desk Folio':
-		
+	elif self.transaction_type=='Desk Folio':		
 		update_desk_folio(self.transaction_number, None, False)
-
+	elif self.transaction_type=='Payable Ledger':
+		update_payable_ledger(self.transaction_number, None, False)
 	
+	
+	#update to reservation stay and reservation
+
+	if not self.parent_reference:	
+		if self.transaction_type=="Reservation Folio": 
+			if not self.flags.ignore_update_reservation:
+				update_reservation_stay_and_reservation(reservation_stay=self.reservation_stay,reservation=self.reservation)
 
 def update_sub_account_description(self):
 	
@@ -577,7 +689,11 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						"note":note,
 						"parent_reference":self.name,
 						"is_auto_post":self.is_auto_post,
-						"reservation_room_rate": self.reservation_room_rate
+						"is_night_audit_posting":self.is_night_audit_posting,
+						"reservation_room_rate": self.reservation_room_rate,
+						"source_reservation_stay": self.source_reservation_stay,
+						"stay_room_id": self.stay_room_id,
+						"is_package_charge":self.is_package_charge
 					}).insert()
 					
 
@@ -596,6 +712,8 @@ def post_transaction_to_target_transaction_type(self,):
 		'cashier_shift': self.cashier_shift,
 		'working_date': self.working_date,
 		'account_code': self.target_account_code,
+		'account_group_name': self.account_group_name,
+		'account_group': self.account_group,
 		'type': self.target_account_type,
 		"quantity":self.quantity,
 		'input_amount': self.input_amount,
@@ -613,3 +731,40 @@ def post_transaction_to_target_transaction_type(self,):
 		"source_transaction_type": self.transaction_type
 	}).insert()
 
+def update_report_description_field(self):
+	self.report_description = self.account_name
+	if self.target_transaction_type:
+		if self.target_transaction_type=='City Ledger':
+			self.report_description = "{} (to {})".format(self.report_description, self.city_ledger_name)
+		else:
+			self.report_description = "{} (to {})".format(self.report_description, self.target_transaction_number)
+	elif self.source_transaction_type:
+		if self.source_transaction_number:
+			self.report_description = "{} (from {})".format(self.report_description, self.source_transaction_number)
+	elif self.product:
+		self.report_description = "{} ({})".format(self.report_description, self.product_name)
+
+
+def update_inventory(self):
+	product_doc = frappe.get_doc("Product",self.product)
+	if product_doc.is_inventory_product==1:
+		working_day = get_working_day(self.property)
+		cost = get_product_cost(working_day["stock_location"], self.product)
+		add_to_inventory_transaction({
+			'doctype': 'Inventory Transaction',
+			'transaction_type':"Folio Transaction",
+			'transaction_date':self.posting_date,
+			'transaction_number':self.name,
+			'product_code': self.product,
+			'portion':"",
+			'unit':self.unit,
+			'stock_location':working_day["stock_location"],
+			'out_quantity': self.quantity if self.type=='Debit' else 0,
+			'in_quantity': self.quantity if self.type=='Credit' else 0,
+			"uom_conversion":1,
+			'note': f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}',
+			'action': 'Submit'
+		})
+
+			
+ 

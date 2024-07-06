@@ -494,7 +494,7 @@ function showFolioTransactionDetail(name) {
         props: {
             header: 'Folio Transaction Detail - ' + name,
             style: {
-                width: '50vw',
+                width: '90vw',
             },
             modal: true,
             position:"top",

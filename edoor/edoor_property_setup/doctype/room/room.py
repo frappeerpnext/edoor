@@ -35,6 +35,7 @@ class Room(Document):
 	def on_update(self):
 		if self.creation != self.modified:
 			update_fetch_from_fields(self)
+		frappe.clear_document_cache('Room', self.name)
 
 @frappe.whitelist()
 def update_to_related_transaction(param):

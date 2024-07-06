@@ -42,7 +42,7 @@ function onAddFolioTransaction(account_code) {
             props: {
                 header: 'Post ' + account_code.account_name,
                 style: {
-                    width: '50vw',
+                    width: '60vw',
                 },
 
                 modal: true,

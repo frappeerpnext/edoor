@@ -1,7 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-       <div class="grid">
-       <div class="col grid justify-between override-input-text-width myInput">
+        <div class="grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
                 <div class="grid">
                     <div class="col-12 " v-if="(dialog_data?.show_source_reservation_stay || false)">
@@ -46,61 +45,18 @@
                     </div>
                     <div class="col-6">
                         <label for="input_amount">{{ $t('Amount') }}</label>
-                        
-                        <ComInputCurrency  classCss="w-full" :disabled="!canEdit" v-model="doc.input_amount"
-                            id="input_amount" @update:modelValue="onRateCalculation" />
+                        <ComInputCurrency classCss="w-full" :disabled="!canEdit" v-model="doc.input_amount"
+                            id="input_amount" />
                             
                     </div>
 
                     <div v-if="doc.account_name" class="col-12 ">
                         <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
                             <span class="text-500 font-italic">{{ $t('You Selected Account Code') }} </span>
-                           {{ doc.account_code }} - {{ doc.account_name }}
+                            {{ doc.account_name }}
                         </div>
                     </div>
-                                        <!-- Bank Fee -->
-                                        <div v-if="doc.account_name && account_code.allow_bank_fee" class="col-12">
-                        <div class="grid">
-                            <div class="col-6">
-                                <label>{{ $t('Bank Fee') }}</label>
-                                <InputNumber @update:modelValue="onRateCalculation" class="w-full" :input-class="'w-full'" v-model="doc.bank_fee" suffix="%"
-                                    :maxFractionDigits="2" :readonly="!account_code.allow_user_to_change_bank_fee" />
-                            </div>
-                            <div class="col-6">
-                                <label>{{ $t('Bank Fee Amount') }}</label>
-                                <div style="height: 36.5px;"
-                                    class="w-full rounded-lg max-h-3rem leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
-                                    <CurrencyFormat :value="data?.bank_fee_amount" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Bank Fee -->
-                    <!-- Bank -->
-                    <div v-if="doc.account_name  && account_code.show_payment_information" class="col-12">
-                        <div class="grid">
-                            <div class="col-6">
-                                <label for="credit_card_number">{{ $t('Credit Card Number') }}</label>
-                                <InputText class="w-full" type="text" v-model="doc.credit_card_number" />
-                            </div>
-                            <div class="col-6">
-                                <label for="bank_name"> {{ $t('Bank Name') }} </label>
-                                <InputText class="w-full" type="text" v-model="doc.bank_name" />
-                            </div>
-                            <div class="col-6">
-                                <label for="card_holder_name">{{ $t('Card Holder Name') }}</label>
-                                <InputText class="w-full" type="text" v-model="doc.card_holder_name" />
-                            </div>
-                            <div class="col-6">
-                                <label for="credit_expired_date">{{ $t('Credit Expired Date') }}</label>
-                              
-                                <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy"
-                                    showIcon showButtonBar  />
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Bank -->
-                    <div class="col-12" v-if="doc.account_name && account_code.show_payment_by==1">
+                    <div class="col-12" v-if="account_code.show_payment_by==1">
                         <div class="col-12 -mb-2 px-0">
                             <hr>
                         </div>
@@ -115,26 +71,10 @@
                             </div>
                         </div>
                     </div>  
-
-
-                    <!-- Pax -->
-                    <div v-if="account_code.allow_enter_pax && doc?.account_code"  class="col-12 grid pt-0">
-                    <div class="col-6 pr-1 ">
-                            <label>{{$t('Adults')}}</label>
-                            <InputNumber @update:modelValue="onRateCalculation" v-model="doc.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
-                                class="child-adults-txt w-full"  />
-                            </div>
-                            <div class="col-6 pr-0 pl-3">
-                            <label>{{$t('Children')}}</label>
-                            <InputNumber v-model="doc.child" @update:modelValue="onRateCalculation" inputId="stacked-buttons" showButtons :min="0" :max="100"
-                                class="child-adults-txt w-full"  />
-                            </div>
-                    </div>
-                    <!-- Pax -->
                     <!-- Quantity -->
                     <div v-if="account_code.allow_enter_quantity && doc?.account_code" class="col-6">
                         <label for="quantity">{{ $t('Quantity') }}</label>
-                        <InputNumber class="w-full" @update:modelValue="onRateCalculation" v-model="doc.quantity" :minFractionDigits="0" :maxFractionDigits="2" />
+                        <InputNumber class="w-full" v-model="doc.quantity" :minFractionDigits="0" :maxFractionDigits="2" />
                     </div>
                     <!-- /Quantity -->
 
@@ -160,13 +100,13 @@
                                 <label for="dis_type">{{ $t('Discount Type') }}</label>
                                 <div class="w-full">
                                     <ComSelect class="w-full min-w-full" id="dis_type" :disabled="!canEdit"
-                                        v-model="doc.discount_type" @update:modelValue="onRateCalculation" optionLabel="label" optionValue="value" :options="discountType" :clear="false" />
+                                        v-model="doc.discount_type" optionLabel="label" optionValue="value" :options="discountType" :clear="false" />
                                 </div>
                             </div>
                             <div class="col-12 md:col-6 lg:col-4">
                                 <label for="minmaxfraction">{{ $t('Discount') }}</label>
                                 <div class="w-full">
-                                    <InputNumber class="w-full" @update:modelValue="onRateCalculation" inputClass="w-full" :disabled="!canEdit"
+                                    <InputNumber class="w-full" inputClass="w-full" :disabled="!canEdit"
                                         v-model="doc.discount" inputId="minmaxfraction" id="discount" :minFractionDigits="2"
                                         :maxFractionDigits="10" />
                                 </div>
@@ -175,10 +115,8 @@
                                 <label for="minmaxfraction">{{ $t('Total Discount') }}</label>
                                 <div class="w-full">
                                     <div
-
                                         class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
-                                    
-                                        <CurrencyFormat :value="data?.discount_amount" />
+                                        <CurrencyFormat :value="discount_amount" />
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +170,139 @@
                 </div>
             </div>
             <!-- end input -->
-
+            <div v-if="((tax_rule && account_code.allow_tax) || (account_code.show_payment_information) || (account_code.allow_bank_fee)) && doc?.account_code"
+                class="col-12">
+                <div class="grid h-full">
+                    <!-- tax -->
+                    <div v-if="tax_rule && account_code.allow_tax" class="col-12 mt-auto">
+                        <div class="flex flex-col">
+                            <div class="flex justify-end text-end">
+                                <label for="include-tax" class="col-6 font-medium cursor-pointer">Rate Include Tax</label>
+                                <Checkbox input-id="include-tax" style="min-width: 50px;" class="col-6 px-3" :disabled="!canEdit"
+                                    v-model="doc.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
+                            </div>
+                        </div>
+                        <!-- Tax - 1 -->
+                        <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_1_rate > 0">
+                            <ComBoxBetwenConten inputIdFor="tax-1" is-currency="true" title-class="col-6 font-medium"
+                                :title="(tax_rule.tax_1_name || '') + '-' + (tax_rule.tax_1_rate || 0) + '%'"
+                                :value="(tax_1_amount || 0)">
+                                <template #prefix>
+                                    <div>
+                                        <div class="flex items-center">
+                                            <Checkbox inputId="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change"
+                                                :binary="true"
+                                                :disabled="!account_code.allow_user_to_change_tax || !canEdit" />
+                                        </div>
+                                    </div>
+                                </template>
+                                <template #default>
+                                    <div>
+                                        <CurrencyFormat :value="tax_1_amount" />
+                                    </div>
+                                </template>
+                            </ComBoxBetwenConten>
+                        </div>
+                        <!-- /Tax - 1 -->
+                        <!-- Tax - 2 -->
+                        <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_2_rate > 0">
+                            <ComBoxBetwenConten inputIdFor="tax-2" is-currency="true" title-class="col-6 font-medium"
+                                :title="(tax_rule.tax_2_name || '') + '-' + (tax_rule.tax_2_rate || 0) + '%'"
+                                :value="(tax_2_amount || 0)">
+                                <template #prefix>
+                                    <div>
+                                        <div class="flex items-center">
+                                            <Checkbox inputId="tax-2" v-model="use_tax.use_tax_2" @input="onUseTax2Change"
+                                                :binary="true"
+                                                :disabled="!account_code.allow_user_to_change_tax || !canEdit" />
+                                        </div>
+                                    </div>
+                                </template>
+                                <template #default>
+                                    <div>
+                                        <CurrencyFormat :value="tax_2_amount" />
+                                    </div>
+                                </template>
+                            </ComBoxBetwenConten>
+                        </div>
+                        <!-- /Tax - 2 -->
+                        <!-- Tax - 3 -->
+                        <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_3_rate > 0">
+                            <ComBoxBetwenConten inputIdFor="tax-3" is-currency="true" title-class="col-6 font-medium"
+                                :title="(tax_rule.tax_3_name || '') + '-' + (tax_rule.tax_3_rate || 0) + '%'"
+                                :value="(tax_3_amount || 0)">
+                                <template #prefix>
+                                    <div>
+                                        <div class="flex items-center">
+                                            <Checkbox inputId="tax-3" v-model="use_tax.use_tax_3" @input="onUseTax3Change"
+                                                :binary="true"
+                                                :disabled="!account_code.allow_user_to_change_tax || !canEdit" />
+                                        </div>
+                                    </div>
+                                </template>
+                                <template #default>
+                                    <div>
+                                        <CurrencyFormat :value="tax_3_amount" />
+                                    </div>
+                                </template>
+                            </ComBoxBetwenConten>
+                        </div>
+                        <!-- /Tax - 3 -->
+                        <!-- Total tax -->
+                        <div v-if="tax_rule && (tax_rule.tax_1_rate + tax_rule.tax_2_rate + tax_rule.tax_3_rate > 0)"
+                            class="flex justify-end mt-2">
+                            <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium leading-8"
+                                title="Total Tax" :value="total_tax"
+                                valueClass="max-h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
+                        </div>
+                        <!-- /Total tax -->
+                    </div>
+                    <!-- /tax -->
+                    <!-- Bank -->
+                    <div v-if="account_code.show_payment_information" class="col-12">
+                        <div class="grid">
+                            <div class="col-6">
+                                <label for="credit_card_number">{{ $t('Credit Card Number') }}</label>
+                                <InputText class="w-full" type="text" v-model="doc.credit_card_number" />
+                            </div>
+                            <div class="col-6">
+                                <label for="bank_name"> {{ $t('Bank Name') }} </label>
+                                <InputText class="w-full" type="text" v-model="doc.bank_name" />
+                            </div>
+                            <div class="col-6">
+                                <label for="card_holder_name">{{ $t('Card Holder Name') }}</label>
+                                <InputText class="w-full" type="text" v-model="doc.card_holder_name" />
+                            </div>
+                            <div class="col-6">
+                                <label for="credit_expired_date">{{ $t('Credit Expired Date') }}</label>
+                              
+                                <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy"
+                                    showIcon showButtonBar  />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Bank -->
+                     
+                    <!-- Bank Fee -->
+                    <div v-if="account_code.allow_bank_fee" class="col-12">
+                        <div class="grid">
+                            <div class="col-6">
+                                <label>{{ $t('Bank Fee') }}</label>
+                                <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.bank_fee" suffix="%"
+                                    :maxFractionDigits="2" :readonly="!account_code.allow_user_to_change_bank_fee" />
+                            </div>
+                            <div class="col-6">
+                                <label>{{ $t('Bank Fee Amount') }}</label>
+                                <div style="height: 36.5px;"
+                                    class="w-full rounded-lg max-h-3rem leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
+                                    <CurrencyFormat :value="bank_fee_amount" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Bank Fee -->
+                </div>
+            </div>
             <!-- Total Amount -->
             <div class="col-12 mb-2 -mt-2">
                 <hr>
@@ -246,7 +316,7 @@
                                 class="flex flex-column grow p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
                                 <span class="text-500 uppercase text-sm text-end">{{ $t('Rate Before Tax') }}</span>
                                 <span class="text-xl line-height-2 font-semibold text-end">
-                                    <CurrencyFormat :value="data?.total_amount - data?.total_tax" />
+                                    <CurrencyFormat :value="amount" />
                                 </span>
                             </div>
                         </div>
@@ -257,7 +327,7 @@
                                 class="flex flex-column grow p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
                                 <span class="text-500 uppercase text-sm text-end">{{ $t('Total') }}</span>
                                 <span class="text-xl line-height-2 font-semibold text-end">
-                                    <CurrencyFormat :value="data?.total_amount" />
+                                    <CurrencyFormat :value="total_amount" />
                                 </span>
                             </div>
                         </div>
@@ -273,128 +343,8 @@
             </div>
             <!-- /note -->
         </div>
-        <div v-if="tax_rule && account_code.allow_tax && doc?.account_code" class="col-4">
-            <div class="card">
-        <Accordion :activeIndex="0">
-            <AccordionTab header="Room Rate Breakdown">
-                <div class="grid p-2">
-                    <div class="col-12 pb-0">
-                <div class="grid justify-end ">
-                    <div class="col-12">
-                        <table>
-                    <tbody>
-                        <ComStayInfoNoBox label="Base Rate"
-                            :value="data?.base_transaction_data?.rate" isCurrency="true" valueClass="text-end" />
-                            <ComStayInfoNoBox v-if="data?.base_transaction_data?.discount_amount" label="Discount" :value="data?.base_transaction_data?.discount_amount" isCurrency="true" valueClass="text-end" />    
-                            <ComStayInfoNoBox label="Rate Include Tax" valueClass="text-end">
-                                <div class="flex gap-2">
-                             <Checkbox   @change="onRateCalculation"  :disabled="!canEdit"
-                             v-model="doc.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" /> 
-                                </div>    
-                            </ComStayInfoNoBox>
-                            <ComStayInfoNoBox v-if="tax_rule && tax_rule.tax_1_rate > 0" :label="($t(tax_rule.tax_1_name ?? '') || '') + ' ' + (tax_rule.tax_1_rate || 0) + '%'" valueClass="text-end">
-                                <div class="flex gap-2"> 
-                                    <CurrencyFormat :value="data?.base_transaction_data?.tax_1_amount || 0 " />
-                                 <Checkbox v-model="use_tax.use_tax_1" @input="onUseTax1Change"
-                                                :binary="true"
-                                                :disabled="!account_code.allow_user_to_change_tax || !canEdit" />
-                                </div>
-                            </ComStayInfoNoBox>
-                            <ComStayInfoNoBox v-if="tax_rule && tax_rule.tax_2_rate > 0" :label="($t(tax_rule.tax_2_name ?? '') || '') + ' ' + (tax_rule.tax_2_rate || 0) + '%'" valueClass="text-end">
-                                <div class="flex gap-2"> 
-                                    <CurrencyFormat :value="data?.base_transaction_data?.tax_2_amount || 0 " />
-                                <Checkbox input-id="tax-2" @input="onUseTax2Change" v-model="use_tax.use_tax_2"
-                                                            :binary="true" />
-                                </div>
-                            </ComStayInfoNoBox>
-                            <ComStayInfoNoBox v-if="tax_rule && tax_rule.tax_3_rate > 0" :label="($t(tax_rule.tax_3_name ?? '') || '') + ' ' + (tax_rule.tax_3_rate || 0) + '%'" valueClass="text-end">
-                                <div class="flex gap-2"> 
-                                    <CurrencyFormat :value="data?.base_transaction_data?.tax_3_amount || 0 " />
-                                <Checkbox input-id="tax-3" @input="onUseTax3Change" v-model="use_tax.use_tax_3"
-                                                            :binary="true" />
-                                </div>
-                            </ComStayInfoNoBox>
-                         
-                             <ComStayInfoNoBox v-if="tax_rule && (tax_rule.tax_1_rate + tax_rule.tax_2_rate + tax_rule.tax_3_rate > 0) && doc?.account_code" 
-                                label="Total Tax" 
-                                :value="data?.base_transaction_data?.total_tax" isCurrency="true" valueClass="text-end" />  
-                                <ComStayInfoNoBox   
-                                label="Total Rate" 
-                                :value="data?.base_transaction_data?.total_amount" isCurrency="true" valueClass="text-end" />   
-                    </tbody>
-                </table>
-                   
-                        
-                    </div>
-                </div>
-            </div>
-                </div>
-            </AccordionTab>
-            <AccordionTab v-if="account_code.is_package && data?.package_charge_data " >
-               <template #header>
-Package Charge Breakdown
-               </template> 
-                <div class="col-12">
-  <div class="grid p-y px-2">
-    <div class="col-12" v-for="item in data?.package_charge_data" :key="item.account_name" >
-        <Fieldset  :key="item.account_name" v-if="item.quantity > 0" >
-            <template #legend>
-                <div class="flex align-items-center pl-2">
-                    <span class="font-bold"> {{ item.account_name }} x {{ item.quantity }} </span>
-                </div>
-            </template>
-            <div class="grid">
-                <table class="w-full">
-                    <tbody>
-                        <ComStayInfoNoBox label="Base Rate"
-                            :value="item.rate" isCurrency="true" valueClass="text-end" />
-                            <ComStayInfoNoBox v-if="item.discount_amount > 0" label="Discount" :value="item.discount_amount" isCurrency="true" valueClass="text-end" />    
-                          <ComStayInfoNoBox label="Rate Include Tax" valueClass="text-end">
-                                <div class="flex gap-2"> 
-                             <Checkbox  v-model="item.rate_include_tax" disabled :binary="true"
-                                    trueValue="Yes" falseValue="No"  /> 
-                                </div>    
-                              
-                            </ComStayInfoNoBox>
-                              <ComStayInfoNoBox v-if="item.tax_1_rate > 0" :label="($t(item.tax_1_name ?? '') || '') + ' ' + (item.tax_1_rate || 0) + '%'" valueClass="text-end">
-                                <div class="flex gap-2"> 
-                                    <CurrencyFormat :value="item.tax_1_amount || 0 " />
-                                <Checkbox v-model="isCheckedTrue" disabled :binary="true"
-                                    />
-                                </div>
-                            </ComStayInfoNoBox>
-                           <ComStayInfoNoBox v-if="item.tax_2_rate > 0" :label="($t(item.tax_2_name ?? '') || '') + ' ' + (item.tax_2_rate || 0) + '%'" valueClass="text-end">
-                                <div class="flex gap-2"> 
-                                    <CurrencyFormat :value="item.tax_2_amount || 0 " />
-                                    <Checkbox v-model="isCheckedTrue" disabled :binary="true"
-                                    />
-                                </div>
-                            </ComStayInfoNoBox>
-                              <ComStayInfoNoBox v-if="item.tax_3_rate > 0" :label="($t(item.tax_3_name ?? '') || '') + ' ' + (item.tax_3_rate || 0) + '%'" valueClass="text-end">
-                                <div class="flex gap-2"> 
-                                    <CurrencyFormat :value="item.tax_3_amount || 0 " />
-                                    <Checkbox v-model="isCheckedTrue" disabled :binary="true"
-                                   />
-                                </div>
-                            </ComStayInfoNoBox>
-                          <ComStayInfoNoBox  v-if="item.tax_1_rate > 0 || item.tax_2_rate > 0 || item.tax_3_rate > 0" 
-                                label="Total Tax" 
-                                :value="item.total_tax" isCurrency="true" valueClass="text-end" />  
-                                 <ComStayInfoNoBox   
-                                label="Total Rate" 
-                                :value="item.total_amount" isCurrency="true" valueClass="text-end" />        
-                    </tbody>
-                </table>
-            </div> 
-        </Fieldset>
-    </div>
-                </div>
-                </div>
-            </AccordionTab>
-        </Accordion>
-    </div>
-        </div>
-         </div>  
+        
+        <Button v-if="current_user.name" @click="onSubmit">Submit with Breakdcown</Button>
     </ComDialogContent>
 </template>
 <script setup>
@@ -407,7 +357,7 @@ import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
 import {i18n} from '@/i18n';
-const isCheckedTrue = ref(true);
+
 const { t: $t } = i18n.global;
 const discountType = ref([
     { label: $t('Percent'), value: 'Percent' },
@@ -433,9 +383,8 @@ const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
 const extra_account_code_filter = ref({}) 
-const doc = ref({});
+const doc = ref({}) 
 const dialog_data =ref()
-const data = ref()
 
 const accountCodeFilter = computed(()=>{
     if(extra_account_code_filter.value){
@@ -458,6 +407,8 @@ const filterTargetTransactionNumberType = computed(()=>{
        
     }
 
+
+    
     if (["Reservation Folio","Deposit Ledger","Desk Folio"].includes(doc.value.target_transaction_type)){
         if(doc.value.guest){
             options.push({fieldname:"guest",label:"Guest"})
@@ -494,18 +445,16 @@ const targetTransactionNumberFilter = computed(()=>{
 const folioNumberFilter = ref()
 function onUseTax1Change() {
     doc.value.tax_1_rate = use_tax.value.use_tax_1 ?  0 : tax_rule.value.tax_1_rate
-    onRateCalculation()
 } 
 
 function onUseTax2Change() {
 
     doc.value.tax_2_rate = use_tax.value.use_tax_2 ?  0 : tax_rule.value.tax_2_rate
-    onRateCalculation()
+
 }
 function onUseTax3Change() {
 
     doc.value.tax_3_rate = use_tax.value.use_tax_3 ?  0 : tax_rule.value.tax_3_rate
-    onRateCalculation()
 
 } 
 const canEdit = computed(() => {
@@ -536,12 +485,95 @@ const min_date = computed(() => {
 
 });
 
+const amount = computed(() => {
+    if (tax_rule.value) {
+        if (doc.value.rate_include_tax == "Yes") {
+            let priceBefore = gv.getRateBeforeTax(((doc.value.input_amount || 0) * (doc.value.quantity)) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
+            let priceAfter = priceBefore + discount_amount.value
+            return (priceAfter)  
+
+        } else {
+            return ((doc.value.input_amount || 0) * (doc.value.quantity))
+        }
+    }
+    
+    return ((doc.value.input_amount || 0) * (doc.value.quantity)) - discount_amount.value
+})
 
 
- 
- 
- 
- 
+const discount_amount = computed(() => {
+    if (doc.value.discount_type == "Percent") {
+        return ((doc.value.input_amount || 0) * (doc.value.quantity)) * (doc.value.discount / 100 || 0)
+    } else {
+        return (doc.value.discount || 0)
+    }
+
+});
+
+const tax_1_amount = computed(() => {
+    if (tax_rule.value) {
+        doc.value.taxable_amount_1 = amount.value * ((tax_rule.value.percentage_of_price_to_calculate_tax_1 || 100) / 100);
+        if (tax_rule.value.calculate_tax_1_after_discount == 0 || doc.value.rate_include_tax == "Yes") {
+            doc.value.taxable_amount_1 = doc.value.taxable_amount_1
+
+        } else {
+            doc.value.taxable_amount_1 = doc.value.taxable_amount_1 - discount_amount.value
+
+        }
+        return (doc.value.taxable_amount_1 || 0) * (doc.value.tax_1_rate / 100 || 0)
+    } else {
+        return 0
+    }
+});
+const tax_2_amount = computed(() => {
+    if (tax_rule.value) {
+        doc.value.taxable_amount_2 = amount.value * ((tax_rule.value.percentage_of_price_to_calculate_tax_2 || 100) / 100)
+
+        if (tax_rule.value.calculate_tax_2_after_discount == 0 || doc.value.rate_include_tax == "Yes") {
+            doc.value.taxable_amount_2 = doc.value.taxable_amount_2
+        } else { doc.value.taxable_amount_2 = doc.value.taxable_amount_2 - discount_amount.value }
+
+        if (tax_rule.value.calculate_tax_2_after_adding_tax_1 == 0 || tax_1_amount.value == 0) {
+            doc.value.taxable_amount_2 = doc.value.taxable_amount_2
+        } else { doc.value.taxable_amount_2 = doc.value.taxable_amount_2 + tax_1_amount.value }
+
+        return (doc.value.taxable_amount_2 || 0) * (doc.value.tax_2_rate / 100 || 0)
+    } else {
+        return 0
+    }
+});
+const tax_3_amount = computed(() => {
+    if (tax_rule.value) {
+        doc.value.taxable_amount_3 = amount.value * ((tax_rule.value.percentage_of_price_to_calculate_tax_3 || 100) / 100)
+
+        if (tax_rule.value.calculate_tax_3_after_discount == 0 || doc.value.rate_include_tax == "Yes") {
+            doc.value.taxable_amount_3 = doc.value.taxable_amount_3
+        } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 - discount_amount.value }
+
+        if (tax_rule.value.calculate_tax_3_after_adding_tax_1 == 0 || tax_1_amount.value == 0) {
+            doc.value.taxable_amount_3 = doc.value.taxable_amount_3
+        } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 + tax_1_amount.value }
+
+        if (tax_rule.value.calculate_tax_3_after_adding_tax_2 == 0 || tax_2_amount.value == 0) {
+            doc.value.taxable_amount_3 = doc.value.taxable_amount_3
+        } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 + tax_2_amount.value }
+
+        return (doc.value.taxable_amount_3 || 0) * (doc.value.tax_3_rate / 100 || 0)
+    } else {
+        return 0
+    }
+});
+const bank_fee_amount = computed(() => {
+    return (doc.value.input_amount || 0) * (doc.value.bank_fee / 100 || 0)
+})
+const total_tax = computed(() => {
+    return (tax_1_amount.value || 0) + (tax_2_amount.value || 0) + (tax_3_amount.value || 0)
+});
+const total_amount = computed(() => {
+    const discount = doc.value.rate_include_tax == 'Yes' ? 0 : (discount_amount.value || 0)
+    return (amount.value || 0) - discount + (total_tax.value || 0) + (bank_fee_amount.value || 0)
+});
+
 function onSelectAccountCode(data) {
 
     if (data.value) {
@@ -551,7 +583,6 @@ function onSelectAccountCode(data) {
                 doc.value.tax_rule = d.tax_rule
                 doc.value.rate_include_tax = d.rate_include_tax
                 doc.value.bank_fee = (d.bank_fee || 0)
-                doc.value.bank_fee_account = d.bank_fee_account
                 doc.value.account_name = d.account_name
                 doc.value.type = d.type
                 doc.value.account_code = d.name
@@ -563,10 +594,10 @@ function onSelectAccountCode(data) {
                 doc.value.target_account_code= d.target_account_code
                 doc.value.target_transaction_type = d.target_document
                 doc.value.required_select_product= d.required_select_product
-                if(d.allow_enter_pax){
-                    doc.value.child = 0
-                    doc.value.adult = 1
-                }
+            
+               
+
+
                 doc.value.quantity = 1
                 if (d.tax_rule) {
                     const tax_rule = JSON.parse(account_code.value.tax_rule_data)
@@ -627,7 +658,6 @@ function onSelectProduct(data){
         getDoc("Product", data.value).then(r=>{
           
             doc.value.input_amount = r.price || 0
-            onRateCalculation()
         })
     }
     
@@ -661,34 +691,56 @@ function onFolioFilterTypeChange(d){
     doc.value.target_transaction_number = ""
     doc.value.target_transaction_number = ""
 }
+ 
 
-function onRateCalculation(){
 
-    if (doc.value.account_code && doc.value.input_amount){
-        postApi("add_folio_transaction.get_folio_transaction_calculation",
-        {
-            folio_transaction_data:doc.value
-        },
-        "",
-        false
-).then(result=>{
-        data.value = result.message
-    })
+function onSave() {
+    
+    const data = JSON.parse(JSON.stringify(doc.value))
+    if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
+    if(!gv.cashier_shift?.name){
+        isSaving.value = false;
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+        
     }
+    isSaving.value = true;
+    createUpdateDoc("Folio Transaction", data)
+        .then((doc) => {
+            isSaving.value = false
+            dialogRef.value.close(doc)
+            window.postMessage({action:"ReservationList"},"*")
+            window.postMessage({action:"GuestLedger"},"*")
+            window.postMessage({action:"ReservationStayList"},"*")
+            window.postMessage({action:"ReservationStayDetail"},"*")
+            window.postMessage({action:"ReservationDetail"},"*")
+            window.postMessage({action:"FolioTransactionDetail"},"*")
+            window.postMessage({action:"CityLedgerAccount"},"*")
+            window.postMessage({action:"ComCityLedgerDetail"},"*") 
+            window.postMessage({action:"GuestLedgerTransaction"},"*")
+            window.postMessage({action:"Reports"},"*")
+            window.postMessage({action:"FolioTransactionList"},"*")
+            window.postMessage({action:"ComPayableLedgerDetail"},"*")
+            window.postMessage({action:"PayableLedger"},"*")
+            window.postMessage({action:"DeskFolio"},"*") 
+            window.postMessage({action:"ComDeskFolioDetail"},"*")
+            window.postMessage({action:"DepositLedger"},"*")
+            window.postMessage({action:"ComDepositLedgerDetail"},"*")
+            window.postMessage({action:"load_folio_transaction"},"*")
+
+        }).catch((err) => {
+            isSaving.value = false;
+        })
 }
 
-
-
-function onSave(){
+function onSubmit(){
     const data = JSON.parse(JSON.stringify(doc.value))
-    data.input_amount = data.input_amount || 0
     // will change this later
 
-
+    data.adult = 1
+    data.child = 0
 
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
-    if (data.credit_expired_date) data.credit_expired_date = moment(data.credit_expired_date).format("yyyy-MM-DD")
-    
     if(!gv.cashier_shift?.name){
         isSaving.value = false;
         gv.toast('error', 'Please Open Cashier Shift.')
@@ -720,7 +772,7 @@ function onSave(){
             window.postMessage({action:"DepositLedger"},"*")
             window.postMessage({action:"ComDepositLedgerDetail"},"*")
             window.postMessage({action:"load_folio_transaction"},"*")
-            
+
         }).catch((err) => {
             isSaving.value = false;
         })
@@ -800,14 +852,6 @@ onMounted(() => {
 }); 
 
 </script>
-<style scoped>
-.h-edoor-35 {
-    height: 36.5px;
-}
-::v-deep .top-label-style{
-    display: block !important;
-}
-::v-deep .p-fieldset .p-fieldset-legend{
-    background-color: white;
-}
-</style>
+<style scoped>.h-edoor-35 {
+    height: 36.5px !important;
+}</style>

@@ -14,6 +14,7 @@ def update_fetch_from_fields(self):
 	data_for_updates = data_for_updates +   group_color_change(self)
 
 	if data_for_updates:
+		frappe.clear_document_cache('Reservation', self.name)
 		for d in set([x["doctype"] for x in data_for_updates]):
 			sql="update `tab{}` set {} where reservation='{}'".format(
 				d,
@@ -25,6 +26,7 @@ def update_fetch_from_fields(self):
 def business_source_change(self):
 	data_for_updates = []
 	if self.has_value_changed("business_source"):
+		
 		business_source_type = frappe.db.get_value("Business Source",self.business_source, "business_source_type")
 		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"business_source='{}'".format(self.business_source)})
 		
@@ -53,6 +55,8 @@ def business_source_change(self):
 def reservation_type_change(self):
 	data_for_updates = []
 	if self.has_value_changed("reservation_type"):
+		# clear chache 
+  
 		data_for_updates.append({"doctype":"Reservation Stay","update_field":"reservation_type='{}'".format(self.reservation_type)})
 		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"reservation_type='{}'".format(self.reservation_type)})
 		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_type='{}'".format(self.reservation_type)})

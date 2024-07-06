@@ -357,11 +357,13 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "hidden_section_section",
    "fieldtype": "Tab Break",
    "label": "Hidden Section"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "summary_tab",
    "fieldtype": "Tab Break",
    "label": "Summary"
@@ -690,6 +692,7 @@
    "label": "General Information"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "details_tab",
    "fieldtype": "Tab Break",
    "label": "Details"
@@ -718,6 +721,7 @@
    "label": "Folio"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "document_tab",
    "fieldtype": "Tab Break",
    "label": "Document"
@@ -734,7 +738,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-18 14:46:43.815095",
+ "modified": "2024-07-03 09:45:07.997616",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

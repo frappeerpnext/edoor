@@ -341,7 +341,7 @@ function AddTransaction(account_code) {
         props: {
             header: 'Post ' + account_code.account_name + ' to City Ledger ' + props.name,
             style: {
-                width: '50vw',
+                width: '60vw',
             },
 
             modal: true,
@@ -414,7 +414,7 @@ function onEditFolioTransaction(name) {
         props: {
             header: 'Edit City Ledger Transaction - ' + name,
             style: {
-                width: '50vw',
+                width: '60vw',
             },
             modal: true,
             position: 'top',

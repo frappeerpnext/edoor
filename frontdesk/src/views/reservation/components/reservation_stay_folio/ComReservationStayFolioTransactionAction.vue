@@ -73,7 +73,7 @@ function onEditFolioTransaction() {
         props: {
             header: 'Edit Folio Transaction - ' + props.data.name,
             style: {
-                width: '50vw',
+                width: '60vw',
             },
             modal: true,
             position:'top',
@@ -107,7 +107,7 @@ const onViewFolioDetail = () => {
         props: {
             header: 'Folio Transaction Detail - ' + props.data.name,
             style: {
-                width: '50vw',
+                width: '90vw',
             },
             modal: true,
             position:'top',

@@ -3,20 +3,20 @@
 
 
 frappe.ui.form.on("Reservation Stay", {
+        onload(frm) {
+                audit_trail_detail(frm)
+        },
         setup(frm) {
-
                 for (const key in frm.fields_dict) {
                         if (["Currency", "Data", "Int", "Link", "Date", "Datetime", "Float", "Select"].includes(frm.fields_dict[key].df.fieldtype)) {
                                 frm.fields_dict[key].$wrapper.addClass('custom_control');
                         }
-
-                }
-
-                
-                
+                }  
         },
         refresh(frm) {
-
+                if (!frm.doc.__islocal) {
+                        frm.set_intro("We reserved room for this reservation.", "blue");
+                }
                 // // set_indicator(frm);
                 // if (frappe.session.user != "Administrator") {
                         
@@ -33,12 +33,8 @@ frappe.ui.form.on("Reservation Stay", {
                         getReservationStayFolio(frm)
                 }
                 renderGeneralInforamtion(frm);
-
-
         },
 });
-
-
 function set_indicator(frm) {
         if (frm.doc.__islocal)
                 return;
@@ -129,14 +125,19 @@ function getReservationStayFolio(frm) {
 
         frappe.db.get_list("Reservation Folio", {
                 fields:["name","status","is_master","rooms","note","room_types","guest","guest_name","phone_number","email","photo","status","balance","owner","creation","reservation","reservation_stay","business_source","doctype","total_credit","total_debit","tax_invoice_number","folio_type","folio_type_color"],
-                filters:[['reservation_stay','=',frm.doc.name]]
+                filters:[['reservation_stay','=',frm.doc.name]],
+                order_by: 'creation asc'
         }).then(result=>{
+                result.sort((a, b) => b.is_master - a.is_master);
+
                 const html = frappe.render_template("reservation_stay_folio",{data:result})
                 let dom = parser.parseFromString(html, "text/html").querySelector("#wrapper_folio_list")
                 const buttons = dom.querySelectorAll("button.child-folio-present")
 
                 if (dom){
-                dom.querySelector("#wrapper_folio_detail").innerHTML = '<div>Please select folio!</div>'
+                        if (dom.querySelector("#wrapper_folio_detail")) {
+                                dom.querySelector("#wrapper_folio_detail").innerHTML = '<div>Please select folio!</div>'
+                        }
                         buttons.forEach(r=>{
                                 r.addEventListener('click',function(){
                                 buttons.forEach(btn => {
@@ -153,7 +154,11 @@ function getReservationStayFolio(frm) {
                                 })
                         })
                 }
-                $(frm.fields_dict["reservation_stay_folio_list"].wrapper).html(dom);
+                if ((result.length) > 0) {
+                        $(frm.fields_dict["reservation_stay_folio_list"].wrapper).html(dom);
+                }else {
+                        $(frm.fields_dict["reservation_stay_folio_list"].wrapper).html("<div style='padding: 8px 10px;background:#edf6fd;color:#005ca3;border-radius:8px;'>This reservation does not have a folio assigned.</div>");
+                }
         })
 }
 
@@ -200,4 +205,55 @@ function getChargeSumamry(frm) {
                 }
             })
         });
+}
+
+function prettyDate(date) {
+        var diff = Math.floor((new Date() - date) / 1000);
+        var dayDiff = Math.floor(diff / 86400);
+    
+        if (isNaN(dayDiff) || dayDiff < 0) {
+            return '';
+        }
+    
+        if (dayDiff === 0) {
+            if (diff < 60) return 'Just now';
+            if (diff < 120) return '1 minute ago';
+            if (diff < 3600) return Math.floor(diff / 60) + ' minutes ago';
+            if (diff < 7200) return '1 hour ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + ' hours ago';
+        }
+    
+        if (dayDiff === 1) return 'Yesterday';
+        if (dayDiff < 7) return dayDiff + ' days ago';
+        if (dayDiff < 31) return Math.ceil(dayDiff / 7) + ' weeks ago';
+        if (dayDiff < 365) return Math.ceil(dayDiff / 30) + ' months ago';
+        return Math.ceil(dayDiff / 365) + ' years ago';
+}
+
+function audit_trail_detail (frm){ 
+        if (frm.doc.checked_in_date) {
+                audit_data(frm.doc.checked_in_date, frm.doc.checked_in_by, txt_by='Check-in by')
+        }
+        if (frm.doc.checked_out_date) {
+                audit_data(frm.doc.checked_out_date, frm.doc.checked_out_by, txt_by='Check Out by')
+        }
+        if (frm.doc.cancelled_date) {
+                audit_data(frm.doc.cancelled_date, frm.doc.cancelled_by, txt_by='Cancelled By')
+        }
+}
+function audit_data (date_by, checked_by, txt_by) {
+        const auditTrail = document.querySelector('.list-unstyled.sidebar-menu.text-muted')
+        if (auditTrail) {
+                if (checked_by == frappe.session.user) {
+                        checked_by = 'You'
+                }
+                let date = new Date(date_by);
+                let date_pretty = prettyDate(date)
+                const li = document.createElement('li');
+                if (li) {
+                        li.style = 'margin-top:15px'
+                        li.textContent = `${txt_by} · ${checked_by.split("@")[0]} ${date_pretty}`;
+                        auditTrail.appendChild(li);
+                }               
+        }
 }

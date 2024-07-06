@@ -226,7 +226,6 @@ const onSaveDiscount = () => {
 }
 const onSaveChangePax = () => {
   isLoading.value = true
-    
     postApi('reservation.change_pax', {
       data:{
         stay_name:rs.reservationStay.name,
@@ -239,11 +238,9 @@ const onSaveChangePax = () => {
           isLoading.value = false
           rs.getRoomRate(rs.reservationStay.name);
           onCloseOplaypanel()
-            
         })
         .catch((error) => {
           isLoading.value = false;
-
         });
     
 }
@@ -348,16 +345,16 @@ function onChangePax (event) {
   }
   if (rs.selectedRoomRates.length>0) {
     const selectedRate = rs.selectedRoomRates[0];
-        pax.value.adult = selectedRate.adult ;
-        pax.value.child = selectedRate.child;
-      showChangePax.value.toggle(event);
+    pax.value.adult = selectedRate.adult ;
+    pax.value.child = selectedRate.child;
+    showChangePax.value.toggle(event);
   } else if (rs.selectedRoomRates.length == 0){
     toast.add({ severity: 'warn', summary: 'Change Pax', detail: "Please select room to edit.", life: 3000 })
     return 
   }
 }else {
-          toast.add({ severity: 'warn', summary: 'Change Pax', detail: "This Reservation Stay has been Cancelled or Void.", life: 3000 })
-          return 
+    toast.add({ severity: 'warn', summary: 'Change Pax', detail: "This Reservation Stay has been Cancelled or Void.", life: 3000 })
+    return 
   }
 }
 

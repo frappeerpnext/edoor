@@ -206,7 +206,6 @@ function LoadFolioTransaction() {
     })
         .then((result) => {
             folioTransactions.value = result.message
-            console.log(folioTransactions)
         })
     setTimeout(function () {
         getFolioSummary()
@@ -264,7 +263,7 @@ const onViewFolioDetail = (doc) => {
             props: {
                 header: 'Folio Transaction Detail - ' + doc.data.name,
                 style: {
-                    width: '50vw',
+                    width: '90vw',
                 },
                 modal: true,
                 position: 'top',

@@ -23,7 +23,11 @@ def get_account_code_sub_account_information(account_code):
         "discount_account": account_code_doc.discount_account,
         "allow_enter_quantity":account_code_doc.allow_enter_quantity,
         "sort_order":account_code_doc.sort_order,
-        "flash_report_revenue_group":account_code_doc.flash_report_revenue_group
+        "flash_report_revenue_group":account_code_doc.flash_report_revenue_group,
+        "is_package":account_code_doc.is_package,
+        "tax_rule":account_code_doc.tax_rule,
+        "type":account_code_doc.type,
+        "show_quantity_in_report":account_code_doc.show_quantity_in_report
     }
     
     if account_code_doc.allow_tax and account_code_doc.tax_rule:
@@ -182,3 +186,11 @@ def get_doctype_tree_name(doctype, parent=None, parent_field='parent', name_fiel
     
     return tree
 
+
+@lru_cache(maxsize=128)
+def get_cache_data(doctype,docname,fields):
+    data= frappe.db.sql("select {} from `tab{}` where name=%(name)s".format(",".join(fields.split(",")),doctype),{"name":docname},as_dict=1 )
+    if data:
+        return data[0]
+    return None
+    

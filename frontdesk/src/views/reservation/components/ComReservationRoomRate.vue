@@ -19,8 +19,8 @@
           </Button>
         </div>
         <!-- hide funtion -->
-        <!-- <div>
-          <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onChangePax">
+        <div>
+          <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onChangePax">
             <i class="pi pi-user me-2" style="font-size: 1rem"></i>
             {{ $t('Change Pax') }}
             
@@ -28,9 +28,9 @@
               ({{ rs.selectedRoomRates.length  }})
             </template>
           </Button>
-        </div> -->
+        </div>
         <!-- hide funtion -->
-        <!-- <div>
+        <div>
           <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onDiscount">
             <i class="pi pi-percentage me-2" style="font-size: 1rem"></i>
             {{ $t('Discount') }}
@@ -39,7 +39,7 @@
               ({{ rs.selectedRoomRates.length  }})
             </template>
           </Button>
-        </div> -->
+        </div>
       </div>
     </div>
       <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
@@ -160,18 +160,20 @@
 
     <!-- show change pax -->
     <OverlayPanel ref="showChangePax" style="max-width:70rem">
-      <div class="flex gap-2">
-        <div>
-          <label>{{$t('Adults')}}</label>
-              <InputNumber inputId="stacked-buttons" showButtons :min="1" :max="100"
-                  class="child-adults-txt w-full" inputClass="border-noround-right"/>
+      <ComOverlayPanelContent  :loading="isLoading" @onSave="onSaveChangePax" @onCancel="onCloseOplaypanel">  
+        <div class="flex gap-2">
+          <div>
+            <label>{{$t('Adults')}}</label>
+                <InputNumber inputId="stacked-buttons" v-model="pax.adult" showButtons :min="1" :max="100"
+                    class="child-adults-txt w-full" inputClass="border-noround-right"/>
+          </div>
+          <div>
+            <label>{{$t('Children')}}</label>
+            <InputNumber inputId="stacked-buttons" v-model="pax.child" showButtons :min="1" :max="100"
+                class="child-adults-txt w-full" inputClass="border-noround-right"/>
+          </div>
         </div>
-        <div>
-          <label>{{$t('Children')}}</label>
-          <InputNumber inputId="stacked-buttons" showButtons :min="1" :max="100"
-              class="child-adults-txt w-full" inputClass="border-noround-right"/>
-        </div>
-      </div>
+      </ComOverlayPanelContent>
     </OverlayPanel>
 
 
@@ -198,7 +200,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import {inject, ref, onMounted,useDialog, useToast} from "@/plugin"
+import {inject, ref, onMounted,useDialog,postApi, useToast} from "@/plugin"
 import { FilterMatchMode } from 'primevue/api';
 import InputNumber from 'primevue/inputnumber';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
@@ -208,7 +210,9 @@ import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const rs = inject('$reservation')
 const dialog = useDialog();
+const pax = ref({ adult: 0, child: 0 });
 const toast = useToast()
+const isLoading = ref()
 const gv = inject('$gv')
 const filters = ref(
     {
@@ -343,16 +347,53 @@ onMounted(() => {
 
 
 function onChangePax (event) { 
+  if( rs.reservation?.reservation_status != 'Cancelled' && rs.reservation?.reservation_status != 'Void'){
   if(!gv.cashier_shift?.name){
       gv.toast('error', 'Please Open Cashier Shift.')
       return
   }
   if (rs.selectedRoomRates.length>0) {
+    const selectedRate = rs.selectedRoomRates[0];
+    pax.value.adult = selectedRate.adult ;
+    pax.value.child = selectedRate.child;
     showChangePax.value.toggle(event);
   } else if (rs.selectedRoomRates.length == 0){
-    toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
+    toast.add({ severity: 'warn', summary: 'Change Pax', detail: "Please select room to edit.", life: 3000 })
     return 
   }
+}else {
+    toast.add({ severity: 'warn', summary: 'Change Pax', detail: "This Reservation Stay has been Cancelled or Void.", life: 3000 })
+    return 
+  }
+}
+
+const onSaveChangePax = () => {
+  console.log(rs.selectedRoomRates)
+  let reservation_stay_names = []
+  reservation_stay_names = Array.from(new Set(rs.selectedRoomRates.map(d => d["reservation_stay"])))
+  isLoading.value = true
+    postApi('reservation.change_pax', {
+      data:{
+        stay_name:reservation_stay_names,
+        adult:pax.value.adult,
+        child:pax.value.child
+      },
+      room_rates:rs.selectedRoomRates
+    }, "Edit room rate successfully")
+        .then((doc) => {
+          isLoading.value = false
+          rs.getRoomRate(rs.reservation.name);
+          onCloseOplaypanel()
+            
+        })
+        .catch((error) => {
+          isLoading.value = false;
+
+        });   
+}
+
+function onCloseOplaypanel(){
+  showChangePax.value.hide();
 }
 
 function onDiscount (event) { 

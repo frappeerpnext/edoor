@@ -43,7 +43,7 @@ loadData(show_loading=true) {
 				'floor':filters.selected_floor || '',
 				'room_type_group':filters.selected_room_type_group || '',
 				'housekeeper':filters.selected_housekeeper || '',
-				'keyword':filters.keyword || ''
+				'keyword':filters.keyword || '',
 			}
 		},"",false)
 			.then((result) => {

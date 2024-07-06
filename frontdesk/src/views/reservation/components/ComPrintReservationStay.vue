@@ -9,11 +9,11 @@
                     <div> 
                         <ComLetterHead v-model="filters.letterHead"  @onSelect="onSelectLetterHead"/>
                     </div>
-                    <div> 
+                    <!-- <div> 
                         <ComSelect v-model="filters.invoice_style" @onSelected="refreshReport" :clear="false" placeholder="Invoice Style"
                             :options="['Simple Style','Debit/Credit Style']">
                         </ComSelect> 
-                    </div>
+                    </div> -->
                 </div>
                 <br/>
                 <div class="flex flex-column gap-2">
