@@ -71,7 +71,6 @@ def get_folio_transaction_calculation(folio_transaction_data=None):
     if folio_transaction_data["discount"]>0:
         if folio_transaction_data["discount_type"]=="Amount":
             discountable_amount = sum(d["amount"] for d in account_codes if d["allow_discount"]==1)
-            
             folio_transaction_data["discount"] = folio_transaction_data["discount"] / (1 if discountable_amount==0 else discountable_amount)
 
         
@@ -180,6 +179,10 @@ def validate_add_folio_transaction(data,working_day):
  
         if  data["input_amount"] == 0:
             frappe.throw(_("Please enter amount for {account_name}".format(account_name = account_code_doc.account_name)))
+        
+    if account_code_doc.required_select_product :
+        if not "product" in data or not data["product"]:
+            frappe.throw(_("Please select product for this account {account_code} - {account_name}".format( account_code =  account_code_doc.name, account_name = account_code_doc.account_name)))
         
     # validate if folio transaction parent transaction is not close
     parent_doc_status = frappe.db.get_value(data["transaction_type"],data["transaction_number"],"status")
