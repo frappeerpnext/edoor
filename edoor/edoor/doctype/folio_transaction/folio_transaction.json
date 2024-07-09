@@ -185,6 +185,7 @@
    "options": "FT.YYYY.-.####"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fetch_if_empty": 1,
    "fieldname": "property",
    "fieldtype": "Link",
@@ -388,12 +389,14 @@
    "label": "Working Date"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "working_day",
    "fieldtype": "Link",
    "label": "Working Day",
    "options": "Working Day"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "cashier_shift",
    "fieldtype": "Link",
    "label": "Cashier Shift",
@@ -512,6 +515,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.city_ledger_name",
    "fetch_from": "city_leger.city_ledger_name",
    "fieldname": "city_ledger_name",
    "fieldtype": "Data",
@@ -791,6 +795,7 @@
    "options": "Business Source"
   },
   {
+   "depends_on": "eval:doc.city_ledger_type",
    "fetch_from": "city_ledger.city_ledger_type",
    "fieldname": "city_ledger_type",
    "fieldtype": "Data",
@@ -1122,6 +1127,7 @@
    "label": "Is Package Breakdown"
   },
   {
+   "depends_on": "eval:doc.folio_type",
    "fieldname": "folio_type",
    "fieldtype": "Link",
    "label": "Folio Type",
@@ -1136,7 +1142,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-06 12:15:44.547946",
+ "modified": "2024-07-08 08:55:23.524363",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

@@ -128,6 +128,7 @@ class ReservationStay(Document):
 			d.stay_room_types = self.room_types 
 			d.can_change_start_date = 1 if (len(self.stays) == 1 or self.stays.index(d) ==0) and self.reservation_status in ["Reserved","Confirmed"]     else 0
 			d.can_change_end_date = 1 if (len(self.stays) == 1 or self.stays.index(d) == len(self.stays)-1 ) and  self.reservation_status in ["Confirmed","Reserved","In-house"] else 0
+			d.total_amount = self.total_amount
 			#generate room data
 			rooms_data.append({
 					"name": d.name,
@@ -145,22 +146,16 @@ class ReservationStay(Document):
 
 		#update stay summary
 		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
-		self.room_rate= Enumerable(self.stays).min(lambda x: x.rate or 0)
-		self.room_rate_discount= Enumerable(self.stays).sum(lambda x: x.discount_amount or 0)
  
 	
-
-		self.total_tax= Enumerable(self.stays).sum(lambda x: x.total_tax or 0)
-
-		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
-		self.adr = Enumerable(self.stays).avg(lambda x: (x.adr or 0)) 
+ 
  
 		self.arrival_date = Enumerable(self.stays).min(lambda x:getdate(x.start_date))
 		self.departure_date = Enumerable(self.stays).max(lambda x:getdate(x.end_date))
 
 		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)
 
-		currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+		currency_precision = frappe.get_cached_value("System Settings",None,"currency_precision")
 		if abs(round(self.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
 			self.balance = 0
 
@@ -168,8 +163,8 @@ class ReservationStay(Document):
 		#update note & housekeeping note
 		if self.is_new():
 			#set default check in and check out time
-			self.arrival_time = frappe.db.get_single_value("eDoor Setting","default_check_in_time")			
-			self.departure_time = frappe.db.get_single_value("eDoor Setting","default_check_out_time")			
+			self.arrival_time = frappe.get_cached_value("eDoor Setting",None,"default_check_in_time")			
+			self.departure_time = frappe.get_cached_value("eDoor Setting",None,"default_check_out_time")			
 
 			if self.note:
 				self = update_note(self=self)

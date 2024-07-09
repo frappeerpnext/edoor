@@ -91,7 +91,7 @@
                         </Column>
                         <Column v-if="can_view_rate"  class="text-right res__room-list-right white-space-nowrap" :header="$t('Total Rate')">
                             <template #body="slotProps">
-                                <CurrencyFormat :value="slotProps.data.total_room_rate"/>
+                                <CurrencyFormat :value="slotProps.data.total_amount"/>
                             </template>
                         </Column>
                         <Column v-if="can_view_rate" class="text-right res__room-list-right" :header="$t('Debit')">

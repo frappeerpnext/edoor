@@ -15,6 +15,41 @@ from frappe import _
 from frappe.model.naming import make_autoname
 
 
+@frappe.whitelist()
+def dome():
+    data = {
+        "transaction_type": "Reservation Folio",
+        "transaction_number": "FN2024-0019",
+        "reservation": "RS2024-0016",
+        "reservation_stay": "ST2024-0017",
+        "property": "ESTC  & HOTEL's",
+        "account_group": "10000",
+        "guest": "0001",
+        "business_source": "Angkor Daily Tour",
+        "is_base_transaction": 1,
+        "posting_date": "2024-07-05T17:00:00.000Z",
+        "account_code": "10116",
+        "tax_rule": "Room Charge Tax",
+        "rate_include_tax": "Yes",
+        "bank_fee": 0,
+        "account_name": "Room Include B/F",
+        "type": "Debit",
+        "show_print_preview": 0,
+        "discount_type": "Percent",
+        "discount": 0,
+        "target_transaction_type": "",
+        "required_select_product": 0,
+        "quantity": 10,
+        "tax_1_rate": 0,
+        "tax_2_rate": 2,
+        "tax_3_rate": 10,
+        "target_transaction_number": "",
+        "input_amount": 10,
+        "child": 0,
+        "adult": 2
+        }
+    return get_folio_transaction_calculation(data)
+
 @frappe.whitelist(methods="POST")
 def get_folio_transaction_calculation(folio_transaction_data=None):
     data = []
@@ -89,8 +124,10 @@ def get_folio_transaction_calculation(folio_transaction_data=None):
                 tax_2_rate=acc["tax_2_rate"], 
                 tax_3_rate=acc["tax_3_rate"],
                 discount_amount=acc["discount_amount"],
-                rate=acc["amount"]
+                rate=acc["amount"],
+                quantity = acc["quantity"]
         )
+        
         if "tax_rule_data" in tax_data:
             del tax_data["tax_rule_data"]
         
@@ -179,11 +216,18 @@ def validate_add_folio_transaction(data,working_day):
  
         if  data["input_amount"] == 0:
             frappe.throw(_("Please enter amount for {account_name}".format(account_name = account_code_doc.account_name)))
+    
+    if account_code_doc.allow_enter_quantity:
+        quantity = 0 if not "quantity" in data else data["quantity"]
+        
+        if quantity<=0:
+            frappe.throw(_("Please enter quantity"))
         
     if account_code_doc.required_select_product :
         if not "product" in data or not data["product"]:
             frappe.throw(_("Please select product for this account {account_code} - {account_name}".format( account_code =  account_code_doc.name, account_name = account_code_doc.account_name)))
-        
+    
+    
     # validate if folio transaction parent transaction is not close
     parent_doc_status = frappe.db.get_value(data["transaction_type"],data["transaction_number"],"status")
     if parent_doc_status=="Closed":
@@ -223,7 +267,7 @@ def get_folio_transaction_breakdown(data=None):
             "discount_amount":0,
             "target_transaction_type": "",
             "required_select_product": 0,
-            "quantity": 1,
+            "quantity": 10,
             "tax_1_rate": 0,
             "tax_2_rate": 2,
             "tax_3_rate": 10,
@@ -238,6 +282,10 @@ def get_folio_transaction_breakdown(data=None):
     data["adult"] = 0 if not "adult" in data else data["adult"]
     data["child"] = 0 if not "child" in data else data["child"]
     data["tax_rule"] = "" if not "tax_rule" in data else data["tax_rule"]
+    data["quantity"] = 1 if not "quantity" in data else data["quantity"]
+    if data["quantity"]<=0:
+        data["quantity"] = 1
+        
     
     account_doc = get_account_code_doc(data["account_code"])
     package_data = []
@@ -271,7 +319,7 @@ def get_folio_transaction_breakdown(data=None):
             "discount":0 if not "discount" in data else  data["discount"],
             "discount_amount":0 if not "discount_amount" in data else  data["discount_amount"],
             "package_charge_data":json.dumps( package_data),
-     
+            "quantity":data["quantity"]
         }
     # we send account account_doc to function because we want to save db connect 
     # for get account code data in function get_room_rate_account_code_breakdown
@@ -284,7 +332,7 @@ def get_folio_transaction_breakdown(data=None):
     # package_base_account_code_charge_breakdown.cache_clear()
     
     account_code_breakdown = get_room_rate_account_code_breakdown(json.dumps(rate_breakdown_param))
-
+   
     account_code_breakdown =[d for d in account_code_breakdown if d["amount"]>0 or d["is_package_account"]==0]
     account_code_breakdown = get_charge_breakdown_by_account_code_breakdown(json.dumps(account_code_breakdown)) 
     
@@ -305,10 +353,16 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
         base_doc.price =    base_doc.amount if base_doc.quantity ==0 else base_doc.amount / base_doc.quantity
         base_doc.total_amount = base_doc.amount - (base_doc.discount_amount or  0)+ (base_doc.total_tax or 0)
         
+        if base_doc.discount_type=="Percent":
+            if base_doc.discount>100:
+                frappe.throw(_("Discount  percent must be less than or equal to 100"))
+        else:
+            if base_doc.discount>0 and base_doc.discount> base_doc.input_amount:
+                frappe.throw(_("Discount amount must be less than or equal to amount"))
+
         
         if "package_accounts" in breakdown_data:
             base_doc.total_sub_package_charge  = sum([d["amount"] - ( d["discount_amount"] or  0)+ (d["total_tax"] or 0)  for d in breakdown_data["package_accounts"]]) 
-        
         
         # bank fee
         if "bank_fee_account"  in data:
@@ -319,7 +373,8 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
         update_folio_transaction_note(base_doc)
         
         base_doc.insert()
-        
+    
+ 
         # add bank fee account
         if base_doc.bank_fee_account:
             if base_doc.bank_fee:
@@ -352,19 +407,24 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
             sub_doc.report_quantity= 0
             sub_doc.price =    sub_doc.input_amount
             sub_doc.total_amount =  sub_doc.input_amount
-            
+            sub_doc.reference_folio_transaction = base_doc.name
             sub_doc.flags.ignore_post_audit_trail = True
+            sub_doc.product = ""
+            sub_doc.product_name = ""
+            sub_doc.unit= ""
             sub_doc.insert(ignore_permissions=True)
     # breakdown account
     if "breakdown_accounts" in breakdown_data:
         for b in breakdown_data["breakdown_accounts"]:
             doc = get_folio_transaction_doc_share_property(data, b,working_day)
-            
             doc.naming_series = base_doc.name + ".-.##"
+            doc.reference_folio_transaction = base_doc.name
             doc.parent_reference = base_doc.name
             doc.is_base_transaction = 0
             doc.is_package_breakdown = 1
             doc.input_amount = b["amount"]
+            doc.quantity = 0
+            doc.report_quantity = 0
             doc.amount = b["amount"]
             doc.price = doc.amount
             doc.total_amount = doc.amount
@@ -375,6 +435,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
             for s in  b["sub_account"]:
                 sub_doc = get_folio_transaction_doc_share_property(data, s,working_day)
                 sub_doc.naming_series = doc.name + ".-.##"
+                sub_doc.reference_folio_transaction = base_doc.name
                 sub_doc.is_base_transaction = 0
                 sub_doc.is_package_breakdown = 1
                 sub_doc.parent_reference = doc.name
@@ -382,6 +443,8 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
                 sub_doc.amount = sub_doc.input_amount
                 sub_doc.price =    sub_doc.input_amount
                 sub_doc.total_amount =  sub_doc.input_amount
+                sub_doc.quantity = 0
+                sub_doc.report_quantity = 0
                 sub_doc.flags.ignore_post_audit_trail = True
                 sub_doc.insert(ignore_permissions=True)
             
@@ -390,6 +453,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
         for p in breakdown_data["package_accounts"]:
             doc = get_folio_transaction_doc_share_property(data, p ,working_day)
             doc.naming_series = base_doc.name + ".-.##"
+            doc.reference_folio_transaction = base_doc.name
             doc.is_base_transaction = 1
             doc.is_package_charge = 1
             doc.parent_reference = base_doc.name
@@ -410,6 +474,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
             for s in  p["sub_account"]:
                 sub_doc = get_folio_transaction_doc_share_property(data, s,working_day)
                 sub_doc.naming_series = doc.name + ".-.##"
+                sub_doc.reference_folio_transaction = base_doc.name
                 sub_doc.is_base_transaction = 0
                 sub_doc.is_package_charge = 1
                 sub_doc.parent_reference = doc.name

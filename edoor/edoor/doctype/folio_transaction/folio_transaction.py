@@ -26,11 +26,10 @@ class FolioTransaction(Document):
 					self.working_date = working_day["date_working_day"]
 			if not self.amount:
 				self.amount = self.input_amount
-			if not self.total_amount:
-				self.total_amount = self.input_amount
 			if not self.price:
 				self.price = self.input_amount
-
+			
+			
 			if self.transaction_type == "Reservation Folio":
 				validate_reservation_folio_posting(self)
 			elif self.transaction_type =="City Ledger":

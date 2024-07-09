@@ -90,9 +90,70 @@ function set_indicator(frm) {
 }
 
 function setupActionMenu(frm) {
+  // frm.add_custom_button(
+  //   __("Post Charge"),
+  //   async function () {
+  //     let dlg = new frappe.ui.Dialog({
+  //       title: "Post Charge",
+  //       fields: [
+           
+  //         {
+  //           fieldname: "reservation_stay",
+  //           fieldtype: "Link",
+  //           label: "Reservation Stay",
+  //           options: "Reservation Stay",
+  //           filters:{"reservation":frm.doc.reservation}
+  //         } ,
+  //         {"fieldtype":"Column Break","fieldname": "column_break_01",},
+  //         {
+  //           fieldname: "room_id",
+  //           fieldtype: "Link",
+  //           label: "Room Number",
+  //           options: "Room",
+  //           filters:{"property":frm.doc.property}
+  //         } ,
+  //         {"fieldtype":"Column Break","fieldname": "column_break_02",},
+  //         {
+  //           fieldname: "guest",
+  //           fieldtype: "Link",
+  //           label: "Guest",
+  //           options: "Customer"
+  //         } ,
+  //         {
+  //           "fieldname": "charge_section",
+  //           "fieldtype": "Section Break",
+  //           "label": "Charge Amount"
+  //          },
+  //          {
+  //           fieldname: "account_code",
+  //           fieldtype: "Link",
+  //           label: "Account Code",
+  //           options: "Account Code"
+  //         } ,
+  //         {"fieldtype":"Column Break"},
+  //         {
+  //           fieldname: "input_amount",
+  //           fieldtype: "Currency",
+  //           label: "Amount",
+  //         } ,
+  //       ],
+  //       primary_action_label: "Save",
+  //       primary_action(d) {
+  //         console.log(d)
+  //         alert("save me")
+          
+  //       },
+  //     });
+
+  //     dlg.show();
+  //   },
+  //   __("Action")
+  // );
+
   if(frm.doc.tax_invoice_number){
     return
   }
+
   frm.add_custom_button(
     __("Generate Tax Invoice"),
     async function () {

@@ -399,7 +399,7 @@ Package Charge Breakdown
 </template>
 <script setup>
 
-import { ref, inject, getDoc, computed, onMounted, createUpdateDoc, getDocList, getApi,postApi } from "@/plugin"
+import { ref, inject, getDoc, computed, onMounted, createUpdateDoc, getDocList, getApi,postApi,nextTick  } from "@/plugin"
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
@@ -606,7 +606,7 @@ function onSelectAccountCode(data) {
         doc.value.account_name = ''
         doc.value.rate_include_tax = 'No'
         doc.value.input_amount = 0
-        total_amount.value = 0
+        
         doc.value.city_ledger = ''
         doc.value.city_ledger_name = ''
         doc.value.folio_number = ''
@@ -662,8 +662,9 @@ function onFolioFilterTypeChange(d){
     doc.value.target_transaction_number = ""
 }
 
-function onRateCalculation(){
-
+async function onRateCalculation(newValue){
+    await nextTick();
+   
     if (doc.value.account_code && doc.value.input_amount){
         postApi("add_folio_transaction.get_folio_transaction_calculation",
         {
@@ -701,7 +702,7 @@ function onSave(){
     })
         .then((doc) => {
             isSaving.value = false
-            // dialogRef.value.close(doc)
+            dialogRef.value.close(doc)
             window.postMessage({action:"ReservationList"},"*")
             window.postMessage({action:"GuestLedger"},"*")
             window.postMessage({action:"ReservationStayList"},"*")

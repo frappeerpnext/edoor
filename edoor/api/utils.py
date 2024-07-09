@@ -368,25 +368,19 @@ def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=Fal
                     sum(if(is_active_reservation=0 and reservation_status='No Show',1,0)) as total_no_show,
                     sum(if(is_active_reservation=0 and reservation_status='Void',1,0)) as total_void,
                     
+                    sum(if(is_active_reservation =1,total_amount,0)) as total_amount,
                     sum(if(is_active_reservation =1,room_nights,0)) as room_nights,
-                    sum(if(is_active_reservation=1,total_room_rate,0)) as total_room_rate,
-                    avg(if(is_active_reservation=1,adr,0)) as adr,
-                    min(if(is_active_reservation=1,room_rate,0)) as room_rate,
-                    sum(if(is_active_reservation=1,room_rate_discount,0)) as room_rate_discount,
-                    sum(if(is_active_reservation=1,room_rate_tax_1_amount,0)) as room_rate_tax_1_amount,
-                    sum(if(is_active_reservation=1,room_rate_tax_2_amount,0)) as room_rate_tax_2_amount,
-                    sum(if(is_active_reservation=1,room_rate_tax_3_amount,0)) as room_rate_tax_3_amount,
-                    sum(if(is_active_reservation=1,total_room_rate_tax,0)) as total_room_rate_tax,
+                    min(if(is_active_reservation=1,total_tax,0)) as total_tax,
+                    sum(if(is_active_reservation=1,total_discount,0)) as total_discount,
                     max(is_complimentary) as is_complimentary, 
                     max(is_house_use) as is_house_use
-
                 from `tabReservation Stay`
                 where 
                     reservation='{}'
                 """.format(name)
         
         data = frappe.db.sql(sql,as_dict=1)
-
+ 
         #get folio summary
         sql_folio = """
             select  
@@ -438,17 +432,14 @@ def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=Fal
         doc.child = data[0][ "child"]
 
         doc.room_nights= data[0]["room_nights"]
-        doc.total_room_rate= data[0]["total_room_rate"]
-        doc.room_rate= data[0]["room_rate"]
+        doc.total_amount= data[0]["total_amount"]
+        # doc.room_rate= data[0]["room_rate"]
         if (data[0]["room_nights"] or 0)>0:
-            doc.adr= data[0]["total_room_rate"] / data[0]["room_nights"]
+            doc.adr= data[0]["total_amount"] / data[0]["room_nights"]
         else:
             doc.adr = 0
-        doc.room_rate_discount= data[0]["room_rate_discount"]
-        doc.room_rate_tax_1_amount= data[0]["room_rate_tax_1_amount"]
-        doc.room_rate_tax_2_amount= data[0]["room_rate_tax_2_amount"]
-        doc.room_rate_tax_3_amount= data[0]["room_rate_tax_3_amount"]
-        doc.total_room_rate_tax= data[0]["total_room_rate_tax"]
+        doc.total_discount= data[0]["total_discount"]
+        doc.total_tax= data[0]["total_tax"]
         
         doc.total_reservation_stay = data[0][ "total_stay"]
         doc.total_active_reservation_stay = data[0][ "total_active_stay"]
@@ -506,9 +497,6 @@ def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=Fal
                 doc.reservation_status = 'Cancelled'
             else:
                 doc.reservation_status = "Void" 
-
-    
-        
 
         doc.flags.ignore_on_update= True
         doc.flags.ignore_validate = ignore_validate

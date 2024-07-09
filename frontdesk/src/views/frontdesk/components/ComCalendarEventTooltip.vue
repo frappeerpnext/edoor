@@ -4,6 +4,24 @@
             <span class="me-2"> {{ event.title }}
             </span>
         </div>
+        <div class="flex mb-2 mt-2 gap-2 text-right">
+              <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
+                  <div class="text-500 uppercase text-sm">{{$t('Total Debit')}}</div>
+                  <div class="text-xl line-height-2 font-semibold text-color" ><CurrencyFormat :value="event.extendedProps?.total_debit"></CurrencyFormat></div>
+              </div>
+              <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
+                  <div class=" text-500 uppercase text-sm">{{$t('Total Credit')}}</div>
+                  <div class="text-xl line-height-2 font-semibold text-color" ><CurrencyFormat :value="event.extendedProps?.total_credit"></CurrencyFormat></div>
+              </div>
+              <div class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
+                  <div class="text-500 uppercase text-sm">{{$t('Balance')}}</div>
+                
+                  <div class="text-xl line-height-2 font-semibold text-color"><CurrencyFormat :value="( event.extendedProps?.total_debit - event.extendedProps?.total_credit )"></CurrencyFormat></div>
+              </div>
+          </div>
+
+ 
+
         <table class="tip_description_stay_table m-1 pt-4">
             <tbody>
                 <tr class="table-rs-de">
@@ -98,34 +116,13 @@
                         </td>
                     </tr>
                     <tr class="table-rs-de">
-                        <td>{{ $t('Total Room Rate') }}</td>
+                        <td>{{ $t('Total Room Charge') }}</td>
                         <td class="px-2">:</td>
                         <td>
-                            <CurrencyFormat :value="event.extendedProps?.total_room_rate" />
+                            <CurrencyFormat :value="event.extendedProps?.total_amount" />
                         </td>
                     </tr>
-                    <tr class="table-rs-de">
-                        <td>{{ $t('Total Debit') }}</td>
-                        <td class="px-2">:</td>
-                        <td>
-                            <CurrencyFormat :value="event.extendedProps?.total_debit" />
-                        </td>
-                    </tr>
-                    <tr class="table-rs-de">
-                        <td>{{ $t('Total Credit') }}</td>
-                        <td class="px-2">:</td>
-                        <td>
-                            <CurrencyFormat :value="event.extendedProps?.total_credit" />
-
-                        </td>
-                    </tr>
-                    <tr class="table-rs-de">
-                        <td>{{ $t('Balance') }}</td>
-                        <td class="px-2">:</td>
-                        <td>
-                            <CurrencyFormat :value="event.extendedProps?.balance" />
-                        </td>
-                    </tr>
+                    
                 </template>
                 <tr v-if="event.extendedProps?.note != 'null' && event.extendedProps?.note">
                     <td><span class="mt-2">{{ $t('Note') }}</span></td>

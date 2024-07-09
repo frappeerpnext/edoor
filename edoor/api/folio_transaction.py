@@ -136,6 +136,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
     folio_transaction_list = get_folio_transaction_new_record(stays_infor=stays_info,charge_list=charge_list, working_day = working_day)
     bulk_insert("Folio Transaction",folio_transaction_list , chunk_size=10000)
     
+    
     # update debit, credit and balance to reservation folio 
     update_reservation_folios(folio_names=folio_names ,run_commit=False)
     
@@ -150,6 +151,7 @@ def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rat
     sql="""
         select 
             name, 
+            stay_room_id,
             parent_reference,
             reservation_stay,
             reservation,
@@ -233,6 +235,12 @@ def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
         t.business_source = stay["business_source"]
         t.business_source_type = stay["business_source_type"]
         
+        # update reservation status get from cache 
+        # This might have problem if cache not clear
+        t.reservation_type = frappe.get_cached_value("Reservation Stay",t.reservation_stay,"reservation_type")
+        t.reservation_status = frappe.get_cached_value("Reservation Stay",t.reservation_stay,"reservation_status")
+        t.reservation_status_color = frappe.get_cached_value("Reservation Status",t.reservation_status,"color")
+
 
         yield t
         
@@ -255,7 +263,7 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
             doc.parent_reference = parent_doc.name
 
         doc.transaction_type = "Reservation Folio"
-        
+        doc.stay_room_id = t["stay_room_id"]
         # more doc property heres
         doc.reservation_stay = t["folio_transaction_reservation_stay"]
         doc.source_reservation_stay = t["reservation_stay"]

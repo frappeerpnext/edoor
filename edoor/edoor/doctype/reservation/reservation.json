@@ -88,14 +88,17 @@
   "room_rate_summary_section",
   "room_rate",
   "room_rate_discount",
+  "total_discount",
   "column_break_67",
   "room_rate_tax_1_amount",
   "room_rate_tax_2_amount",
   "room_rate_tax_3_amount",
   "total_room_rate_tax",
+  "total_tax",
   "column_break_72",
   "adr",
   "total_room_rate",
+  "total_amount",
   "room_charge_and_payment_section",
   "total_debit",
   "column_break_77",
@@ -401,6 +404,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "description": "Not Use",
    "fieldname": "total_room_rate",
    "fieldtype": "Currency",
    "label": "Total Room Rate"
@@ -536,6 +540,7 @@
    "label": "Room Rate Summary"
   },
   {
+   "description": "Not use",
    "fieldname": "room_rate_discount",
    "fieldtype": "Currency",
    "label": "Room Rate Discount"
@@ -545,16 +550,19 @@
    "fieldtype": "Column Break"
   },
   {
+   "description": "Not Use",
    "fieldname": "room_rate_tax_1_amount",
    "fieldtype": "Currency",
    "label": "Room Rate Tax 1 Amount"
   },
   {
+   "description": "Not use",
    "fieldname": "room_rate_tax_2_amount",
    "fieldtype": "Currency",
    "label": "Room Rate Tax 2 Amount"
   },
   {
+   "description": "Not Use",
    "fieldname": "room_rate_tax_3_amount",
    "fieldtype": "Currency",
    "label": "Room Rate Tax 3 Amount"
@@ -574,6 +582,7 @@
    "label": "ADR"
   },
   {
+   "description": "Not use",
    "fieldname": "total_room_rate_tax",
    "fieldtype": "Currency",
    "label": "Total Room Rate Tax"
@@ -733,12 +742,27 @@
   {
    "fieldname": "reservation_folio_list",
    "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "total_discount",
+   "fieldtype": "Currency",
+   "label": "Total Discount"
+  },
+  {
+   "fieldname": "total_tax",
+   "fieldtype": "Currency",
+   "label": "Total Tax"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-03 09:45:07.997616",
+ "modified": "2024-07-07 13:22:39.397506",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

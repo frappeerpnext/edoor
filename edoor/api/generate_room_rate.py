@@ -596,7 +596,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
         "type":base_account["type"],
         "input_rate":base_account["input_rate"],
         "amount":sum([d["rate"] for d in tax_data_breakdown if 'rate' in d]) or 0,
-        "quantity":1,
+        "quantity":1 if  not "quantity" in base_account else base_account["quantity"],
         "sort_order":1,
         "parent_reference": "",
         "is_package": base_account["is_package"],
@@ -795,7 +795,14 @@ def get_room_rate_account_code_breakdown(room_rate_data):
         room_rate_data = {key: value for key, value in room_rate_data}
     else:
         room_rate_data = json.loads(room_rate_data)
-      
+    
+    
+    quantity = 1
+    if "quantity" in room_rate_data:
+        quantity = room_rate_data["quantity"]
+    if quantity<=0:
+        quantity = 1
+        
     base_account_codes=[]
     
     if "account_code" in room_rate_data:
@@ -819,7 +826,7 @@ def get_room_rate_account_code_breakdown(room_rate_data):
                 "discount_amount":0,
                 "type":account_code_doc.type,
                 "tax_rule":"",
-                "quantity":0,
+                "quantity":quantity,
                 "is_package":room_rate_data["is_package"]
             }
     # sub account of main account
@@ -850,15 +857,15 @@ def get_room_rate_account_code_breakdown(room_rate_data):
         base_code["discount_amount"]=   room_rate_data["discount_amount"] 
         
     base_account_codes.append(base_code)    
-
+    base_code["quantity"] = quantity
     if room_rate_data["is_package"] ==1 and (room_rate_data["input_rate"] or 0)>0:
         
         package_account_codes =   package_base_account_code_charge_breakdown(json.dumps( room_rate_data))
         
-        base_code["amount"] = room_rate_data["input_rate"] - sum([d["amount"] for d in package_account_codes if d["is_package_account"]==1])
+        base_code["amount"] = (room_rate_data["input_rate"] * quantity) - sum([d["amount"] for d in package_account_codes if d["is_package_account"]==1])
         base_account_codes =  base_account_codes + package_account_codes
     else:
-         base_code["amount"] = room_rate_data["input_rate"]
+         base_code["amount"] = room_rate_data["input_rate"]    * quantity
 
     base_code["amount"] = 0 if base_code["amount"]<=0 else base_code["amount"]
 
@@ -886,6 +893,13 @@ def package_base_account_code_charge_breakdown(room_rate_data):
         room_rate_data = {key: value for key, value in room_rate_data}
     else:
         room_rate_data = json.loads(room_rate_data)
+    
+    quantity = 1
+    if "quantity" in room_rate_data:
+        quantity =room_rate_data["quantity"]
+    if quantity<=0:
+        quantity = 1
+        
     
     
     data = []
@@ -917,16 +931,18 @@ def package_base_account_code_charge_breakdown(room_rate_data):
 
         if p["charge_rule"] =="Stay":
             doc["quantity"] = 1
-            
+            doc["quantity"] = doc["quantity"] * quantity
             doc["amount"] = p["rate"]
             doc["input_rate"] = p["rate"]
         elif p["charge_rule"] =="Adult":
             doc["quantity"] = room_rate_data["adult"]
+            doc["quantity"] = doc["quantity"] * quantity
             doc["amount"] = doc["quantity"] * p["adult_rate"] 
             doc["input_rate"] = p["adult_rate"]
         else:
             # child charge rull
             doc["quantity"] = room_rate_data["child"]
+            doc["quantity"] = doc["quantity"] * quantity
             doc["amount"] = doc["quantity"] * p["child_rate"] 
             doc["input_rate"] = p["child_rate"]
         
@@ -980,6 +996,8 @@ def get_room_rate_calculation(room_rate_data=None,rate=100):
         room_rate_data["discount_amount"] = 0
     room_rate_data["discount"] = room_rate_data["discount"] or 0
         
+    room_rate_data["quantity"] = 1
+    
     account_codes = get_room_rate_account_code_breakdown(tuple(sorted(room_rate_data.items())))
     if room_rate_data["discount"]>0:
         if room_rate_data["discount_type"]=="Amount":

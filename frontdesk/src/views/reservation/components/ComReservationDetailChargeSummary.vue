@@ -39,10 +39,10 @@
                     </ComBoxStayInformation>
                     </div>
                     <div class="flex mt-2 gap-2">
-                        <ComBoxStayInformation  isCurrency title="Discount" :value="rs?.reservation?.room_rate_discount" valueClass="grow text-right" titleClass="col-4" ></ComBoxStayInformation>
+                        <ComBoxStayInformation  isCurrency title="Discount" :value="rs?.reservation?.total_discount" valueClass="grow text-right" titleClass="col-4" ></ComBoxStayInformation>
                     </div>
                     <div class="flex mt-2 gap-2 relative">
-                        <ComBoxStayInformation  isCurrency title="Total Tax" :value="rs?.reservation?.total_room_rate_tax" valueClass="grow text-right" titleClass="col-4" >
+                        <ComBoxStayInformation  isCurrency title="Total Tax" :value="rs?.reservation?.total_tax" valueClass="grow text-right" titleClass="col-4" >
                         <Button v-if="rs?.reservation?.room_rate_tax_1_amount || rs?.reservation?.room_rate_tax_2_amount || rs?.reservation?.room_rate_tax_3_amount" @click="toggleTAX"  icon="pi pi-question text-xs" class="float-left -ms-1 surface-border tax-info-btn" severity="secondary" rounded outlined aria-label="Total Tax" />
                         </ComBoxStayInformation>
                         <OverlayPanel ref="opTax">
@@ -57,7 +57,7 @@
                         </OverlayPanel>
                     </div>
                     <div class="flex mt-2 gap-2">
-                        <ComBoxStayInformation isCurrency title="Total Room Rate" :value="rs?.reservation?.total_room_rate" valueClass="grow text-right font-semibold" titleClass="col-4 font-semibold" ></ComBoxStayInformation>
+                        <ComBoxStayInformation isCurrency title="Total Room Charge" :value="rs?.reservation?.total_amount" valueClass="grow text-right font-semibold" titleClass="col-4 font-semibold" ></ComBoxStayInformation>
                     </div>
                 </div>
                 <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">

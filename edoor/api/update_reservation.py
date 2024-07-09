@@ -156,6 +156,7 @@ def update_reservation_stay(stay_names,run_commit=True):
             a.rate_type = b.rate_type,
             a.is_complimentary = b.is_complimentary,
             a.is_house_use = b.is_house_use,
+            
             a.is_breakfast_include = b.is_breakfast_include,
             a.adult=b.adult,
             a.child = b.child,
@@ -202,6 +203,51 @@ def update_reservation_stay(stay_names,run_commit=True):
 
     """
  
+    frappe.db.sql(sql,{"stay_names":stay_names})
+ 
+    # update stay room 
+    sql = """
+        update `tabReservation Stay Room` a
+        JOIN `tabReservation Stay` b on b.name = a.parent
+        SET
+            a.reference_number  = b.reference_number,
+            a.internal_reference_number  = b.internal_reference_number,
+            a.reservation_color_code = b.reservation_color_code,
+            a.reservation_color = b.reservation_color,
+            a.reservation_status = b.reservation_status,
+            a.status_color= b.status_color,
+            a.reservation_type= b.reservation_type,
+            a.adult= b.adult,
+            a.child= b.child,
+            a.pax= b.pax,
+            a.reservation_stay_adr = b.adr,
+            a.allow_user_to_edit_information= b.allow_user_to_edit_information,
+            a.start_time = b.arrival_time,
+            a.end_time= b.departure_time,
+            a.is_active_reservation = b.is_active_reservation,
+            a.total_tax = b.total_tax,
+            a.balance = b.balance,
+            a.total_credit = b.total_credit,
+            a.total_debit = b.total_debit,
+            
+            a.arrival_date = b.arrival_date,
+            a.departure_date = b.departure_date,
+            a.group_color = b.group_color,
+            a.stay_rooms = b.rooms,
+            a.group_name = b.group_name,
+            a.group_code = b.group_code,
+            a.stay_room_types = b.room_types,
+            a.business_source =b.business_source,
+            a.is_master = b.is_master,
+            a.total_amount = b.total_amount,
+            a.guest = b.guest,
+            a.guest_name = b.guest_name,
+            a.phone_number = b.guest_phone_number,
+            a.email = b.guest_email
+        
+        where
+            a.parent in %(stay_names)s
+    """
     frappe.db.sql(sql,{"stay_names":stay_names})
     if run_commit:
         frappe.db.commit()

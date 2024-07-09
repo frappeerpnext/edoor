@@ -2291,7 +2291,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             total_debit,
             balance,
             total_credit,
-            total_room_rate,
+            total_amount,
             note,
             reservation_status,
             can_change_start_date,

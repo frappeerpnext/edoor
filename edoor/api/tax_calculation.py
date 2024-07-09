@@ -29,8 +29,9 @@ def dome(n=10,rate=0):
 
      
 @lru_cache(maxsize=128)
-def get_tax_breakdown(tax_rule,rate_include_tax="Yes", tax_1_rate=0, tax_2_rate=0, tax_3_rate=0,discount_amount=0,rate=0):
-    
+def get_tax_breakdown(tax_rule,rate_include_tax="Yes", tax_1_rate=0, tax_2_rate=0, tax_3_rate=0,discount_amount=0,rate=0,quantity = 1):
+    if quantity<=0:
+        quantity = 1
     if tax_rule:
         tax_rule = frappe.get_doc("Tax Rule",tax_rule)
         
@@ -48,7 +49,9 @@ def get_tax_breakdown(tax_rule,rate_include_tax="Yes", tax_1_rate=0, tax_2_rate=
             data["rate"] = price + (discount_amount or 0)
 
         else:
-            data["rate"] = rate    
+            data["rate"] = rate  
+            
+        
         #tax 1
         data["taxable_amount_1"] = data["rate"] * ((tax_rule.percentage_of_price_to_calculate_tax_1 or 100)/100)
         
@@ -82,6 +85,8 @@ def get_tax_breakdown(tax_rule,rate_include_tax="Yes", tax_1_rate=0, tax_2_rate=
         data["total_tax"] = (data["tax_1_amount"] or 0 ) + (data["tax_2_amount"] or 0 ) + (data["tax_3_amount"] or 0 ) 
         data["total_amount"] = data["rate"] - discount_amount + data["total_tax"] 
       
+        data["base_rate"] = data["rate"] /quantity
+        
         return data
     else:
         return {

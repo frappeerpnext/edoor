@@ -90,7 +90,8 @@
   "column_break_vbiw",
   "paid_by_master_room",
   "group_code",
-  "total_room_rate"
+  "total_room_rate",
+  "total_amount"
  ],
  "fields": [
   {
@@ -266,16 +267,19 @@
    "label": "Room Type Alias"
   },
   {
+   "description": "Not Use",
    "fieldname": "tax_1_amount",
    "fieldtype": "Currency",
    "label": "Tax 1 Amount"
   },
   {
+   "description": "Not Use",
    "fieldname": "tax_2_amount",
    "fieldtype": "Currency",
    "label": "Tax 2 Amount"
   },
   {
+   "description": "Not Use",
    "fieldname": "tax_3_amount",
    "fieldtype": "Currency",
    "label": "Tax 3 Amount"
@@ -377,6 +381,7 @@
    "label": "Balance"
   },
   {
+   "description": "Not Use",
    "fieldname": "total_room_rate",
    "fieldtype": "Currency",
    "label": "Total Room Rate"
@@ -538,12 +543,17 @@
    "fieldname": "reservation_color_code",
    "fieldtype": "Data",
    "label": "Reservation Color Code"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-01-28 16:38:35.969188",
+ "modified": "2024-07-07 14:19:52.680953",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

@@ -14,8 +14,10 @@ frappe.ui.form.on("Reservation Stay", {
                 }  
         },
         refresh(frm) {
-                if (!frm.doc.__islocal) {
+                if (frm.doc.is_reserved_room && frm.doc.reservation_status == 'No Show') {
                         frm.set_intro("We reserved room for this reservation.", "blue");
+                }else if (!frm.doc.is_reserved_room && frm.doc.reservation_status == 'No Show'){
+                        frm.set_intro("We do not reserved room for this reservation.", "blue");
                 }
                 // // set_indicator(frm);
                 // if (frappe.session.user != "Administrator") {
