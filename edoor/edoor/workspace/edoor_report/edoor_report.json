@@ -5,10 +5,10 @@
    "label": "Monthly Occupancy"
   }
  ],
- "content": "[{\"id\":\"H8O1W_w4Ky\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Report</span>\",\"col\":12}},{\"id\":\"QUrQvpFQCd\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}},{\"id\":\"fpWlMZ6qVG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservation List\",\"col\":3}},{\"id\":\"11lmDp6qUG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monthly Availability Chart\",\"col\":3}},{\"id\":\"VOcianaWlt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Ledger Transaction Report\",\"col\":3}},{\"id\":\"8OCNpBT4l6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Revenue and Occupancy\",\"col\":3}},{\"id\":\"1aKZWlxbFJ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Grq4RCZBNN\",\"type\":\"card\",\"data\":{\"card_name\":\"Reservation Report\",\"col\":4}},{\"id\":\"LGAbpMUxfW\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Ledger\",\"col\":4}},{\"id\":\"A5yI7gW4wi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy\",\"col\":4}},{\"id\":\"IZcX3v6LnD\",\"type\":\"card\",\"data\":{\"card_name\":\"Audit Trail Report\",\"col\":4}},{\"id\":\"jJrsq9_i0t\",\"type\":\"card\",\"data\":{\"card_name\":\"Finance Report\",\"col\":4}},{\"id\":\"TAqs9zTip7\",\"type\":\"card\",\"data\":{\"card_name\":\"Front Office Report\",\"col\":4}},{\"id\":\"XLi2xm0DQw\",\"type\":\"card\",\"data\":{\"card_name\":\"Housekeeping Report\",\"col\":4}},{\"id\":\"zEuYerM0FQ\",\"type\":\"card\",\"data\":{\"card_name\":\"Night Audit Report\",\"col\":4}}]",
+ "content": "[{\"id\":\"H8O1W_w4Ky\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Report</span>\",\"col\":12}},{\"id\":\"QUrQvpFQCd\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}},{\"id\":\"fpWlMZ6qVG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservation List\",\"col\":3}},{\"id\":\"11lmDp6qUG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monthly Availability Chart\",\"col\":3}},{\"id\":\"VOcianaWlt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Ledger Transaction Report\",\"col\":3}},{\"id\":\"8OCNpBT4l6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Revenue and Occupancy\",\"col\":3}},{\"id\":\"1aKZWlxbFJ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"LGAbpMUxfW\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Ledger\",\"col\":4}},{\"id\":\"Grq4RCZBNN\",\"type\":\"card\",\"data\":{\"card_name\":\"Reservation Report\",\"col\":4}},{\"id\":\"A5yI7gW4wi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy\",\"col\":4}},{\"id\":\"jJrsq9_i0t\",\"type\":\"card\",\"data\":{\"card_name\":\"Finance Report\",\"col\":4}},{\"id\":\"TAqs9zTip7\",\"type\":\"card\",\"data\":{\"card_name\":\"Front Office Report\",\"col\":4}},{\"id\":\"XLi2xm0DQw\",\"type\":\"card\",\"data\":{\"card_name\":\"Housekeeping Report\",\"col\":4}},{\"id\":\"zEuYerM0FQ\",\"type\":\"card\",\"data\":{\"card_name\":\"Night Audit Report\",\"col\":4}},{\"id\":\"IZcX3v6LnD\",\"type\":\"card\",\"data\":{\"card_name\":\"Audit Trail Report\",\"col\":4}}]",
  "creation": "2023-12-12 11:29:54.491345",
  "custom_blocks": [],
- "custom_menu_icon": "<svg viewBox=\"0 0 512 512\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" fill=\"#ffffff\" stroke=\"#ffffff\"><g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g><g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g><g id=\"SVGRepo_iconCarrier\"> <title>report-linechart</title> <g id=\"Page-1\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <g id=\"add\" fill=\"#ffffff\" transform=\"translate(42.666667, 85.333333)\"> <path d=\"M341.333333,1.42108547e-14 L426.666667,85.3333333 L426.666667,341.333333 L3.55271368e-14,341.333333 L3.55271368e-14,1.42108547e-14 L341.333333,1.42108547e-14 Z M330.666667,42.6666667 L42.6666667,42.6666667 L42.6666667,298.666667 L384,298.666667 L384,96 L330.666667,42.6666667 Z M106.666667,85.3333333 L106.666333,217.591333 L167.724208,141.269742 L232.938667,173.866667 L280.864376,130.738196 L295.135624,146.595138 L236.398693,199.458376 L173.589333,168.064 L120.324333,234.666333 L341.333333,234.666667 L341.333333,256 L85.3333333,256 L85.3333333,85.3333333 L106.666667,85.3333333 Z\" id=\"Combined-Shape\"> </path> </g> </g> </g></svg>",
+ "custom_menu_icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g><g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g><g id=\"SVGRepo_iconCarrier\"> <path d=\"M22 22H2\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M21 22V14.5C21 13.6716 20.3284 13 19.5 13H16.5C15.6716 13 15 13.6716 15 14.5V22\" stroke=\"#000000\" stroke-width=\"1.5\"></path> <path d=\"M15 22V9M9 22V5C9 3.58579 9 2.87868 9.43934 2.43934C9.87868 2 10.5858 2 12 2C13.4142 2 14.1213 2 14.5607 2.43934C15 2.87868 15 3.58579 15 5V5\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path> <path d=\"M9 22V9.5C9 8.67157 8.32843 8 7.5 8H4.5C3.67157 8 3 8.67157 3 9.5V16M3 22V19.75\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> </g></svg>",
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -20,34 +20,8 @@
  "label": "eDoor Report",
  "links": [
   {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Audit Trail Report",
-   "link_count": 2,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "eDoor Audit Trail",
-   "link_count": 0,
-   "link_to": "Audit Trail Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "ePOS Audit Trail",
-   "link_count": 0,
-   "link_to": "Sale Audit Trail Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 100,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Housekeeping Report",
@@ -56,6 +30,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Housekeeping Arrival Guest",
@@ -66,6 +42,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Housekeeping Stay Over Guest",
@@ -76,6 +54,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Housekeeping Departure Guest",
@@ -86,6 +66,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Housekeeping Arrival Stay Over Departure Guest",
@@ -96,6 +78,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Property Ledger",
@@ -104,6 +88,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Guest Ledger Report",
@@ -114,6 +100,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Guest Ledger Transaction",
@@ -124,6 +112,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "City Ledger Account",
@@ -134,6 +124,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Front Office Report",
@@ -142,6 +134,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Arrival Guest",
@@ -152,6 +146,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Stay Over Guest",
@@ -162,6 +158,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Departure Guest",
@@ -172,6 +170,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Arrival Stay Over Departure Guest",
@@ -182,6 +182,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Pick-up Guest Report",
@@ -192,6 +194,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Drop-off Guest Report",
@@ -202,6 +206,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Pick-up & Drop-off Guest Report",
@@ -212,6 +218,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Extra Charge List Report",
@@ -222,6 +230,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "POS Transfer List",
@@ -232,6 +242,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reservation Report",
@@ -240,6 +252,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Reservation List",
@@ -250,6 +264,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Reservation Forecast",
@@ -260,6 +276,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Monthly Availability Chart",
@@ -270,6 +288,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Room Inventory Report",
@@ -280,6 +300,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Group Reservation List Report",
@@ -290,6 +312,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Revenue and Occupancy",
@@ -298,6 +322,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Revenue and Occupancy",
@@ -308,6 +334,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "General Journal Transaction",
@@ -318,6 +346,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Monthly Occupancy",
@@ -328,6 +358,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Monthly Property Data Summary",
@@ -338,6 +370,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Trail Balance Report",
@@ -348,6 +382,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Manager Flash Report",
@@ -358,6 +394,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Room Revenue Detail",
@@ -368,6 +406,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Night Audit Report",
@@ -376,6 +416,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Audit Trail Report",
@@ -386,6 +428,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Daily Reservation Report",
@@ -396,6 +440,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "No Show Cancel and Void Reservation Report",
@@ -406,6 +452,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Room Complimentary and House Use Report",
@@ -416,6 +464,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Room Charge Posting Report",
@@ -426,6 +476,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Housekeeping Room Status Report",
@@ -436,6 +488,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "End of Day Report",
@@ -446,6 +500,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "eDoor Cashier Shift Report",
@@ -456,6 +512,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Finance Report",
@@ -464,6 +522,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "A/R Aging Summary",
@@ -474,6 +534,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Tax Invoice Report",
@@ -484,6 +546,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Tax Invoice Summary Report",
@@ -492,9 +556,43 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Audit Trail Report",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "eDoor Audit Trail",
+   "link_count": 0,
+   "link_to": "Audit Trail Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "ePOS Audit Trail",
+   "link_count": 0,
+   "link_to": "Sale Audit Trail Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-06-26 14:02:25.846010",
+ "modified": "2024-07-15 18:39:19.727332",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",
@@ -508,6 +606,7 @@
  "shortcuts": [
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Revenue and Occupancy",
    "link_to": "Revenue and Occupancy Summary Report",
@@ -515,6 +614,7 @@
   },
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Monthly Availability Chart",
    "link_to": "Monthly Availability Chart",
@@ -522,6 +622,7 @@
   },
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Reservation List",
    "link_to": "Reservation List Report",
@@ -529,6 +630,7 @@
   },
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Guest Ledger Transaction Report",
    "link_to": "Guest Ledger Transaction Report",

@@ -1,5 +1,5 @@
 <template>
-
+ 
     <div class="grid w-full">
         <div class="col-12 lg:col" v-if="hasFilter('filter_date_by')"> 
             <label> {{ $t('Filters') }} </label><br/>
@@ -243,6 +243,32 @@
                 </div>
             </div>   
         </div>
+        <div class="col-12 lg:col mt-4"  v-if="hasFilter('show_package_breakdown')">
+            <div class="h-full" >
+                <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                <div>
+                    <label for="filter_is_active" class="font-medium cursor-pointer">{{ $t('Show Package Breakdown') }}</label>
+                </div>
+                <div>
+                    <Checkbox class="mx-3" v-model="filter.show_package_breakdown" :binary="true" trueValue="1"
+                            falseValue="0" /> 
+                </div>
+                </div>
+            </div>   
+        </div>
+        <div class="col-12 lg:col mt-4"  v-if="hasFilter('show_vat_breakdown')">
+            <div class="h-full" >
+                <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                <div>
+                    <label for="filter_is_active" class="font-medium cursor-pointer">{{ $t('Show VAT Breakdown') }}</label>
+                </div>
+                <div>
+                    <Checkbox class="mx-3" v-model="filter.show_vat_breakdown" :binary="true" trueValue="1"
+                            falseValue="0" /> 
+                </div>
+                </div>
+            </div>   
+        </div>
         <div class="col-12 lg:col mt-4"  v-if="hasFilter('show_summary')">
             <div class="h-full" >
                 <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
@@ -335,8 +361,9 @@
     </div>
 </template>
 <script setup> 
-import { ref } from "@/plugin"
+import { ref,watch,toRefs  } from "@/plugin"
 import {i18n} from '@/i18n';
+import { onMounted } from "vue";
 const { t: $t } = i18n.global;
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const window = JSON.parse(localStorage.getItem("edoor_working_day"))
@@ -344,6 +371,32 @@ const property = setting.property
 const props = defineProps({
     selectedReport: Object,
     filter: Object
+})
+
+const { selectedReport } = toRefs(props);
+watch(selectedReport, (newVal, oldVal) => {
+    if (newVal.filter_default_value){
+       const filterValue = JSON.parse(newVal.filter_default_value)
+       setFilterDefaultValue(filterValue);
+      
+   }
+  
+});
+function setFilterDefaultValue(filterValue){
+    Object.keys(filterValue).forEach(key => {
+         props.filter[key] =filterValue[key] 
+     });
+}
+onMounted(()=>{
+
+    if (props.selectedReport.filter_default_value){
+       
+        const filterValue = JSON.parse(props.selectedReport.filter_default_value)
+        setFilterDefaultValue(filterValue);
+       
+    }
+    
+
 })
  
 const hasFilter = ref((f) => { 

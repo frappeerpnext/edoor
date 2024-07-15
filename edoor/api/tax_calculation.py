@@ -33,7 +33,7 @@ def get_tax_breakdown(tax_rule,rate_include_tax="Yes", tax_1_rate=0, tax_2_rate=
     if quantity<=0:
         quantity = 1
     if tax_rule:
-        tax_rule = frappe.get_doc("Tax Rule",tax_rule)
+        tax_rule = frappe.get_cached_doc ("Tax Rule",tax_rule)
         
         data = {
             "tax_rule_data":tax_rule.tax_rule_data,

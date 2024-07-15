@@ -436,7 +436,6 @@ const extra_account_code_filter = ref({})
 const doc = ref({});
 const dialog_data =ref()
 const data = ref()
-
 const accountCodeFilter = computed(()=>{
     if(extra_account_code_filter.value){
         return {...{ 'account_group': doc.value.account_group },...extra_account_code_filter.value}
@@ -625,8 +624,25 @@ function onSelectProduct(data){
     doc.value.product_description = data.description || ''
     if (data?.value){
         getDoc("Product", data.value).then(r=>{
-          
-            doc.value.input_amount = r.price || 0
+            if (r.product_price){
+               
+                let price = r.product_price.find(x=>x.business_branch == window.property_name && x.price_rule == window.setting.pos_profile.price_rule) 
+                
+                if (price){
+                    doc.value.input_amount = price.price
+                }else {
+              
+                        price = r.product_price.find(x=>x.price_rule == window.setting.pos_profile.price_rule)
+
+                        if(price){
+                            doc.value.input_amount = price.price
+                        }else {
+                            doc.value.input_amount = r.price || 0
+                        }
+                }
+            }else {
+                doc.value.input_amount = r.price || 0
+            }
             onRateCalculation()
         })
     }
@@ -775,6 +791,7 @@ onMounted(() => {
 
                 isSaving.value = false
                 folioNumberFilter.value = { 'property': window.property_name, status: 'Open', 'name': ['!=', doc.value.transaction_number] }
+                onRateCalculation()
             }).catch(() => {
                 isSaving.value = false
             })

@@ -224,7 +224,7 @@ const columns = ref([
     { fieldname: 'business_source', label: 'Business Source', default: true },
     { fieldname: 'total_reservation_stay', label: 'Total Stay #', header_class: "text-center", default: true },
     { fieldname: 'adr', label: 'ADR', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate:window.can_view_rate?'Yes':'No' },
-    { fieldname: 'total_room_rate', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true ,can_view_rate:window.can_view_rate?'Yes':'No' },
+    { fieldname: 'total_amount', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true ,can_view_rate:window.can_view_rate?'Yes':'No' },
     { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },

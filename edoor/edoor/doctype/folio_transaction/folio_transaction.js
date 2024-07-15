@@ -2,28 +2,53 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Folio Transaction", {
+
 	onload(frm) {
+
     if (window.self !== window.top) {
+      setTimeout(() => {
+        const tabParents = document.querySelector('#form-tabs')
+        if (tabParents) {
+            const tabChild = tabParents.querySelectorAll('.nav-link')
+            const tabChildActive = tabParents.querySelector('.nav-link.active')
+            if (tabChildActive) {
+                tabChildActive.classList.add('active-tab')
+            }
+            if (tabChild.length > 0) {} {
+                tabChild.forEach(el => { 
+                    el.addEventListener('click', () => {
+                        tabChild.forEach(t => t.classList.remove('active-tab'));
+                        el.classList.add('active-tab');
+                    })
+                })
+            }
+        }
+      }, 100)
       
       let container = document.querySelector('div[data-page-route="Folio Transaction"]');
+
       if (!container){
+
         return
+
       }
       // hide share 
-      const share = container.querySelector("ul.form-shared")
-   
-     
-      if(share){
-       
-        share.remove()
-      }
+      share = document.querySelector('.list-unstyled.sidebar-menu.form-shared')
+
+      const placeholder = document.createElement('div');
+
+      placeholder.className = 'placeholder';
+
+      share.parentNode.replaceChild(placeholder, share);
+
+      
+
       let pageheade = container.querySelector('.custom-page-head');
     
       if (pageheade){
          
         pageheade.remove()
-
-        
+  
       }
       $.each(frm.fields_dict, function(fieldname, field) {
           frm.set_df_property(fieldname, 'read_only', 1);

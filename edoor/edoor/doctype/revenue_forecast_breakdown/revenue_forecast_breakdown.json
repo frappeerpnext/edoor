@@ -45,6 +45,8 @@
   "tax_2_rate",
   "tax_3_rate",
   "total_amount",
+  "total_sub_package_charge",
+  "transaction_amount",
   "parent_reference",
   "rate_include_tax",
   "rate_type",
@@ -349,11 +351,21 @@
    "fieldname": "stay_room_id",
    "fieldtype": "Data",
    "label": "Stay Room ID"
+  },
+  {
+   "fieldname": "total_sub_package_charge",
+   "fieldtype": "Currency",
+   "label": "Total Sub Package Charge"
+  },
+  {
+   "fieldname": "transaction_amount",
+   "fieldtype": "Currency",
+   "label": "transaction_amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-13 10:55:46.466923",
+ "modified": "2024-07-13 18:06:21.035067",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Revenue Forecast Breakdown",

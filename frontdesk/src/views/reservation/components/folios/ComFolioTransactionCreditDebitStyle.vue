@@ -168,7 +168,7 @@ const folio_summary = ref()
 
 const dialog = useDialog();
 const show = ref()
-const saveDisplayViewFolioTransaction = ref('');
+
 function onRowSelection(r) {
 
     selectedfolioTransactions.value.push(...folioTransactions.value.filter(x => x.parent_reference == r.data.name))
@@ -192,17 +192,15 @@ watch(() => props.folio, (newValue, oldValue) => {
 
 //load data
 function LoadFolioTransaction() {
+    let show_package_breakdown = 0
     if(localStorage.getItem('displayViewFolioTransaction')){
-      saveDisplayViewFolioTransaction.value = localStorage.getItem('displayViewFolioTransaction');  
-    }else{
-        saveDisplayViewFolioTransaction.value = 0
+        show_package_breakdown = localStorage.getItem('displayViewFolioTransaction');  
     }
+    
     getApi('reservation.get_folio_transaction', {
         transaction_type: props.doctype,
         transaction_number: selectedFolio.value.name,
-        // hide funtion
-        // saveDisplayViewFolioTransaction.value
-        breakdown_account_code:0
+        show_package_breakdown:show_package_breakdown
     })
         .then((result) => {
             folioTransactions.value = result.message
@@ -215,9 +213,14 @@ function LoadFolioTransaction() {
 
 
 function getFolioSummary() {
+    let show_package_breakdown = 0
+    if(localStorage.getItem('displayViewFolioTransaction')){
+        show_package_breakdown = localStorage.getItem('displayViewFolioTransaction');  
+    }
     getApi("reservation.get_folio_summary_by_transaction_type", {
         transaction_type: "Reservation Folio",
-        transaction_number: selectedFolio.value.name
+        transaction_number: selectedFolio.value.name,
+        show_package_breakdown:show_package_breakdown
     }).then((result) => {
         folio_summary.value = result.message
     })
@@ -330,11 +333,7 @@ const windowActionHandler = async function (e) {
     }
 }
 onMounted(() => {
-    if(localStorage.getItem('displayViewFolioTransaction')){
-      saveDisplayViewFolioTransaction.value = localStorage.getItem('displayViewFolioTransaction');  
-    }else{
-        saveDisplayViewFolioTransaction.value = 0
-    }
+    
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){

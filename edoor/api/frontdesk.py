@@ -1983,7 +1983,8 @@ def get_edoor_setting(property = None):
     
     edoor_setting["pos_profile"] = {
         "name":pos_profile.name,
-        "stock_location":pos_profile.stock_location
+        "stock_location":pos_profile.stock_location,
+        "price_rule":pos_profile.price_rule
     }
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
@@ -2686,15 +2687,15 @@ def run_night_audit(property, working_day):
                 "opening_amount":0
             })
      
-
-    doc_cashier_shift = frappe.get_doc(  {
-            "doctype":"Cashier Shift",
-            "working_day": new_working_day.name,
-            "shift_name": frappe.db.get_default("shift_name_after_run_night_audit"),
-            "pos_profile": doc_property.default_pos_profile,
-            "cash_float":cash_float
-        }
-    ).insert()
+    if frappe.get_cached_value("eDoor Setting", None, "create_next_cashier_shift_after_close_shift"):
+        frappe.get_doc(  {
+                "doctype":"Cashier Shift",
+                "working_day": new_working_day.name,
+                "shift_name": frappe.db.get_default("shift_name_after_run_night_audit"),
+                "pos_profile": doc_property.default_pos_profile,
+                "cash_float":cash_float
+            }
+        ).insert()
 
     #queue post room change to folio
 
@@ -3033,19 +3034,32 @@ def check_room_config_and_over_booking(property):
     return 0
 
 @frappe.whitelist()
-def get_day_end_summary_report(property, date): 
+def get_day_end_summary_report(property="ESTC  & HOTEL's", date=None,show_package_breakdown=0,show_vat_breakdown=0): 
+    amount_field = "total_amount"
+    if int(show_package_breakdown)==1:
+        amount_field = "amount"
+        
     # room revneue 
     sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as room_revenue 
+                sum({} * if(type='Debit',1,-1)) as room_revenue 
             from `tabFolio Transaction` 
             where 
+            {} and 
             property=%(property)s and posting_date = '{}' and
             account_category in ('Room Charge','Room Tax','Room Discount','Service Charge')
-        """.format(date)
+        """.format(
+            amount_field, 
+            " is_base_transaction=1 and coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0 else "  1=1  " ,
+            date)
+    
+    
+       
+
     data = frappe.db.sql(sql,{'property':property},as_dict=1)
     room_revenue = 0
     if len(data)>0:
         room_revenue = data[0]["room_revenue"]
+ 
     #room nitht
     sql = """select 
                 sum(is_active=1 and type='Reservation') as total_room_sold ,
@@ -3122,15 +3136,17 @@ def get_day_end_summary_report(property, date):
     sql = """
         select
             transaction_type,
-            sum(amount * if(type='Debit',1,0)) as debit,
-            sum(amount * if(type='Debit',0,1)) as credit
+            sum({0} * if(type='Debit',1,0)) as debit,
+            sum({0} * if(type='Debit',0,1)) as credit
         from `tabFolio Transaction`
         where
+            is_base_transaction=1 and coalesce(parent_reference,'') ='' and 
             property = %(property)s and 
             posting_date = %(date)s
         group by
             transaction_type
-    """
+    """.format( "total_amount", " is_base_transaction=1 and coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0  else "  1=1 " ,)
+    
 
     current_date_transaction  = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
 

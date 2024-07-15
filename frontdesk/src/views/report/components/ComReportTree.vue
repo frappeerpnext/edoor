@@ -50,7 +50,7 @@ function onTabClick () {
 onMounted(() => {
     loading.value = true;
     getDocList("System Report", {
-        fields: ["name", "is_group", "report_title", "report_name", "filter_option", "parent_system_report"],
+        fields: ["name", "is_group", "report_title", "report_name", "filter_option", "parent_system_report","filter_default_value"],
         orderBy: {
             field: "sort_order",
             order: "asc"

@@ -13,7 +13,7 @@
    "label": "Recent Journal Transaction"
   }
  ],
- "custom_menu_icon": "<svg fill=\"#ffffff\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" stroke=\"#ffffff\"><g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g><g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g><g id=\"SVGRepo_iconCarrier\"><title>Account Settings</title><path d=\"M9.6,3.32a3.86,3.86,0,1,0,3.86,3.85A3.85,3.85,0,0,0,9.6,3.32M16.35,11a.26.26,0,0,0-.25.21l-.18,1.27a4.63,4.63,0,0,0-.82.45l-1.2-.48a.3.3,0,0,0-.3.13l-1,1.66a.24.24,0,0,0,.06.31l1,.79a3.94,3.94,0,0,0,0,1l-1,.79a.23.23,0,0,0-.06.3l1,1.67c.06.13.19.13.3.13l1.2-.49a3.85,3.85,0,0,0,.82.46l.18,1.27a.24.24,0,0,0,.25.2h1.93a.24.24,0,0,0,.23-.2l.18-1.27a5,5,0,0,0,.81-.46l1.19.49c.12,0,.25,0,.32-.13l1-1.67a.23.23,0,0,0-.06-.3l-1-.79a4,4,0,0,0,0-.49,2.67,2.67,0,0,0,0-.48l1-.79a.25.25,0,0,0,.06-.31l-1-1.66c-.06-.13-.19-.13-.31-.13L19.5,13a4.07,4.07,0,0,0-.82-.45l-.18-1.27a.23.23,0,0,0-.22-.21H16.46M9.71,13C5.45,13,2,14.7,2,16.83v1.92h9.33a6.65,6.65,0,0,1,0-5.69A13.56,13.56,0,0,0,9.71,13m7.6,1.43a1.45,1.45,0,1,1,0,2.89,1.45,1.45,0,0,1,0-2.89Z\"></path></g></svg>",
+ "custom_menu_icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g><g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g><g id=\"SVGRepo_iconCarrier\"> <path d=\"M3.17157 20.8284C4.34315 22 6.22876 22 10 22H14C17.7712 22 19.6569 22 20.8284 20.8284C22 19.6569 22 17.7712 22 14C22 12.8302 22 11.8419 21.965 11M20.8284 7.17157C19.6569 6 17.7712 6 14 6H10C6.22876 6 4.34315 6 3.17157 7.17157C2 8.34315 2 10.2288 2 14C2 15.1698 2 16.1581 2.03496 17\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M12 2C13.8856 2 14.8284 2 15.4142 2.58579C16 3.17157 16 4.11438 16 6M8.58579 2.58579C8 3.17157 8 4.11438 8 6\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M12 17.3333C13.1046 17.3333 14 16.5871 14 15.6667C14 14.7462 13.1046 14 12 14C10.8954 14 10 13.2538 10 12.3333C10 11.4129 10.8954 10.6667 12 10.6667M12 17.3333C10.8954 17.3333 10 16.5871 10 15.6667M12 17.3333V18M12 10V10.6667M12 10.6667C13.1046 10.6667 14 11.4129 14 12.3333\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> </g></svg>",
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -25,6 +25,8 @@
  "label": "Account",
  "links": [
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 1,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Revenue and Occupancy Report",
@@ -33,6 +35,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Revenue and Occupancy",
@@ -43,6 +47,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Trail Balance Report",
@@ -53,6 +59,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "General Journal Report",
@@ -63,6 +71,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Room Revenue Detail",
@@ -73,6 +83,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 2,
    "hidden": 0,
    "is_query_report": 0,
    "label": "Finance Reports",
@@ -81,6 +93,8 @@
    "type": "Card Break"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "A/R Aging Summary",
@@ -91,6 +105,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Tax Invoice Report",
@@ -101,6 +117,8 @@
    "type": "Link"
   },
   {
+   "custom_show_in_app_menu": 1,
+   "custom_sort_order": 0,
    "hidden": 0,
    "is_query_report": 1,
    "label": "Tax Invoice Summary",
@@ -111,7 +129,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-06-25 14:40:25.536996",
+ "modified": "2024-07-13 10:11:12.538224",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Account",
@@ -146,14 +164,7 @@
  "shortcuts": [
   {
    "color": "Grey",
-   "doc_view": "List",
-   "label": "Business Source",
-   "link_to": "Business Source",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Guest Folio",
    "link_to": "Reservation Folio",
@@ -161,7 +172,17 @@
    "type": "DocType"
   },
   {
+   "color": "Grey",
+   "custom_show_in_app_menu": 1,
+   "doc_view": "List",
+   "label": "Business Source",
+   "link_to": "Business Source",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
    "color": "Green",
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Tax Invoices",
    "link_to": "Tax Invoice",
@@ -170,6 +191,7 @@
   },
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 0,
    "doc_view": "List",
    "label": "POS Sale Invoice",
    "link_to": "Sale",
@@ -178,6 +200,7 @@
   },
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 0,
    "doc_view": "List",
    "label": "City Ledger Account",
    "link_to": "City Ledger",
@@ -186,6 +209,7 @@
   },
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 0,
    "doc_view": "List",
    "label": "Desk Folio",
    "link_to": "Desk Folio",
@@ -194,6 +218,7 @@
   },
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 0,
    "doc_view": "List",
    "label": "Deposit Ledger",
    "link_to": "Deposit Ledger",
@@ -202,6 +227,7 @@
   },
   {
    "color": "Grey",
+   "custom_show_in_app_menu": 0,
    "doc_view": "List",
    "label": "Payable Ledger",
    "link_to": "Payable Ledger",

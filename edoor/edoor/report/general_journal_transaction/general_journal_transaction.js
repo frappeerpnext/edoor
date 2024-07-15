@@ -182,6 +182,22 @@ frappe.query_reports["General Journal Transaction"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
+		{
+			"fieldname": "show_package_breakdown",
+			"label": __("Show Package Breakdown"),
+			"fieldtype": "Check",
+			"default":1,
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "show_all_breakdown",
+			"label": __("Show All Breakdown"),
+			"fieldtype": "Check",
+			"default":0,
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
 		 
 		 
 	],
@@ -190,6 +206,20 @@ frappe.query_reports["General Journal Transaction"] = {
 			frappe.query_report.refresh();
 		});
 		 
+		let currentUrl = window.location.href;
+
+	// Create a URLSearchParams object
+	let urlParams = new URLSearchParams(window.location.search);
+
+	// Get the value of the 'auto_refresh' parameter
+	let autoRefreshValue = urlParams.get('auto_refresh');
+	if (autoRefreshValue==1){
+		setTimeout(function(){
+			frappe.query_report.refresh();
+		},300)
+		
+		
+	}
 	},
 	"formatter": function(value, row, column, data, default_formatter) {
 		const origninal_value = value  || 0

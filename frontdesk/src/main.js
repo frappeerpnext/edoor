@@ -269,7 +269,7 @@ app.use(
 		defaultProps: {
 			placement: "bottom",
 			allowHTML: true,
-			followCursor: true,
+			// followCursor: true,
 			
 			// interactive: true,
 		},

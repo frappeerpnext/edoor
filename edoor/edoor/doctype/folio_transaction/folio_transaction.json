@@ -66,6 +66,7 @@
   "report_quantity",
   "amount",
   "total_sub_package_charge",
+  "transaction_amount",
   "section_break_gdka",
   "item_list",
   "item_list_2",
@@ -1138,11 +1139,17 @@
    "fieldname": "is_base_transaction",
    "fieldtype": "Check",
    "label": "Is Base Transaction"
+  },
+  {
+   "description": "This field is use to store this record transaction total amount that include base rate - discount + vat",
+   "fieldname": "transaction_amount",
+   "fieldtype": "Currency",
+   "label": "Transaction Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-08 08:55:23.524363",
+ "modified": "2024-07-13 18:01:22.659840",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

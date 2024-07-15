@@ -186,7 +186,9 @@ def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rat
             is_package_charge,
             is_package_breakdown,
             room_rate_id,
-            is_base_transaction
+            is_base_transaction,
+            transaction_amount,
+            total_sub_package_charge
         from `tabRevenue Forecast Breakdown`
         where
             date=%(date)s
@@ -296,7 +298,8 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
         doc.total_amount = t["total_amount"]
         doc.amount = t["amount"]
         doc.price = t["price"]
-        
+        doc.transaction_amount = t["transaction_amount"]
+        doc.total_sub_package_charge = t["total_sub_package_charge"]
         
         # # account information
         

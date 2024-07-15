@@ -315,9 +315,12 @@ function onRowClass(r){
 
 
 function getFolioSummary() {
+   
+ 
 		getApi("reservation.get_folio_summary_by_transaction_type", {
 			transaction_type: "Reservation Folio",
-			transaction_number: selectedFolio.value.name
+			transaction_number: selectedFolio.value.name,
+            show_package_breakdown:show_package_breakdown
 		}).then((result) => {
 			 folio_summary.value = result.message
 		})

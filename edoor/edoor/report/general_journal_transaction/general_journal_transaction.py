@@ -30,6 +30,19 @@ def get_columns(filters):
 	]
 
 def get_data(filters):
+	amount_field = "total_amount"
+	is_package_charge = "0"
+	is_base_transaction="1"
+ 
+	if filters.show_package_breakdown==1:
+		amount_field = "transaction_amount"
+		is_package_charge = "is_package_charge"
+		is_base_transaction = "1"
+	if filters.show_all_breakdown==1:
+		amount_field = "amount"
+		is_package_charge = "is_package_charge"
+		is_base_transaction="is_base_transaction"
+
 	sql="""
 		select 
 			name,
@@ -37,16 +50,24 @@ def get_data(filters):
 			date_format(posting_date,'%%d-%%m-%%Y') as ledger, 
 			concat(account_code,'-',report_description ) as account, 
 			quantity,
-			if(type='Debit',amount,0) as debit,
-			if(type='Debit',0,amount) as credit,
+			if(type='Debit',{amount_field},0) as debit,
+			if(type='Debit',0,{amount_field}) as credit,
 			modified,
 			SUBSTRING_INDEX(modified_by,'@',1) as modified_by,
 			1 as indent
 		from `tabFolio Transaction`
 		where
+			is_base_transaction = {is_base_transaction} and 
+   			is_package_charge = {is_package_charge} and 
 			property = %(property)s and 
 			posting_date between %(start_date)s and %(end_date)s 
-		"""
+		""".format(
+      		amount_field=amount_field,
+			is_package_charge = is_package_charge,
+   			is_base_transaction=is_base_transaction
+        
+      )
+	
 	# add additional filter
 	if filters.ledger_type:
 		sql = sql + " and transaction_type in %(ledger_type)s "

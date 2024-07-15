@@ -428,6 +428,7 @@ def get_new_revenue_forecast_records(room_rate_data):
         for s in [d for d in account_code_breakdown["base_account"]["sub_account"] if d["amount"]>0]:
             s["name"] = str(uuid.uuid4())
             s["parent_reference"] = account_code_breakdown["base_account"]["name"] 
+            
             new_records_data.append(s)
         # 2 package account
         for p in account_code_breakdown["package_accounts"]:
@@ -441,8 +442,7 @@ def get_new_revenue_forecast_records(room_rate_data):
        
         # 3 breakdown account
         account_code_breakdown["breakdown_accounts"] = group_breakdown_breakdown_account_code(account_code_breakdown["breakdown_accounts"])
-        
-        
+         
         for b in account_code_breakdown["breakdown_accounts"]:
             b["name"] = str(uuid.uuid4())
             b["parent_reference"] = account_code_breakdown["base_account"]["name"] 
@@ -456,7 +456,7 @@ def get_new_revenue_forecast_records(room_rate_data):
                 new_records_data.append(s)
                 
         new_records_data = sorted(new_records_data, key=lambda x: x["sort_order"])
-         
+        
         
         for acc in  new_records_data:
             doc = frappe.new_doc("Revenue Forecast Breakdown")
@@ -493,7 +493,8 @@ def get_new_revenue_forecast_records(room_rate_data):
             doc.child = rate["child"] or 0
             doc.amount =  acc["amount"]
             doc.price = doc.amount if doc.quantity ==0 else doc.amount / doc.quantity
-           
+            
+                 
             doc.sort_order = acc["sort_order"]
             doc.is_house_use = rate["is_house_use"]
             doc.is_complimentary = rate["is_complimentary"]
@@ -521,7 +522,13 @@ def get_new_revenue_forecast_records(room_rate_data):
             doc.total_tax = 0  if not "total_tax" in acc else   acc["total_tax"]
             
             doc.total_amount = doc.amount - (doc.discount_amount or  0)+ (doc.total_tax or 0)
-
+            if "total_sub_package_charge" in acc:
+                doc.total_sub_package_charge = acc["total_sub_package_charge"]
+                 
+            if "transaction_amount" in acc:
+                doc.transaction_amount = acc["transaction_amount"]
+            else:
+                doc.transaction_amount = doc.total_amount
 
             yield doc
             
@@ -538,6 +545,7 @@ def group_breakdown_breakdown_account_code(data):
         base_account_data = {
             "account_code":acc,
             "amount":sum([d["amount"] for d in data if d["account_code"] ==acc]),
+            "transaction_amount":sum([d["transaction_amount"] for d in data if d["account_code"] ==acc]),
             "sort_order": charge["sort_order"],
             "is_package_breakdown":1,
             "sub_account":[]
@@ -572,7 +580,9 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
     account_code_breakdown = json.loads(account_code_breakdown)
     # return account_code_breakdown
     tax_data_breakdown = []
+
     for acc in account_code_breakdown:
+         
         tax_data = get_tax_breakdown( acc["tax_rule"],
                                          rate_include_tax="No" if not acc["rate_include_tax"] else acc["rate_include_tax"], 
                                          tax_1_rate=acc["tax_1_rate"], 
@@ -582,6 +592,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
                                          rate=acc["amount"]
         )
         tax_data["account_code"] = acc["account_code"]
+        tax_data["is_package_account"] = acc["is_package_account"]
         tax_data_breakdown.append(tax_data)
         
         
@@ -596,6 +607,8 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
         "type":base_account["type"],
         "input_rate":base_account["input_rate"],
         "amount":sum([d["rate"] for d in tax_data_breakdown if 'rate' in d]) or 0,
+        "transaction_amount":sum([d["total_amount"] for d in tax_data_breakdown if 'total_amount' in d and d["account_code"] == base_account["account_code"]]) or 0,
+        "total_sub_package_charge":sum([d["total_amount"] for d in tax_data_breakdown if 'total_amount' in d and d["is_package_account"] == 1]) or 0,
         "quantity":1 if  not "quantity" in base_account else base_account["quantity"],
         "sort_order":1,
         "parent_reference": "",
@@ -612,6 +625,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
         "discount_amount":sum([d["discount_amount"] for d in account_code_breakdown   if "discount_amount" in d]),
         "sub_account":[]
     }
+
     breakdown_account_codes["base_account"]= base_charge
 
     # discount
@@ -674,6 +688,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
         
         if package_account:
             package_account = package_account[0]
+
             # frappe.throw(str(package_account))
             package_charge ={
                 "account_code":p["account_code"],
@@ -681,6 +696,8 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
                 "type":p["type"],
                 "input_rate":p["input_rate"],
                 "amount":package_account["rate"],
+                "transaction_amount":sum([d["total_amount"] for d in tax_data_breakdown if 'total_amount' in d and d["account_code"] == p["account_code"]]) or 0,
+                "total_sub_package_charge":0,
                 "quantity":0 if not "quantity" in  p else   p["quantity"],
                 "sort_order": package_sort_order + 1,
                 "is_package_charge":1,
@@ -700,6 +717,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
                 breakdown_charge = {
                     "account_code":p["breakdown_account_code"],
                     "amount":package_account["rate"],
+                    "transaction_amount": package_account["rate"],
                     "note":"Breakdown Account of {}".format(p["account_code"]),
                     "sort_order":10  ,
                     "is_package_breakdown":1,
@@ -742,6 +760,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
                     breakdown_charge["sub_account"].append({
                         "account_code":p["tax_1_breakdown_account_code"],
                         "amount":package_account["tax_1_amount"],
+                       
                         "note":"Tax 1 Breakdown Account",
                         "sort_order":12 ,
                         "is_package_breakdown":1

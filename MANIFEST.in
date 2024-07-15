@@ -8,7 +8,7 @@ recursive-include edoor *.css
 recursive-include edoor *.csv
 recursive-include edoor *.html
 recursive-include edoor *.ico
-recursive-include edoor *.js
+recurve-include edoor *.js
 recursive-include edoor *.json
 recursive-include edoor *.md
 recursive-include edoor *.png

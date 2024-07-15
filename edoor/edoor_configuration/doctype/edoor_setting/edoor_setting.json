@@ -15,6 +15,7 @@
   "show_account_code_in_folio_transaction",
   "allow_user_to_delete_auto_post_transaction",
   "maximum_number_of_folio_in_reservation_stay",
+  "create_next_cashier_shift_after_close_shift",
   "cb_177",
   "show_summary_under_room_chart_calendar",
   "enable_over_booking",
@@ -411,12 +412,18 @@
    "fieldname": "auto_post_room_charge_folio_on_current_audit_date",
    "fieldtype": "Check",
    "label": "Auto Post Room Charge Folio on Current Audit Date"
+  },
+  {
+   "default": "1",
+   "fieldname": "create_next_cashier_shift_after_close_shift",
+   "fieldtype": "Check",
+   "label": "Create Next Cashier Shift after Close Shift"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-03-11 09:38:39.794842",
+ "modified": "2024-07-10 16:41:22.347849",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

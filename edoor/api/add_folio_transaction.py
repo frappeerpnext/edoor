@@ -167,6 +167,7 @@ def get_folio_transaction_calculation(folio_transaction_data=None):
 def create_folio_transaction(data): 
     
     get_cache_data.cache_clear()
+    
     if not "input_amount" in data:
         data["input_amount"] = 0
     data["input_rate"] = data["input_amount"]
@@ -176,6 +177,17 @@ def create_folio_transaction(data):
     # chekc if reservation is still allow to edit information
     # and more
     working_day = get_working_day(data["property"])
+    if "name" in data:
+        # delete all sub transaction
+        delete_transaction(data["name"])
+        working_day = {
+            "date_working_day":data["working_date"],
+            "name":data["working_day"],
+            "cashier_shift":{
+                "name":data["cashier_shift"]
+            }
+        }
+        
     
     validate_add_folio_transaction(data,working_day)
 
@@ -183,7 +195,7 @@ def create_folio_transaction(data):
     # get charge breakdown 
     breakdown_data =  get_folio_transaction_breakdown(data)
     
-    
+    # frappe.throw(str(breakdown_data))
     add_folio_transaction_record(data, breakdown_data,working_day)
     
     
@@ -194,9 +206,14 @@ def create_folio_transaction(data):
     if "reservation_stay" in data:
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=[data["reservation_stay"]])
     
+    # update creation and ownere when user edit
+         
     frappe.db.commit()
         
-
+    if "name" in data:
+       
+        frappe.db.sql("update `tabFolio Transaction` set owner='{0}',creation='{1}' where name='{2}' or reference_folio_transaction='{2}'".format(data["owner"],data["creation"],data["name"]))
+        frappe.db.commit()
 
     frappe.msgprint(_("Posting transaction successfully"))
     
@@ -341,10 +358,13 @@ def get_folio_transaction_breakdown(data=None):
 def add_folio_transaction_record(data, breakdown_data,working_day):
     if "base_account" in breakdown_data:
         base_doc = get_folio_transaction_doc_share_property(data, breakdown_data["base_account"],working_day)
+        if "name" in data:
+            base_doc.flags.doc_name =data["name"]
+        # frappe.throw(base_doc.name)
         base_doc.is_base_transaction = 1
         base_doc.input_amount = breakdown_data["base_account"]["input_rate"]
         base_doc.amount = breakdown_data["base_account"]["amount"]
-        
+        base_doc.transaction_amount = breakdown_data["base_account"]["transaction_amount"]
         base_doc.discount_amount = breakdown_data["base_account"]["discount_amount"]
         base_doc.total_tax = breakdown_data["base_account"]["total_tax"]
         
@@ -370,6 +390,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
                 base_doc.bank_fee_amount = base_doc.total_amount * (data["bank_fee"] / 100)
                 base_doc.amount = base_doc.amount +  base_doc.bank_fee_amount 
                 base_doc.total_amount = base_doc.total_amount + base_doc.bank_fee_amount 
+                base_doc.transaction_amount = base_doc.transaction_amount + base_doc.bank_fee_amount
         update_folio_transaction_note(base_doc)
         
         base_doc.insert()
@@ -384,12 +405,14 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
                 doc.amount =base_doc.bank_fee_amount
                 doc.price =  base_doc.bank_fee_amount
                 doc.total_amount =base_doc.bank_fee_amount
+                doc.transaction_amount =base_doc.bank_fee_amount
                 doc.reference_number = base_doc.name  
                 doc.bank_fee_account = ""
                 doc.bank_fee_amount = 0
                 doc.bank_fee = 0
                 doc.reference_folio_transaction = base_doc.name
                 doc.note = _("Credit card processing fee")
+                doc.report_description = "Bank Fee {bank_fee}% of {amount}".format(bank_fee=base_doc.bank_fee, amount= frappe.format_value(base_doc.input_amount,"Currency"))
                 doc.is_auto_post =1
                 doc.insert(ignore_permissions=True)
 
@@ -407,6 +430,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
             sub_doc.report_quantity= 0
             sub_doc.price =    sub_doc.input_amount
             sub_doc.total_amount =  sub_doc.input_amount
+            sub_doc.transaction_amount =  sub_doc.input_amount
             sub_doc.reference_folio_transaction = base_doc.name
             sub_doc.flags.ignore_post_audit_trail = True
             sub_doc.product = ""
@@ -423,6 +447,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
             doc.is_base_transaction = 0
             doc.is_package_breakdown = 1
             doc.input_amount = b["amount"]
+            doc.transaction_amount = b["amount"]
             doc.quantity = 0
             doc.report_quantity = 0
             doc.amount = b["amount"]
@@ -443,6 +468,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
                 sub_doc.amount = sub_doc.input_amount
                 sub_doc.price =    sub_doc.input_amount
                 sub_doc.total_amount =  sub_doc.input_amount
+                sub_doc.transaction_amount =  sub_doc.input_amount
                 sub_doc.quantity = 0
                 sub_doc.report_quantity = 0
                 sub_doc.flags.ignore_post_audit_trail = True
@@ -467,6 +493,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
             doc.report_quantity= p["quantity"]
             doc.price =    doc.amount if doc.quantity ==0 else doc.amount / doc.quantity
             doc.total_amount = doc.amount - (doc.discount_amount or  0)+ (doc.total_tax or 0)
+            doc.transaction_amount =  p["transaction_amount"]
             doc.flags.ignore_post_audit_trail = True
             doc.insert(ignore_permissions=True)
             
@@ -482,6 +509,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
                 sub_doc.amount = sub_doc.input_amount
                 sub_doc.price =    sub_doc.input_amount
                 sub_doc.total_amount =  sub_doc.input_amount
+                sub_doc.transaction_amount =  sub_doc.input_amount
                 sub_doc.flags.ignore_post_audit_trail = True
                 sub_doc.insert(ignore_permissions=True)
                 
@@ -500,6 +528,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
         doc.amount =  base_doc.input_amount
         doc.price =     base_doc.input_amount
         doc.total_amount =  base_doc.input_amount
+        doc.transaction_amount =  base_doc.input_amount
         doc.is_auto_post = 1
         # clear target transfer info from share property
         doc.target_transaction_type  =""
@@ -672,3 +701,8 @@ def update_transaction_type_summary(data):
     elif data["transaction_type"]=='City Ledger':
         update_city_ledger(name= data["transaction_number"],run_commit=False, ignore_on_update= True, ignore_validate= True )
         
+        
+def delete_transaction(parent_transaction_name):
+    frappe.db.sql("delete from `tabFolio Transaction` where reference_folio_transaction='{0}' or name='{0}'".format(parent_transaction_name))
+    # update tab series
+    frappe.db.sql("select * from `tabSeries` where name like '{}-%'".format(parent_transaction_name))

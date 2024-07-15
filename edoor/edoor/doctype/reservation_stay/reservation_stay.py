@@ -84,7 +84,7 @@ class ReservationStay(Document):
 		
 				
 		for d in self.stays:
-			
+		 
 			d.property = self.property
 			d.reservation_status = self.reservation_status
 			d.is_active_reservation = self.is_active_reservation
@@ -122,7 +122,7 @@ class ReservationStay(Document):
 			d.reference_number = self.reference_number
 			d.pax = d.adult  + d.child
 			d.reservation = self.reservation
-			d.rate_type = self.rate_type
+			d.rate_type = d.rate_type or  self.rate_type
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
 			d.stay_rooms = self.rooms
 			d.stay_room_types = self.room_types 
@@ -238,7 +238,6 @@ class ReservationStay(Document):
 				"reservation_type":self.reservation_type,
 				"paid_by_master_room":self.paid_by_master_room,
 				"reservation_stay_adr":self.adr,
-				"rate_type":self.rate_type,
 				"name": self.name
 			}
 			frappe.db.sql("""
@@ -259,8 +258,7 @@ class ReservationStay(Document):
 				group_name=%(group_name)s,
 				reservation_stay_adr=%(reservation_stay_adr)s,
 				reservation_type=%(reservation_type)s,
-				paid_by_master_room=%(paid_by_master_room)s,
-				rate_type=%(rate_type)s
+				paid_by_master_room=%(paid_by_master_room)s
 			where parent=%(name)s
 			""",data_for_udpate)
 		

@@ -1,45 +1,11 @@
 <template>
   <ComDialogContent :loading="loading" :hideButtonOK="true" @onClose="onClose">
     <div style="height: 100vh;">
-    <ComIframeContainer :iframeUrl="`/app/folio-transaction/${dialogRef.data.folio_transaction_number}`"/>
-  </div>
-    <!-- <hr class="my-2">
-    <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="true" :attacheds="[doc?.name]" />
-
-    <div v-if="doc.note" class="link_line_action_res_note px-3 mt-3">
-      <div class="pt-2 pb-3 text-color-black">
-        <div class="">
-          <div class="flex justify-content-between flex-wrap">
-            <span class="text-lg font-semibold line-height-4">Note</span>
-            <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onOpenNote"></Button>
-          </div>
-          <div class="text-sm">
-            <span class="font-italic">Last Modified: </span><span class="text-500 font-italic">{{ doc?.note_by }}
-              {{ gv.datetimeFormat(doc?.note_modified) }}</span>
-          </div>
-        </div>
-        <hr class="my-2">
-        <div class="text-color wrap__sp_not">{{ doc?.note }}</div>
-      </div>
+      <ComIframeContainer :iframeUrl="`/app/folio-transaction/${dialogRef.data.folio_transaction_number}`"/>
     </div>
-    <div v-else class="link_line_action px-3 mt-3" @click="onOpenNote">
-      <div class="flex justify-center items-center my-3">
-        <ComIcon icon="iconNoteBlue" class="me-2" style="height: 16px;" />
-        <span class="text-xl">Add Note</span>
-      </div>
-    </div>
-    <div class="mt-3">
-      <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name"
-        :filters="['custom_folio_transaction', '=', doc.name]" />
-    </div>
-
-    <template #footer-left>
-
-
-      <Button class="border-none" @click="onPrintFolioTransaction" :label="$t('Print')" icon="pi pi-print"
-        v-if="doc.print_format" />
-      <Button class="border-none" @click="onAuditTrail" :label="$t('Audit Trail')" icon="pi pi-history" />
-    </template> -->
+    <template v-if="doc.print_format" #footer-left>
+      <Button style="background: var(--bg-btn-color);padding: 0.6rem 0.65rem !important;" class="conten-btn text-white border-0" @click="onPrintFolioTransaction"><i class="pi pi-print mr-2"></i>{{ $t('Print') }} </Button>
+    </template>
     <OverlayPanel ref="openNote">
       <ComOverlayPanelContent width="350px" :loading="saving" @onSave="onSaveNote" @onCancel="onCloseNote">
         <div>

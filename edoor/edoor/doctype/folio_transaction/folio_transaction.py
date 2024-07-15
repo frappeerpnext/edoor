@@ -21,6 +21,8 @@ class FolioTransaction(Document):
 			if not self.working_day or not self.cashier_shift:
 				if self.property:
 					working_day = get_working_day(self.property)
+					if not  working_day["cashier_shift"]:
+						frappe.throw(_("Please start eDoor cashier shift first"))
 					self.working_day = working_day["name"]
 					self.cashier_shift = working_day["cashier_shift"]["name"]
 					self.working_date = working_day["date_working_day"]
@@ -30,13 +32,15 @@ class FolioTransaction(Document):
 				self.price = self.input_amount
 			
 			
+			if not self.report_description:
+				self.report_description = self.account_name
+    
 			if self.transaction_type == "Reservation Folio":
 				validate_reservation_folio_posting(self)
 			elif self.transaction_type =="City Ledger":
 				validate_city_ledger_posting(self)
 			elif self.transaction_type =="Desk Folio":
 				validate_desk_folio_posting(self)
-    
 			update_sub_account_description(self)
 
 	def after_insert(self):
@@ -77,7 +81,9 @@ class FolioTransaction(Document):
 		if self.flags.ingore_on_update:
 			return 
 		
-		
+	def autoname(self):
+		if self.flags.doc_name:
+			self.name = self.flags.doc_name
 		 
 	def on_trash(self):
 		#if this transaction is auto post 

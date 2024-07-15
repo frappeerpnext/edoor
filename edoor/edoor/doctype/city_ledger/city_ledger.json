@@ -23,6 +23,11 @@
   "contact_name",
   "column_break_12",
   "contact_phone_number",
+  "bank_account_information_section",
+  "bank_account_number",
+  "bank_account_name",
+  "column_break_24",
+  "bank_name",
   "summary_section",
   "total_debit",
   "column_break_14",
@@ -33,11 +38,7 @@
   "keyword",
   "available_property_section",
   "note",
-  "bank_account_information_tab",
-  "bank_account_number",
-  "bank_account_name",
-  "column_break_24",
-  "bank_name"
+  "bank_account_information_tab"
  ],
  "fields": [
   {
@@ -128,6 +129,7 @@
    "label": "Summary"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "total_debit",
    "fieldtype": "Currency",
    "label": "Total Debit",
@@ -138,6 +140,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "total_credit",
    "fieldtype": "Currency",
    "label": "Total Credit",
@@ -148,6 +151,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "balance",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -199,15 +203,21 @@
   },
   {
    "default": "Open",
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
    "options": "Open\nClosed"
+  },
+  {
+   "fieldname": "bank_account_information_section",
+   "fieldtype": "Section Break",
+   "label": "Bank Account Information"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-21 12:00:25.169046",
+ "modified": "2024-07-10 17:35:54.202804",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger",

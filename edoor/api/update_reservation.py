@@ -248,7 +248,23 @@ def update_reservation_stay(stay_names,run_commit=True):
         where
             a.parent in %(stay_names)s
     """
+
+    
     frappe.db.sql(sql,{"stay_names":stay_names})
+
+    # update room_number to reservation folio
+    sql = """
+        update `tabReservation Folio` a
+        join `tabReservation Stay` b on b.name = a.reservation_stay
+        SET
+            a.rooms = b.rooms,
+            a.room_types = b.room_types,
+            a.room_types_alias=b.room_type_alias
+        where
+            a.reservation_stay in %(stay_names)s
+    """
+    frappe.db.sql(sql,{"stay_names":stay_names})
+    
     if run_commit:
         frappe.db.commit()
    

@@ -56,19 +56,19 @@
                     </Button>
                 </template>
             </div>
-
             <div v-if="can_view_rate" :class="rs.is_page == true ? 'flex flex-column bg-white mt-3 page_total_foliolist' : 'flex flex-column bg-white mt-3 relative lg:fixed total_foliolist'" :style="`width: ${panelWidth ? panelWidth : '250px'};bottom:0px;z-index: 1;`">
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2">
                     <div class="pr-3"><label> {{ $t('Total Debit') }} </label></div>
                     <div><span>
-                            <CurrencyFormat :value="totalDebit" class="white-space-nowrap font-medium" />
+                            <CurrencyFormat :value="rs?.reservationStay?.total_debit" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
                 
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 border-top-none p-2">
                     <div class="pr-3"><label>{{ $t('Total Credit') }}</label></div>
                     <div><span>
-                            <CurrencyFormat :value="totalCredit" class="white-space-nowrap font-medium" />
+                        
+                            <CurrencyFormat :value="rs?.reservationStay?.total_credit" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
 
@@ -76,7 +76,7 @@
                 <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2">
                     <div class="pr-3"><label>{{ $t('Balance') }}</label></div>
                     <div><span>
-                            <CurrencyFormat :value="balance" class="white-space-nowrap font-medium" />
+                            <CurrencyFormat :value="rs?.reservationStay?.balance" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
             </div>

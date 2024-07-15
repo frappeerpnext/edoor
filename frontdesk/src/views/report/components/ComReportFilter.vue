@@ -1,5 +1,5 @@
 <template>
-    
+ 
     <div v-if="showFilter">
         <div class="">
             <ComReportFilterOnly v-if="!isMobile" :filter="filter" :selectedReport="selectedReport" />
