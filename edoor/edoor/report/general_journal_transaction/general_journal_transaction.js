@@ -224,9 +224,8 @@ frappe.query_reports["General Journal Transaction"] = {
 	"formatter": function(value, row, column, data, default_formatter) {
 		const origninal_value = value  || 0
 		value = default_formatter(value, row, column, data);
-		
-		
-		 
+	 
+ 
 		value = value.toString().replace("style='text-align: right'","style='text-align: " + column.align + "'");	
 	 
  
@@ -251,12 +250,22 @@ frappe.query_reports["General Journal Transaction"] = {
 			
 
 			value = $value.wrap("<p></p>").parent().html();
-		} 
+		}
+		
+		if(column.fieldtype=="Link"){
+			var parser = new DOMParser(); // create a DOMParser object
+			var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
+			var element = doc.querySelector("a");
+			if (element){
+				value = "<a  class='link' data-name='" + element.dataset.name + "' data-doctype='" + element.dataset.doctype+  "'>" + element.textContent + "</a>";
+			}
+			
+		}
+
 	 
  
 		return value;
 	},
 	
 };
-
  

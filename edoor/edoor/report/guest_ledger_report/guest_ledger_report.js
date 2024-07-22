@@ -52,6 +52,12 @@ frappe.query_reports["Guest Ledger Report"] = {
 			"options":"Customer",
 			"on_change": function (query_report) {},
 		}, 
+		{
+			"fieldname": "hide_zero_balance",
+			"label": __("Hide Zero Balance"),
+			"fieldtype": "Check",
+			"on_change": function (query_report) {},
+		}, 
 
 	],
 	onload: function(report) {
@@ -73,7 +79,15 @@ frappe.query_reports["Guest Ledger Report"] = {
 
 			value = $value.wrap("<p></p>").parent().html();
 		}
-		
+		if(column.fieldtype=="Link"){
+			var parser = new DOMParser(); // create a DOMParser object
+			var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
+			var element = doc.querySelector("a");
+			if (element){
+				value = "<a  class='link' data-name='" + element.dataset.name + "' data-doctype='" + element.dataset.doctype+  "'>" + element.textContent + "</a>";
+			}
+			
+		}
 		return value;
 	},
 	

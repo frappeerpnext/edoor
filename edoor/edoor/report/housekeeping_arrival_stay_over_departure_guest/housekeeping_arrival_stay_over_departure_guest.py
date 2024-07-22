@@ -126,14 +126,15 @@ def get_guest_data(filters):
 
 
 def get_report_data(filters,data):
-	start_date = datetime.strptime(filters.start_date, '%Y-%m-%d')
-	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d')
+	start_date = datetime.strptime(filters.start_date, '%Y-%m-%d').date()
+	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d').date()
 	delta = end_date - start_date
+	
 	stay_over_date=[datetime.strftime(start_date + timedelta(days=i), '%Y-%m-%d') for i in range(delta.days + 1)]
 
 	report_data = []
 
-	arrival = sorted(set([d["arrival_date"] for d in data if d['arrival_date'] >= start_date and d['arrival_date'] <= end_date]))
+	arrival =  sorted(set([d["arrival_date"] for d in data if d['arrival_date'] >= start_date and d['arrival_date'] <= end_date]))
 	if arrival:	
 		report_data.append({
 				"indent":0,

@@ -690,6 +690,7 @@ async function onRateCalculation(newValue){
         false
 ).then(result=>{
         data.value = result.message
+        
     })
     }
 }

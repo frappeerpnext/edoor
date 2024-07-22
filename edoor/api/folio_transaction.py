@@ -339,14 +339,14 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
             doc.tax_1_account = account_info["tax_1_account"]
             if t["tax_1_rate"]>0:
                 doc.tax_1_rate = t["tax_1_rate"]
-                doc.tax_description  = "{} - {}%".format( account_info["tax_1_description"] , t["tax_rate"])
+                doc.tax_description  = "{} - {}%".format( account_info["tax_1_description"] , t["tax_1_rate"])
                 
     
         if "tax_2_account" in  account_info:
             doc.tax_2_account = account_info["tax_2_account"]
             doc.tax_2_rate = t["tax_2_rate"]
             if t["tax_2_rate"]>0:
-                doc.tax_description  = "{} - {}%".format( account_info["tax_2_description"] , t["tax_1_rate"])
+                doc.tax_description  = "{} - {}%".format( account_info["tax_2_description"] , t["tax_2_rate"])
                 
     
         if "tax_3_account" in  account_info:

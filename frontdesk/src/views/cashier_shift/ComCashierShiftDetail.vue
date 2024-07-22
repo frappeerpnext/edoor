@@ -397,7 +397,7 @@ function onPrintFolioTransactionSummary(format_name = 'eDoor Cashier Shift Trans
             "doctype": "Cashier%20Shift",
             name: doc.value.name,
             report_name: format_name,
-            filter_options: ["show_account_code", "group_by_ledger_type", "show_cash_count", "show_cash_float", "select_user"],
+            filter_options: ["show_account_code", "group_by_ledger_type", "show_cash_count", "show_cash_float", "select_user","show_package_breakdown"],
         },
         props: {
             header: title == "" ? "Cashier Shift Transaction Summary - " + doc.value.name : title,

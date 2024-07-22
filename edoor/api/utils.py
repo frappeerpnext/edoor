@@ -370,7 +370,7 @@ def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=Fal
                     
                     sum(if(is_active_reservation =1,total_amount,0)) as total_amount,
                     sum(if(is_active_reservation =1,room_nights,0)) as room_nights,
-                    min(if(is_active_reservation=1,total_tax,0)) as total_tax,
+                    sum(if(is_active_reservation=1,total_tax,0)) as total_tax,
                     sum(if(is_active_reservation=1,total_discount,0)) as total_discount,
                     max(is_complimentary) as is_complimentary, 
                     max(is_house_use) as is_house_use
@@ -1128,6 +1128,7 @@ def update_account_code_to_folio_transaction():
             a.account_group_name = b.account_name
             
     """
+    
     frappe.db.sql(sql)
     sql = """
         update `tabRevenue Forecast Breakdown` a 
@@ -1140,6 +1141,7 @@ def update_account_code_to_folio_transaction():
             a.account_group_code = b.account_group,
             a.account_group_name = b.account_group_name
     """
+    
     frappe.db.sql(sql)
     frappe.db.commit()
 
@@ -1960,7 +1962,7 @@ def get_folio_transaction_without_breakdown(property, start_date,end_date,accoun
             is_base_transaction,
             account_code,
             account_name,
-            amount,
+            transaction_amount as amount,
             parent_reference,
             type,
             folio_type,
@@ -1977,7 +1979,7 @@ def get_folio_transaction_without_breakdown(property, start_date,end_date,accoun
             coalesce(note,'') as note
         from `tabFolio Transaction`
         where
-            coalesce(reference_folio_transaction,'') = '' and 
+            is_base_transaction = 1  and 
             property = %(property)s and 
             posting_date between %(start_date)s and %(end_date)s
         

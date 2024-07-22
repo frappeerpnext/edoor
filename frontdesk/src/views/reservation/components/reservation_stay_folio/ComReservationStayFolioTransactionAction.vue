@@ -122,7 +122,6 @@ const onViewFolioDetail = () => {
 
 }
 function onPrintFolioTransaction() {
-    console.log(props.data.print_format)
 
     const dialogRef = dialog.open(ComIFrameModal, {
         data: {

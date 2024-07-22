@@ -44,7 +44,7 @@ def get_columns(filters):
 		{"fieldname":"guest_name", "label":"Guest",'align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'reservation_status','label':'Status','align':'left',"width":95,"show_in_report":1},
 		{'fieldname':'adr','label':'ADR','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'total_room_rate','label':'Total Rate','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
+		{'fieldname':'total_amount','label':'Total Rate','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		{'fieldname':'total_debit','label':'Debit','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		{'fieldname':'total_credit','label':'Credit', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		{'fieldname':'balance','label':'Balance', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
@@ -251,6 +251,7 @@ def get_get_reservation_stay(filters):
 				reservation_status,
 				adr,
 				total_room_rate,
+				total_amount,
 				total_debit,
 				total_credit,
 				balance,
@@ -297,7 +298,7 @@ def get_report_data(filters,data):
 				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
 				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
 				"adr":sum([d["adr"] for d in data if d[group_column["data_field"]]==g]),
-				"total_room_rate":sum([d["total_room_rate"] for d in data if d[group_column["data_field"]]==g]),
+				"total_amount":sum([d["total_amount"] for d in data if d[group_column["data_field"]]==g]),
 				"is_total_row":1,
 				"is_group":0,
 				"parent":id
@@ -316,7 +317,7 @@ def get_report_data(filters,data):
 				"total_credit":sum([d["total_credit"] for d in data]),
 				"balance":sum([d["balance"] for d in data ]),
 				"adr":sum([d["adr"] for d in data ]),
-				"total_room_rate":sum([d["total_room_rate"] for d in data ]),
+				"total_amount":sum([d["total_amount"] for d in data ]),
 				"is_total_row":1,
 				"is_group":0,
 				"is_grand_total":1
@@ -331,7 +332,7 @@ def get_report_data(filters,data):
 			"total_credit":sum([d["total_credit"] for d in data]),
 			"balance":sum([d["balance"] for d in data ]),
 			"adr":sum([d["adr"] for d in data ]),
-			"total_room_rate":sum([d["total_room_rate"] for d in data ]),
+			"total_amount":sum([d["total_amount"] for d in data ]),
 			"room_nights":sum([d["room_nights"] for d in data ]),
 			"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
 			"is_total_row":1

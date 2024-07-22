@@ -97,7 +97,6 @@ const doc = getApi('frontdesk.get_business_source_chart_data', {
         };
 
   new Chart("#chartbs", chartConfig);
-  console.log(chartConfig);
 }
 onMounted(() => {
     renderdata()

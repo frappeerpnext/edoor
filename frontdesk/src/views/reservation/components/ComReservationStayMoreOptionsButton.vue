@@ -96,6 +96,13 @@
                     <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
                     <span class="ml-2">{{ $t('Mark as FIT Reservation') }} </span>
                 </button>
+              
+                <button  @click="onReinstate()" v-if="canReinstate==1"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-check" style="color: green"></i>
+                    <span class="ml-2">{{ $t('Reinstate') }}  </span>
+
+                </button>
                 <button @click="onAuditTrail"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-history" />
@@ -109,6 +116,7 @@
 <script setup>
 import { inject, ref, useConfirm, useToast, postApi,useDialog,computed,updateDoc } from "@/plugin";
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
+import ComReinstate from "@/views/frontdesk/components/ComReinstate.vue";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 
@@ -123,11 +131,16 @@ const rs = inject("$reservation_stay")
 const working_day =  window.working_day
 const loading = ref(false)
 
+  
 
 const toggle = (event) => {
     folio_menu.value.toggle(event);
 }
  
+const canReinstate = computed(()=>{
+
+    return window.setting.reservation_status.find(r=>r.name == rs.reservationStay.reservation_status).allow_reinstate
+})
 const canUndoCheckOut = computed(()=>{
     
 if (parseInt(window.setting.allow_user_to_add_back_date_transaction)==1){
@@ -149,6 +162,41 @@ const canUndoCheckIn = computed(() =>{
         return rs.reservationStay.reservation_status == 'In-house' && rs.reservationStay?.arrival_date == window.current_working_date
     }
 })
+
+
+function onReinstate(){
+    dialog.open(ComReinstate, {
+        data:  {
+            reservation_stay: rs.reservationStay.name,
+            reservation: rs.reservationStay.reservation,
+            property:rs.reservationStay.property,
+            note:""
+        },
+        props: {
+            header: $t("Reinstate"),
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: false,
+            closeOnEscape: false,
+            position: "top",
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+            if (options.data){
+                setTimeout(() => {
+                    emit('onRefresh')
+                }, 1000);
+            }
+              
+         }
+
+    });
+}
 
 items.value.push({
     label: "Audit Trail",

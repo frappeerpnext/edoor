@@ -51,6 +51,16 @@
                                 <label class="white-space-nowrap" for="show_rate">Show/Hide Rate</label>
                             </div>
                         </div>
+                   
+                        <div v-if="hasFilter('show_inactive_reservation')">
+                            <div>
+                                <Checkbox v-model="filters.show_inactive_reservation" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_inactive_reservation" />
+                            </div>
+                            <div>
+                                <label class="white-space-nowrap" for="show_rate">Show/Hide Rate</label>
+                            </div>
+                        </div>
                         <div v-if="hasFilter('business_source')" class="w-16rem">
                             <ComAutoComplete v-model="filters.business_source" placeholder="Business Source"
                                 @onSelected="reloadIframe" doctype="Business Source" class="auto__Com_Cus w-full" />
@@ -165,7 +175,7 @@
                                 <label for="show_cash_float">Show/Hide Cash Float</label>
                             </div>
                         </div>
-
+                        
                         <div v-if="hasFilter('show_cash_count')" class="flex ml-2">
                             <div>
                                 <Checkbox v-model="filters.show_cash_count" :binary="true" :trueValue="1" :falseValue="0"
@@ -173,6 +183,15 @@
                             </div>
                             <div>
                                 <label for="show_cash_count">Show/Hide Cash Count</label>
+                            </div>
+                        </div>
+                        <div v-if="hasFilter('show_package_breakdown')" class="flex ml-2">
+                            <div>
+                                <Checkbox v-model="filters.show_package_breakdown" :binary="true" :trueValue="1" :falseValue="0"
+                                    @input="reloadIframe" inputId="show_package_breakdown" />
+                            </div>
+                            <div>
+                                <label for="show_package_breakdown">Show Package Breakdown</label>
                             </div>
                         </div>
 
@@ -255,6 +274,7 @@ const filters = ref({
     show_master_folio_only: 1,
     show_vattin:0,
     show_summary:0,
+    show_package_breakdown:1,
 
 })
 const show_toolbar = ref(0)

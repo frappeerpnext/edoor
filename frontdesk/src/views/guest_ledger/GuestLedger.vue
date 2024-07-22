@@ -362,7 +362,6 @@ function loadData(show_loading = true) {
         filters: filters
     }).then((result) => {
         columns.value = result.message.columns
-        console.log(result)
         if (selectedColumns.value && selectedColumns.value.length == 0) {
             selectedColumns.value = columns.value.filter(r => r.default).map(r => r.fieldname)
         }

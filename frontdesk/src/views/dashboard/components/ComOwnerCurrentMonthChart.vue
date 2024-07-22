@@ -32,7 +32,6 @@ const doc = getApi('frontdesk.get_owner_dashboard_current_mount_chart', {
         })
     } 
     function renderChart() {
-      console.log(data.value.datasets)
       const chartConfig = {
         data: {
             labels:data.value.labels,

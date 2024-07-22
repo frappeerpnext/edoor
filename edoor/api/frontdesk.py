@@ -1885,7 +1885,7 @@ def get_edoor_setting(property = None):
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order','is_room_occupy'],  order_by='sort_order asc')
     housekeeping_status_code = frappe.get_list("Housekeeping Status Code", fields=['status'],ignore_permissions = True )
 
-    reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
+    reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order',"allow_reinstate"],  order_by='sort_order asc')
     
     edoor_setting_doc = frappe.get_doc("eDoor Setting")
      
@@ -2122,7 +2122,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
 
     filters = ""
     if room_number:
-        filters = filters + " AND `room_number` like '%{}%'".format(room_number)
+        filters = filters + " AND `room_number` like '%%{}%%'".format(room_number)
     if building:
         filters = filters + " AND building = '{}'".format(building)
     if floor:
@@ -2154,22 +2154,23 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
                 rt.name in (select room_type_id from `tabRoom` where building=if(%(building)s="",building,%(building)s)) and
                 rt.name in (select room_type_id from `tabRoom` where floor=if(%(floor)s="",floor,%(floor)s)) and
                 
-                property='{0}'{1}
+                property=%(property)s {0}
             
         """
-        sql=sql.format(property,filter_room_type)      
+        sql=sql.format(filter_room_type)      
         
         
 
         filter = {
             "building":building or "",
-            "floor":floor or ""
+            "floor":floor or "",
+            "property":property
         }
         room_types = frappe.db.sql(sql,filter, as_dict=1)
         
          
         for t in room_types:
-            rooms = frappe.db.sql("select name as id,coalesce(room_type_color,'#FFFFFF') as room_type_color, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type,room_type_alias from `tabRoom` where room_type_id='{0}' and property='{1}' and disabled = 0 {2}   order by room_number".format(t["name"],property, filters),as_dict=1)
+            rooms = frappe.db.sql("select name as id,coalesce(room_type_color,'#FFFFFF') as room_type_color, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type,room_type_alias from `tabRoom` where room_type_id='{0}' and property=%(property)s and disabled = 0 {1}   order by room_number".format(t["name"], filters),{"property":property},as_dict=1)
             resources.append({
                 "id":t["name"],
                 "room_type_color":t["room_type_color"],
@@ -3034,10 +3035,10 @@ def check_room_config_and_over_booking(property):
     return 0
 
 @frappe.whitelist()
-def get_day_end_summary_report(property="ESTC  & HOTEL's", date=None,show_package_breakdown=0,show_vat_breakdown=0): 
+def get_day_end_summary_report(property="ESTC  & HOTEL's", date=None,show_package_breakdown=0): 
     amount_field = "total_amount"
     if int(show_package_breakdown)==1:
-        amount_field = "amount"
+        amount_field = "transaction_amount"
         
     # room revneue 
     sql = """select 
@@ -3046,10 +3047,11 @@ def get_day_end_summary_report(property="ESTC  & HOTEL's", date=None,show_packag
             where 
             {} and 
             property=%(property)s and posting_date = '{}' and
-            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge')
+            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') and
+            is_base_transaction=1
         """.format(
             amount_field, 
-            " is_base_transaction=1 and coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0 else "  1=1  " ,
+            " coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0 else "  1=1  " ,
             date)
     
     
@@ -3140,12 +3142,13 @@ def get_day_end_summary_report(property="ESTC  & HOTEL's", date=None,show_packag
             sum({0} * if(type='Debit',0,1)) as credit
         from `tabFolio Transaction`
         where
-            is_base_transaction=1 and coalesce(parent_reference,'') ='' and 
+            {1} and 
             property = %(property)s and 
-            posting_date = %(date)s
+            posting_date = %(date)s and
+            is_base_transaction=1
         group by
             transaction_type
-    """.format( "total_amount", " is_base_transaction=1 and coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0  else "  1=1 " ,)
+    """.format( amount_field, " coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0  else "  1=1 " )
     
 
     current_date_transaction  = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)

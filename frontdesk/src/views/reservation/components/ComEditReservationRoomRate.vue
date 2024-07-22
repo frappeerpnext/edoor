@@ -225,7 +225,7 @@
                     <div class="col-12 pb-0">
                 <div class="grid justify-end ">
                     <div class="col-12">
-                        <table>
+                        <table >
                     <tbody>
                         <ComStayInfoNoBox label="Base Rate"
                             :value="RoomRateCalculation.room_charge_data?.rate" isCurrency="true" valueClass="text-end" />
@@ -615,7 +615,6 @@ function onSave() {
         reservation_stay_names = Array.from(new Set(selectedRoomRates.value.map(d => d["reservation_stay"])))
     }
 
-    console.log(reservation_stay_names)
     
 
     isSaving.value = true;

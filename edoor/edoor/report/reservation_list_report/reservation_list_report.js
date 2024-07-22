@@ -246,11 +246,15 @@ frappe.query_reports["Reservation List Report"] = {
 		
 		}else {
 			if(column.fieldtype=="Link"){
+				var parser = new DOMParser(); // create a DOMParser object
+				var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
+				var element = doc.querySelector("a");
+				if (element){
+					value = "<a  class='link' data-name='" + element.dataset.name + "' data-doctype='" + element.dataset.doctype+  "'>" + element.textContent + "</a>";
+				}
 				
-				value = "<a target='_blank' href='" + column.url + "/" + element.getAttribute('data-value') + "'>" + element.getAttribute('data-value') + "</a>";
-
- 
 			}
+	
 			
 		}
 		

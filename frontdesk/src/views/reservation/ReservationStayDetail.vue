@@ -402,7 +402,6 @@ const onCheckIn = () => {
         },
         onClose: (options) => {
             const result = options.data;
-            console.log(result)
             if (result) {
                 rs.loading = true
                 

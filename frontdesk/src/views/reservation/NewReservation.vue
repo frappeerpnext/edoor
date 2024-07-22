@@ -1082,7 +1082,7 @@ const onRateTypeChange = (rate_type) => {
                 doc.value.package_charge_data  = result.message.package_charge_data
                 doc.value.is_house_use = result.message.is_house_use
                 doc.value.is_complimentary = result.message.is_complimentary
-
+                
                 //check if stay have not manully rate update
                 if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {
                     getRoomType()
@@ -1109,8 +1109,7 @@ const onUseRatePlan = () => {
 
 
 function get_room_rate_breakdown(stay){
-    console.log(stay)
-
+    
     if ( (stay?.loading || false )==true){
         return 
     }
@@ -1147,6 +1146,7 @@ function get_room_rate_breakdown(stay){
                 stay.loading = false 
             })
 }
+
 
 function viewRoomRateBreakdown(stay){
     if (!doc.value.reservation.rate_type){

@@ -2768,12 +2768,17 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
     get_room_rate_breakdown.cache_clear()
     get_room_rate_account_code_breakdown.cache_clear()
     get_tax_breakdown.cache_clear()
+    
+    # validate discount
+ 
+    
     #validate reservation status 
+    
     #reservation_stays is array string
     if reservation_stays:
         for s in reservation_stays:
             status = frappe.db.get_value("Reservation Stay",s,"reservation_status")
-            if frappe.db.get_value("Reservation Status",status, "allow_user_to_edit_information")==0:
+            if frappe.get_cached_value("Reservation Status",status, "allow_user_to_edit_information")==0:
                 frappe.throw("Reservation Stay: {0} is {1}. {1} reservation is not allow to change information".format(s, status) )
     else:
         reservation_stays.append(data["reservation_stay"])
@@ -3842,9 +3847,7 @@ def verify_reservation_stay(stay_name= None):
 
         folio_data = frappe.db.sql(sql_folio, as_dict=1)
         if len(folio_data)>0:
-            
             if folio_data[0]["credit"] != stay.total_credit or folio_data[0]["debit"] != stay.total_debit:
-               
                 frappe.db.sql("update `tabReservation Stay` set total_credit={0} , total_debit={1}, balance={1}-{0} where name='{2}'".format(folio_data[0]["credit"],folio_data[0]["debit"], stay_name))
 
  
@@ -3860,5 +3863,97 @@ def make_as_verify_folio_transaction(name):
         frappe.msgprint(_("Mask as verify successfully"))
     else:
         frappe.msgprint(_("Unmask as verify successfully"))
-    
     return doc
+
+
+def is_room_avaliable(room_id,start_date,end_date):
+ 
+    sql="select name from `tabTemp Room Occupy` where room_id=%(room_id)s and date between %(start_date)s and %(end_date)s"
+    data = frappe.db.sql(sql,{
+            "room_id":room_id,
+            "start_date":start_date,
+            "end_date": end_date
+        },as_dict=1)
+    return len(data) > 0
+    
+
+# check reinstate info
+@frappe.whitelist(methods="POST")
+def get_check_reinstate_reservation(data):
+    stay_doc = frappe.get_doc("Reservation Stay",data["reservation_stay"])
+    data = {
+        "reservation_stay":data["reservation_stay"],
+        "reservation":data["reservation"],
+        "property":data["property"],
+        "stays":[]
+    }
+    for s in stay_doc.stays:
+        
+        data["stays"].append({
+            "name": s.name,
+            "start_date": s.start_date,
+            "end_date": s.end_date,
+            "room_type_id": s.room_type_id,
+            "room_type": s.room_type,
+            "room_id": s.room_id,
+            "room_number": s.room_number,
+            "is_room_avaliable":is_room_avaliable(s.room_id,s.start_date, add_to_date(s.end_date,days=-1)),
+            "room_types":check_room_type_availability(property=stay_doc.property,start_date=s.start_date,end_date=s.end_date),
+            "rooms":check_room_availability(property=stay_doc.property, start_date=s.start_date, end_date=s.end_date)
+            
+        })
+    return  data
+    
+
+@frappe.whitelist(methods="POST")
+def reinstate(data):
+    if  not 'note'  in data:
+        frappe.throw(_("Please enter reason"))
+        
+    if  not  data["note"]:
+        frappe.throw(_("Please enter reason"))
+    
+    # validate reinstate room_type vs room
+    for s in data["stay_rooms"]:
+        if s["room_id"]:
+            room_type_id, room_number,room_type = frappe.db.get_value("Room",s["room_id"],["room_type_id","room_number","room_type"])
+            if room_type_id!=s["room_type_id"]:
+                frappe.throw(_("Room number {room_number} is not belong to room type {room_type}".format(room_number = room_number, room_type=room_type)))
+        
+    working_day = get_working_day(data["property"])
+    comment_doc = []
+    for s in data["stays"]:
+        doc = frappe.get_doc("Reservation Stay", s)
+        if  doc.arrival_date< working_day["date_working_day"]:
+            frappe.throw(_("You can reinstate a reservation only if the arrival date is earlier than the current working date."))
+            
+        if doc.rooms:
+            doc.reservation_status = "Reserved"
+        else:
+            doc.reservation_status = "Confirmed"
+        doc.flags.ignore_validate=True
+        for x in doc.stays:
+            x.show_in_room_chart = 1
+            x.room_type_id =  [d for d in  data["stay_rooms"] if d["name"] == x.name][0]["room_type_id"]
+            x.room_id =  [d for d in  data["stay_rooms"] if d["name"] == x.name][0]["room_id"]
+        doc.save()
+        
+
+        comment = {
+            "subject":"Reinstate Reservation",
+            "reference_doctype":"Reservation Stay",
+            "reference_name":s,
+            "custom_audit_trail_type":"Reinstate",
+            "content": f"Reservation stay #: {s}, Ref. #: {doc.reference_number}, Room #: {doc.rooms}, Guest: {doc.guest}-{doc.guest_name}"}
+        comment["content"] = comment["content"] + "\n Reason: " + data["note"]
+        comment_doc.append(comment)
+    
+    from edoor.api.generate_room_rate import generate_new_room_rate
+    generate_new_room_rate(stay_names=data["stays"],run_commit=False)
+    generate_room_occupies(data["stays"],run_commit=False)
+    # frappe.enqueue("edoor.api.generate_room_rate.generate_forecast_revenue",queue='short', stay_names=stay_names, run_commit = False )
+    generate_forecast_revenue(stay_names=data["stays"],run_commit=False)
+    
+    
+    update_reservation_stay_and_reservation( reservation = data["reservation"], reservation_stay=data["stays"],run_commit=False)
+    frappe.enqueue("edoor.api.utils.add_audit_trail", data =comment_doc,  queue='long')

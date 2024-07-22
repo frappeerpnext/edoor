@@ -29,10 +29,10 @@ class RoomBlock(Document):
 
 		
 	def before_submit(self):
-		sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id = '{}' and date between '{}' and '{}' and property='{}' limit 1"
-		sql = sql.format(self.name, self.room_id, self.start_date, add_to_date(getdate(self.end_date),days=-1), self.property)
+		sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id = '{}' and date between '{}' and '{}' and property=%(property)s limit 1"
+		sql = sql.format(self.name, self.room_id, self.start_date, add_to_date(getdate(self.end_date),days=-1))
 		 
-		data = frappe.db.sql(sql, as_dict=1)
+		data = frappe.db.sql(sql,{"property":self.property}, as_dict=1)
 		if data:
 			frappe.throw("Room {} is already occupy or block on date {}".format( self.room_number,data[0]["date"].strftime("%d-%m-%Y")))
 
@@ -62,17 +62,17 @@ class RoomBlock(Document):
 			room_doc.housekeeping_status_code = self.unblock_housekeeping_status_code 
 			room_doc.room_status ="Vacant"
 			room_doc.save()
-			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
-			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
+			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
+			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 		else:
 			#check if date is extend
 			old_doc = frappe.get_doc("Room Block", self.name)
 			if self.end_date != old_doc.end_date or  self.start_date != old_doc.start_date:
 				#check if next block date have room occupy 
-				sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id='{}' and date between '{}' and '{}' and property='{}' and stay_room_id != '{}' and is_departure=0 limit 1 "
-				sql = sql.format(self.name, self.room_id, self.start_date, add_to_date(getdate(self.end_date),days=-1), self.property,self.name)
+				sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id='{}' and date between '{}' and '{}' and property=%(property)s and stay_room_id != '{}' and is_departure=0 limit 1 "
+				sql = sql.format(self.name, self.room_id, self.start_date, add_to_date(getdate(self.end_date),days=-1),self.name)
  
-				data = frappe.db.sql(sql, as_dict=1)
+				data = frappe.db.sql(sql,{"property":self.property}, as_dict=1)
 				if data:
 					frappe.throw("Room {} is already occupy or block on date {}".format( self.room_number,data[0]["date"].strftime("%d-%m-%Y")))
 
@@ -100,8 +100,8 @@ class RoomBlock(Document):
 		}])
 
 	def on_cancel(self):
-		frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
-		frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
+		frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
+		frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 
 	def on_trash(self):
 		working_day = get_working_day(self.property)

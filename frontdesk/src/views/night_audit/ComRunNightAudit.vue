@@ -102,7 +102,6 @@ function onNext() {
                 property: setting?.property?.name,
                 step: currentStep.value
             }, "", false).then((result) => {
-                console.log(result)
                 if (currentStep.value == 5) {
                     //confrim room rate
                

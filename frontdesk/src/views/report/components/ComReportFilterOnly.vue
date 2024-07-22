@@ -243,7 +243,7 @@
                 </div>
             </div>   
         </div>
-        <div class="col-12 lg:col mt-4"  v-if="hasFilter('show_package_breakdown')">
+        <div class="col-12 lg:col-3 mt-4"  v-if="hasFilter('show_package_breakdown')">
             <div class="h-full" >
                 <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                 <div>
@@ -256,7 +256,8 @@
                 </div>
             </div>   
         </div>
-        <div class="col-12 lg:col mt-4"  v-if="hasFilter('show_vat_breakdown')">
+        <!-- hide funtion -->
+        <!-- <div class="col-12 lg:col mt-4"  v-if="hasFilter('show_vat_breakdown')">
             <div class="h-full" >
                 <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                 <div>
@@ -268,8 +269,8 @@
                 </div>
                 </div>
             </div>   
-        </div>
-        <div class="col-12 lg:col mt-4"  v-if="hasFilter('show_summary')">
+        </div> -->
+        <div class="col-12 lg:col-4 mt-4"  v-if="hasFilter('show_summary')">
             <div class="h-full" >
                 <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                 <div>
@@ -383,6 +384,7 @@ watch(selectedReport, (newVal, oldVal) => {
   
 });
 function setFilterDefaultValue(filterValue){
+    
     Object.keys(filterValue).forEach(key => {
          props.filter[key] =filterValue[key] 
      });

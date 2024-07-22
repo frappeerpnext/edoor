@@ -139,7 +139,6 @@ function setupActionMenu(frm) {
         ],
         primary_action_label: "Save",
         primary_action(d) {
-          console.log(d)
           alert("save me")
           
         },

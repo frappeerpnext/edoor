@@ -32,6 +32,7 @@ class FolioTransaction(Document):
 				self.price = self.input_amount
 			
 			
+			
 			if not self.report_description:
 				self.report_description = self.account_name
     
@@ -42,7 +43,7 @@ class FolioTransaction(Document):
 			elif self.transaction_type =="Desk Folio":
 				validate_desk_folio_posting(self)
 			update_sub_account_description(self)
-
+		
 	def after_insert(self):
 		 
 

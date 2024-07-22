@@ -85,6 +85,16 @@ frappe.query_reports["Guest Ledger Transaction Report"] = {
 			value = $value.wrap("<p></p>").parent().html();
 		}
 		
+		if(column.fieldtype=="Link"){
+			var parser = new DOMParser(); // create a DOMParser object
+			var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
+			var element = doc.querySelector("a");
+			if (element){
+				value = "<a  class='link' data-name='" + element.dataset.name + "' data-doctype='" + element.dataset.doctype+  "'>" + element.textContent + "</a>";
+			}
+			
+		}
+		
 		return value;
 	},
 	

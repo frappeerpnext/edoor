@@ -368,7 +368,6 @@ function onChangePax (event) {
 }
 
 const onSaveChangePax = () => {
-  console.log(rs.selectedRoomRates)
   let reservation_stay_names = []
   reservation_stay_names = Array.from(new Set(rs.selectedRoomRates.map(d => d["reservation_stay"])))
   isLoading.value = true

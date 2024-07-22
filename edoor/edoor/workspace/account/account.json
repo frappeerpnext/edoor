@@ -5,7 +5,7 @@
    "label": "Current Month Revenue by Date"
   }
  ],
- "content": "[{\"id\":\"-8EMHxKowN\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Revenue\",\"col\":3}},{\"id\":\"oYw-6l9rNI\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today ADR\",\"col\":3}},{\"id\":\"LPUc2S9qfr\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"MTD Revenue\",\"col\":3}},{\"id\":\"fMCQzYgc1Q\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"MTD ADR\",\"col\":3}},{\"id\":\"JQFnKv5sW1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Current Month Revenue by Date\",\"col\":12}},{\"id\":\"hnXStuTusO\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tax Invoices\",\"col\":3}},{\"id\":\"1eXpPXOgBN\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Folio\",\"col\":3}},{\"id\":\"C7J0zqXoDE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Desk Folio\",\"col\":3}},{\"id\":\"yFcH3cVYCQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deposit Ledger\",\"col\":3}},{\"id\":\"KtdL8taJ5N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Payable Ledger\",\"col\":3}},{\"id\":\"OlEAB5M7e7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POS Sale Invoice\",\"col\":3}},{\"id\":\"uST6tT4O8R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"City Ledger Account\",\"col\":3}},{\"id\":\"PCBoj9gwJV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"id\":\"sNUVA1Trrk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XJ-SC0bjfi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy Report\",\"col\":4}},{\"id\":\"hhL1TEaEDx\",\"type\":\"card\",\"data\":{\"card_name\":\"Finance Reports\",\"col\":4}},{\"id\":\"14ka_m6Ego\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Recent Journal Transaction\",\"col\":12}}]",
+ "content": "[{\"id\":\"-8EMHxKowN\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Revenue\",\"col\":3}},{\"id\":\"oYw-6l9rNI\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today ADR\",\"col\":3}},{\"id\":\"LPUc2S9qfr\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"MTD Revenue\",\"col\":3}},{\"id\":\"fMCQzYgc1Q\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"MTD ADR\",\"col\":3}},{\"id\":\"JQFnKv5sW1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Current Month Revenue by Date\",\"col\":12}},{\"id\":\"SFfkA8-3wr\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Generate Tax Invoice</b></span>\",\"col\":12}},{\"id\":\"hnXStuTusO\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tax Invoices\",\"col\":3}},{\"id\":\"1eXpPXOgBN\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Folio\",\"col\":3}},{\"id\":\"C7J0zqXoDE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Desk Folio\",\"col\":3}},{\"id\":\"yFcH3cVYCQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deposit Ledger\",\"col\":3}},{\"id\":\"KtdL8taJ5N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Payable Ledger\",\"col\":3}},{\"id\":\"OlEAB5M7e7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POS Sale Invoice\",\"col\":3}},{\"id\":\"uST6tT4O8R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"City Ledger Account\",\"col\":3}},{\"id\":\"PCBoj9gwJV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"id\":\"sNUVA1Trrk\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XJ-SC0bjfi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy Report\",\"col\":4}},{\"id\":\"hhL1TEaEDx\",\"type\":\"card\",\"data\":{\"card_name\":\"Finance Reports\",\"col\":4}},{\"id\":\"14ka_m6Ego\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Recent Journal Transaction\",\"col\":12}}]",
  "creation": "2024-05-02 18:04:52.412103",
  "custom_blocks": [
   {
@@ -129,7 +129,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-07-13 10:11:12.538224",
+ "modified": "2024-07-18 14:01:25.602084",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Account",
@@ -163,24 +163,6 @@
  "sequence_id": 2.0,
  "shortcuts": [
   {
-   "color": "Grey",
-   "custom_show_in_app_menu": 1,
-   "doc_view": "List",
-   "label": "Guest Folio",
-   "link_to": "Reservation Folio",
-   "stats_filter": "[[\"Reservation Folio\",\"status\",\"=\",\"Open\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "custom_show_in_app_menu": 1,
-   "doc_view": "List",
-   "label": "Business Source",
-   "link_to": "Business Source",
-   "stats_filter": "[]",
-   "type": "DocType"
-  },
-  {
    "color": "Green",
    "custom_show_in_app_menu": 1,
    "doc_view": "List",
@@ -191,25 +173,16 @@
   },
   {
    "color": "Grey",
-   "custom_show_in_app_menu": 0,
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
-   "label": "POS Sale Invoice",
-   "link_to": "Sale",
-   "stats_filter": "[[\"POS Sale Payment\",\"payment_type\",\"!=\",\"Pay to Room\",false],[\"Sale\",\"is_generate_tax_invoice\",\"=\",0,false]]",
+   "label": "Guest Ledger",
+   "link_to": "Reservation Folio",
+   "stats_filter": "[[\"Reservation Folio\",\"status\",\"=\",\"Open\",false]]",
    "type": "DocType"
   },
   {
    "color": "Grey",
-   "custom_show_in_app_menu": 0,
-   "doc_view": "List",
-   "label": "City Ledger Account",
-   "link_to": "City Ledger",
-   "stats_filter": "[[\"City Ledger\",\"status\",\"=\",\"Open\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "custom_show_in_app_menu": 0,
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Desk Folio",
    "link_to": "Desk Folio",
@@ -218,7 +191,7 @@
   },
   {
    "color": "Grey",
-   "custom_show_in_app_menu": 0,
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Deposit Ledger",
    "link_to": "Deposit Ledger",
@@ -227,11 +200,38 @@
   },
   {
    "color": "Grey",
-   "custom_show_in_app_menu": 0,
+   "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Payable Ledger",
    "link_to": "Payable Ledger",
    "stats_filter": "[[\"Payable Ledger\",\"status\",\"=\",\"Open\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "custom_show_in_app_menu": 1,
+   "doc_view": "List",
+   "label": "POS Sale Invoice",
+   "link_to": "Sale",
+   "stats_filter": "[[\"POS Sale Payment\",\"payment_type\",\"!=\",\"Pay to Room\",false],[\"Sale\",\"is_generate_tax_invoice\",\"=\",0,false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "custom_show_in_app_menu": 1,
+   "doc_view": "List",
+   "label": "City Ledger",
+   "link_to": "City Ledger",
+   "stats_filter": "[[\"City Ledger\",\"status\",\"=\",\"Open\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "custom_show_in_app_menu": 1,
+   "doc_view": "List",
+   "label": "Business Source",
+   "link_to": "Business Source",
+   "stats_filter": "[]",
    "type": "DocType"
   }
  ],

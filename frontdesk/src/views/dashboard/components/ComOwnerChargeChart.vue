@@ -66,7 +66,6 @@ const doc = getApi('frontdesk.get_charge_chart_data', {
         };
 
   new Chart("#chartCharge", chartConfig);
-  console.log(chartConfig);
 }
 onMounted(() => {
     renderdata()

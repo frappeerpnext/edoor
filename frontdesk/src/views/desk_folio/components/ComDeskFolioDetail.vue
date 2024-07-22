@@ -191,7 +191,6 @@ function onSaveEdit(){
         op.value.hide()
     }).catch((err) => {
         getData()   
-    console.log(doc)
         // saving.value = false
     })
 }

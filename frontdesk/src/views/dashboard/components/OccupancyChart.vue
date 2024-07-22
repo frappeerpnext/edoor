@@ -112,7 +112,6 @@ onMounted(() => {
 
 
 function renderChart(){
- console.log(chartData.value)
     const chartConfig = {
   data: chartData.value,
   height: 350,

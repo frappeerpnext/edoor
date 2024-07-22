@@ -29,9 +29,9 @@ def get_report_columns(filters,report_config):
 
 def get_report_data(filters,report_config):
 
-    calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
-    calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
-    # frappe.throw(str(calculate_adr_include_all_room_occupied))
+    calculate_room_occupancy_include_room_block = frappe.get_cached_value("eDoor Setting",None, "calculate_room_occupancy_include_room_block")
+    calculate_adr_include_all_room_occupied = frappe.get_cached_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
+ 
  
     data = get_occupy_data(filters,report_config)
 
@@ -277,8 +277,6 @@ def get_occupy_data(filters,report_config):
     return data
 
 
-
-
 def get_room_available(filters):
     sql = ""
     if filters.parent_row_group=="Room Type":
@@ -328,7 +326,7 @@ def get_folio_transaction_data(filters, report_config ):
         
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Folio Transaction' and d.sql_expression]) )
     #filter
-    sql = sql+ " from `tabFolio Transaction` a where transaction_type='Reservation Folio' "
+    sql = sql+ " from `tabFolio Transaction` a where 1=1 "
     sql = "{} {}".format(sql, get_folio_transaction_filters(filters))
 
     # group by
@@ -338,7 +336,7 @@ def get_folio_transaction_data(filters, report_config ):
     if filters.parent_row_group:
         sql = "{}, {}".format(sql, get_folio_transaction_group_by_field(filters)) 
 
-
     data = frappe.db.sql(sql,filters,as_dict = 1)
+    
     return data
 

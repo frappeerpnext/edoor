@@ -517,12 +517,44 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
     if base_doc.target_transaction_type and  base_doc.target_transaction_number:
         doc = get_folio_transaction_doc_share_property(data,{"account_code": base_doc.target_account_code},working_day)
         doc.reference_number = base_doc.name  
-        
         doc.reference_folio_transaction = base_doc.name
         doc.source_transaction_number= base_doc.transaction_number
         doc.source_transaction_type = base_doc.transaction_type
         doc.transaction_type =  base_doc.target_transaction_type
         doc.transaction_number  = base_doc.target_transaction_number
+        # assign reservation, stay, source, room, room type
+        if data["target_transaction_type"] =="Reservation Folio":
+            target_doc = frappe.get_doc("Reservation Folio",data["target_transaction_number"])
+            doc.reservation = target_doc.reservation
+            doc.reservation_stay = target_doc.reservation_stay
+            doc.reservation_status = target_doc.reservation_status
+            doc.reservation_status_color = target_doc.reservation_status_color
+            doc.reservation_type = frappe.db.get_value("Reservation", target_doc.reservation, "reservation_type")
+            doc.guest = target_doc.guest
+            doc.guest_name = frappe.get_cached_value("Customer", target_doc.guest,"customer_name_en")
+            doc.phone_number = frappe.get_cached_value("Customer", target_doc.guest,"phone_number")
+            doc.email = frappe.get_cached_value("Customer", target_doc.guest,"email_address")
+            
+            doc.business_source = target_doc.business_source
+            doc.business_source_type = frappe.get_cached_value("Business Source",target_doc.business_source,"business_source_type")
+            doc.room_id =""
+            update_room_information(doc)
+            
+        elif    data["target_transaction_type"] =="City Ledger":
+            doc.reservation =""
+            doc.reservation_stay = ""
+            doc.reservation_status = ""
+            doc.reservation_status_color =""
+            doc.reservation_type = ""
+            doc.guest = ""
+            doc.guest_name = ""
+            doc.phone_number = ""
+            doc.email = ""
+            doc.room_id= ""
+            doc.room_number= ""
+            doc.room_type= ""
+            doc.room_type_alias= ""
+            
         doc.is_base_transaction = 1
         doc.input_amount = base_doc.input_amount
         doc.amount =  base_doc.input_amount
@@ -538,7 +570,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day):
         
        
         # prepare note
-        update_folio_transaction_note(doc)
+        update_folio_transaction_note(doc,base_doc=base_doc)
         doc.insert(ignore_permissions=True)
 
         
@@ -606,28 +638,7 @@ def get_folio_transaction_doc_share_property(data,folio_transaction_data,working
     doc.type = account_info["type"]
 
     # room info
-    if not doc.room_id:
-        room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabRoom Occupy` where reservation_stay=%(reservation_stay)s and property=%(property)s and date=%(date)s limit 1",{"property":doc.property,"reservation_stay":doc.reservation_stay,"date": doc.posting_date},as_dict=1)
-        if room_info:
-            room_info = room_info[0]
-            doc.room_id = room_info["room_id"]
-            doc.room_number = room_info["room_number"]
-            doc.room_type_id = room_info["room_type_id"]
-            doc.room_type = room_info["room_type"]
-            doc.room_type_alias = room_info["room_type_alias"]
-        else:
-            # get froom from `tabReservation Room`
-            room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabReservation Stay Room` where parent=%(reservation_stay)s and property=%(property)s  limit 1",{"property":doc.property,"reservation_stay":doc.reservation_stay},as_dict=1)
-            if room_info:
-                room_info = room_info[0]
-                doc.room_id = room_info["room_id"]
-                doc.room_number = room_info["room_number"]
-                doc.room_type_id = room_info["room_type_id"]
-                doc.room_type = room_info["room_type"]
-                doc.room_type_alias = room_info["room_type_alias"]
-    else:
-        doc.room_number , doc.room_type_id, doc.room_type , doc.room_type_alias = frappe.db.get_value("Room",doc.room_id,["room_number","room_type_id","room_type","room_type_alias"])
-
+    update_room_information(doc)
 
     if doc.target_transaction_type and doc.target_transaction_number:
         doc.city_ledger_name = frappe.get_cached_value("City Ledger",doc.target_transaction_number,"city_ledger_name")
@@ -672,21 +683,44 @@ def get_folio_transaction_doc_share_property(data,folio_transaction_data,working
       
     return doc
 
+def update_room_information(doc):
+    if not doc.room_id:
+        room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabRoom Occupy` where reservation_stay=%(reservation_stay)s and property=%(property)s and date=%(date)s limit 1",{"property":doc.property,"reservation_stay":doc.reservation_stay,"date": doc.posting_date},as_dict=1)
+        if room_info:
+            room_info = room_info[0]
+            doc.room_id = room_info["room_id"]
+            doc.room_number = room_info["room_number"]
+            doc.room_type_id = room_info["room_type_id"]
+            doc.room_type = room_info["room_type"]
+            doc.room_type_alias = room_info["room_type_alias"]
+        else:
+            # get froom from `tabReservation Room`
+            room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabReservation Stay Room` where parent=%(reservation_stay)s and property=%(property)s  limit 1",{"property":doc.property,"reservation_stay":doc.reservation_stay},as_dict=1)
+            if room_info:
+                room_info = room_info[0]
+                doc.room_id = room_info["room_id"]
+                doc.room_number = room_info["room_number"]
+                doc.room_type_id = room_info["room_type_id"]
+                doc.room_type = room_info["room_type"]
+                doc.room_type_alias = room_info["room_type_alias"]
+    else:
+        doc.room_number , doc.room_type_id, doc.room_type , doc.room_type_alias = frappe.db.get_value("Room",doc.room_id,["room_number","room_type_id","room_type","room_type_alias"])
 
-def update_folio_transaction_note(doc):
+
+def update_folio_transaction_note(doc,base_doc=None):
     if doc.target_transaction_type and  doc.target_transaction_number:
         if doc.note:
             doc.note = doc.note + "\n"
         if doc.target_transaction_type =="Reservation Folio":
-            doc.note = (doc.note or "") + _("Folio balance transfer to folio # {folio_number}, room: {room_number} ".format(folio_number = doc.target_transaction_number, room_number=doc.room_number))
+            room_number = frappe.db.get_value("Reservation Folio", doc.target_transaction_number, "rooms")
+            doc.note = (doc.note or "") + _("Folio balance transfer to folio # {folio_number}, room: {room_number} ".format(folio_number = doc.target_transaction_number, room_number=room_number))
         elif doc.target_transaction_type =="City Ledger":
             doc.note = (doc.note or "") + _("City Ledger Transfer to {city_ledger} - {city_ledger_name}".format(city_ledger = doc.target_transaction_number, city_ledger_name=doc.city_ledger_name))
             
     elif doc.source_transaction_type and  doc.source_transaction_number:
-        
         if doc.note:
             doc.note = doc.note + "\n"
-        doc.note = (doc.note or "") + _("{transaction_type} transfer from {source_transaction_type} #: {source_transaction_number}, Reference Source Transaction Number: {reference_folio_transaction}".format(transaction_type=doc.transaction_type, source_transaction_type = doc.source_transaction_type,source_transaction_number=doc.source_transaction_number, reference_folio_transaction = doc.reference_folio_transaction))
+        doc.note = (doc.note or "") + _("{transaction_type} transfer from {source_transaction_type} #: {source_transaction_number}, Reference Source Transaction Number: {reference_folio_transaction}, Room: {room_number}".format(transaction_type=doc.transaction_type, source_transaction_type = doc.source_transaction_type,source_transaction_number=doc.source_transaction_number, reference_folio_transaction = doc.reference_folio_transaction,room_number=base_doc.room_number))
         
 
 def update_transaction_type_summary(data):

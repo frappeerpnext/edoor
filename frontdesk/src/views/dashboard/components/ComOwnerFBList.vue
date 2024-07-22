@@ -65,7 +65,6 @@ const doc = getApi('fnb.get_fnb_revenue', {
         };
 
   new Chart("#chartChargefnb", chartConfig);
-  console.log(chartConfig);
 }
     onMounted(() => {
     renderdata()

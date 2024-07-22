@@ -21,7 +21,7 @@ def execute(filters=None):
 	filters.reservation= filters.reservation or ''
 	filters.reservation_stay= filters.reservation_stay or ''
 	filters.reservation_status= filters.reservation_status or ''
-	filters.status= filters.status or ''
+	filters.status= filters.status or 'Open'
 	filters.posting_date_start_date= filters.posting_date_start_date or ''
 	filters.posting_date_end_date= filters.posting_date_end_date or working_day["date_working_day"]
 
@@ -48,13 +48,12 @@ def get_columns(filters):
 		{'fieldname':'business_source','label':'Source',"default":True,"show_in_report":1},
 		{'fieldname':'room','label':'Room(s)',"default":True,"show_in_report":1,'align':'left'},
 		{'fieldname':'guest_name', 'label':'Guest',"align":'left' ,"default":True,"show_in_report":1,"default":True},	
-		{'fieldname':'phone_number','label':'Phone #',"default":False},
+		{'fieldname':'phone_number','label':'Phone #',"default":False,"align":"left","width":150},
 		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right',"default":True,"show_in_report":1,"align":'right'},
 		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right',"default":True,"show_in_report":1,"align":'right'},
 		{'fieldname':'balance','label':'Balance', 'fieldtype':'Currency',"header_class":'text-right',"default":True,"show_in_report":1,"align":'right'},
 		{'fieldname':'status','label':'Status',"fieldtype":"status","default":True},
 		{'fieldname':'reservation_status','label':'Res. Status',"fieldtype":"ReservationStatus","default":True,"show_in_report":1,'align':'center'},
-
 	]
 	 
 
@@ -63,7 +62,6 @@ def get_columns(filters):
  
 def get_report_data(filters):
 	#get folio number from folio folio transaction
-
 	filters.keyword = "%{}%".format(filters.keyword or "")
 
 	sql="""select 
@@ -101,8 +99,16 @@ def get_report_data(filters):
 			guest = if(%(guest)s='',guest,%(guest)s)  and 
 			ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
 			ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s) 
+
+			{extra_filter}
 			
-	""" 
+			
+	"""
+	extra_filter = ""
+	if filters.hide_zero_balance ==1:
+		extra_filter = " and balance>0 "
+	sql=sql.format(extra_filter=extra_filter)
+
 	
 	data = frappe.db.sql(sql,filters,as_dict=1)
 	return data

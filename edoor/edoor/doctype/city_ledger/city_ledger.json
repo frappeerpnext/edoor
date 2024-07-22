@@ -38,7 +38,9 @@
   "keyword",
   "available_property_section",
   "note",
-  "bank_account_information_tab"
+  "transaction_tab",
+  "transaction_detail",
+  "view_general_journal_btn"
  ],
  "fields": [
   {
@@ -159,11 +161,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "bank_account_information_tab",
-   "fieldtype": "Tab Break",
-   "label": "Bank Account Information"
-  },
-  {
    "fieldname": "bank_account_number",
    "fieldtype": "Data",
    "label": "Bank Account Number"
@@ -213,11 +210,24 @@
    "fieldname": "bank_account_information_section",
    "fieldtype": "Section Break",
    "label": "Bank Account Information"
+  },
+  {
+   "fieldname": "transaction_tab",
+   "fieldtype": "Tab Break",
+   "label": "Transaction"
+  },
+  {
+   "fieldname": "transaction_detail",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "view_general_journal_btn",
+   "fieldtype": "HTML"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-10 17:35:54.202804",
+ "modified": "2024-07-20 15:50:03.141057",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger",

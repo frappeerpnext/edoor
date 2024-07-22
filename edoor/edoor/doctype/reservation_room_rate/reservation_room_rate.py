@@ -17,7 +17,7 @@ class ReservationRoomRate(Document):
 
 		# track changte to imporove performance
 		if self.has_value_changed("rate_type"):
-			rate_type_doc = frappe.get_doc("Rate Type",self.rate_type,cache=True)
+			rate_type_doc = frappe.get_cached_doc("Rate Type",self.rate_type)
 			if self.is_new():
 				self.allow_discount = rate_type_doc.allow_discount or 0
 			
@@ -48,7 +48,6 @@ class ReservationRoomRate(Document):
 			self.has_value_changed("child") or   
 			self.has_value_changed("is_package") or   
 			self.has_value_changed("package_charge_data")   or 
-	
 			self.flags.regenerate_rate == True 
        
       	): 
@@ -78,13 +77,10 @@ class ReservationRoomRate(Document):
 			self.total_other_charge = rate_breakdown["total_other_charge"]
 			self.total_rate = rate_breakdown["total_amount"]
 			self.discount_amount= rate_breakdown["discount_amount"]
-
-		 
-
-			if (self.discount_amount or 0) > (self.input_rate or 0):
-				frappe.throw("Discount amount cannot greater than total amoun")
-
-
+		
+		if (self.discount_amount or 0) > (self.input_rate or 0) or  self.discount_type =="Amount" and self.discount>self.input_rate:
+			frappe.throw("Discount amount cannot greater than total amount")
+ 
 
 
 	def on_update(self):
