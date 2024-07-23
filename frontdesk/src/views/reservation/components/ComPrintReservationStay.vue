@@ -1,5 +1,4 @@
 <template>
-zzz
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog grid" id="view-table-iframe-dialog" style="height: 85vh;">
             <div class="xl:mb-3 mb-0 overflow-auto col-12  xl:col-3 gap-2">

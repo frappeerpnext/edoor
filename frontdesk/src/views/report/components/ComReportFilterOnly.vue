@@ -25,13 +25,14 @@
         </div>
         <div class="col-12 lg:col"  v-if="hasFilter('reservation')">
             <label> {{ $t('Reservation') }} </label><br>
-            <ComSelect v-model="filter.reservation" placeholder="Reservation" doctype="Reservation"
-            class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" />
+            <ComAutoComplete v-model="filter.reservation" placeholder="Reservation" doctype="Reservation"
+            class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
+
         </div>
         <div class="col-12 lg:col"  v-if="hasFilter('reservation_stay')">
             <label>{{$t('Reservation Stay') }}</label><br>
-            <ComSelect v-model="filter.reservation_stay" placeholder="Reservation Stay" doctype="Reservation Stay"
-            class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" />
+            <ComAutoComplete v-model="filter.reservation_stay" placeholder="Reservation Stay" doctype="Reservation Stay"
+            class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
         </div>
         <div class="col-12 lg:col" v-if="hasFilter('select_filter')">
             <label>{{ $t('Select Filter') }}</label><br>
@@ -286,10 +287,8 @@
         
         <div class="col-12 lg:col" v-if="hasFilter('guest')">
             <label> {{ $t('Guest') }} </label><br/>
-            <ComSelect        class="auto__Com_Cus w-full" 
-            optionLabel="customer_name_en" optionValue="name"
-            extraFields="customer_name_en"
-                v-model="filter.guest"   placeholder="Guest" doctype="Customer"></ComSelect>
+            <ComAutoComplete v-model="filter.guest" placeholder="Guest" doctype="Guest"
+            class="auto__Com_Cus w-full" />
         </div> 
         <div class="col-12 lg:col" v-if="hasFilter('guest_type')">
             <label> {{ $t('Guest Type') }} </label><br>

@@ -1,0 +1,19 @@
+    			<div class="list-row-container" tabindex="1">
+    				<div class="level list-row">
+    					<div class="level-left ellipsis">
+                                 {{left}}
+                            
+    					</div>
+                        <div class="level-right text-muted ellipsis">
+    						{{frappe.format(doc.total_amount,{"fieldtype":"Currency"})}}
+                            
+                        </div>
+    				</div>
+    				<div class="level list-row details-row">{{doc.account_code}} -{{doc.account_name}}
+                        <br/>
+                        {{doc.reservation_stay }}
+                        <br>
+                        {{modified}}
+                    </div>
+    			</div>
+                

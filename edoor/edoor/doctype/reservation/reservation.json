@@ -568,6 +568,7 @@
    "label": "Room Rate Tax 3 Amount"
   },
   {
+   "description": "Not use will delete in futuire",
    "fieldname": "room_rate",
    "fieldtype": "Currency",
    "label": "Room Rate"
@@ -762,7 +763,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-07 13:22:39.397506",
+ "modified": "2024-07-22 17:28:19.971485",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

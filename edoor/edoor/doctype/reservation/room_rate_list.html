@@ -40,7 +40,7 @@
                             <div class="col">{{d.guest_name}}</div>
                             <div class="col text-center">{{d.adult}}/{{d.child}}</div>
                             <div class="col text-center">{{d.rate_type}}</div>
-                            <div class="col text-right">{{ frappe.format(d.rate,{"fieldtype":"Currency"})}}</div>
+                            <div class="col text-right">{{ frappe.format(d.total_rate + d.discount_amount - d.total_tax,{"fieldtype":"Currency"})}}</div>
                             <div class="col text-right">{{ frappe.format(d.discount_amount,{"fieldtype":"Currency"})}}</div>
                             <div class="col text-right">{{ frappe.format(d.total_tax,{"fieldtype":"Currency"})}}</div>
                             <div class="col text-right">{{ frappe.format(d.total_rate,{"fieldtype":"Currency"})}}</div>
