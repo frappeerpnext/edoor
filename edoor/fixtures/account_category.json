@@ -252,15 +252,6 @@
   "sort_order": 2800
  },
  {
-  "account_category": "Room Tax",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:02.044673",
-  "name": "Room Tax",
-  "note": null,
-  "sort_order": 1400
- },
- {
   "account_category": "Payment",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -268,6 +259,15 @@
   "name": "Payment",
   "note": "a",
   "sort_order": 1800
+ },
+ {
+  "account_category": "Room Tax",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:11:02.044673",
+  "name": "Room Tax",
+  "note": null,
+  "sort_order": 1400
  },
  {
   "account_category": "Room Charge",

@@ -23,39 +23,39 @@ class CustomHotelRoomListView extends frappe.views.ListView {
                         <span class="badge badge-info">${data.name}</span>
                     </div>
                     <div class="list-item__right">
-                      hello
+                      
                     </div>
                 </div>
             </div>
         `;
     }
 }
-frappe.views.ListView = CustomHotelRoomListView;
 
-// if (frappe.is_mobile()){
-//     frappe.views.ListView = class ListView extends frappe.views.ListView {
 
-//     get_mobile_row(left = "", doc) { 
-//         if (this.doctype === "Folio Transaction") {
-//             return frappe.render_template("mobile_list_view_row_template",{left:left,doc:doc,modified:comment_when(doc.modified,true)})           
-//         }
-// 	}
-//     get_list_row_html(doc) {
+if (frappe.is_mobile()){
+    frappe.views.ListView = class ListView extends frappe.views.ListView {
+
+    get_mobile_row(left = "", doc) { 
+        if (this.doctype === "Folio Transaction") {
+            return frappe.render_template("mobile_list_view_row_template",{left:left,doc:doc,modified:comment_when(doc.modified,true)})           
+        }
+	}
+    get_list_row_html(doc) {
       
-// 		return this.get_mobile_row(
-// 			this.get_left_html(doc),
-// 			doc
-// 		);
-// 	}
-// }
+		return this.get_mobile_row(
+			this.get_left_html(doc),
+			doc
+		);
+	}
+}
 
-// document.querySelector('style').textContent +=
-//     `@media (min-width: 768px) { 
-//         .list-row-container .details-row { display: none; }
-//     }
-//     .list-row-container .details-row {
-//         color: #666;
-//         padding: 0 0 0 40px !important;
-//     }
-//     `
-// }
+document.querySelector('style').textContent +=
+    `@media (min-width: 768px) { 
+        .list-row-container .details-row { display: none; }
+    }
+    .list-row-container .details-row {
+        color: #666;
+        padding: 0 0 0 40px !important;
+    }
+    `
+}
