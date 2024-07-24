@@ -508,7 +508,8 @@ function onUseTax3Change() {
 
 } 
 const canEdit = computed(() => {
-    return edoor_setting?.folio_transaction_style_credit_debit == 0 || doc.value.name == undefined;
+    return true
+    // return edoor_setting?.folio_transaction_style_credit_debit == 0 || doc.value.name == undefined;
 });
 
 const tax_rule = computed(() => {

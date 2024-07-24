@@ -82,7 +82,7 @@
             <Column header="">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.name">
-                        <ComReservationStayFolioTransactionAction :is-edit="true" :is-delete="false"
+                        <ComReservationStayFolioTransactionAction :is-edit="true" :is-delete="true"
                             :data="slotProps.data" />
                     </div>
                 </template>

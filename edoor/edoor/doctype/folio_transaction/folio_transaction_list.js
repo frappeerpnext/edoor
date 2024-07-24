@@ -11,36 +11,51 @@ frappe.listview_settings['Folio Transaction'] = {
         }
     },
 }
-if (frappe.is_mobile()){
 
-
-frappe.views.ListView = class ListView extends frappe.views.ListView {
-    get_mobile_row(left = "", doc) { 
-        
-            return frappe.render_template("mobile_list_view_row_template",{left:left,doc:doc,modified:comment_when(doc.modified,true)})           
-            
-        
-	}
-    
-    get_list_row_html(doc) {
-        
-		return this.get_mobile_row(
-			this.get_left_html(doc),
-			doc
-		);
-	}
-}
-
-// here, we'll add some css to style our new content. Because we're using media queries,
-// we can't just style inline and need to add to a style block in the dom.
-document.querySelector('style').textContent +=
-    `@media (min-width: 768px) { 
-        .list-row-container .details-row { display: none; }
+class CustomHotelRoomListView extends frappe.views.ListView {
+    render_row(row, data) {
+        // Your custom HTML structure for each row
+        row.innerHTML = `
+            <div class="list-item">
+                <div class="list-item__content">
+                    <div class="list-item__left">
+                        <b>${data.name}</b>
+                        <span class="badge badge-info">${data.name}</span>
+                    </div>
+                    <div class="list-item__right">
+                      hello
+                    </div>
+                </div>
+            </div>
+        `;
     }
-    .list-row-container .details-row {
-        color: #666;
-        padding: 0 0 0 40px !important;
-    }
-    `
-
 }
+frappe.views.ListView = CustomHotelRoomListView;
+
+// if (frappe.is_mobile()){
+//     frappe.views.ListView = class ListView extends frappe.views.ListView {
+
+//     get_mobile_row(left = "", doc) { 
+//         if (this.doctype === "Folio Transaction") {
+//             return frappe.render_template("mobile_list_view_row_template",{left:left,doc:doc,modified:comment_when(doc.modified,true)})           
+//         }
+// 	}
+//     get_list_row_html(doc) {
+      
+// 		return this.get_mobile_row(
+// 			this.get_left_html(doc),
+// 			doc
+// 		);
+// 	}
+// }
+
+// document.querySelector('style').textContent +=
+//     `@media (min-width: 768px) { 
+//         .list-row-container .details-row { display: none; }
+//     }
+//     .list-row-container .details-row {
+//         color: #666;
+//         padding: 0 0 0 40px !important;
+//     }
+//     `
+// }

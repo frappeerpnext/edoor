@@ -41,7 +41,7 @@
       <Column  headerStyle="width: 3rem" field="is_package" bodyClass="text-center p-0" headerClass="text-center p-0">
         <template  #body="slotProps" >
           <span v-if="slotProps.data?.is_package" class="package_room_rate" >
-          <ComIcon icon="iconPackage" height="20px" /> 
+          <ComIcon icon="iconPackage" height="20px" />
           </span>
         </template>
       </Column>
@@ -73,13 +73,13 @@
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
         </template>
       </Column>
-      <Column field="rate" :header="$t('Rate')" bodyStyle="text-align:right" headerStyle="text-align:right">
+      <Column field="rate" :header="$t('Rate Before Tax')" bodyStyle="text-align:right" headerStyle="text-align:right">
           <template #body="{ data }">
             <button @click="onEditRoomRate(data)" class="link_line_action1 w-12rem">
               <div class="flex justify-between w-full items-center">
               <span class="text-sm" v-if="data.is_manual_rate"> ({{ $t('Manual') }}) </span>
                                   <span class="text-sm" v-else>({{$t('Plan')}})</span>
-              <CurrencyFormat  :value="data.input_rate" class="p-0 "/>
+              <CurrencyFormat :value="data.total_rate + data.discount_amount - data.total_tax" class="p-0 "/>
             </div>
             </button>
           </template>
@@ -150,7 +150,7 @@
       </div>
       <div>
         <label>{{$t('Children')}}</label>
-        <InputNumber inputId="stacked-buttons" v-model="pax.child" showButtons :min="1" :max="100"
+        <InputNumber inputId="stacked-buttons" v-model="pax.child" showButtons :min="0" :max="100"
             class="child-adults-txt w-full" inputClass="border-noround-right"/>
       </div>
     </div>
@@ -237,6 +237,7 @@ const onSaveChangePax = () => {
         .then((doc) => {
           isLoading.value = false
           rs.getRoomRate(rs.reservationStay.name);
+          rs.selectedRoomRates = []
           onCloseOplaypanel()
         })
         .catch((error) => {

@@ -1,5 +1,18 @@
+from edoor.api.generate_room_rate import generate_forecast_revenue
 import frappe
 
+
+
+@frappe.whitelist()
+def generate_revenue_forecast_breakdown():
+    data = frappe.db.sql("select name from `tabReservation Stay` where is_active_reservation = 1",as_dict=1)
+    for d in data:
+        generate_forecast_revenue(stay_names=[d["name"]], run_commit=False)
+    frappe.db.commit()
+
+    return "done"
+    
+    
 @frappe.whitelist()
 def fix_revenue_forecast_breadown():
     # fix total sub package charger

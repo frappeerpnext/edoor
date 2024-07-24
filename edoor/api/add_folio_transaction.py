@@ -177,9 +177,12 @@ def create_folio_transaction(data):
     # chekc if reservation is still allow to edit information
     # and more
     working_day = get_working_day(data["property"])
+    old_doc = None
     if "name" in data:
         # delete all sub transaction
+        old_doc = frappe.get_doc("Folio Transaction", data["name"])
         delete_transaction(data["name"])
+        
         working_day = {
             "date_working_day":data["working_date"],
             "name":data["working_day"],
@@ -193,10 +196,10 @@ def create_folio_transaction(data):
 
 
     # get charge breakdown 
-    breakdown_data =  get_folio_transaction_breakdown(data)
-    
+    breakdown_data =  get_folio_transaction_breakdown(data)    
     # frappe.throw(str(breakdown_data))
-    add_folio_transaction_record(data, breakdown_data,working_day)
+    
+    add_folio_transaction_record(data, breakdown_data,working_day, old_doc)
     
     
     
@@ -355,11 +358,12 @@ def get_folio_transaction_breakdown(data=None):
     
     return account_code_breakdown
 
-def add_folio_transaction_record(data, breakdown_data,working_day):
+def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
     if "base_account" in breakdown_data:
         base_doc = get_folio_transaction_doc_share_property(data, breakdown_data["base_account"],working_day)
         if "name" in data:
             base_doc.flags.doc_name =data["name"]
+            base_doc.flags.old_doc = old_doc
         # frappe.throw(base_doc.name)
         base_doc.is_base_transaction = 1
         base_doc.input_amount = breakdown_data["base_account"]["input_rate"]

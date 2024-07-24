@@ -98,9 +98,6 @@ def get_reservation_stay_detail(name):
 
     total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': name})
   
-
-
-    
     return {
         "reservation":reservation,
         "total_reservation_stay": total_reservation_stay,

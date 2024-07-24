@@ -95,9 +95,9 @@
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
         </template>
       </Column>
-      <Column field="rate" :header="$t('Rate')" bodyClass="text-right" headerClass="text-right">
+      <Column field="rate" :header="$t('Rate Before Tax')" bodyClass="text-right" headerClass="text-right">
           <template #body="{ data }">
-            <CurrencyFormat @click="onEditRoomRate(data)" :value="data.input_rate" class="p-0 link_line_action1"/>
+            <CurrencyFormat @click="onEditRoomRate(data)" :value="data.total_rate + data.discount_amount - data.total_tax" class="p-0 link_line_action1"/>
           </template>
       </Column>
 
@@ -169,7 +169,7 @@
           </div>
           <div>
             <label>{{$t('Children')}}</label>
-            <InputNumber inputId="stacked-buttons" v-model="pax.child" showButtons :min="1" :max="100"
+            <InputNumber inputId="stacked-buttons" v-model="pax.child" showButtons :min="0" :max="100"
                 class="child-adults-txt w-full" inputClass="border-noround-right"/>
           </div>
         </div>
@@ -382,6 +382,7 @@ const onSaveChangePax = () => {
         .then((doc) => {
           isLoading.value = false
           rs.getRoomRate(rs.reservation.name);
+          rs.selectedRoomRates = []
           onCloseOplaypanel()
             
         })

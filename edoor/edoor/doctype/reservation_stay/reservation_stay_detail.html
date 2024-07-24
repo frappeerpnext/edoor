@@ -186,13 +186,13 @@
                                     {% for d in  data.doc.stays%}
                                     <div class="grid-row">  
                                         <div class="data-row row">
-                                            <div class="col" style="min-width:22%;">{{frappe.format(data.doc.arrival_date,{"fieldtype":"Date"})}} - {{frappe.format(data.doc.departure_date,{"fieldtype":"Date"})}}</div>
-                                            <div class="col text-center" style="max-width: 9%;">{{data.doc.room_nights}}</div>
+                                            <div class="col" style="min-width:22%;">{{frappe.format(d.arrival_date,{"fieldtype":"Date"})}} &#8594; {{frappe.format(d.departure_date,{"fieldtype":"Date"})}}</div>
+                                            <div class="col text-center" style="max-width: 9%;">{{d.room_nights}}</div>
                                             <div class="col text-center" style="max-width:12%;">{{d.room_number}}</div>
-                                            <div class="col text-right" style="max-width:12%;">{{frappe.format(data.doc.adr,{"fieldtype":"Currency"})}}</div>
-                                            <div class="col text-right" style="max-width:12%;">{{frappe.format(data.doc.room_rate_discount,{"fieldtype":"Currency"})}}</div>
-                                            <div class="col text-right" style="max-width:12%;">{{frappe.format(data.doc.total_room_rate_tax,{"fieldtype":"Currency"})}}</div>
-                                            <div class="col text-right">{{frappe.format(data.doc.total_room_rate,{"fieldtype":"Currency"})}}</div>
+                                            <div class="col text-right" style="max-width:12%;">{{frappe.format(d.adr,{"fieldtype":"Currency"})}}</div>
+                                            <div class="col text-right" style="max-width:12%;">{{frappe.format(d.room_rate_discount,{"fieldtype":"Currency"})}}</div>
+                                            <div class="col text-right" style="max-width:12%;">{{frappe.format(d.total_tax,{"fieldtype":"Currency"})}}</div>
+                                            <div class="col text-right">{{frappe.format(d.total_rate,{"fieldtype":"Currency"})}}</div>
                                         </div>
                                     </div>
                                     {%endfor%}
