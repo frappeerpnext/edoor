@@ -71,6 +71,12 @@ def fix_folio_transaction():
         update `tabFolio Transaction` set transaction_amount = total_amount - coalesce(total_sub_package_charge,0)
     """
     frappe.db.sql(sql)
+
+    # 4 update total transaction amount
+    sql ="""
+        update `tabFolio Transaction` set is_base_transaction = 1 where coalesce(parent_reference,'') = ''
+    """
+    frappe.db.sql(sql)
     
     # update reservation status to folio
     sql ="""
@@ -80,8 +86,22 @@ def fix_folio_transaction():
             a.reservation_status_color = b.status_color
 
     """
+    
+    
     frappe.db.sql(sql)
     
+    # update pax
+    sql = """
+        update `tabFolio Transaction` a 
+        inner join `tabReservation Stay` rs on rs.name = a.reservation_stay
+        Set
+            a.adult= rs.adult,
+            a.child=rs.child,
+            a.total_pax = rs.pax
+        where
+            a.account_code = '10101' and 
+            a.adult = 0 
+    """
     frappe.db.commit()
     
     
@@ -170,3 +190,18 @@ def update_reservation():
     
     return "Done"
     
+
+@frappe.whitelist()
+def update_pax_to_room_occupy():
+    sql ="""
+        update `tabRoom Occupy` a
+        join `tabReservation Stay` b on b.name = a.reservation_stay
+        SET 
+            a.adult = b.adult,
+            a.child = b.child,
+            a.pax = b.adult + b.child
+        
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
+    return "done"

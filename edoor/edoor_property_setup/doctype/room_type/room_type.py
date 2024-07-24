@@ -32,6 +32,7 @@ def update_fetch_from_fields(self):
 		data_for_updates.append({"doctype":"Folio Transaction","update_field":"room_type_alias='{}'".format(self.alias)})
 		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"room_type_alias='{}'".format(self.alias)})
 		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type_alias='{}'".format(self.alias)})
+		data_for_updates.append({"doctype":"Room","update_field":"room_type_alias='{}'".format(self.alias)})
 		
 	if data_for_updates:
 		for d in set([x["doctype"] for x in data_for_updates]):

@@ -180,6 +180,7 @@ def create_folio_transaction(data):
     old_doc = None
     if "name" in data:
         # delete all sub transaction
+        # we send old doc to view 
         old_doc = frappe.get_doc("Folio Transaction", data["name"])
         delete_transaction(data["name"])
         
