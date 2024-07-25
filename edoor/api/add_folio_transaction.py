@@ -725,7 +725,7 @@ def update_folio_transaction_note(doc,base_doc=None):
     elif doc.source_transaction_type and  doc.source_transaction_number:
         if doc.note:
             doc.note = doc.note + "\n"
-        doc.note = (doc.note or "") + _("{transaction_type} transfer from {source_transaction_type} #: {source_transaction_number}, Reference Source Transaction Number: {reference_folio_transaction}, Room: {room_number}".format(transaction_type=doc.transaction_type, source_transaction_type = doc.source_transaction_type,source_transaction_number=doc.source_transaction_number, reference_folio_transaction = doc.reference_folio_transaction,room_number=base_doc.room_number))
+        doc.note = (doc.note or "") + _("Transfer from {source_transaction_type} #: {source_transaction_number}, Room: {room_number}".format(transaction_type=doc.transaction_type, source_transaction_type = doc.source_transaction_type,source_transaction_number=doc.source_transaction_number, reference_folio_transaction = doc.reference_folio_transaction,room_number=base_doc.room_number))
         
 
 def update_transaction_type_summary(data):

@@ -1,4 +1,4 @@
-<template lang="">
+<template lang=""  >
     <div>
         <ComHeader>
             <template #start>
@@ -74,11 +74,11 @@
             @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)" @onRefresh="onRefresh()" />
     </div>
 </div>
-<div class="pb-5" style="max-width: 100%;">
+<div class="pb-5" style="max-width: 100%;" >
     <div id="fron__desk-fixed-top">
         <div :class=" ( !isMobile && showSummary) ? 'flex gap-2' : ''">
             <div v-if="(!isMobile && showSummary)" class="relative" style="width:280px">
-                <div>
+                <div >
                     <div class="w-full">
                         <ComPanel title="Today Guest" class="mb-3 pb-3">
                             <div>
@@ -938,7 +938,7 @@ function onFilterResource(f) {
 
 const onSearch = debouncer((key) => {
     getEvent();
-}, 700);
+}, 1000);
 
 
 function getTotalNote() {
@@ -961,7 +961,7 @@ function debouncer(fn, delay) {
 }
 
 function getEvent() {
-
+    
     gv.loading = true
     filter.value.date = moment.utc(calendarOptions.visibleRange.start).toDate()
     getApi('frontdesk.get_room_chart_calendar_event', {

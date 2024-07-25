@@ -1627,10 +1627,14 @@ def change_stay(data):
             update_reservation_stay_room_rate_after_move(data=data,stay_doc= doc)
             
         # update room_type and room type to reservatio reservation room rate
-        
-        room_type_id = frappe.get_cached_value("Room", data["room_id"], "room_type_id") 
-        room_type = frappe.get_cached_value("Room", data["room_id"], "room_type") 
-        room_type_alias = frappe.get_cached_value("Room", data["room_id"], "room_type_alias") 
+        room_type_id = data["room_type_id"]
+        if 'room_id' in data:
+            room_type_id = frappe.get_cached_value("Room", data["room_id"], "room_type_id") 
+            room_type = frappe.get_cached_value("Room", data["room_id"], "room_type") 
+            room_type_alias = frappe.get_cached_value("Room", data["room_id"], "room_type_alias") 
+        else:
+            room_type = frappe.get_cached_value("Room Type", room_type_id, "room_type")
+            room_type_alias = frappe.get_cached_value("Room Type", room_type_id, "room_type_alias")
         
      
         sql ="""

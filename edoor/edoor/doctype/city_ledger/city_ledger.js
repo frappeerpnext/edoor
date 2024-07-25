@@ -58,7 +58,7 @@ function showCityLedgerTransaction (frm) {
             el.modified = prettyDate(date) 
         });
 
-        let html = frappe.render_template("city_ledger_transaction", {data:result});
+        let html = frappe.render_template("city_ledger_transaction", {data:result,dataLength:result.length});
         $(frm.fields_dict["transaction_detail"].wrapper).html(html);
 
         
