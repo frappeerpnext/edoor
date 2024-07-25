@@ -2938,8 +2938,8 @@ def change_pax(data , room_rates = None):
     
     # update room rate
     if room_rates is None:
-        room_rates = frappe.db.sql("select name, rate_type, tax_rule, rate_include_tax,tax_1_rate, tax_2_rate, tax_3_rate, input_rate,is_package, package_charge_data,discount,discount_type,discount_amount from `tabReservation Room Rate` where reservation_stay=%(reservation_stay)s and is_manual_change_pax=0",{"reservation_stay":stay.name},as_dict=1)
-
+        room_rates = frappe.db.sql("select name, rate_type, tax_rule, rate_include_tax,tax_1_rate, tax_2_rate, tax_3_rate, input_rate,is_package, package_charge_data,discount,discount_type,discount_amount from `tabReservation Room Rate` where reservation_stay=%(reservation_stay)s",{"reservation_stay":stay.name},as_dict=1)
+    working_day = get_working_day(stay.property)
     for r in room_rates:
          
         rate_breakdown = get_room_rate_breakdown(json.dumps({
@@ -2960,14 +2960,22 @@ def change_pax(data , room_rates = None):
         }))
         
         room_rate_doc = frappe.get_doc("Reservation Room Rate", r["name"])
-        room_rate_doc.total_tax =rate_breakdown["total_tax"]
+        
         room_rate_doc.total_room_charge = rate_breakdown["total_room_charge"]
         room_rate_doc.total_other_charge = rate_breakdown["total_other_charge"]
         room_rate_doc.total_rate = rate_breakdown["total_amount"]
         room_rate_doc.discount_amount= rate_breakdown["discount_amount"]
-        room_rate_doc.adult = stay.adult
-        room_rate_doc.child = stay.child
-        room_rate_doc.is_manual_change_pax = 1
+        if stay.reservation_status =="In-house":
+            if  room_rate_doc.date>working_day["date_working_day"]:
+                room_rate_doc.adult = stay.adult
+                room_rate_doc.child = stay.child
+                room_rate_doc.total_tax =rate_breakdown["total_tax"]
+        else:
+          
+            room_rate_doc.adult = stay.adult
+            room_rate_doc.child = stay.child
+            room_rate_doc.total_tax =rate_breakdown["total_tax"]
+            
         room_rate_doc.flags.ignore_validate = True
         room_rate_doc.flags.ignore_on_update = True
         room_rate_doc.save()

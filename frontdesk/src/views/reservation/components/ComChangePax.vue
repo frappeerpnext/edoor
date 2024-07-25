@@ -1,6 +1,6 @@
 <template>
     <ComOverlayPanelContent title="Change Pax" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
-        
+        <Message v-if="stay.reservation_status=='In-house'">{{ $t("Change pax is affect to future stay only") }}</Message>
         <div class="wp-number-cus flex gap-3 my-2">
         <div class="flex flex-col">
         <label>{{$t('Adults')}}</label>
@@ -21,6 +21,7 @@
 import { ref, inject,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 import {i18n} from '@/i18n';
+import Message from "primevue/message";
 const { t: $t } = i18n.global;
 const emit = defineEmits(['onClose'])
 const rs = inject('$reservation_stay');
