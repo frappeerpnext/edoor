@@ -3644,10 +3644,21 @@ def get_room_tax_summary(reservation=None, reservation_stay=None):
         return frappe.db.sql(sql,as_dict=1)
     else:
         sql="""
-            SELECT account_category as tax_name , SUM(CASE WHEN type = 'debit' THEN amount WHEN type = 'credit' THEN -amount END) tax_amount
-            FROM `tabRevenue Forecast Breakdown`
-            WHERE reservation_stay = '{0}' and account_group_name = 'Tax' ORDER BY sort_order ASC
-        """.format(reservation_stay)
+          SELECT 
+    a.account_name AS tax_name, 
+    SUM(CASE WHEN rfb.type = 'debit' THEN rfb.total_amount WHEN rfb.type = 'credit' THEN -rfb.total_amount END) AS tax_amount
+FROM 
+    `tabRevenue Forecast Breakdown` rfb
+JOIN 
+    `tabAccount Code` a ON rfb.account_code = a.name
+WHERE 
+    rfb.reservation_stay = '{0}' 
+    AND rfb.account_group_name = 'Tax' 
+GROUP BY 
+    rfb.account_code, a.name 
+ORDER BY 
+    rfb.sort_order ASC
+       """.format(reservation_stay)
         return frappe.db.sql(sql,as_dict=1)
 
 @frappe.whitelist(methods="POST")

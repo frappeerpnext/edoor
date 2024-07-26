@@ -154,35 +154,23 @@ frappe.ui.form.on("Folio Transaction", {
 
 
 function updateTransactionList(frm) {
-  if (!frm.doc.is_package) {
-    alert(1)
-    const html = frappe.render_template("folio_transaction_list", frm);
+
+  frm.call("get_package_data").then((r) => {
+    //get package list
+    const html = frappe.render_template("folio_transaction_list", {data:r.message.transaction_list, doc:null});
     $(frm.fields_dict["item_list"].wrapper).html(html);
     frm.refresh_field("item_list");
 
+    //get package data summary
     const html_summary = frappe.render_template(
       "folio_transaction_summary_list",
-      frm
+      {summary:r.message.summary, total_amount:frm.doc, summaryLength:r.message.summary.length}
     );
+    
     $(frm.fields_dict["summary_list"].wrapper).html(html_summary);
     frm.refresh_field("summary_list");
-  } else { 
-    alert(2)
-    frm.call("get_package_data").then((r) => {
-      //get package list
-      const html = frappe.render_template("folio_transaction_list", {data:r.message.transaction_list, doc:null});
-      $(frm.fields_dict["item_list"].wrapper).html(html);
-      frm.refresh_field("item_list");
+  });
 
-      //get package data summary
-      const html_summary = frappe.render_template(
-        "folio_transaction_summary_list",
-        {summary:r.message.summary, doc:null, total_amount:frm.doc}
-      );
-      $(frm.fields_dict["summary_list"].wrapper).html(html_summary);
-      frm.refresh_field("summary_list");
-    });
-  }
 } 
 
 function onchangeURL(frm) {

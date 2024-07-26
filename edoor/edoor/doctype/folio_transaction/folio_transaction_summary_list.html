@@ -3,9 +3,11 @@
         <div class="row">
             <div class="col">{{s.account_code}} - {{s.account_name}}</div>
             <div class="col text-right"><strong>{{frappe.format(s.amount,{"fieldtype":"Currency"})}}</strong></div>
-        </div>
-        <hr/>
+        </div> 
     {% endfor %}
+    {% if summaryLength > 0 %}
+        <hr/>
+    {% endif %}
     {% if total_amount.total_amount %}
     <div class="row">
         <div class="col">Total Amount</div>

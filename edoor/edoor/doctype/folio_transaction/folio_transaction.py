@@ -199,35 +199,35 @@ class FolioTransaction(Document):
 
 	@frappe.whitelist()
 	def get_package_data(self):
-		if self.is_package:
-			sql ="""
-				select 
-					name,
-					account_code,
-					account_name,
-					quantity,
-					input_amount,
-					price,
-					amount,
-					note,
-					type
-				from `tabFolio Transaction`
-				where
-					name = %(name)s  or 
-					parent_reference = %(name)s
-			"""
-			
+		# if self.is_package:
+		sql ="""
+			select 
+				name,
+				account_code,
+				account_name,
+				quantity,
+				input_amount,
+				price,
+				amount,
+				note,
+				type
+			from `tabFolio Transaction`
+			where
+				name = %(name)s  or 
+				parent_reference = %(name)s
+		"""
+		
 
-			transaction_list = frappe.db.sql(sql,{"name":self.name},as_dict=1)
-			# get sub parent reference 
-			
-			summary_list =frappe.db.sql( "select account_code,account_name, sum(amount*if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where parent_reference in %(parent_references)s group by account_code,account_name order by account_category_sort_order",
-                               {"parent_references":[d["name"] for d in transaction_list]},as_dict=1)
-   
-			return {
-				"transaction_list":[d for d in transaction_list if d["name"]==self.name],
-				"summary":summary_list
-			}
+		transaction_list = frappe.db.sql(sql,{"name":self.name},as_dict=1)
+		# get sub parent reference 
+		
+		summary_list =frappe.db.sql( "select account_code,account_name, sum(amount*if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where parent_reference in %(parent_references)s group by account_code,account_name order by account_category_sort_order",
+							{"parent_references":[d["name"] for d in transaction_list]},as_dict=1)
+
+		return {
+			"transaction_list":[d for d in transaction_list if d["name"]==self.name],
+			"summary":summary_list
+		}
 	
 def validate_reservation_folio_posting(self):
 	if not self.reservation_stay:

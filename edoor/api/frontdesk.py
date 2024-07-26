@@ -1025,7 +1025,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount as total_room_rate,
             reservation_status,
             room_rate_discount,
             status_color
@@ -1063,7 +1063,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount as total_room_rate,
             reservation_status,
             status_color,
             room_rate_discount
@@ -1100,7 +1100,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount as total_room_rate,
             reservation_status,
             status_color,
             room_rate_discount
@@ -1136,7 +1136,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount as total_room_rate,
             reservation_status,
             status_color
         from `tabReservation Stay`
@@ -1172,7 +1172,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount as total_room_rate,
             reservation_status,
             pickup_time as time,
             arrival_mode as mode,
@@ -1215,7 +1215,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount as total_room_rate,
             reservation_status,
             drop_off_time as time,
             departure_mode as mode,
@@ -1261,7 +1261,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount as total_room_rate,
             reservation_status,
             status_color,
             cancelled_date,
@@ -1300,7 +1300,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount as total_room_rate,
             reservation_status,
             status_color,
             cancelled_date,
@@ -1498,7 +1498,7 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
         d["checked_out"] = sum([r["checked_out"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
         d["no_show"] = sum([r["no_show"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
         d["void"] = sum([r["void"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
-        d["cancelled"] = sum([r["cancelled"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["cancelled"] = sum([(r["cancelled"] if r["cancelled"] is not None else 0) for r in occupy_data if r["room_type_id"] == d["room_type_id"]])
         d["block"] = sum([r["block"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
 
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
