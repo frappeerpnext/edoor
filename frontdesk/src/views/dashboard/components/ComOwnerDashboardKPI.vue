@@ -60,6 +60,7 @@ const doc = call.get('edoor.api.frontdesk.get_owner_dashboard_current_revenue_da
         .then((result) => {
             data.value = result.message
             loading.value = false 
+            console.log(JSON.parse('this' + localStorage.getItem("edoor_property")).name)
         }).catch((error) => {
             loading.value = false 
   });

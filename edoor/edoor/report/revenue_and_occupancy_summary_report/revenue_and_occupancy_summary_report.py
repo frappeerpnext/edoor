@@ -58,7 +58,7 @@ def execute(filters=None):
 	elif filters.row_group == "Room Type":
 		report =  report_by_room_type.get_report(filters, report_config)
 
-	message = "This is report is for past date transaction"
+	message = _("This is report is for past date transaction")
 	return report["columns"], report["data"],message,report["report_chart"], report["report_summary"],True
 
  

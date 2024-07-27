@@ -4,6 +4,7 @@ import copy
 from edoor.edoor.report.revenue_and_occupancy_summary_report.utils import get_report_chart,get_report_summary, get_occupy_data_filters, get_folio_transaction_filters,get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data,get_parent_row_group_label,get_report_fields
 from edoor.api.frontdesk import get_working_day
 import frappe
+from frappe import _
 
 def get_report(filters, report_config):
     report_data = get_report_data(filters,report_config)
@@ -23,7 +24,7 @@ def get_report_columns(filters,report_config):
 
     for g in report_fields:
         if g.show_in_report==1:
-            columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
+            columns.append({"fieldname":g.fieldname,"label":_(g.label),"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
         
     return columns
 

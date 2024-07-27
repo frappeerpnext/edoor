@@ -39,6 +39,7 @@ def get_master_folio(reservation,create_if_not_exists = False,reopen_folio_if_cl
         return create_folio(frappe.get_doc("Reservation Stay",master_stay))
     return None
 
+
 @frappe.whitelist()
 def update_reservation_folios(folio_names,run_commit=True):
     if folio_names:
@@ -63,6 +64,72 @@ def update_reservation_folios(folio_names,run_commit=True):
                     f.balance = a.debit - a.credit
                     """ 
             frappe.db.sql(sql,{"folio_names":folio_names})
+            if run_commit:
+                frappe.db.commit()
+
+@frappe.whitelist()
+def update_reservation_stay_credit_debit(stay_names,run_commit=True):
+    if stay_names:
+            sql = """
+                update `tabReservation Stay` s
+                join (
+                    select 
+                            reservation_stay,
+                            sum(if(type='Debit',amount,0)) as debit,
+                            sum(if(type='Credit',amount,0)) as credit
+                        from `tabFolio Transaction` 
+                        where
+                            transaction_type = 'Reservation Folio' and 
+                            reservation_stay in %(stay_names)s
+                        group by
+                            reservation_stay
+                    ) a 
+                on a.reservation_stay = s.name
+                SET 
+                    s.total_credit = a.credit,
+                    s.total_debit = a.debit,
+                    s.balance = a.debit - a.credit
+                    """ 
+            frappe.db.sql(sql,{"stay_names":stay_names})
+            
+            sql = """
+                update `tabReservation Stay Room` r
+                JOIN `tabReservation Stay` s on s.name = r.parent
+                SET    
+                    r.total_credit = s.total_credit,
+                    r.total_debit = s.total_debit,
+                    r.balance = s.balance
+                where
+                    s.name in %(stay_names)s
+                """ 
+            frappe.db.sql(sql,{"stay_names":stay_names})
+            if run_commit:
+                frappe.db.commit()
+
+@frappe.whitelist()
+def update_reservation_credit_debit(reservaiton_names,run_commit=True):
+    if reservaiton_names:
+            sql = """
+                update `tabReservation` s
+                join (
+                    select 
+                            reservation,
+                            sum(if(type='Debit',amount,0)) as debit,
+                            sum(if(type='Credit',amount,0)) as credit
+                        from `tabFolio Transaction` 
+                        where
+                            transaction_type = 'Reservation Folio' and 
+                            reservation in %(reservaiton_names)s
+                        group by
+                            reservation
+                    ) a 
+                on a.reservation = s.name
+                SET 
+                    s.total_credit = a.credit,
+                    s.total_debit = a.debit,
+                    s.balance = a.debit - a.credit
+                    """ 
+            frappe.db.sql(sql,{"reservaiton_names":reservaiton_names})
             if run_commit:
                 frappe.db.commit()
     
@@ -398,13 +465,14 @@ def get_reservation_stay_list_infor(stay_names):
 
 
 def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_commit=True):
-    get_master_folio_name_cache.cache_clear()
     
+    get_master_folio_name_cache.cache_clear()
     folio_names=[]
     # get stay names 
     room_rate_datas = frappe.db.sql("""select 
                                     a.name,
-                                    a.reservation_stay
+                                    a.reservation_stay,
+                                    a.reservation
                                 from `tabReservation Room Rate` a
                                 inner join `tabReservation Stay` b on b.name = a.reservation_stay
                                 where 
@@ -463,6 +531,9 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
         
         # update debit, credit and balance to reservation folio 
         update_reservation_folios(folio_names=folio_names ,run_commit=False)
+        # update credit debit, balace to reservation stay
+        update_reservation_stay_credit_debit(stay_names = stay_names, run_commit=False)
+        update_reservation_credit_debit(reservaiton_names=set([d["reservation"] for d in room_rate_datas]),run_commit=False)
         
         if run_commit:
             frappe.db.commit()

@@ -994,6 +994,23 @@ def package_base_account_code_charge_breakdown(room_rate_data):
 
 @frappe.whitelist()
 def get_room_rate_calculation(room_rate_data=None,rate=100):
+    if not room_rate_data:
+        room_rate_data = {
+            "rate_type": "Daily Rate No-Tax",
+            "tax_rule": "",
+            "rate_include_tax": "No",
+            "tax_1_rate": 0,
+            "tax_2_rate": 0,
+            "tax_3_rate": 0,
+            "input_rate": 400,
+            "discount_type": "Percent",
+            "discount": 15,
+            "adult": 1,
+            "child": 0,
+            "is_package": 0,
+            "package_charge_data": "[]"
+            }
+                    
     data = []
     if not room_rate_data:
         room_rate_data ={
@@ -1033,6 +1050,7 @@ def get_room_rate_calculation(room_rate_data=None,rate=100):
             d["discount_amount"] = d["amount"] * room_rate_data["discount"] 
     # return account_codes
     for acc in account_codes:
+         
         tax_data  =  get_tax_breakdown(
                 tax_rule=acc["tax_rule"],
                 rate_include_tax=acc["rate_include_tax"], 

@@ -411,14 +411,24 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
     if not end_date:
         end_date = working_date
     day_end = get_day_end_summary_report(property, end_date)
-    revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as room_revenue 
+    today_revenue_sql = """select 
+                sum(amount * if(type='Debit',1,-1)) as today_revenue 
             from `tabFolio Transaction` 
             where 
             property=%(property)s and posting_date = %(date)s and
+            is_base_transaction=1 and
+            account_group_name in ('Charge')
+        """
+    today_revenue = frappe.db.sql(today_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["today_revenue"] or 0
+    room_revenue_sql = """select 
+                sum(total_amount * if(type='Debit',1,-1)) as room_revenue 
+            from `tabFolio Transaction` 
+            where 
+            property=%(property)s and posting_date = %(date)s and
+            is_base_transaction=1 and 
             flash_report_revenue_group in ('Room Charge')
         """
-    today_revenue = frappe.db.sql(revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["room_revenue"] or 0
+    room_revenue = frappe.db.sql(room_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["room_revenue"] or 0
     other_room_revenue_sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as other_room_revenue 
             from `tabFolio Transaction` 
@@ -459,7 +469,7 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
     if calculate_room_occupancy_include_room_block==0:
         total_rooms = total_rooms - day_end['room_block'] 
-    revpar = (today_revenue + today_room_other_revenue)/(1 if total_rooms==0 else total_rooms)
+    revpar = (room_revenue + today_room_other_revenue)/(1 if total_rooms==0 else total_rooms)
     exp_revpar = (today_exp_revenue)/(1 if total_rooms==0 else total_rooms)
     ##Get MTD Data
 
@@ -532,8 +542,8 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
     else:
         mtd_adr = (mtd_room_revenue) / ((1 if room_sold==0 else room_sold) - (complimentary + house_use))
     #occupancy
-    sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}'".format(property, start_date,end_date)
-    mtd_total_room= frappe.db.sql(sql,as_dict=1)[0]["total_room"] or 0
+    sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between '{}' and '{}'".format( start_date,end_date)
+    mtd_total_room= frappe.db.sql(sql,{'property':property},as_dict=1)[0]["total_room"] or 0
     total_room = 0
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
     if calculate_room_occupancy_include_room_block==0:
@@ -543,7 +553,8 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
     
     return {
         "working_date":working_date,
-        "room_revenue": today_revenue,
+        "room_revenue": room_revenue,
+        "today_revenue":today_revenue,
         "adr":day_end['adr'],
         "revpar":revpar,
         "other_room_revenue": today_room_other_revenue,
@@ -1776,10 +1787,10 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
         if duration_type=="Daily":
             total_rooms_list = frappe.db.sql("select date ,sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between '{}' and '{}' group by date".format( start_date,end_date),{"property":property}, as_dict=1)
         else:
-            total_rooms_list = frappe.db.sql("select date_format(date,'%M') as date ,sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}' group by date_format(date,'%M')".format(property, start_date,end_date), as_dict=1)
+            total_rooms_list = frappe.db.sql("select date_format(date,'%M') as date ,sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between '{}' and '{}' group by date_format(date,'%M')".format( start_date,end_date),{"property":property}, as_dict=1)
 
     elif view_chart_by == "Business Source":
-        total_rooms_list =  frappe.db.sql("select sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}'".format(property, start_date,end_date), as_dict=1)
+        total_rooms_list =  frappe.db.sql("select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between '{}' and '{}'".format(start_date,end_date), {"property":property}, as_dict=1)
          
 
 
@@ -2708,6 +2719,8 @@ def run_night_audit(property, working_day):
     old_working_day_data["cashier_shift"] = {"name": last_shift[0]["name"]}
     
     post_charge_to_folio_afer_after_run_night_audit(property=property, working_day=old_working_day_data)  
+    
+    
     
     # update_room_status(new_working_day)
     frappe.enqueue("edoor.api.frontdesk.update_room_status", queue='long', working_day=new_working_day)

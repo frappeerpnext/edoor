@@ -85,7 +85,7 @@ def get_tax_breakdown(tax_rule,rate_include_tax="Yes", tax_1_rate=0, tax_2_rate=
         data["total_tax"] = (data["tax_1_amount"] or 0 ) + (data["tax_2_amount"] or 0 ) + (data["tax_3_amount"] or 0 ) 
         data["total_amount"] = data["rate"] - discount_amount + data["total_tax"] 
       
-        data["base_rate"] = data["rate"] /quantity
+        data["base_rate"] = data["rate"] / quantity
         
         return data
     else:
@@ -101,6 +101,8 @@ def get_tax_breakdown(tax_rule,rate_include_tax="Yes", tax_1_rate=0, tax_2_rate=
             "tax_2_name":"",
             "tax_3_name":"",
             "rate":rate,
-            "total_amount":rate,
+            "base_rate":rate,
+            "total_amount":rate- discount_amount,
+          
             "tax_rule_data":"{}"
         }

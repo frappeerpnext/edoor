@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 
 def get_room_occupy_group_by_field(filters):
     if filters.parent_row_group:
@@ -152,7 +153,7 @@ def get_report_summary( filters, total_record,report_config):
 	
 	for f in report_fields :
 			if f.show_in_summary==1:
-				report_summary.append({"label":f.label,"value":frappe.format_value(total_record[f.fieldname],f.fieldtype),"indicator":f.summary_indicator or "blue"})
+				report_summary.append({"label":_(f.label),"value":frappe.format_value(total_record[f.fieldname],f.fieldtype),"indicator":f.summary_indicator or "blue"})
 
 	return report_summary
 
@@ -230,4 +231,5 @@ def get_report_chart(filters,report_data,report_config):
 		'valuesOverPoints':1,
 		"axisOptions": {"xIsSeries": 1}
 	}
+	frappe.throw(str(chart))
 	return chart

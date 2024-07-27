@@ -1,7 +1,7 @@
 <template>
   <ComOwnerContentTitle label="Recent Transaction">  
     <div class="flex-col flex" >
-  
+  HIIIIIIIIIIIIIIIIIIIII
   <Button @click="onFilterFolioTransaction(btn)" v-for="(btn, index) in ['All','Reservation Folio','Desk Folio','Deposit Ledger']" :key="index">
     {{$t(btn)}}
   </Button>
@@ -77,6 +77,7 @@
   const columns = ref([
     { fieldname: 'name', label: 'Transaction #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
     { fieldname: 'room_number', label: 'Rooms', header_class: "text-center", default: true },
+    { fieldname: 'transaction_type', label: 'transaction_type', default: true ,header_class: "transaction_type"},
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
     { fieldname: 'amount', label: 'Amount', header_class: "text-right", fieldtype: "Currency", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
@@ -103,22 +104,32 @@
     loadData();
   }, 500);
   
- 
-  
-  function loadData() {
-    loading.value = true
-    let filters = [
+     let filters = [
       ["property", "=", property.name],
       ["parent_reference","is","not set"]
     ]
-    
-    if (filter.value?.selected_room_id) {
-      filters.push(["room_id", '=', filter.value.selected_room_id])
-    }
-    if (filter.value?.selected_room_type) {
-      filters.push(["room_type_id", '=', filter.value.selected_room_type])
-    }
+    function onFilterFolioTransaction(transaction_type) {
+      alert(transaction_type)
+  if (transaction_type != "All") { 
+    filters = [
+      ["property", "=", property.name],
+      ["parent_reference","is","not set"]
+    ]  
+  filter.value.transaction_type = transaction_type
+}else{
+  filters = [
+      ["property", "=", property.name],
+      ["parent_reference","is","not set"]
+    ]  
+}
+loadData();
+    }  
+  function loadData() {
+    loading.value = true
 
+    if (filter.value?.transaction_type){
+      filters.push(["transaction_type", '=', filter.value.transaction_type])
+    }
   
   
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
