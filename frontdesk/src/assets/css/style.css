@@ -71,6 +71,19 @@ html {
 .bg-sysdate{
     background: #4d40ca !important;
 }
+.recent_transaction_tap{
+    background: none;
+    color: #000;
+    border-radius: 0;
+    border: 1px  solid #7f7f7f !important;
+}
+.recent_transaction_tap:hover{
+    background: #6d9afb !important;
+}
+.active_recent_transaction{
+    background: #6d9afb !important;
+    color:white !important;
+}
 .bg-border-color-teal {
     border-color: var(--bg-color-teal);
 }

@@ -1,5 +1,6 @@
 <template>
-    <ComOwnerContentTitle label="Payment chart">         
+    <ComOwnerContentTitle label="Payment">       
+        <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets > 0">  
         <div class="grid">
         <div class="col-6 pt-6">
             <div v-if="loading" class="flex w-full justify-content-center">
@@ -23,20 +24,28 @@
             </td>
             <td class="text-center border-left-1">  <CurrencyFormat :value="payment.values" /></td>
         </tr>
+        <tr>
+            <th class="text-right border-1 pe-2">Total</th>
+            <th class="border-1"><CurrencyFormat :value="totalValues" /></th>
+        </tr>
     </table>
 </div>
 </div>  
 </div>
+</ComPlaceholder>
 </ComOwnerContentTitle>    
 </template>
 <script setup>
-import {  ref, onMounted,getApi } from '@/plugin'
+import {  ref, onMounted,getApi,computed } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 const loading = ref(true)
  
  
 const data = ref({})
+const totalValues = computed(() => {
+  return data.value.datasets.reduce((sum, payment) => sum + payment.values, 0);
+});
 function renderdata() {
     loading.value = true 
 const doc = getApi('frontdesk.get_paymet_chart_data', {

@@ -1,5 +1,6 @@
 <template>
     <ComOwnerContentTitle label="F&B">    
+        <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data.length > 0">
     <div class="grid ">
   <div class="col-6 pt-6 relative">
     <Skeleton v-if="loading" width="100%" height="20rem"></Skeleton> 
@@ -25,7 +26,7 @@
 </div>
     </div>
     </div>
-   
+</ComPlaceholder>
 </ComOwnerContentTitle>    
 </template>
 <script setup>

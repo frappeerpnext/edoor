@@ -1,10 +1,15 @@
 <template>
   <ComOwnerContentTitle label="Recent Transaction">  
     <div class="flex-col flex" >
-  HIIIIIIIIIIIIIIIIIIIII
-  <Button @click="onFilterFolioTransaction(btn)" v-for="(btn, index) in ['All','Reservation Folio','Desk Folio','Deposit Ledger']" :key="index">
+  <div class="px-2">
+ <Button class="col px-3 border-0 mb-4 mt-2 p-tabview-nav-link recent_transaction_tap" :class="{'active_recent_transaction': activeIndex === index}" @click="onFilterFolioTransaction(btn,index)" v-for="(btn, index) in ['All','Reservation Folio','Desk Folio','Deposit Ledger']" :key="index">
+  
     {{$t(btn)}}
+  
+  
   </Button>
+  </div>
+ 
 
         <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
           <DataTable scrollable  class="res_list_scroll"    showGridlines
@@ -72,12 +77,13 @@
   const filter = ref({})
   const loading = ref(false)
   const selectedColumns = ref([])
+  const activeIndex = ref(0);
   const property = window.property
   const isMobile = ref(window.isMobile) 
   const columns = ref([
     { fieldname: 'name', label: 'Transaction #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
     { fieldname: 'room_number', label: 'Rooms', header_class: "text-center", default: true },
-    { fieldname: 'transaction_type', label: 'transaction_type', default: true ,header_class: "transaction_type"},
+    { fieldname: 'transaction_type', label: 'Transaction Type', default: true ,header_class: "transaction_type"},
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
     { fieldname: 'amount', label: 'Amount', header_class: "text-right", fieldtype: "Currency", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
@@ -108,21 +114,23 @@
       ["property", "=", property.name],
       ["parent_reference","is","not set"]
     ]
-    function onFilterFolioTransaction(transaction_type) {
-      alert(transaction_type)
+    function onFilterFolioTransaction(transaction_type , index) {
+      activeIndex.value = index;
   if (transaction_type != "All") { 
+
     filters = [
       ["property", "=", property.name],
       ["parent_reference","is","not set"]
     ]  
   filter.value.transaction_type = transaction_type
 }else{
-  filters = [
+    filter.value.transaction_type = ''
+    filters = [
       ["property", "=", property.name],
       ["parent_reference","is","not set"]
     ]  
 }
-loadData();
+  loadData();
     }  
   function loadData() {
     loading.value = true

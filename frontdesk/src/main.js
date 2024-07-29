@@ -44,6 +44,11 @@ import shortkey from 'vue3-shortkey'
 import {getRoutes} from './router';
 import { i18n } from '@/i18n';
 
+import "vue3-openlayers/styles.css";
+
+import OpenLayersMap from "vue3-openlayers";
+
+
 const app = createApp(App);
 
 
@@ -151,6 +156,8 @@ import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import VueSortable from "vue3-sortablejs";
 
+ 
+
 app.config.globalProperties.$t = i18n.global.t;
 
 // use components //
@@ -257,7 +264,7 @@ app.use(ConfirmationService);
 app.use(VueSortable);
 app.use(shortkey)
 app.use(Vue3DraggableResizable)
- 
+app.use(OpenLayersMap);
 
 app.use(
 	VueTippy,

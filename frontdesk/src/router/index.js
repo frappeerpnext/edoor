@@ -5,6 +5,8 @@ import Dashboard from "../views/dashboard/Dashboard.vue";
 import OwnerDashboard from "../views/dashboard/OwnerDashboard.vue";
 import Frontdesk from "../views/frontdesk/Frontdesk.vue"
 import FloorPlanView from "../views/frontdesk/FloorPlanView.vue"
+import FrontdeskMapView from "../views/frontdesk/FrontdeskMapView.vue"
+
 import ReservationList from "../views/frontdesk/ReservationList.vue";
 import ReservationStayList from "@/views/frontdesk/ReservationStayList.vue";
 import Housekeeping from "../views/housekeeping/Housekeeping.vue";
@@ -39,6 +41,7 @@ import CashierShift from "@/views/cashier_shift/CashierShift.vue";
 import PayableLedger from "@/views/payable_ledger/PayableLedger.vue";
 import Vendor from "@/views/vendor/Vendor.vue";
 import GuestFolio from "@/views/guest_ledger/GuestFolio.vue";
+
 import Test from "@/views/test.vue";
 
 import authRoutes from './auth';
@@ -51,6 +54,7 @@ let routes = [
   { path: "/frontdesk/owner-dashboard", name: "OwnerDashboard", component: OwnerDashboard, meta: { layout: 'main_layout',title: 'Owner Dashboard' } },
   { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Front Desk - Room Chart' } },
   { path: "/frontdesk/floorplan", name: "FloorPlanView", component: FloorPlanView, meta: { layout: 'main_layout', title: 'Front Desk - Floor Plan' } },
+  { path: "/frontdesk/map-view", name: "FrontdeskMapView", component:FrontdeskMapView, meta: { layout: 'main_layout', title: 'Front Desk - Map View' } },
   { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
   { path: "/frontdesk/inventory", name: "RoomInventory", component: RoomInventory, meta: { layout: 'main_layout', title: 'Room Inventory' } },
 
@@ -90,6 +94,7 @@ let routes = [
   { path: "/frontdesk/payable-ledger", name: "PayableLedger", component:PayableLedger, meta: { layout: 'payable_ledger',title:"Payable Ledger" } },
   { path: "/frontdesk/vendor", name: "Vendor", component:Vendor, meta: { layout: 'vendor',title:"Vendor" } },
   { path: "/frontdesk/guest-folio", name: "GuestFolio", component:GuestFolio, meta: { layout: 'guest_folio',title:"Guest Folio" } },
+  
   { path: "/frontdesk/test", name: "Test", component:Test, meta: { layout: 'main_layout',title:"Test" } },
  
   ...authRoutes,

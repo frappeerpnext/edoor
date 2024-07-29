@@ -25,6 +25,9 @@
     "linq": "^4.0.1",
     "mustache": "^4.2.0",
     "number-format.js": "^2.0.9",
+    "ol": "^10.0.0",
+    "ol-contextmenu": "^5.4.0",
+    "ol-ext": "^4.0.21",
     "pm2": "^5.3.0",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
@@ -43,6 +46,7 @@
     "vue-web-cam": "^1.9.0",
     "vue2-timeago": "^3.0.2",
     "vue3-draggable-resizable": "^1.6.5",
+    "vue3-openlayers": "^10.0.2",
     "vue3-shortkey": "^4.0.0",
     "vue3-sortablejs": "^1.0.7"
   },

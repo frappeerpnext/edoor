@@ -412,21 +412,20 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
         end_date = working_date
     day_end = get_day_end_summary_report(property, end_date)
     today_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as today_revenue 
+                sum(transaction_amount * if(type='Debit',1,-1)) as today_revenue 
             from `tabFolio Transaction` 
             where 
             property=%(property)s and posting_date = %(date)s and
-            is_base_transaction=1 and
             account_group_name in ('Charge')
         """
     today_revenue = frappe.db.sql(today_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["today_revenue"] or 0
     room_revenue_sql = """select 
-                sum(total_amount * if(type='Debit',1,-1)) as room_revenue 
+                sum(transaction_amount * if(type='Debit',1,-1)) as room_revenue 
             from `tabFolio Transaction` 
             where 
             property=%(property)s and posting_date = %(date)s and
-            is_base_transaction=1 and 
-            flash_report_revenue_group in ('Room Charge')
+            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') and
+            is_base_transaction=1
         """
     room_revenue = frappe.db.sql(room_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["room_revenue"] or 0
     other_room_revenue_sql = """select 
@@ -475,11 +474,12 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
 
     start_date = getdate(end_date).replace(day=1)
     mtd_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as room_revenue 
+                sum(transaction_amount * if(type='Debit',1,-1)) as room_revenue 
             from `tabFolio Transaction` 
             where 
             property=%(property)s and posting_date between '{}' and '{}' and
-            flash_report_revenue_group in ('Room Charge')
+            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') and
+            is_base_transaction=1
         """.format(start_date ,end_date)
     mtd_room_revenue = frappe.db.sql(mtd_revenue_sql,{"property":property}, as_dict=1)[0]["room_revenue"] or 0
     mtd_other_room_revenue_sql = """select 
@@ -772,28 +772,42 @@ def get_business_source_chart_data(property=None,date=None):
     if not date :
         date = working_date
     sql="""
-            select 
-                sum(amount * if(type='Debit',1,-1)) as amount,
-                business_source
-            from `tabFolio Transaction`
-            where 
-                property = %(property)s and
-                posting_date = %(date)s and
-                coalesce(business_source,'') !=''
-            group by
+            SELECT
+                COALESCE(bs.business_source, '') AS business_source,
+                SUM(COALESCE(ft.amount, 0) * IF(ft.type = 'Debit', 1, -1)) AS amount
+            FROM
+                `tabBusiness Source` bs
+            LEFT JOIN 
+                `tabFolio Transaction` ft
+            ON 
+                bs.business_source = ft.business_source
+                AND ft.property = %(property)s
+                AND ft.posting_date = %(date)s
+            WHERE 
+                COALESCE(bs.business_source, '') != ''
+            GROUP BY
+                COALESCE(bs.business_source, '')
+            ORDER BY 
                 business_source
         """
     data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     epx_sql="""
-            select 
-                sum(amount * if(type='Debit',1,-1)) as amount,
-                business_source
-            from `tabRevenue Forecast Breakdown`
-            where 
-                property = %(property)s and
-                date = %(date)s and
-                coalesce(business_source,'') !=''
-            group by
+            SELECT
+                COALESCE(bs.business_source, '') AS business_source,
+                SUM(COALESCE(ft.amount, 0) * IF(ft.type = 'Debit', 1, -1)) AS amount
+            FROM
+                `tabBusiness Source` bs
+            LEFT JOIN 
+                `tabRevenue Forecast Breakdown` ft
+            ON 
+                bs.business_source = ft.business_source
+                AND ft.property = %(property)s
+                AND ft.date = %(date)s
+            WHERE 
+                COALESCE(bs.business_source, '') != ''
+            GROUP BY
+                COALESCE(bs.business_source, '')
+            ORDER BY 
                 business_source
         """
     epx_data = frappe.db.sql(epx_sql,{"property":property,"date":date}, as_dict=1)
@@ -864,7 +878,7 @@ def get_owner_dashboard_current_mount_chart(property=None):
         "chartType": 'bar',
         "name": 'Actual Revenue',
         "values": actual_revenue,
-        "colors":'#306ec5',
+        "colors":'#0000db',
     }
     chart_data["datasets"].append(datasets_actual)
 
@@ -872,7 +886,7 @@ def get_owner_dashboard_current_mount_chart(property=None):
         "chartType": 'bar',
         "name": 'Forcast Revenue',
         "values": forcast_revenue,
-        "colors":'#e0453a',
+        "colors":'#e83a3a',
     }
     chart_data["datasets"].append(datasets_forcast)
   
@@ -888,29 +902,44 @@ def get_room_type_chart_data(property=None,date=None):
     if not date :
         date = working_date
     sql="""
-            select 
-                sum(amount * if(type='Debit',1,-1)) as amount,
-                room_type
-            from `tabFolio Transaction`
-            where 
-                property = %(property)s and
-                posting_date = %(date)s and
-                room_type != '' and
-                flash_report_revenue_group in ('Room Charge')
-            group by
+            SELECT
+                COALESCE(rt.room_type, '') AS room_type,
+                SUM(COALESCE(ft.amount, 0) * IF(ft.type = 'Debit', 1, -1)) AS amount
+            FROM
+                `tabRoom Type` rt
+            LEFT JOIN 
+                `tabFolio Transaction` ft
+            ON 
+                rt.room_type = ft.room_type
+                AND ft.property = %(property)s
+                AND ft.posting_date = %(date)s
+                AND ft.flash_report_revenue_group in ('Room Charge')
+            WHERE 
+                COALESCE(rt.room_type, '') != ''
+            GROUP BY
+                COALESCE(rt.room_type, '')
+            ORDER BY 
                 room_type
         """
     data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     epx_sql="""
-            select 
-                sum(amount * if(type='Debit',1,-1)) as amount,
-                room_type
-            from `tabRevenue Forecast Breakdown`
-            where 
-                property = %(property)s and
-                date = %(date)s and
-                room_type != ''
-            group by
+             SELECT
+                COALESCE(rt.room_type, '') AS room_type,
+                SUM(COALESCE(ft.amount, 0) * IF(ft.type = 'Debit', 1, -1)) AS amount
+            FROM
+                `tabRoom Type` rt
+            LEFT JOIN 
+                `tabRevenue Forecast Breakdown` ft
+            ON 
+                rt.room_type = ft.room_type
+                AND ft.property = %(property)s
+                AND ft.date = %(date)s
+                AND ft.account_category in ('Room Charge')
+            WHERE 
+                COALESCE(rt.room_type, '') != ''
+            GROUP BY
+                COALESCE(rt.room_type, '')
+            ORDER BY 
                 room_type
         """
     epx_data = frappe.db.sql(epx_sql,{"property":property,"date":date}, as_dict=1)

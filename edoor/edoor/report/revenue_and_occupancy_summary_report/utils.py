@@ -231,5 +231,5 @@ def get_report_chart(filters,report_data,report_config):
 		'valuesOverPoints':1,
 		"axisOptions": {"xIsSeries": 1}
 	}
-	frappe.throw(str(chart))
+ 
 	return chart
