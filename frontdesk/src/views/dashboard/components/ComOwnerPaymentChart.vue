@@ -1,6 +1,6 @@
 <template>
     <ComOwnerContentTitle label="Payment">       
-        <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets > 0">  
+        <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets.length > 0">  
         <div class="grid">
         <div class="col-6 pt-6">
             <div v-if="loading" class="flex w-full justify-content-center">
