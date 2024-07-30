@@ -1,14 +1,15 @@
 <template>
     <ComOwnerContentTitle label="F&B Payment">   
-        <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data.length > 0">
+       
     <div class="grid ">
-  <div class="col-6 pt-6">
+  <div class="lg:col-6 col-12 pt-6">
     <Skeleton v-if="loading" width="100%" height="20rem"></Skeleton> 
             <div id="chartChargefnbpayment" style="margin-bottom: -30px;"></div>
   </div>      
- <div class="card col-6">
+ <div class="card lg:col-6 col-12">
     <Skeleton v-if="loading" width="100%" height="100%"></Skeleton>    
 <div v-else class="surface-ground rounded-lg p-2 max-h-list-scroll">
+     <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets?.length > 0">
     <table class="w-full border-bottom-1">
         <tr class="border-bottom-1">
             <th class="text-center ">Payment Type</th>
@@ -22,15 +23,20 @@
             </td>
             <td class="text-center border-left-1">  <CurrencyFormat :value="payment.values" /></td>
         </tr>
+        <tr>
+            <th class="text-right border-1 pe-2">Total</th>
+            <th class="border-1"><CurrencyFormat :value="totaldValues" /></th>
+        </tr>
     </table>
+</ComPlaceholder> 
 </div>
     </div>
     </div>
-</ComPlaceholder> 
+
 </ComOwnerContentTitle>    
 </template>
 <script setup>
-import {  ref, onMounted,getApi } from '@/plugin'
+import {  ref, onMounted,getApi,computed } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 import { Colors } from 'chart.js';
@@ -38,6 +44,9 @@ const loading = ref(true)
  
  
 const data = ref({})
+const totaldValues = computed(() => {
+  return data.value.datasets.reduce((sum, payment) => sum + payment.values, 0);
+});  
 function renderdata() {
 const doc = getApi('fnb.get_fnb_payment', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,

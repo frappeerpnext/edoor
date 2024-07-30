@@ -1,20 +1,20 @@
 <template>
   <ComOwnerContentTitle label="Recent Transaction">  
     <div class="flex-col flex" >
-  <div class="px-2">
- <Button class="col px-3 border-0 mb-4 mt-2 p-tabview-nav-link recent_transaction_tap" :class="{'active_recent_transaction': activeIndex === index}" @click="onFilterFolioTransaction(btn,index)" v-for="(btn, index) in ['All','Reservation Folio','Desk Folio','Deposit Ledger']" :key="index">
+  <div class="px-2 mb-4 border-bottom-1">
+ <Button class="ms-2 col px-3 border-1 mt-2 p-tabview-nav-link recent_transaction_tap" :class="{'active_recent_transaction': activeIndex === index}" @click="onFilterFolioTransaction(btn,index)" v-for="(btn, index) in ['All','Reservation Folio','Desk Folio','Deposit Ledger']" :key="index">
   
     {{$t(btn)}}
-  
   
   </Button>
   </div>
  
 
-        <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
-          <DataTable scrollable  class="res_list_scroll"    showGridlines
+        <ComPlaceholder text="No Data" height="40rem" :loading="gv.loading" :is-not-empty="data.length > 0">
+          <div style="min-height:40rem;">
+          <DataTable scrollable :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"  class="res_list_scroll"    showGridlines
            :value="data"
-            tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
+            tableStyle="min-width: 50rem;" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
             <Column
               v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
               :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''"
@@ -59,6 +59,7 @@
               </template>
             </Column>
           </DataTable>
+        </div>
         </ComPlaceholder>
     </div>
 

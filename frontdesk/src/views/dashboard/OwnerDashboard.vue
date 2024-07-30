@@ -6,7 +6,7 @@
         <div class="col-12 p-1">
             <ComOwnerCurrentMonthChart/>
         </div>        
-        <div class="col-6 p-0">
+        <div class="lg:col-6 col-12 p-0">
             <div class="col-12 p-0 h-auto p-1">
                 <ComOwnerPaymentChart />
             </div>
@@ -14,7 +14,7 @@
                 <ComOwnerRoomTypeChart />
             </div>
         </div>
-        <div class="col-6 h-auto p-0">
+        <div class="lg:col-6 col-12 h-auto p-0">
             <div class="h-full p-1">
                 <ComOwnerChargeChart />
             </div>
@@ -22,10 +22,10 @@
         <div class="col-12 p-1">
             <ComOwnerBusinessSourceChart />
         </div> 
-    <div class="col-6 p-1">
+    <div class="lg:col-6 col-12 p-1">
         <ComOwnerFBList />
     </div> 
-    <div class="col-6 p-1">
+    <div class="lg:col-6 col-12 p-1">
         <ComOwnerFBPaymentList />
     </div> 
     <div class="col-12 p-1">

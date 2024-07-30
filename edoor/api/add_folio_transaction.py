@@ -360,6 +360,7 @@ def get_folio_transaction_breakdown(data=None):
     return account_code_breakdown
 
 def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
+   
     if "base_account" in breakdown_data:
         base_doc = get_folio_transaction_doc_share_property(data, breakdown_data["base_account"],working_day)
         if "name" in data:
@@ -519,6 +520,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
                 sub_doc.insert(ignore_permissions=True)
                 
     # if system transfer account
+ 
     if base_doc.target_transaction_type and  base_doc.target_transaction_number:
         doc = get_folio_transaction_doc_share_property(data,{"account_code": base_doc.target_account_code},working_day)
         doc.reference_number = base_doc.name  
@@ -527,6 +529,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
         doc.source_transaction_type = base_doc.transaction_type
         doc.transaction_type =  base_doc.target_transaction_type
         doc.transaction_number  = base_doc.target_transaction_number
+        
         # assign reservation, stay, source, room, room type
         if data["target_transaction_type"] =="Reservation Folio":
             target_doc = frappe.get_doc("Reservation Folio",data["target_transaction_number"])
@@ -546,19 +549,23 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
             update_room_information(doc)
             
         elif    data["target_transaction_type"] =="City Ledger":
-            doc.reservation =""
-            doc.reservation_stay = ""
-            doc.reservation_status = ""
-            doc.reservation_status_color =""
-            doc.reservation_type = ""
-            doc.guest = ""
-            doc.guest_name = ""
-            doc.phone_number = ""
-            doc.email = ""
-            doc.room_id= ""
-            doc.room_number= ""
-            doc.room_type= ""
-            doc.room_type_alias= ""
+            
+            if not base_doc.reservation_stay:
+                doc.reservation =""
+                doc.reservation_stay = ""
+                doc.reservation_status = ""
+                doc.reservation_status_color =""
+                doc.reservation_type = ""
+            if not base_doc.guest:
+                doc.guest = ""
+                doc.guest_name = ""
+                doc.phone_number = ""
+                doc.email = ""
+            if not base_doc.room_id:
+                doc.room_id= ""
+                doc.room_number= ""
+                doc.room_type= ""
+                doc.room_type_alias= ""
             
         doc.is_base_transaction = 1
         doc.input_amount = base_doc.input_amount

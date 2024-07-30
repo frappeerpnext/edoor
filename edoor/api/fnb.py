@@ -59,6 +59,7 @@ def get_fnb_payment(property, date):
 	where
 		s.business_branch = %(property)s and
 		sp.posting_date=%(date)s and 
+		sp.transaction_type = 'Payment' and
 		sp.docstatus = 1 
 	group by
 		payment_type

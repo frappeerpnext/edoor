@@ -1,16 +1,18 @@
 <template>
     <ComOwnerContentTitle label="Payment">       
-        <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets.length > 0">  
+         
         <div class="grid">
-        <div class="col-6 pt-6">
+        <div class="lg:col-6 col-12 pt-6">
             <div v-if="loading" class="flex w-full justify-content-center">
             <Skeleton  shape="circle" size="17rem" class="mr-2"></Skeleton>
             </div>
             <div id="chart" style="margin-bottom: -30px;"></div>
         </div>
-<div class="col-6 h-auto">
-<Skeleton v-if="loading" width="100%" height="100%"></Skeleton>    
+<div class="lg:col col-12 h-auto">
+<Skeleton v-if="loading" width="100%" height="100%"></Skeleton>  
+
 <div v-else class="surface-ground rounded-lg p-2 max-h-list-scroll">
+     <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets?.length > 0">
     <table class="w-full border-bottom-1 relative">
         <tr class="border-bottom-1 surface-ground" style="position: sticky;top: 0;">
             <th class="text-center ">Payment Type</th>
@@ -29,10 +31,11 @@
             <th class="border-1"><CurrencyFormat :value="totalValues" /></th>
         </tr>
     </table>
+</ComPlaceholder>
 </div>
 </div>  
 </div>
-</ComPlaceholder>
+
 </ComOwnerContentTitle>    
 </template>
 <script setup>
@@ -65,7 +68,7 @@ const doc = getApi('frontdesk.get_paymet_chart_data', {
             labels:data.value.labels,
             datasets:[{
                 name: "", 
-                values:data.value.datasets.map(r=>r.values),
+                values:data.value.datasets.map(r=>Math.abs(r.values)),
             }
         ]
             },

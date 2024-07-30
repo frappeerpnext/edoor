@@ -128,7 +128,7 @@ onMounted(() => {
   // Get the map instance
   const map = document.querySelector('ol-map').__vue__.map
   
-  console.log(map)
+ 
 
   map.addOverlay(overlay)
 

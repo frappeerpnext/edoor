@@ -74,8 +74,13 @@ html {
 .recent_transaction_tap{
     background: none;
     color: #000;
-    border-radius: 0;
+    border-radius: 10px 10px 0px 0px;
     border: 1px  solid #7f7f7f !important;
+    margin-right: 2px;
+}
+.box_recent_transaction_tap{
+    background: #6d9afb !important;
+    color: white;
 }
 .recent_transaction_tap:hover{
     background: #6d9afb !important;

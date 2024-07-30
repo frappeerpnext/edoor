@@ -5,8 +5,8 @@
             <div id="chartbs"></div>
         </div>
 <div class="col-12 h-full">
-    <div class="flex ">
-        <div class="col-6">
+    <div class="grid ">
+        <div class="lg:col-6 col-12">
             
             <Skeleton v-if="loading"  class="mb-2"  width="100%" height="20rem"></Skeleton>
             <div v-else class="surface-ground rounded-lg p-2 h-full">
@@ -27,10 +27,14 @@
                     </td>
                     <td class="text-center border-left-1">  <CurrencyFormat :value="payment.values" /></td>
                 </tr>
+                <tr>
+            <th class="text-right border-1 pe-2">Total</th>
+            <th class="border-1"><CurrencyFormat :value="totaldActualValues" /></th>
+        </tr>
                 </table>
             </div>
         </div>
-        <div class="col-6">
+        <div class=" lg:col-6 col-12">
             <Skeleton v-if="loading"  class="mb-2"  width="100%" height="20rem"></Skeleton>
             <div v-else class="surface-ground rounded-lg p-2 h-full">
                 <table class="w-full border-bottom-1">
@@ -50,6 +54,10 @@
                     </td>
                     <td class="text-center border-left-1">  <CurrencyFormat :value="payment.values" /></td>
                 </tr>
+                <tr>
+            <th class="text-right border-1 pe-2">Total</th>
+            <th class="border-1"><CurrencyFormat :value="totalExpectedValues" /></th>
+        </tr>
                 </table>
             </div>
         </div>
@@ -58,12 +66,17 @@
 </ComOwnerContentTitle>    
 </template>
 <script setup>
-import {  ref, onMounted,getApi } from '@/plugin'
+import {  ref, onMounted,getApi,computed } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 import { Colors } from 'chart.js';
 const loading = ref(true)
- 
+const totaldActualValues = computed(() => {
+  return data.value.datasets_actual.reduce((sum, payment) => sum + payment.values, 0);
+}); 
+const totalExpectedValues = computed(() => {
+  return data.value.datasets_expected.reduce((sum, payment) => sum + payment.values, 0);
+}); 
  
 const data = ref({})
 function renderdata() {
