@@ -155,7 +155,7 @@ import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import VueSortable from "vue3-sortablejs";
-
+import vInteract from './directives/v-interact';
  
 
 app.config.globalProperties.$t = i18n.global.t;
@@ -296,6 +296,7 @@ app.provide("$numberFormat", NumberFormat)
 app.directive('badge', BadgeDirective);
 app.directive('tooltip', Tooltip);
 app.directive('debounce', vue3Debounce({ lock: true }))
+app.directive('interact', vInteract);
 
 const gv = reactive(new Gv());
 const housekeeping = reactive(new Housekeeping());

@@ -52,7 +52,7 @@ def get_columns(filters):
 		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'adr','label':'ADR','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'total_room_rate','label':'Total Rate','fieldtype':'Currency','align':'right',"width":95,"show_in_report":1},
+		{'fieldname':'total_amount','label':'Total Rate','fieldtype':'Currency','align':'right',"width":95,"show_in_report":1},
 		{'fieldname':'total_debit','label':'Debit','align':'right',"width":95,"show_in_report":1,'fieldtype':'Currency'},
 		{'fieldname':'total_credit','label':'Credit','align':'right',"width":95,"show_in_report":1,'fieldtype':'Currency'},
 		{'fieldname':'reservation_status','label':'Status',"width":95,"show_in_report":1},
@@ -134,7 +134,7 @@ def get_guest_data(filters):
 				room_rate,
 				total_debit,
 				total_credit,
-				total_room_rate,
+				total_amount as total_room_rate,
 				note
 			from `tabReservation Stay` rst
 			where

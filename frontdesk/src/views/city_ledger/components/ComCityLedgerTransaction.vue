@@ -353,9 +353,10 @@ function AddTransaction(account_code) {
             },
         },
         onClose: (options) => {
-            const data = options.data;
-
+            const data = options.data.message;
+            // console.log(data)
             if (data) {
+
                 loadData()
                 if ((data.show_print_preview || 0) == 1) {
                         if (data.print_format) {

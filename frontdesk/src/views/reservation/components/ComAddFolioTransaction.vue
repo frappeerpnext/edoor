@@ -703,7 +703,6 @@ function onSave(){
     // will change this later
 
 
-
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
     if (data.credit_expired_date) data.credit_expired_date = moment(data.credit_expired_date).format("yyyy-MM-DD")
     

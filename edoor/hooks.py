@@ -243,7 +243,8 @@ fixtures = [
 						]
                     ]
             }
-        ]
+        ],
+        
     },
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Blank Guest Registration Card"]]},
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Shortcut Menu Help"]]},

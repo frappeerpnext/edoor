@@ -215,7 +215,6 @@ def create_folio_transaction(data):
     frappe.db.commit()
         
     if "name" in data:
-       
         frappe.db.sql("update `tabFolio Transaction` set owner='{0}',creation='{1}' where name='{2}' or reference_folio_transaction='{2}'".format(data["owner"],data["creation"],data["name"]))
         frappe.db.commit()
 
@@ -584,6 +583,10 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
         # prepare note
         update_folio_transaction_note(doc,base_doc=base_doc)
         doc.insert(ignore_permissions=True)
+        update_transaction_type_summary({
+            "transaction_type":base_doc.transaction_type,
+            "transaction_number":base_doc.transaction_number
+        })
 
         
 def get_folio_transaction_doc_share_property(data,folio_transaction_data,working_day):
@@ -736,8 +739,10 @@ def update_folio_transaction_note(doc,base_doc=None):
         
 
 def update_transaction_type_summary(data):
+    
     if data["transaction_type"]=='Reservation Folio':
         update_reservation_folio(name= data["transaction_number"], run_commit=False, ignore_validate=True)
+
     elif data["transaction_type"]=='Deposit Ledger':
         update_deposit_ledger( name=  ["transaction_number"], run_commit=False, ignore_validate=True, ignore_on_update=True )
     elif data["transaction_type"]=='Desk Folio':
@@ -745,7 +750,8 @@ def update_transaction_type_summary(data):
     elif data["transaction_type"]=='Payable Ledger':
         update_payable_ledger(name= data["transaction_number"],run_commit=False, ignore_on_update= True, ignore_validate= True )    
     elif data["transaction_type"]=='City Ledger':
-        update_city_ledger(name= data["transaction_number"],run_commit=False, ignore_on_update= True, ignore_validate= True )
+    
+        update_city_ledger(name= data["transaction_number"],run_commit=False, ignore_on_update= True, ignore_validate= True )    
         
         
 def delete_transaction(parent_transaction_name):

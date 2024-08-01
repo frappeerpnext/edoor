@@ -1644,7 +1644,7 @@ def get_commercial_tax_data(data):
                 record["description"] = d["report_description"]
                 
             record["quantity"] = d["report_quantity"] * (1 if d["type"] =="Debit" else -1) 
-            record["amount"] = (d["total_amount"] - d["discount"]) * (1 if d["type"] =="Debit" else -1) 
+            record["amount"] = (d["transaction_amount"] - d["discount"]) * (1 if d["type"] =="Debit" else -1) 
             record["sort_order"] = sort_order 
             
             raw_data.append(record)

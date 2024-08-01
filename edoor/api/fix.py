@@ -1,5 +1,6 @@
 from edoor.api.generate_room_rate import generate_forecast_revenue
 import frappe
+from edoor.api.utils import update_city_ledger
 
 
 
@@ -205,3 +206,13 @@ def update_pax_to_room_occupy():
     frappe.db.sql(sql)
     frappe.db.commit()
     return "done"
+
+@frappe.whitelist()
+def update_balance_to_city_ledger():
+    sql="select name from `tabCity Ledger`"
+    data = frappe.db.sql(sql,as_dict=1)
+    for d in data:
+        update_city_ledger(name= d["name"],run_commit=False, ignore_on_update= True, ignore_validate= True )    
+    frappe.db.commit()
+    return "done"
+    

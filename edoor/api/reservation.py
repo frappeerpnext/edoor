@@ -2168,7 +2168,7 @@ def get_folio_transaction_with_package_breakdown(transaction_type="", transactio
             "reservation":d["reservation"],
             "name":"" if d.is_package_charge==1 else d["name"],
             "room_number":d.room_number,
-            "account_name": "{}-{}".format(d.account_code, d.account_name)  if show_account_code else ( d.account_name) ,
+            "account_name": "{}-{}".format(d.account_code, d.report_description)  if show_account_code else ( d.report_description) ,
             "quantity": d["report_quantity"],
             "note":d["note"],
             "posting_date": d["posting_date"],
@@ -2327,7 +2327,7 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
 
 def get_folio_transaction_without_breakdown_account_code(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1"):
     if show_account_code =="-1":
-        show_account_code = frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction")==1
+        show_account_code = frappe.get_cached_value("eDoor Setting",None,"show_account_code_in_folio_transaction")==1
     else:
         show_account_code = int(show_account_code)
         
@@ -2364,7 +2364,7 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
             "reservation":d["reservation"],
             "name":d["name"],
             "room_number":d['room_number'],
-            "account_name": "{}-{}".format(d.account_code,d.account_name)  if show_account_code else (d.account_name) ,
+            "account_name": "{}-{}".format(d.account_code,d.report_description)  if show_account_code else (d.report_description) ,
             "quantity": d["report_quantity"],
             "note":d["note"],
             "posting_date": d["posting_date"],

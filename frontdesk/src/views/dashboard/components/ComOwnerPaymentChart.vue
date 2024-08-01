@@ -1,6 +1,5 @@
 <template>
     <ComOwnerContentTitle label="Payment">       
-         
         <div class="grid">
         <div class="lg:col-6 col-12 pt-6">
             <div v-if="loading" class="flex w-full justify-content-center">

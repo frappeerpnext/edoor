@@ -229,7 +229,7 @@
                             <p class="text-right m-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Total Tax</p>
                         </div>
                         <div class="w-100 d-flex justify-content-end">
-                            <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_room_rate_tax,{"fieldtype":"Currency"})}}</div>
+                            <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_tax,{"fieldtype":"Currency"})}}</div>
                         </div>
                     </div>
                     <div class="d-flex mt-2">
@@ -237,7 +237,7 @@
                             <p class="text-right m-0 font-weight-bold" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width:130px;">Total Room Rate</p>
                         </div>
                         <div class="w-100 d-flex justify-content-end">
-                            <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_room_rate,{"fieldtype":"Currency"})}}</div>
+                            <div class="bg-white p-2 rounded w-75" style="min-height:35px;box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;">{{ frappe.format(data.doc.total_amount,{"fieldtype":"Currency"})}}</div>
                         </div>
                     </div>
                 </div>

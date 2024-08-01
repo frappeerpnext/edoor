@@ -15,7 +15,6 @@ frappe.ui.form.on("City Ledger", {
 
 
 function showCityLedgerTransaction (frm) {  
-    let parser = new DOMParser()
     $(frm.fields_dict["transaction_detail"].wrapper).html("Loading city ledger transaction...");
     frm.refresh_field("transaction_detail");
 

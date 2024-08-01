@@ -3,6 +3,9 @@
 import copy
 from edoor.edoor.report.revenue_and_occupancy_summary_report.utils import get_report_chart,get_report_summary,get_folio_transaction_filters,get_occupy_data_filters,get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data,get_parent_row_group_label,get_report_fields,get_row_group_from_result_data
 import frappe
+@frappe.whitelist()
+def get_report(filters):
+    frappe.throw("x")
 
 def get_report(filters, report_config):
       

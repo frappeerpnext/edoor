@@ -3,7 +3,7 @@
     <div style="height: 100vh;">
       <ComIframeContainer :iframeUrl="`/app/folio-transaction/${dialogRef.data.folio_transaction_number}`"/>
     </div>
-    <template v-if="doc.print_format" #footer-left>
+    <template v-if="doc.show_print_preview" #footer-left>
       <Button style="background: var(--bg-btn-color);padding: 0.6rem 0.65rem !important;" class="conten-btn text-white border-0" @click="onPrintFolioTransaction"><i class="pi pi-print mr-2"></i>{{ $t('Print') }} </Button>
     </template>
     <OverlayPanel ref="openNote">

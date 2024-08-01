@@ -11,7 +11,7 @@
             <ComOwnerKPICard label="Today Revenue" :value="data.today_revenue" bgColor="bg-blue-500" icon="pi pi-chart-line"/>
             <ComOwnerKPICard label="Today ADR" :value="data?.adr" bgColor="bg-blue-500" icon="pi pi-dollar" />
             <ComOwnerKPICard label="Today Payment" :value="data?.today_payment" bgColor="bg-red-400" icon="pi pi-dollar" />
-            <ComOwnerKPICard label="MTD Revenue" :value="data?.mtd_room_revenue" bgColor="bg-cyan-500" icon="pi pi-dollar" />
+            <ComOwnerKPICard label="MTD Revenue" :value="data?.mtd_revenue" bgColor="bg-cyan-500" icon="pi pi-dollar" />
             <ComOwnerKPICard label="MTD ADR" :value="data?.mtd_adr" bgColor="bg-cyan-500" icon="pi pi-dollar" />
             <ComOwnerKPICard label="MTD Payment" :value="data?.mtd_payment" bgColor="bg-red-400" icon="pi pi-dollar" /> 
             </div>
@@ -22,8 +22,10 @@
             <div class="lg:col-6 col-12 p-0">
                 <ComTitleOfKeyKPI label="Today Revenue">
                    <ComOwnerKeyValueKPI label="Room Revenue" :value="data?.room_revenue" />
-                   <ComOwnerKeyValueKPI label="Other Revenue" :value="data?.other_revenue" />
+                   <ComOwnerKeyValueKPI label="ADR" :value="data?.adr" />
                    <ComOwnerKeyValueKPI label="RevPAR" :value="data?.revpar" />
+                   <ComOwnerKeyValueKPI label="Other Revenue" :value="data?.other_revenue" />
+                   
                 </ComTitleOfKeyKPI>
                 <ComTitleOfKeyKPI class="mt-3" label="Today Expected">
                    <ComOwnerKeyValueKPI label="Room Revenue" :value="data?.today_exp_revenue" />
@@ -33,8 +35,9 @@
             <div class="lg:col-6 col-12 p-0">
                 <ComTitleOfKeyKPI label="MTD Revenue">
                    <ComOwnerKeyValueKPI label="Room Revenue" :value="data?.mtd_room_revenue" />
-                   <ComOwnerKeyValueKPI label="Other Revenue" :value="data?.mtd_other_revenue" />
+                   <ComOwnerKeyValueKPI label="MTD ADR" :value="data?.mtd_adr" />
                    <ComOwnerKeyValueKPI label="RevPAR" :value="data?.mtd_revpar" />
+                   <ComOwnerKeyValueKPI label="Other Revenue" :value="data?.mtd_other_revenue" />
                 </ComTitleOfKeyKPI>
                 <ComTitleOfKeyKPI class="mt-3" label="Expense">
                    <ComOwnerKeyValueKPI label="Today Expense" :value="data?.today_expense" />

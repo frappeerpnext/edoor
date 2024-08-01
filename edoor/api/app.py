@@ -33,7 +33,7 @@ def reservation_list(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount,
             reservation_status,
             room_rate_discount,
             status_color
@@ -71,7 +71,7 @@ def reservation_list(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount,
             reservation_status,
             status_color,
             room_rate_discount
@@ -108,7 +108,7 @@ def reservation_list(property=None, date=None, room_type=None):
             guest_name,
             business_source,
             adr,
-            total_room_rate,
+            total_amount,
             reservation_status,
             status_color,
             room_rate_discount

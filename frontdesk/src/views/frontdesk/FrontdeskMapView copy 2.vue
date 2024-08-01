@@ -3,6 +3,7 @@
   <ComFrontDeskLayout :title="$t('Map View')">
     <!-- Openlayer Map -->
     <ol-map style="height: 100vh" 
+    @click="handleMapClick"
     >
       <ol-view
         ref="view"
@@ -19,7 +20,7 @@
         v-for="(province, index) in provinces"
         :key="index"
         :position="[province.longitude + offset, province.latitude]"
-         
+         positioning="center-center"
       >
         <div class="overlay-content" @click="handleOverlayClick">
           <div
@@ -60,7 +61,7 @@ import { useTippy } from 'vue-tippy'
 
 const center = ref([104.991, 12.5657]); // Center on Cambodia
 const projection = ref("EPSG:4326");
-const zoom = ref(8);
+const zoom = ref(3.5);
 const offset = ref(0);
 
 const tooltipIndex = ref(null);
@@ -68,9 +69,18 @@ const tooltipIndex = ref(null);
 function  handleOverlayClick(){
   alert("this is over lay click")
 }
-function  mapClick(){
-  alert(123)
-}
+const handleMapClick = (event) => {
+  // Get the coordinate where the click happened
+  const mapCoordinate = event.coordinate;
+  console.log('Map clicked at:', mapCoordinate);
+
+  // You can transform the coordinate if needed
+  const lonLatCoordinate = transform(mapCoordinate, 'EPSG:3857', 'EPSG:4326');
+  console.log('Map clicked at (lon, lat):', lonLatCoordinate);
+
+  // You can add logic here to handle the map click, such as adding a marker
+};
+
 
 const provinces = ref([
   {
@@ -82,188 +92,28 @@ const provinces = ref([
     longitude: 104.991,
   },
   {
-    label: "2",
-    name: "Siem Reap",
-    population: "283,000",
-    area: "10,299",
-    latitude: 13.3594,
-    longitude: 103.8516,
-  },
-  {
-    label: "3",
-    name: "Battambang",
-    population: "159,000",
-    area: "11,702",
-    latitude: 13.0952,
-    longitude: 103.2106,
-  },
-  {
-    label: "4",
-    name: "Sihanoukville",
-    population: "120,000",
-    area: "2,563",
-    latitude: 10.625,
-    longitude: 103.5236,
-  },
-  {
     label: "5",
-    name: "Kampot",
-    population: "50,000",
-    area: "4,873",
-    latitude: 10.6167,
-    longitude: 104.1833,
+    name: "thailan",
+    population: "2,280,000",
+    area: "678",
+    latitude: 15.8700,
+    longitude: 100.9925,
   },
   {
-    label: "6",
-    name: "Kandal",
-    population: "1,000,000",
-    area: "3,549",
-    latitude: 11.547,
-    longitude: 104.9236,
+    label: "45",
+    name: "austra",
+    population: "2,280,000",
+    area: "678",
+    latitude:  -24.040006426735218,
+    longitude:  135.60985529465643
   },
   {
-    label: "7",
-    name: "Prey Veng",
-    population: "410,000",
-    area: "6,708",
-    latitude: 12.1261,
-    longitude: 106.0565,
-  },
-  {
-    label: "8",
-    name: "Kampong Cham",
-    population: "1,100,000",
-    area: "9,811",
-    latitude: 12.5476,
-    longitude: 105.2488,
-  },
-  {
-    label: "9",
-    name: "Svay Rieng",
-    population: "235,000",
-    area: "3,874",
-    latitude: 12.4275,
-    longitude: 104.8462,
-  },
-  {
-    label: "10",
-    name: "Takeo",
-    population: "700,000",
-    area: "3,563",
-    latitude: 12.8731,
-    longitude: 105.3862,
-  },
-  {
-    label: "11",
-    name: "Kampong Speu",
-    population: "400,000",
-    area: "5,821",
-    latitude: 11.2658,
-    longitude: 104.1781,
-  },
-  {
-    label: "12",
-    name: "Kampong Thom",
-    population: "200,000",
-    area: "13,814",
-    latitude: 12.6898,
-    longitude: 104.9784,
-  },
-  {
-    label: "13",
-    name: "Kampong Chhnang",
-    population: "95,000",
-    area: "7,129",
-    latitude: 12.25,
-    longitude: 104.6667,
-  },
-  {
-    label: "14",
-    name: "Koh Kong",
-    population: "140,000",
-    area: "11,160",
-    latitude: 11.575,
-    longitude: 102.9875,
-  },
-  {
-    label: "15",
-    name: "Kratie",
-    population: "65,000",
-    area: "11,097",
-    latitude: 13.491,
-    longitude: 106.0224,
-  },
-  {
-    label: "16",
-    name: "Mondulkiri",
-    population: "60,000",
-    area: "14,288",
-    latitude: 12.7178,
-    longitude: 107.0344,
-  },
-  {
-    label: "17",
-    name: "Ratanakiri",
-    population: "55,000",
-    area: "11,352",
-    latitude: 13.6922,
-    longitude: 107.0184,
-  },
-  {
-    label: "18",
-    name: "Pailin",
-    population: "40,000",
-    area: "1,111",
-    latitude: 12.9167,
-    longitude: 102.6167,
-  },
-  {
-    label: "19",
-    name: "Preah Vihear",
-    population: "75,000",
-    area: "14,500",
-    latitude: 14.3714,
-    longitude: 103.55,
-  },
-  {
-    label: "20",
-    name: "Tboung Khmum",
-    population: "270,000",
-    area: "6,285",
-    latitude: 12.9477,
-    longitude: 106.1816,
-  },
-  {
-    label: "21",
-    name: "Banteay Meanchey",
-    population: "150,000",
-    area: "6,679",
-    latitude: 13.6654,
-    longitude: 103.631,
-  },
-  {
-    label: "22",
-    name: "Pursat",
-    population: "180,000",
-    area: "12,692",
-    latitude: 12.5386,
-    longitude: 103.9304,
-  },
-  {
-    label: "23",
-    name: "Stung Treng",
-    population: "45,000",
-    area: "11,092",
-    latitude: 13.25,
-    longitude: 105.9833,
-  },
-  {
-    label: "24",
-    name: "Oddar Meanchey",
-    population: "55,000",
-    area: "11,252",
-    latitude: 14.1031,
-    longitude: 103.5356,
+    label: "45",
+    name: "japan",
+    population: "2,280,000",
+    area: "678",
+    latitude:   36.128148764327356,
+    longitude:138.07695898731566
   },
 ]);
 

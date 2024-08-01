@@ -22,6 +22,7 @@
     "frappe-charts": "^1.6.2",
     "frappe-js-sdk": "^1.3.4",
     "idb-keyval": "^6.2.0",
+    "interactjs": "^1.10.27",
     "linq": "^4.0.1",
     "mustache": "^4.2.0",
     "number-format.js": "^2.0.9",

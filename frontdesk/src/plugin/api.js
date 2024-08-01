@@ -132,11 +132,11 @@ export function deleteDoc(doctype, name, message){
         });
     })
 }
-export function getApi(api, params = Object){
+export function getApi(api, params = Object,base_url="edoor.api."){
     const frappe = new FrappeApp()
     const call = frappe.call()
     return new Promise((resolve, reject)=>{
-        call.get(`edoor.api.${api}`, params).then((result) => {
+        call.get(`${base_url}${api}`, params).then((result) => {
             resolve(result)
         }).catch((error) =>{
           

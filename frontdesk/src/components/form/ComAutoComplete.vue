@@ -5,7 +5,6 @@
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
             :placeholder="$t(placeholder ?? '')" :multiple="isMultiple">
             <template #option="slotProps">
-                
                 <template v-if="slotProps.option.description == addNewKey || slotProps.option.description == AdvancedSearchKey">
                     <div v-if="slotProps.option.description == addNewKey">
                         <div class="font-bold text-blue-600"><i class="pi pi-plus"></i> {{ addNewTitle || 'Add New' }}</div>

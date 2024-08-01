@@ -1,38 +1,46 @@
 <template>
     <ComOwnerContentTitle label="Today's Room Type Sales">  
-        <div class="card">
-        <TabView>
-            <TabPanel>
-        <template #header>
-            <div class="flex align-items-center gap-2 ">
-                <span class="font-bold white-space-nowrap">Actual</span>
-                <span style="background:#0000001f" class="text-sm rounded-lg px-2 py-1 "  >  <CurrencyFormat :value="totalAmountActual" />  </span>
-            </div>
-        </template>
-        <div>
 <div class="col w-full p-0">
 
     <Skeleton v-if="loading" class="mb-2" v-for="index in 3" :key="index" width="100%" height="50px"></Skeleton>
     <template v-else>
+        <div class="flex">
+<div class="col-6 p-0">
+    <ComOwnerContentTitle label="Actual">  
     <ComOwnerBarChartLine  v-for="(room, index) in data?.datasets_actual" :key="index" :roomType="room.name" :color="room.color" :roomSold="room.room_sold" :totalRoomSold="totalRoomActual" :value="room.values" />
-    </template>
+    <hr>
+    <div class="flex mt-1 font-bold justify-content-between">
+        <div>
+            Total:
+        </div>
+        <div class="text-end">
+            <CurrencyFormat :value="totalAmountActual" />
+        </div>
+    </div>
+</ComOwnerContentTitle>    
+</div>
+<div class="col-6 p-0">
+    <ComOwnerContentTitle label="Expected"> 
+       
+    <ComOwnerBarChartLine v-for="(room, index) in data?.datasets_expected" :key="index" :roomType="room.name" :color="room.color" :roomSold="room.room_sold" :totalRoomSold="totalRoomExpected" :value="room.values" />
+    <hr>
+    <div class="flex mt-1 font-bold justify-content-between">
+        <div>
+            Total:
+        </div>
+        <div class="text-end">
+            <CurrencyFormat :value="totalAmountExpected" />
+        </div>
+    </div>  
+    </ComOwnerContentTitle>     
 </div>
         </div>
-    </TabPanel>
-    <TabPanel>
-        <template #header>
-            <div class="flex align-items-center gap-2">
-                <span class="font-bold white-space-nowrap">Expected</span>
-                <span style="background:#0000001f" class="text-sm rounded-lg px-2 py-1 "> <CurrencyFormat :value="totalAmountExpected" /> </span>
-            </div>
-        </template>
-        <div>
-            <ComOwnerBarChartLine v-for="(room, index) in data?.datasets_expected" :key="index" :roomType="room.name" :color="room.color" :roomSold="room.room_sold" :totalRoomSold="totalRoomExpected" :value="room.values" />
-        </div>
-    </TabPanel>
-           
-        </TabView>
-    </div>
+    
+
+   
+    </template>
+</div>
+   
 </ComOwnerContentTitle>    
 </template>
 <script setup>

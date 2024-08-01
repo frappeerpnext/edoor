@@ -411,110 +411,77 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
     if not end_date:
         end_date = working_date
     day_end = get_day_end_summary_report(property, end_date,show_package_breakdown=1)
-    today_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as today_revenue 
+    #Today Data
+    sql = """select 
+                sum(if(account_group_name in ('Charge','Tax','Discount'),amount * if(type='Debit',1,-1),0)) as today_revenue,
+                sum(if(account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') and is_base_transaction=1,transaction_amount * if(type='Debit',1,-1),0)) as today_room_revenue,
+                sum(if(account_category in ('Room Charge Adjustment'),total_amount * if(type='Debit',1,-1),0)) as today_room_revenue_adj,
+                sum(if(flash_report_revenue_group in ('Other Room Revenue'),amount * if(type='Debit',1,-1),0)) as today_other_room_revenue,
+                sum(if(flash_report_revenue_group in ('Other Revenue'),amount * if(type='Debit',1,-1),0)) as today_other_revenue,
+                sum(if(account_group_name in ('Payment & Refund'),amount * if(type='Debit',1,-1),0)) as today_payment,
+                sum(if(transaction_type = 'Payable Ledger',amount * if(type='Debit',1,-1),0)) as today_expense
             from `tabFolio Transaction` 
             where 
-            property=%(property)s and posting_date = %(date)s and
-            account_group_name in ('Charge','Tax','Discount')
+            property=%(property)s and posting_date = %(date)s 
         """
-    today_revenue = frappe.db.sql(today_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["today_revenue"] or 0
-    room_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as room_revenue 
-            from `tabFolio Transaction` 
-            where 
-            property=%(property)s and posting_date = %(date)s and
-            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') 
-            
-        """
-    room_revenue = frappe.db.sql(room_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["room_revenue"] or 0
-    other_room_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as other_room_revenue 
-            from `tabFolio Transaction` 
-            where 
-            property=%(property)s and posting_date = %(date)s and
-            flash_report_revenue_group in ('Other Room Revenue')
-        """
-    today_room_other_revenue = frappe.db.sql(other_room_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["other_room_revenue"] or 0
-    other_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as other_revenue 
-            from `tabFolio Transaction` 
-            where 
-            property= %(property)s and posting_date = %(date)s and
-            flash_report_revenue_group in ('Other Revenue')
-        """
-    today_other_revenue = frappe.db.sql(other_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["other_revenue"] or 0
-
-    payment_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as payment 
-            from `tabFolio Transaction` 
-            where 
-            property=%(property)s and posting_date = %(date)s and
-            account_group_name in ('Payment & Refund')
-        """
-    today_payment = frappe.db.sql(payment_sql,{"property":property,"date":end_date}, as_dict=1)[0]["payment"] or 0
-
+    today_data = frappe.db.sql(sql,{"property":property,"date":end_date}, as_dict=1)
+    sql1 = "select sum(amount * if(type='Debit',1,-1)) as stay_over_revenue from `tabRevenue Forecast Breakdown` where stay_room_id in (select stay_room_id from `tabReservation Room Rate` where is_arrival != 1 and is_active = 1 and date = %(date)s) and property = %(property)s and date = %(date)s" 
+    stay_over_revenue = frappe.db.sql(sql1,{"property":property,"date":end_date}, as_dict=1)[0]['stay_over_revenue'] or 0
     exp_revenue_sql = "select sum(amount * if(type='Debit',1,-1)) as expected_revenue from `tabRevenue Forecast Breakdown` where property = %(property)s and date = %(date)s"
     today_exp_revenue = frappe.db.sql(exp_revenue_sql,{"property":property,"date":end_date}, as_dict=1)[0]["expected_revenue"] or 0
-    expense_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as expense 
-            from `tabFolio Transaction` 
-            where 
-            property=%(property)s and posting_date = %(date)s and
-            transaction_type = 'Payable Ledger'
-        """
-    today_expense = frappe.db.sql(expense_sql,{"property":property,"date":end_date}, as_dict=1)[0]["expense"] or 0
+
     total_rooms =frappe.db.count('Room', {'property': property, "disabled":0})
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
+    calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
+    sql = """select 
+                sum(is_active=1 and type='Reservation') as total_room_sold ,
+                sum(is_active=1 and type='Reservation' and is_complimentary=1) as total_complimentary_room ,
+                sum(is_active=1 and type='Reservation' and is_house_use=1) as total_house_use_room ,
+                sum(type='Block') as total_block
+            from `tabRoom Occupy` 
+            where 
+            property=%(property)s and date = '{}'  
+        """.format(end_date)
+    
+    occupy_data = frappe.db.sql(sql,{'property':property},as_dict=1)
+    today_room_sold = 0
+    today_complimentary = 0
+    today_house_use = 0
+    today_room_block = 0
+    if len(occupy_data)>0:
+        today_room_sold = occupy_data[0]["total_room_sold"] or 0
+        today_complimentary = occupy_data[0]["total_complimentary_room"] or 0
+        today_house_use = occupy_data[0]["total_house_use_room"] or 0
+        today_room_block = occupy_data[0]["total_block"] or 0
     if calculate_room_occupancy_include_room_block==0:
-        total_rooms = total_rooms - day_end['room_block'] 
-    revpar = (room_revenue + today_room_other_revenue)/(1 if total_rooms==0 else total_rooms)
+        total_rooms = total_rooms - today_room_block
+    if today_data:
+        today_data = today_data[0]  
+        today_room_revenue = (today_data['today_room_revenue'] or 0) + stay_over_revenue
+        revpar = ((today_room_revenue or 0 + today_data['today_other_room_revenue'] or 0) / (1 if total_rooms == 0 else total_rooms)) or 0
+        if calculate_adr_include_all_room_occupied == 1:
+            today_adr = (today_room_revenue or 0) / (1 if today_room_sold==0 else today_room_sold)
+        else:
+            today_adr = (today_room_revenue or 0) / ((1 if today_room_sold==0 else today_room_sold) - (today_complimentary + today_house_use))
     exp_revpar = (today_exp_revenue)/(1 if total_rooms==0 else total_rooms)
-    ##Get MTD Data
+    
 
+    ##Get MTD Data
     start_date = getdate(end_date).replace(day=1)
-    mtd_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as room_revenue 
+    mtd_sql = """select 
+                sum(if(account_group_name in ('Charge','Tax','Discount'),amount * if(type='Debit',1,-1),0)) as mtd_revenue,
+                sum(if(account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') and is_base_transaction=1,transaction_amount * if(type='Debit',1,-1),0)) as mtd_room_revenue,
+                sum(if(flash_report_revenue_group in ('Other Room Revenue'),amount * if(type='Debit',1,-1),0)) as mtd_other_room_revenue,
+                sum(if(account_category in ('Room Charge Adjustment'),total_amount * if(type='Debit',1,-1),0)) as mtd_room_revenue_adj,
+                sum(if(flash_report_revenue_group in ('Other Revenue'),amount * if(type='Debit',1,-1),0)) as mtd_other_revenue,
+                sum(if(account_group_name in ('Payment & Refund'),amount * if(type='Debit',1,-1),0)) as mtd_payment,
+                sum(if(transaction_type = 'Payable Ledger',amount * if(type='Debit',1,-1),0)) as mtd_expense
             from `tabFolio Transaction` 
             where 
-            property=%(property)s and posting_date between '{}' and '{}' and
-            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') 
+            property=%(property)s and posting_date between '{}' and '{}'
             
         """.format(start_date ,end_date)
-    mtd_room_revenue = frappe.db.sql(mtd_revenue_sql,{"property":property}, as_dict=1)[0]["room_revenue"] or 0
-    mtd_other_room_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as other_room_revenue 
-            from `tabFolio Transaction` 
-            where 
-            property=%(property)s and posting_date between '{}' and '{}' and
-            flash_report_revenue_group in ('Other Room Revenue')
-        """.format(start_date,end_date)
-    mtd_other_room_revenue = frappe.db.sql(mtd_other_room_revenue_sql,{'property':property}, as_dict=1)[0]["other_room_revenue"] or 0
-    mtd_other_revenue_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as other_revenue 
-            from `tabFolio Transaction` 
-            where 
-            property=%(property)s and posting_date between '{}' and '{}' and
-            flash_report_revenue_group in ('Other Revenue')
-        """.format(start_date,end_date)
-    mtd_other_revenue = frappe.db.sql(mtd_other_revenue_sql,{'property':property}, as_dict=1)[0]["other_revenue"] or 0
-
-    mtd_payment_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as payment 
-            from `tabFolio Transaction` 
-            where 
-            property=%(property)s and posting_date between '{}' and '{}' and
-            account_group_name in ('Payment & Refund')
-        """.format(start_date,end_date)
-    mtd_payment = frappe.db.sql(mtd_payment_sql, {'property':property},as_dict=1)[0]["payment"] or 0
-    mtd_expense_sql = """select 
-                sum(amount * if(type='Debit',1,-1)) as expense 
-            from `tabFolio Transaction` 
-            where 
-            property=%(property)s and posting_date between '{}' and '{}' and
-            transaction_type = 'Payable Ledger'
-        """.format(start_date,end_date)
-    mtd_expense = frappe.db.sql(mtd_expense_sql,{'property':property}, as_dict=1)[0]["expense"] or 0
+    mtd_data = frappe.db.sql(mtd_sql,{"property":property}, as_dict=1)
 
     sql = """select 
                 sum(is_active=1 and type='Reservation') as total_room_sold ,
@@ -526,54 +493,61 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
             property=%(property)s and date between '{}' and '{}'  
         """.format( start_date,end_date)
     
-    occupy_data = frappe.db.sql(sql,{'property':property},as_dict=1)
-    calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
-    room_sold = 0
-    complimentary = 0
-    house_use = 0
-    room_block = 0
-    if len(occupy_data)>0:
-        room_sold = occupy_data[0]["total_room_sold"] or 0
-        complimentary = occupy_data[0]["total_complimentary_room"] or 0
-        house_use = occupy_data[0]["total_house_use_room"] or 0
-        room_block = occupy_data[0]["total_block"] or 0
-    if calculate_adr_include_all_room_occupied == 1:
-        mtd_adr = (mtd_room_revenue) / (1 if room_sold==0 else room_sold)
-    else:
-        mtd_adr = (mtd_room_revenue) / ((1 if room_sold==0 else room_sold) - (complimentary + house_use))
-    #occupancy
-    sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between '{}' and '{}'".format( start_date,end_date)
-    mtd_total_room= frappe.db.sql(sql,{'property':property},as_dict=1)[0]["total_room"] or 0
-    calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
-    if calculate_room_occupancy_include_room_block==0:
-        mtd_total_room = mtd_total_room - room_block 
-    mtd_revpar = (mtd_room_revenue + mtd_other_room_revenue)/(1 if mtd_total_room==0 else mtd_total_room or 0)
+    mtd_occupy_data = frappe.db.sql(sql,{'property':property},as_dict=1)
+    mtd_room_sold = 0
+    mtd_complimentary = 0
+    mtd_house_use = 0
+    mtd_room_block = 0
+    if len(mtd_occupy_data)>0:
+        mtd_room_sold = mtd_occupy_data[0]["total_room_sold"] or 0
+        mtd_complimentary = mtd_occupy_data[0]["total_complimentary_room"] or 0
+        mtd_house_use = mtd_occupy_data[0]["total_house_use_room"] or 0
+        mtd_room_block = mtd_occupy_data[0]["total_block"] or 0
+    if mtd_data:
+        mtd_data = mtd_data[0]
+        mtd_room_revenue = (mtd_data['mtd_room_revenue'] or 0) + stay_over_revenue
+        if calculate_adr_include_all_room_occupied == 1:
+            mtd_adr = (mtd_room_revenue or 0) / (1 if mtd_room_sold==0 else mtd_room_sold)
+        else:
+            mtd_adr = (mtd_room_revenue or 0) / ((1 if mtd_room_sold==0 else mtd_room_sold) - (mtd_complimentary + mtd_house_use))
+        #occupancy
+        sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between '{}' and '{}'".format( start_date,end_date)
+        mtd_total_room= frappe.db.sql(sql,{'property':property},as_dict=1)[0]["total_room"] or 0
+        calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
+        if calculate_room_occupancy_include_room_block==0:
+            mtd_total_room = mtd_total_room - mtd_room_block 
+        mtd_revpar = (mtd_room_revenue or 0 + mtd_data['mtd_other_room_revenue'] or 0)/(1 if mtd_total_room==0 else mtd_total_room or 0)
 
     
     return {
         "working_date":end_date,
-        "room_revenue": room_revenue,
-        "today_revenue":today_revenue,
-        "adr":day_end['adr'],
+        "room_revenue": today_room_revenue,
+        "today_revenue":(today_data['today_revenue'] or 0) + stay_over_revenue,
+        "stay_over_revenue":stay_over_revenue,
+        "adr":today_adr,
+        "today_room_sold":today_room_sold,
+        "today_room_block":today_room_block,
         "total_rooms":total_rooms,
-
         "revpar":revpar,
-        "other_room_revenue": today_room_other_revenue,
-        "other_revenue": today_other_revenue,
-        "today_payment": today_payment,
+        "other_room_revenue": today_data['today_other_room_revenue'],
+        "room_adjustment": today_data['today_room_revenue_adj'],
+        "other_revenue": today_data['today_other_revenue'],
+        "today_payment": today_data['today_payment'],
         "today_exp_revenue": today_exp_revenue,
         "today_exp_adr": today_exp_revenue/(1 if day_end['room_night']==0 else day_end['room_night']) or 0,
         "today_exp_revpar":exp_revpar,
-        "today_expense": today_expense,
-        "room_block":room_block,
-        "room_sold":room_sold,
+        "today_expense": today_data['today_expense'],
+        "mtd_room_block":mtd_room_block,
+        "mtd_room_sold":mtd_room_sold,
         "mtd_room_revenue":mtd_room_revenue,
+        "mtd_revenue":(mtd_data['mtd_revenue'] or 0) + stay_over_revenue,
         "mtd_adr":mtd_adr,
         "mtd_revpar":mtd_revpar,
-        "mtd_other_room_revenue":mtd_other_room_revenue,
-        "mtd_other_revenue":mtd_other_revenue,
-        "mtd_payment":mtd_payment,
-        "mtd_expense":mtd_expense,
+        "mtd_other_room_revenue":mtd_data['mtd_other_room_revenue'],
+        "mtd_room_adjustment":mtd_data['mtd_room_revenue_adj'],
+        "mtd_other_revenue":mtd_data['mtd_other_revenue'],
+        "mtd_payment":mtd_data['mtd_payment'],
+        "mtd_expense":mtd_data['mtd_expense'],
         "end_day":day_end,
         "mtd_total_room":mtd_total_room,
         "occupy_data":occupy_data,
@@ -581,66 +555,7 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
         "end_date":end_date,
         
     }
-@frappe.whitelist()
-def get_chart_list_data(property=None,date=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
-    working_date =  frappe.utils.today() 
-    
-    if data:
-        working_date = data[0]["date"]
 
-    if not date:
-        date = working_date
-    #payment breakdown
-    sql="""
-            select 
-                sum(amount * if(type='Debit',1,-1)) as payment ,
-                account_code,
-                account_name 
-            from `tabFolio Transaction` 
-            where 
-                property = %(property)s and
-                posting_date = %(date)s and
-                account_group_name in ('Payment & Refund')
-            group by
-                account_code,account_name
-        """
-    payment_breakdown = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
-
-    # Charge List
-    charge_sql="""
-            select 
-                sum(amount * if(type='Debit',1,-1)) as charge ,
-                parent_account_name
-            from `tabFolio Transaction`
-            where 
-                property = %(property)s and
-                posting_date = %(date)s and
-                account_group_name in ('Charge')
-            group by
-                parent_account_name
-        """
-    charge_list = frappe.db.sql(charge_sql,{"property":property,"date":date}, as_dict=1)
-
-    # Business Source List
-    sql="""
-            select 
-                sum(amount * if(type='Debit',1,-1)) as amount,
-                business_source
-            from `tabFolio Transaction`
-            where 
-                property = %(property)s and
-                posting_date = %(date)s and
-                business_source != ''
-            group by
-                business_source
-        """
-    business_source_list = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
-    return {
-        "payment_breakdown":payment_breakdown,
-        "charge_list":charge_list,
-        "business_source":business_source_list
-    }
 @frappe.whitelist()
 def get_paymet_chart_data(property=None,date=None):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
@@ -655,14 +570,15 @@ def get_paymet_chart_data(property=None,date=None):
             select 
                 sum(amount * if(type='Debit',1,-1)) as payment ,
                 account_code,
-                account_name 
+                account_name,
+                type
             from `tabFolio Transaction` 
             where 
                 property = %(property)s and
                 posting_date = %(date)s and
                 account_group_name in ('Payment & Refund')
             group by
-                account_code,account_name
+                account_code,account_name,type
         """
     data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
     chart_data = {
@@ -677,6 +593,7 @@ def get_paymet_chart_data(property=None,date=None):
         dataset = {
             "type": 'pie',
             "name": d['account_name'],
+            "account_type": d['type'],
             "values": d['payment'],
             "color": colors[i % len(colors)]
         }
@@ -701,11 +618,25 @@ def get_charge_chart_data(property=None,date=None):
             where 
                 property = %(property)s and
                 posting_date = %(date)s and
-                account_group_name in ('Charge')
+                account_group_name in ('Charge','Tax','Discount')
             group by
                 parent_account_name
         """
     data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
+    stay_over_sql="""
+            select 
+                sum(amount) as charge ,
+                parent_account_name
+            from `tabRevenue Forecast Breakdown`
+            where 
+                stay_room_id in (select stay_room_id from `tabReservation Room Rate` where is_arrival = 0 and is_active = 1 and date = %(date)s) and
+                property = %(property)s and
+                date = %(date)s and
+                account_group_name in ('Charge','Tax','Discount')
+            group by
+                parent_account_name
+        """
+    stay_over_data = frappe.db.sql(stay_over_sql,{"property":property,"date":date}, as_dict=1)
     chart_data = {
             "labels":[d['parent_account_name'] for d in data],
             "datasets":[d['charge'] for d in data],
@@ -713,12 +644,26 @@ def get_charge_chart_data(property=None,date=None):
     }
     colors = ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
     chart_data["datasets"] = []
+    charges_by_account = {}
 
-    for i, d in enumerate(data):
+    # Sum charges from the first query result
+    for d in data:
+        if d['parent_account_name'] in charges_by_account:
+            charges_by_account[d['parent_account_name']] += d['charge']
+        else:
+            charges_by_account[d['parent_account_name']] = d['charge']
+
+    # Sum charges from the second query result
+    for d in stay_over_data:
+        if d['parent_account_name'] in charges_by_account:
+            charges_by_account[d['parent_account_name']] += d['charge']
+        else:
+            charges_by_account[d['parent_account_name']] = d['charge']
+    for i, (parent_account_name, charge) in enumerate(charges_by_account.items()):
         dataset = {
             "type": 'bar',
-            "name": d['parent_account_name'],
-            "values": d['charge'],
+            "name": parent_account_name,
+            "values": charge,
             "color": colors[i % len(colors)]
         }
         chart_data["datasets"].append(dataset)
@@ -843,36 +788,92 @@ def get_business_source_chart_data(property=None,date=None):
   
     return chart_data
 @frappe.whitelist()
-def get_owner_dashboard_current_mount_chart(property=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
-    working_date =  frappe.utils.today() 
-    currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+def get_owner_dashboard_current_mount_chart(property=None,duration_type="Daily", view_chart_by="Time Series",):
     working_day = get_working_day(property)
     now = getdate(working_day["date_working_day"])
     start_date = getdate( datetime(now.year, now.month, 1))
     end_date = getdate( now + relativedelta(day=1, months=1, days=-1))
     group_by_field =  "date"
     group_by_field_actual =  "posting_date"
-    series_label =  [{"series_label":getdate(d)} for d in  get_date_range(start_date, end_date, False)]
-    forcast_revenue_sql = "select {0} as group_by, sum(amount * if(type='Debit',1,-1)) as forcast_revenue from `tabRevenue Forecast Breakdown` where property = %(property)s and date between %(start_date)s and %(end_date)s group by {0}"    
-    forcast_data = frappe.db.sql(forcast_revenue_sql.format(group_by_field),{"property":property,"start_date":start_date,"end_date":end_date},as_dict=1)
+    
+    if duration_type=="Daily":
+        group_by_field = "date"
+        group_by_field_actual =  "posting_date"
+    else:
+        start_date = datetime(now.year,1, 1)
+        end_date = add_to_date(start_date, years=1,days=-1)
+       
+        group_by_field = "monthname(date)"
+        group_by_field_actual =  "monthname(posting_date)"
+    months= get_months(start_date,end_date)
+
+    series_label =[]
+    #get series label
+    if view_chart_by=="Time Series":
+        if duration_type=="Daily":
+            series_label =  [{"series_label":getdate(d)} for d in  get_date_range(start_date, end_date, False)]
+        else:
+            series_label =  [{'series_label': 'January'},
+                            {'series_label': 'February'},
+                            {'series_label': 'March'},
+                            {'series_label': 'April'},
+                            {'series_label': 'May'},
+                            {'series_label': 'June'},
+                            {'series_label': 'July'},
+                            {'series_label': 'August'},
+                            {'series_label': 'September'},
+                            {'series_label': 'October'},
+                            {'series_label': 'November'},
+                            {'series_label': 'December'}]
+    
+    elif view_chart_by =="Business Source":
+        group_by_field = "business_source"
+        group_by_field_actual = "business_source"
+        series_label =  frappe.db.sql("select distinct business_source as series_label from  `tabBusiness Source` where property=%(property)s and ifnull(business_source,'') !=''  order by business_source",{"property":property},as_dict=1)
+        if duration_type == "Daily":
+            start_date = now
+            end_date = now
+        else:
+            start_date = getdate( datetime(now.year, now.month, 1))
+            end_date = getdate( now + relativedelta(day=1, months=1, days=-1))
+    elif view_chart_by =="Room Type":
+        group_by_field = "room_type"
+        group_by_field_actual = "room_type"
+        series_label =  frappe.db.sql("select distinct  room_type as series_label from  `tabRoom Type` where property=%(property)s order by room_type",{"property":property},as_dict=1)
+        if duration_type == "Daily":
+            start_date = now
+            end_date = now
+        else:
+            start_date = getdate( datetime(now.year, now.month, 1))
+            end_date = getdate( now + relativedelta(day=1, months=1, days=-1))
+
+    # series_label =  [{"series_label":getdate(d)} for d in  get_date_range(start_date, end_date, False)]
+    forcast_revenue_sql = "select {0} as group_by, sum(amount * if(type='Debit',1,-1)) as forcast_revenue from `tabRevenue Forecast Breakdown` where property = %(property)s and date between %(start_date)s and %(end_date)s group by {0}".format(group_by_field)  
+    forcast_data = frappe.db.sql(forcast_revenue_sql,{"property":property,"start_date":start_date,"end_date":end_date},as_dict=1)
     actual_revenue_sql = """select 
                 {0} as group_by,
                 sum(amount * if(type='Debit',1,-1)) as actual_revenue 
             from `tabFolio Transaction` 
             where 
-            property=%(property)s and posting_date between %(start_date)s and %(end_date)s
+            property=%(property)s and 
+            posting_date between %(start_date)s and %(end_date)s and
+            account_group_name in ('Charge','Tax','Discount')
             group by
                 {0}
         """.format(group_by_field_actual)
     actual_data = frappe.db.sql(actual_revenue_sql,{"property":property,"start_date":start_date,"end_date":end_date}, as_dict=1)
+    
+    sql1 = "select {0} as group_by,sum(amount * if(type='Debit',1,-1)) as stay_over_revenue from `tabRevenue Forecast Breakdown` where stay_room_id in (select stay_room_id from `tabReservation Room Rate` where is_arrival != 1 and is_active = 1 and date = %(date)s) and property = %(property)s and date = %(date)s group by {0}".format(group_by_field)
+    stay_over_revenue = frappe.db.sql(sql1,{"property":property,"date":now}, as_dict=1)
     actual_revenue = []
     forcast_revenue = []
+    stay_over=[]
     for d in series_label:
         actual_revenue.append(sum([x["actual_revenue"] for x in actual_data if x["group_by"] == d["series_label"]]))
         forcast_revenue.append(sum([x["forcast_revenue"] for x in forcast_data if x["group_by"] == d["series_label"]]))
+        stay_over.append(sum([x["stay_over_revenue"] for x in stay_over_revenue if x["group_by"] == d["series_label"]]))
     chart_data = {
-            "labels":[getdate(x["series_label"]).strftime('%d/%b') for x in series_label]
+            "labels":[getdate(x["series_label"]).strftime('%d/%b') for x in series_label] if view_chart_by=="Time Series" and duration_type=="Daily" else [x["series_label"] for x in series_label]
             # "colors": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
     }
     colors = ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
@@ -881,8 +882,8 @@ def get_owner_dashboard_current_mount_chart(property=None):
     datasets_actual = {
         "chartType": 'bar',
         "name": 'Actual Revenue',
-        "values": actual_revenue,
-        "colors":'#0000db',
+        "values": [x + y for x, y in zip(actual_revenue, stay_over)],
+        "colors":'#C13018',
     }
     chart_data["datasets"].append(datasets_actual)
 
@@ -890,10 +891,11 @@ def get_owner_dashboard_current_mount_chart(property=None):
         "chartType": 'bar',
         "name": 'Forcast Revenue',
         "values": forcast_revenue,
-        "colors":'#e83a3a',
+        "colors":'#0D95BC',
     }
     chart_data["datasets"].append(datasets_forcast)
-  
+    frappe.msgprint(str(start_date))
+    frappe.msgprint(str(end_date))
     return chart_data
 @frappe.whitelist()
 def get_room_type_chart_data(property=None,date=None):
@@ -1784,11 +1786,11 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
 
     elif view_chart_by =="Business Source":
         group_by_field = "business_source"
-        series_label =  frappe.db.sql("select distinct business_source as series_label from  `tabRoom Occupy` where property='{}' and  date between '{}' and '{}' and ifnull(business_source,'') !=''  order by business_source".format(property, start_date, end_date),as_dict=1)
+        series_label =  frappe.db.sql("select distinct business_source as series_label from  `tabRoom Occupy` where property=%(property)s and  date between '{}' and '{}' and ifnull(business_source,'') !=''  order by business_source".format(start_date, end_date),{"property":property},as_dict=1)
 
     elif view_chart_by =="Room Type":
         group_by_field = "room_type"
-        series_label =  frappe.db.sql("select distinct room_type_id, room_type as series_label from  `tabRoom Occupy` where property='{}' and  date between '{}' and '{}' order by room_type".format(property, start_date, end_date),as_dict=1)
+        series_label =  frappe.db.sql("select distinct room_type_id, room_type as series_label from  `tabRoom Occupy` where property=%(property)s and  date between '{}' and '{}' order by room_type".format(start_date, end_date),{"property":property},as_dict=1)
        
         
 
