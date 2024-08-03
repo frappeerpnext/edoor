@@ -827,7 +827,7 @@ def get_business_source_chart_data(property=None,date=None):
         datasets = {
             "type": 'bar',
             "name": business_source,
-            "values": amount,
+            "actual_values": amount,
             "expected_value": epx_data[i]['amount'],
             "color": colors[i % len(colors)]
         }

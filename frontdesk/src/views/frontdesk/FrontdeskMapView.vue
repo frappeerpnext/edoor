@@ -22,6 +22,10 @@
             :placeholder="$t('Select Timespan')"
             class="w-full overflow-x-auto"
           />
+
+          <ComSelect />
+          <ComSelect />
+
           <ComSelect
             :filters="[['property', '=', property_name]]"
             :placeholder="$t('All Room Types')"
