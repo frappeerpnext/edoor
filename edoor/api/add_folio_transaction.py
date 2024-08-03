@@ -584,8 +584,8 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
         update_folio_transaction_note(doc,base_doc=base_doc)
         doc.insert(ignore_permissions=True)
         update_transaction_type_summary({
-            "transaction_type":base_doc.transaction_type,
-            "transaction_number":base_doc.transaction_number
+            "transaction_type":base_doc.target_transaction_type,
+            "transaction_number":base_doc.target_transaction_number
         })
 
         

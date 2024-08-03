@@ -369,12 +369,12 @@
    "fieldtype": "Data",
    "is_virtual": 1,
    "label": "Rooms",
-   "options": "f\"{doc.rooms} - {doc.room_types} ({doc.room_type_alias})\""
+   "options": "f\"{doc.rooms} - {doc.room_types}\""
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-02 11:15:35.135062",
+ "modified": "2024-08-03 11:29:44.206571",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

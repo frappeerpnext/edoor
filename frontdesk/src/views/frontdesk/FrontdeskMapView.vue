@@ -1,33 +1,30 @@
 <template>
   <ComFrontDeskLayout :title="$t('Map View')">
+  
     <!-- Filter -->
     <!-- {{ filters }} -->
-    <!-- {{ data }} -->
+    {{ data.report_summary }}
+ 
     <div class="page-form rounded-lg">
       <div class="form-group frappe-control input-max-width md:w-full">
         <div class="link-field ui-front flex items-center space-x-9">
-          <ComSelect
-            :clear="false"
-            v-if="data.columns"
-            :options="data?.columns"
-            v-model="filters.display_field"
-            optionLabel="label"
-            optionValue="fieldname"
-            class="w-full overflow-x-auto"
-          />
+          
+
           <ComSelect
             :clear="false"
             :options="timespanOption"
-            :value="filters.timespan"
-            @changed="onTimeSpanChange"
-            :placeholder="$t('Select Timespan')"
+            v-model="filters.timespan"
+            @onSelected="onRefreshData"
+            :placeholder="$t('Date')"
             class="w-full overflow-x-auto"
           />
-          
-          <ComSelect />
-
-          <ComSelect />
-
+          <Calendar 
+            class="w-full"
+              :selectOtherMonths="true"   hideOnRangeSelection v-if="filters.timespan =='Date Range'" dateFormat="dd-MM-yy"
+                  v-model="filters.date_range" selectionMode="range" :manualInput="false" 
+                  @date-select="onSelectDateRange"
+                  placeholder="Select Date Range" showIcon />
+         
           <ComSelect
             :filters="[['property', '=', property_name]]"
             :placeholder="$t('All Room Types')"
@@ -36,6 +33,7 @@
             optionLabel="room_type"
             optionValue="name"
             class="w-full overflow-x-auto"
+            @onSelected = "onRefreshData"
           ></ComSelect>
           <!-- <div :class="bodyClass"> -->
           <ComAutoComplete
@@ -47,14 +45,33 @@
             optionLabel="business_source"
             optionValue="name"
             class="w-full overflow-x-auto"
+            @onSelected = "onRefreshData"
           />
           <!-- </div> -->
+          <ComSelect
+            :clear="false"
+            v-if="data.columns"
+            :options="data?.columns.filter(r=>r.fieldtype)"
+            v-model="filters.display_field"
+            optionLabel="label"
+            optionValue="fieldname"
+            class="w-full overflow-x-auto"
+          />
         </div>
       </div>
     </div>
 
+    <!-- summayr -->
+    <div v-for="(s, index) in data.report_summary" :key="index" :class="s.indicator" >
+      {{ s.label }} <br/>
+      <span :style="'color:' + s.indicator"> {{s.value}}</span>
+     
+
+    </div>
     <!-- Openlayer Map -->
     <!-- {{ mapCoordinate }} -->
+    <TabView   class="tabview-custom mt-3">
+      <TabPanel :header="$t('Map View')">
     <ol-map style="height: 100vh" @click="handleMapClick">
       <ol-view
         ref="view"
@@ -74,12 +91,14 @@
         :position="[d.long, d.lat]"
         positioning="center-center"
       >
-        <div class="overlay-content" @click="handleOverlayClick">
+        <div class="overlay-content" @click="handleOverlayClick(d)">
           <div
             class="pin-marker"
             @mouseover="(event) => showTooltip(event, d)"
             @mouseleave="hideTooltip"
           >
+         
+          
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 200 200"
@@ -101,30 +120,70 @@
                 font-size="50"
                 fill="#ffffff"
               >
+
+              <CurrencyFormat  v-if="fieldtype=='Currency'" :hideWrapper="true" :value="d[filters.display_field]" />
+              <template v-else-if="fieldtype=='Percent'">
+                {{ parseFloat(d[filters.display_field]).toFixed(2) }} %
+              </template>
+              <template v-else>
                 {{ d[filters.display_field] }}
+              </template>
               </text>
             </svg>
           </div>
         </div>
       </ol-overlay>
     </ol-map>
+    </TabPanel>
+    <TabPanel :header="$t('Data View')">
+    <DataTable :value="data.result" tableStyle="min-width: 50rem">
+      <Column v-for="col of data.columns" :key="col.fieldname" :field="col.fieldname" 
+      :header="col.label"
+         :headerClass="getAlignment(col.fieldtype)" 
+         :bodyClass="getAlignment(col.fieldtype)"
+         sortable 
+      >
+        <template #body="slotProps">
+          
+          <CurrencyFormat v-if="col.fieldtype=='Currency'" :value="slotProps.data[col.fieldname]"  :class="slotProps.data.is_total_row ==1?'font-bold':''"/>
+         
+            <span  v-else-if="col.fieldtype=='Percent'"  :class="slotProps.data.is_total_row ==1?'font-bold':''">{{ parseFloat(slotProps.data[col.fieldname]).toFixed(2)}}% </span>
+          
+          <span :class="slotProps.data.is_total_row ==1?'font-bold':''" v-else>
+            {{slotProps.data[col.fieldname]}}
+          </span>
+        </template>
+      </Column>
+  </DataTable>
+    </TabPanel>
+</TabView>
   </ComFrontDeskLayout>
 </template>
 <script setup>
-import { ref, h, getApi, onMounted } from "@/plugin";
+import { ref, h, getApi, inject, onMounted,nextTick,computed } from "@/plugin";
 import ComFrontDeskLayout from "@/views/frontdesk/components/ComFrontDeskLayout.vue";
 import ComMapViewTooltip from "@/views/frontdesk/components/ComMapViewTooltip.vue";
+import ComViewSummaryByNationality from "@/views/frontdesk/components/ComViewSummaryByNationality.vue";
+import { useDialog } from 'primevue/usedialog';
+const dialog = useDialog();
+
 import { i18n } from "@/i18n";
 const { t: $t } = i18n.global;
 import { useTippy } from "vue-tippy";
+import CurrencyFormat from "../../components/CurrencyFormat.vue";
+
 const mapCoordinate = ref();
 // Openlayer
 const data = ref({});
+const moment = inject("$moment");
+const gv =  inject("$gv")
 
 const center = ref([104.991, 12.5657]); // Center on Cambodia
 const projection = ref("EPSG:4326");
 const zoom = ref(0);
-const filters = ref({ timespan: "This Year", display_field: "occupy" });
+const property_name = window.property_name;
+const filters = ref({ timespan: "This Year", display_field: "occupy",row_group: "Nationality",property: property_name,chart_type: "bar",show_summary: 1 });
+ 
 const timespanOption = ref([
   "Today",
   "Yesterday",
@@ -135,44 +194,96 @@ const timespanOption = ref([
   "Last Year",
   "Date Range",
 ]);
-const property_name = window.property_name;
 
-const tooltipIndex = ref(null);
 
-function handleOverlayClick() {
-  alert("this is over lay click");
+
+const fieldtype =computed(()=>{
+  return data.value.columns.find(r=>r.fieldname == filters.value.display_field).fieldtype
+})
+
+function getAlignment(fieldtype){
+  if (fieldtype=='Currency') return "text-right"
+  if (fieldtype=='Percent' || fieldtype=='Int' || fieldtype=='Float') return "text-center"
+
+  return "text-left" 
 }
+
+function handleOverlayClick(data) {
+  dialog.open(ComViewSummaryByNationality, {
+        props: {
+            header: $t('View Summary by Nationality') + " - " + data.row_group,
+            style: {
+                width: '80vw',
+            }, 
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+             
+            
+        }
+    });
+}
+
 const handleMapClick = (event) => {
   // Get the coordinate where the click happened
   mapCoordinate.value = event.coordinate;
 };
-function onTimeSpanChange(){
-  alert("hello")
+
+const onSelectDateRange = (data) => {
+  if (filters.value.date_range){
+    if (!filters.value.date_range[0]){
+      delete filters.value["start_date"]
+    }else {
+      filters.value.start_date = moment(filters.value.date_range[0]).format("YYYY-MM-DD")
+    }
+    if (!filters.value.date_range[1]){
+      delete filters.value["end_date"]
+    }else {
+      filters.value.end_date = moment(filters.value.date_range[1]).format("YYYY-MM-DD")
+    }
+  }
+
+  onRefreshData()
+};
+
+
+function onRefreshData(){
+
+  onLoadData()
 }
-function onLoadData() {
+
+async function onLoadData() {
+  await nextTick();
+  if (filters.value.timespan=="Date Range"){
+    if (!filters.value.start_date || !filters.value.end_date){
+      return
+    }
+  }
+
+  gv.loading = true
   getApi(
     "frappe.desk.query_report.run",
     {
       report_name: "Revenue and Occupancy Summary Report",
-      filters: {
-        property: "ESTC  & HOTEL's",
-        timespan: "Date Range",
-        start_date: "2024-08-01",
-        end_date: "2024-08-31",
-        row_group: "Nationality",
-        show_columns: [],
-        show_summary: 1,
-        show_summary_field: [],
-        chart_type: "bar",
-        show_chart_series: [],
-      },
+      filters:filters.value,
       ignore_prepared_report: false,
       are_default_filters: false,
     },
     ""
   ).then((result) => {
     data.value = result.message;
+    gv.loading = false ;
+  }).catch(error=>{
+    gv.loading = false ;
   });
+  
 }
 
 function showTooltip(event, data) {

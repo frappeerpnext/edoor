@@ -57,27 +57,39 @@
             </div>
         </div>
     </div>
-    {{selected_date}}
 </template>
 <script setup>
 import ComOwnerKPICard from '@/views/dashboard/components/ComOwnerKPICard.vue';
 import ComTitleOfKeyKPI from '@/views/dashboard/components/ComTitleOfKeyKPI.vue';
 import ComOwnerKeyValueKPI from '@/views/dashboard/components/ComOwnerKeyValueKPI.vue';
-import { inject, ref, onUnmounted, onMounted, computed } from '@/plugin'
+import { inject, ref, defineProps ,watch ,onMounted, computed } from '@/plugin'
 const loading = ref(true)
 const frappe = inject("$frappe")
-const selected_date = JSON.parse(localStorage.getItem("edoor_working_day")).edoor_working_day
 const call = frappe.call()
 const data = ref({})
-const doc = call.get('edoor.api.frontdesk.get_owner_dashboard_current_revenue_data', {
+const props = defineProps({
+    date: {
+      type: Date,
+    },
+  });
+
+  const fetchData = () => { call.get('edoor.api.frontdesk.get_owner_dashboard_current_revenue_data', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
-        end_date: JSON.parse(localStorage.getItem("edoor_working_day")).date_working_day
+        end_date: props.date
     })
         .then((result) => {
             data.value = result.message
             loading.value = false 
-            console.log(JSON.parse('this' + localStorage.getItem("edoor_property")).name)
+
+            console.log(props.date)
         }).catch((error) => {
             loading.value = false 
   });
+}
+watch(() => props.date, (newDate) => {
+  if (newDate) {
+    fetchData();
+  }
+});
+
 </script>

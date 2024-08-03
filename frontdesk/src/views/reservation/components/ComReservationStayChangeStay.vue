@@ -37,7 +37,8 @@
                                 <InputNumber v-model="stay.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :max="maxNight" :min="1" class="child-adults-txt w-full" />
                             </td>
                             <td class="px-2"> 
-                                <Dropdown :disabled="stay.room_id" v-model="stay.room_type_id" :options="room_types" optionValue="name"
+                                
+                                <Dropdown :disabled="stay.room_id!=''" v-model="stay.room_type_id" :options="room_types" optionValue="name"
                                      optionLabel="room_type" :placeholder="$t('Select Room Type')"
                                     class="w-full">
                                     <template #option="slotProps">

@@ -12,8 +12,8 @@
      <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets?.length > 0">
     <table class="w-full border-bottom-1">
         <tr class="border-bottom-1">
-            <th class="text-center ">Payment Type</th>
-            <th class="text-center border-left-1">Amount</th>
+            <th class="text-center ">Item</th>
+            <th class="text-right border-left-1">Amount</th>
         </tr>
         <tr v-for="(payment, index) in data?.datasets" :key="index">
             <td class="text-center"> 
@@ -21,11 +21,11 @@
                 <div class="h-1rem w-1rem border-circle inline-block me-2" :style="{ backgroundColor: payment.color }" ></div> {{ payment.name }}
                 </div>
             </td>
-            <td class="text-center border-left-1">  <CurrencyFormat :value="payment.values" /></td>
+            <td class="text-right border-left-1">  <CurrencyFormat :value="payment.values" /></td>
         </tr>
         <tr>
             <th class="text-right border-1 pe-2">Total</th>
-            <th class="border-1"><CurrencyFormat :value="totaldValues" /></th>
+            <th class="border-1 text-right"><CurrencyFormat :value="totaldValues" /></th>
         </tr>
     </table>
 </ComPlaceholder>

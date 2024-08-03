@@ -129,7 +129,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-08-02 14:54:01.204331",
+ "modified": "2024-08-03 09:29:21.481902",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Account",
@@ -163,21 +163,21 @@
  "sequence_id": 2.0,
  "shortcuts": [
   {
+   "color": "Grey",
+   "custom_show_in_app_menu": 1,
+   "doc_view": "List",
+   "label": "Guest Ledger",
+   "link_to": "Reservation Folio",
+   "stats_filter": "[[\"Reservation Folio\",\"status\",\"=\",\"Closed\",false],[\"Reservation Folio\",\"total_debit\",\"!=\",null,false],[\"Reservation Folio\",\"total_credit\",\"!=\",null,false]]",
+   "type": "DocType"
+  },
+  {
    "color": "Green",
    "custom_show_in_app_menu": 1,
    "doc_view": "List",
    "label": "Tax Invoices",
    "link_to": "Tax Invoice",
    "stats_filter": "[[\"Tax Invoice\",\"tax_invoice_date\",\"Timespan\",\"this month\",false]]",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "custom_show_in_app_menu": 1,
-   "doc_view": "List",
-   "label": "Guest Ledger",
-   "link_to": "Reservation Folio",
-   "stats_filter": "[[\"Reservation Folio\",\"status\",\"=\",\"Closed\",false],[\"Reservation Folio\",\"balance\",\">\",null,false]]",
    "type": "DocType"
   },
   {

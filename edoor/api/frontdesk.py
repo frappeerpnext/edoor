@@ -835,7 +835,72 @@ def get_business_source_chart_data(property=None,date=None):
   
     return chart_data
 @frappe.whitelist()
-def get_owner_dashboard_current_mount_chart(property=None,duration_type="Daily", view_chart_by="Time Series",):
+def get_nationality_chart_data(property=None,date=None):
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
+    working_date =  frappe.utils.today() 
+
+    if data:
+        working_date = data[0]["date"]
+
+    if not date :
+        date = working_date
+    date = datetime.strptime(date, '%Y-%m-%d').date()
+    sql="""
+            SELECT
+                nationality,
+                SUM(COALESCE(amount, 0) * IF(type = 'Debit', 1, -1)) AS amount
+            FROM `tabFolio Transaction`               
+            WHERE 
+                nationality != ''
+            GROUP BY
+                nationality
+        """
+    data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
+    stay_over_sql = """
+                select 
+                    sum(amount * if(type='Debit',1,-1)) as amount,
+                    nationality
+               FROM 
+                `tabRevenue Forecast Breakdown` 
+            WHERE 
+                nationality != ''
+            GROUP BY
+                nationality
+                    
+            """
+    stay_over_data = frappe.db.sql(stay_over_sql,{"property":property,"date":date}, as_dict=1)
+    chart_data = {
+            "labels":[d['nationality'] for d in data]
+            # "colors": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
+    }
+    colors = ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
+    chart_data["datasets"] = []
+    charges_by_nationality = {}
+    if date >= working_date:
+        for d in data:
+            if d['nationality'] in charges_by_nationality:
+                charges_by_nationality[d['nationality']]  += d['amount'] or 0
+            else:
+                charges_by_nationality[d['nationality']] = d['amount'] or 0
+
+        # Sum charges from the second query result
+        for d in stay_over_data:
+            if d['nationality'] in charges_by_nationality:
+                charges_by_nationality[d['nationality']]  += d['amount'] or 0
+            else:
+                charges_by_nationality[d['nationality']] = d['amount'] or 0
+    for i, (nationality, amount) in enumerate(charges_by_nationality.items()):
+        datasets = {
+            "type": 'bar',
+            "name": nationality,
+            "values": amount,
+            "color": colors[i % len(colors)]
+        }
+        chart_data["datasets"].append(datasets)
+  
+    return chart_data
+@frappe.whitelist()
+def get_owner_dashboard_current_mount_chart(property=None,duration_type="Daily", view_chart_by="Time Series"):
     working_day = get_working_day(property)
     now = getdate(working_day["date_working_day"])
     start_date = getdate( datetime(now.year, now.month, 1))
@@ -853,7 +918,7 @@ def get_owner_dashboard_current_mount_chart(property=None,duration_type="Daily",
         group_by_field = "monthname(date)"
         group_by_field_actual =  "monthname(posting_date)"
     months= get_months(start_date,end_date)
-
+    today_sale_revenue = []
     series_label =[]
     #get series label
     if view_chart_by=="Time Series":
