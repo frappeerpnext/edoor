@@ -6,13 +6,12 @@
         </div>
 <div class="col-12 h-full">
     <div class="grid ">
-        <div class="lg:col-6 col-12">
-            {{ data }}
+        <div class="col-12">
             <Skeleton v-if="loading"  class="mb-2"  width="100%" height="20rem"></Skeleton>
             <div v-else class="surface-ground rounded-lg p-2 h-full">
                 <table class="w-full border-bottom-1">
                 <tr class="border-bottom-1">
-                    <th class="text-start ">Charge List</th>
+                    <th class="text-start ">Business Source</th>
                     <th class="text-end border-left-1">Actual</th>
                     <th class="text-end border-left-1">Expected</th>
                 </tr>
@@ -22,9 +21,10 @@
                         </div>
                     </td>
                     <td class="text-end border-left-1">  <CurrencyFormat :value="payment.actual_values" /></td>
+                    <td class="text-end border-left-1">  <CurrencyFormat :value="payment.expected_value" /></td>
                 </tr>
                 <tr>
-            <th class="text-right border-1 pe-2">Total</th>
+            <th class="text-left border-1 pe-2">Total</th>
             <th class="border-1 text-end"><CurrencyFormat :value="totaldActualValues" /></th>
             <th class="border-1 text-end"><CurrencyFormat :value="totalExpectedValues" /></th>        
         </tr>

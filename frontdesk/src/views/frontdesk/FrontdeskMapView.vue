@@ -22,7 +22,7 @@
             :placeholder="$t('Select Timespan')"
             class="w-full overflow-x-auto"
           />
-
+          {{ filters.timespan }}
           <ComSelect />
 
           <ComSelect />
