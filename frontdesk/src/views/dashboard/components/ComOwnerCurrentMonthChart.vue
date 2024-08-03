@@ -1,6 +1,6 @@
 <template>
 
-    <ComOwnerContentTitle label="Current Month">  
+    <ComOwnerContentTitle label="Actual Revenue vs Forcast Revenue Trend">  
       <div class="flex justify-content-end mr-5">
         <SplitButton :model="items" @click="save" class="p-component spl__btn_cs sp mb-0 mt-2 mr-2" :label="$t(view_chart_by)"></SplitButton>
         <SplitButton :model="duration_types" :label="$t(duration_type)"   class="p-component spl__btn_cs sp mb-0 mt-2"></SplitButton>
@@ -30,7 +30,7 @@
         <div class="w-full overflow-auto px-2 py-4">
       <table class="w-full" >
           <tr class="border-1 p-2 w-full">
-            <th>Name</th>
+            <th>Revenue</th>
             <th v-for="l in data.labels" class="p-2 border-1">{{l}}</th>
           </tr>
           <tr class="border-1" v-for="dataset in data.datasets">

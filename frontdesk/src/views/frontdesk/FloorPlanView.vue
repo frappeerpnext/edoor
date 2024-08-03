@@ -1,27 +1,19 @@
 <template>
-    <div v-interact="{ draggable: true, resizable: true }" class="draggable-box">
-      Drag and Resize Me!
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  
-  const x = ref(0);
-  const y = ref(0);
-  </script>
-  
-  <style>
-  .draggable-box {
-    width: 100px;
-    height: 100px;
-    background-color: lightblue;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-    touch-action: none;
-    position: relative;
-  }
-  </style>
-  
+hello
+<DataTable :value="data" tableStyle="min-width: 50rem">
+    <Column field="name" header="Name"></Column>
+    <Column field="room_number" header="room #"></Column>
+    <Column field="room type" header="room type"></Column>
+    
+</DataTable>
+
+</template>
+<script setup>
+  import {ref,getApi,onMounted} from "@/plugin"
+  const data = ref([])
+  onMounted(()=>{
+    getApi("test.get_data").then(r=>{
+      data.value = r.message
+    })
+  })
+</script>

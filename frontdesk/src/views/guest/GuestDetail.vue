@@ -17,7 +17,10 @@
                     </div>
                 </TabPanel>
                 <TabPanel :header="$t('Note')">
-                    <div v-html="note_html" class="view_table_style min_table_ui_height "></div>
+                    <!-- <div v-html="note_html" class="view_table_style min_table_ui_height "></div> -->
+                    <iframe @load="onIframeLoaded('guest_note_detail')" id="guest_note_detail" style="height:500px; width: 100%;"
+                        :src="noteUrl">
+                    </iframe>
                 </TabPanel>
                 <TabPanel :header=" $t('Folio') ">
                     <div v-html="folio_html" class="view_table_style min_table_ui_height "></div>
@@ -201,6 +204,10 @@ function loadIframe() {
     if(document.getElementById("pos_misc_sale")){
         document.getElementById("pos_misc_sale").contentWindow.location.replace(posMiscSaleUrl.value + "&refresh=" + (Math.random() * 16))
     }
+
+    if(document.getElementById("guest_note_detail")){
+        document.getElementById("guest_note_detail").contentWindow.location.replace(noteUrl.value + "&refresh=" + (Math.random() * 16))
+    }
 }
 
 onUnmounted(() => {
@@ -210,4 +217,4 @@ onUnmounted(() => {
 })
 
 
-</script>
+</script> 

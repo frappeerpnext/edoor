@@ -136,7 +136,7 @@ function viewfoliotaxinvoicedetail() {
              name: dialogRef.value.data.name,
              report_name: gv.getCustomPrintFormat("Invoice"),
              letterhead:"Tax Letterhead",
-             filter_options:["show_vattin"]
+             filter_options:["show_vattin","show_rate_type","show_business_source"]
             
          },
          props: {

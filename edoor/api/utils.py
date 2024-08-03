@@ -1629,7 +1629,7 @@ def get_commercial_tax_data(data):
 
     raw_data = []
     for d in data:
-        tax_invoice_group_by_key , tax_invoice_description_template,show_in_tax_invoice,sort_order = frappe.db.get_value("Account Code",d["account_code"], ["tax_invoice_group_by_key ", "tax_invoice_description_template","show_in_tax_invoice","sort_order"])
+        tax_invoice_group_by_key , tax_invoice_description_template,show_in_tax_invoice,sort_order = frappe.db.get_value("Account Code",d["account_code"], ["tax_invoice_group_by_key", "tax_invoice_description_template","show_in_tax_invoice","sort_order"])
         
         if show_in_tax_invoice:
             record = {}
@@ -1653,7 +1653,7 @@ def get_commercial_tax_data(data):
     raw_data.sort(key=lambda x: x["group_by_key"])
     # Group the data by the group_by_key field
     grouped_data = {key: list(group) for key, group in groupby(raw_data, key=lambda x: x["group_by_key"])}
-    
+
     return_data =[]
     for key, group in grouped_data.items():
         record={

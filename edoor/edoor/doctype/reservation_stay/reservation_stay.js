@@ -19,16 +19,7 @@ frappe.ui.form.on("Reservation Stay", {
                 }else if (!frm.doc.is_reserved_room && frm.doc.reservation_status == 'No Show'){
                         frm.set_intro("We do not reserved room for this reservation.", "blue");
                 }
-                // // set_indicator(frm);
-                // if (frappe.session.user != "Administrator") {
-                        
-                //         for (const field of frm.meta.fields) {
-                //                  if(field.fieldtype!="HTML" &&  field.fieldtype!="Tab Break"){ 
-                //                         frm.set_df_property(field.fieldname, "hidden", 1);
-                //                 }
-
-                //         }
-                // }
+                 
                 if (!frm.doc.__islocal) {
                         getItemReservationStayList(frm) 
                         getReservationRoomRate(frm) 

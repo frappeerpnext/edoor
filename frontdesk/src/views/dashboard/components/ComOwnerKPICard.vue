@@ -8,7 +8,8 @@
         {{ label }}
       </div>
       <div class="text-3xl font-bold">
-        <CurrencyFormat :value="value" />
+        <slot name="value" v-if="$slots.value"></slot>
+        <CurrencyFormat v-else :value="value" />
 
       </div>
     </div>

@@ -92,6 +92,23 @@ frappe.query_reports["Trail Balance Report"] = {
 			"on_change": function (query_report) { },
 		},
 		{
+			"fieldname": "show_package_breakdown",
+			"label": __("Show Package Breakdown"),
+			"fieldtype": "Check",
+			"default":1,
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "show_all_breakdown",
+			"label": __("Show All Breakdown"),
+			"fieldtype": "Check",
+			"default":0,
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+
+		{
 			"fieldname": "group_by_ledger_type",
 			"label": __("Group by Ledger Type"),
 			"fieldtype": "Check",

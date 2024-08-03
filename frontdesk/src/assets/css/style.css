@@ -82,6 +82,12 @@ html {
     background: #6d9afb !important;
     color: white;
 }
+.value_room_type_chart{
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
 .recent_transaction_tap:hover{
     background: #6d9afb !important;
 }
@@ -1869,4 +1875,49 @@ flex-direction: column;
     width: 30rem;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+
+/* guest detail */ 
+.guest_detail .card-columns {
+    -moz-column-count: 3;
+    column-count: 3;
+    -moz-column-gap: 1.25rem;
+    column-gap: 1.25rem;
+    orphans: 1;
+    widows: 1;
+}
+.guest_detail .card-columns .card {
+    display: inline-block;
+    width: 100%;
+}
+.guest_detail .card-columns .card {
+    margin-bottom: 0.5rem;
+}
+.guest_detail .card{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.75rem;
+}
+.guest_detail .card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+}
+.guest_detail .card-title {
+    margin-bottom: 0.5rem;
+}
+.guest_detail small,
+.guest_detail .small {
+    font-size: 0.875em;
+    font-weight: 400;
+}
+.guest_detail small .text-muted {
+    color: #525252;
 }

@@ -162,13 +162,25 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			frappe.query_report.toggle_filter_display('start_date', true  );
 			frappe.query_report.toggle_filter_display('end_date', true );
 		}
-
+		
+		
+	 
+		
+		
 		report.page.add_inner_button("Preview Report", function () {
 			frappe.query_report.refresh();
+			
 		});
+
+
 
 		setLinkField()
 
+
+
+		 
+		 
+		
 
 	},
 	"formatter": function (value, row, column, data, default_formatter) {

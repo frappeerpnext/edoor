@@ -360,7 +360,7 @@ function viewfoliotaxinvoicedetail() {
             name: selectedFolio.value.tax_invoice_number,
             report_name: r.default_print_format?gv.getCustomPrintFormat(r.default_print_format) :  gv.getCustomPrintFormat("Invoice"),
             letterhead: r.default_letterhead || "Tax Letterhead",
-            filter_options:["show_vattin"]
+            filter_options:["show_vattin","show_rate_type","show_business_source"]
         },
         props: {
             header: $t("Print Tax Invoice"),

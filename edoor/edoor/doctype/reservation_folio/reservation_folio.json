@@ -23,8 +23,11 @@
   "column_break_6",
   "reservation",
   "reservation_stay",
+  "arrival_date",
+  "departure_date",
+  "stay_date",
   "business_source",
-  "room_type",
+  "room_info",
   "room_types",
   "room_types_alias",
   "rooms",
@@ -188,6 +191,7 @@
    "fetch_from": "reservation_stay.rooms",
    "fieldname": "rooms",
    "fieldtype": "Data",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Rooms",
    "length": 500
@@ -318,12 +322,6 @@
    "label": "Other Info(Admin Only)"
   },
   {
-   "fieldname": "room_type",
-   "fieldtype": "HTML",
-   "label": "Room Type",
-   "options": "<div class=\"frappe-control input-max-width custom_control\" data-fieldtype=\"Data\" data-fieldname=\"rooms\">\n\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t<div class=\"clearfix\">\n\t\t\t\t\t\t<label class=\"control-label\" style=\"padding-right: 0px;\">Room Types</label>\n\t\t\t\t\t\t\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"control-input-wrapper\">\n\t\t\t\t\t\t<div class=\"control-input\" style=\"display: none;\"></div>\n\t\t\t\t\t\t<div class=\"control-value like-disabled-input\" style=\"\">{{doc.room_types}} ({{doc.room_types_alias}})</div>\n\t\t\t\t\t\t<p class=\"help-box small text-muted\"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t</div>"
-  },
-  {
    "fieldname": "folio_type",
    "fieldtype": "Link",
    "label": "Folio Type",
@@ -344,11 +342,39 @@
    "fieldname": "show_in_pos_transfer",
    "fieldtype": "Check",
    "label": "Show in POS Transfer"
+  },
+  {
+   "fetch_from": "reservation_stay.departure_date",
+   "fieldname": "departure_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Departure Date"
+  },
+  {
+   "fetch_from": "reservation_stay.arrival_date",
+   "fieldname": "arrival_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Arrival Date"
+  },
+  {
+   "fieldname": "stay_date",
+   "fieldtype": "Data",
+   "is_virtual": 1,
+   "label": "Stay Date",
+   "options": "f\"{doc.get_formatted('arrival_date')} to {doc.get_formatted('departure_date')}\""
+  },
+  {
+   "fieldname": "room_info",
+   "fieldtype": "Data",
+   "is_virtual": 1,
+   "label": "Rooms",
+   "options": "f\"{doc.rooms} - {doc.room_types} ({doc.room_type_alias})\""
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-11 09:24:52.104083",
+ "modified": "2024-08-02 11:15:35.135062",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

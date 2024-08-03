@@ -1,5 +1,5 @@
 <template>
-    <ComOwnerContentTitle label="Payment">       
+    <ComOwnerContentTitle label="Payment & Refund">       
         <div class="grid">
         <div class="lg:col-6 col-12 pt-6">
             <div v-if="loading" class="flex w-full justify-content-center">
@@ -15,7 +15,7 @@
     <table class="w-full border-bottom-1 relative">
         <tr class="border-bottom-1 surface-ground" style="position: sticky;top: 0;">
             <th class="text-center ">Payment Type</th>
-            <th class="text-center border-left-1">Amount</th>
+            <th class="text-right  border-left-1">Amount</th>
         </tr>
         <tr v-for="(payment, index) in data?.datasets" :key="index">
             <td class="text-center"> 
@@ -23,11 +23,11 @@
                 <div class="h-1rem w-1rem border-circle inline-block me-2" :style="{ backgroundColor: payment.color }" ></div> {{ payment.name }}
                 </div>
             </td>
-            <td class="text-center border-left-1">  <CurrencyFormat :value="payment.values" /></td>
+            <td class="text-right border-left-1">  <CurrencyFormat :value="payment.values" /></td>
         </tr>
         <tr>
             <th class="text-right border-1 pe-2">Total</th>
-            <th class="border-1"><CurrencyFormat :value="totalValues" /></th>
+            <th class="text-right border-1"><CurrencyFormat :value="totalValues" /></th>
         </tr>
     </table>
 </ComPlaceholder>

@@ -1,5 +1,5 @@
 <template>
-
+ 
     <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
         <div class="p-3" :class="(view || '') != 'ui' ? 'grid': ''">
             <div :class="(view || '') != 'ui' ? 'col-4 lg:col-3' : ''">
@@ -19,6 +19,20 @@
                                 <span class="absolute w-full">
                                     <Checkbox @input="reloadIframe" class="w-full" v-model="filters.show_vattin" :trueValue="1" :falseValue="0"  :binary="true" /></span>
                                 <span class="pl-5">Show / Hide Vattin Number</span>
+                            </div>        
+                        </div>
+                        <div v-if="hasFilter('show_business_source')">
+                            <div class="relative mt-2">
+                                <span class="absolute w-full">
+                                    <Checkbox @input="reloadIframe" class="w-full" v-model="filters.show_business_source" :trueValue="1" :falseValue="0"  :binary="true" /></span>
+                                <span class="pl-5">Show / Hide Business Source</span>
+                            </div>        
+                        </div>
+                        <div v-if="hasFilter('show_rate_type')">
+                            <div class="relative mt-2">
+                                <span class="absolute w-full">
+                                    <Checkbox @input="reloadIframe" class="w-full" v-model="filters.show_rate_type" :trueValue="1" :falseValue="0"  :binary="true" /></span>
+                                <span class="pl-5">Show / Hide Rate Type</span>
                             </div>        
                         </div>
                         <div v-if="hasFilter('keyword')">
@@ -275,6 +289,8 @@ const filters = ref({
     show_vattin:0,
     show_summary:0,
     show_package_breakdown:1,
+    show_business_source:0,
+    show_rate_type:0
 
 })
 const show_toolbar = ref(0)
