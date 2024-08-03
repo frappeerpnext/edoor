@@ -14,6 +14,7 @@
                 <tr class="border-bottom-1">
                     <th class="text-start ">Charge List</th>
                     <th class="text-end border-left-1">Actual</th>
+                    <th class="text-end border-left-1">Expected</th>
                 </tr>
                 <tr  v-for="(payment, index) in data?.datasets" :key="index">
                     <td class="text-end"> 
@@ -25,6 +26,7 @@
                 <tr>
             <th class="text-right border-1 pe-2">Total</th>
             <th class="border-1 text-end"><CurrencyFormat :value="totaldActualValues" /></th>
+            <th class="border-1 text-end"><CurrencyFormat :value="totalExpectedValues" /></th>        
         </tr>
                 </table>
             </div>
