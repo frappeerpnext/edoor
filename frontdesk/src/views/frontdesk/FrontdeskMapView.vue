@@ -18,11 +18,12 @@
           <ComSelect
             :clear="false"
             :options="timespanOption"
-            v-model="filters.timespan"
+            :value="filters.timespan"
+            @changed="onTimeSpanChange"
             :placeholder="$t('Select Timespan')"
             class="w-full overflow-x-auto"
           />
-          {{ filters.timespan }}
+          
           <ComSelect />
 
           <ComSelect />
@@ -145,7 +146,9 @@ const handleMapClick = (event) => {
   // Get the coordinate where the click happened
   mapCoordinate.value = event.coordinate;
 };
-
+function onTimeSpanChange(){
+  alert("hello")
+}
 function onLoadData() {
   getApi(
     "frappe.desk.query_report.run",
