@@ -1,6 +1,6 @@
 <template lang="">
     <div>
-        <ComHeader :isSetting="showSetting" :isRefresh="showRefreshButton" @onRefresh="onRefresh">
+        <ComHeader :isSetting="showSetting" :isRefresh="showRefreshButton" @onRefresh="onRefresh"  @onSetting="onSetting">
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center  w-full">
@@ -160,7 +160,7 @@ const props = defineProps({
 
 
 })
-const emit = defineEmits("onRefresh")
+const emit = defineEmits(["onRefresh","onSetting"])
 
 const confirm = useConfirm()
 
@@ -198,6 +198,10 @@ if (isMobile) {
 function onRefresh (){
     emit("onRefresh")
 }
+function onSetting (){
+    emit("onSetting")
+}
+
 
 provide('get_count_note', {
     getTotalNote

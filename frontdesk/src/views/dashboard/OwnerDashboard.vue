@@ -1,5 +1,8 @@
 <template>
-    <div class="py-2" style="z-index: 200;">
+    
+    <div class="w-full flex item-content-center justify-content-between mt-1">
+        <div>OwnerDashboard</div>
+  <div class="py-2" style="z-index: 200;">
         <Button :label="$t('Yesterday ')" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
                 :class="selected_date == yesterday  ? 'active' : ''" @click="onShowTommorowData()" />
         <Button :label="$t('Today')" class="w-8rem md:w-12rem btn-date__t border-noround border-x-none border-none"
@@ -8,6 +11,8 @@
                 <Calendar v-model="selected_date" :selectOtherMonths="true" class="w-48 das-calendar" inpu panelClass="no-btn-clear"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
     </div>
+    </div>
+  
    
         <div class="w-full mt-2">
             <ComOwnerDashboardKPI :date="selected_date" />

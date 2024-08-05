@@ -88,6 +88,9 @@ html {
     right: 10px;
     transform: translateY(-50%);
 }
+.active_btn{
+    background-color: #bccbfd !important;
+}
 .recent_transaction_tap:hover{
     background: #6d9afb !important;
 }

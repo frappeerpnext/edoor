@@ -61,6 +61,8 @@
           </div>
         </div>
       </ol-overlay>
+      <ol-interaction-transform/>
+      
     </ol-map>
 
 </template>

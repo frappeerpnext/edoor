@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-xl px-3 py-2 h-full"> 
+  <div :class="bgcolor" class="bg-white rounded-xl px-3 py-2 h-full"> 
     <div class="text-lg font-bold">
         {{label}}  
     </div>      
@@ -12,6 +12,10 @@
    const props = defineProps({
      label: {
        type: String,
+     },
+     bgcolor: {
+       type: String,
+       default:"bg-white"
      },
    });
    </script>

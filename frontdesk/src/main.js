@@ -47,7 +47,7 @@ import { i18n } from '@/i18n';
 import "vue3-openlayers/styles.css";
 
 import OpenLayersMap from "vue3-openlayers";
-
+ 
 
 const app = createApp(App);
 
@@ -156,7 +156,7 @@ import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import VueSortable from "vue3-sortablejs";
 import vInteract from './directives/v-interact';
- 
+import DraggableResizableVue from 'draggable-resizable-vue3'
 
 app.config.globalProperties.$t = i18n.global.t;
 
@@ -239,7 +239,8 @@ app.component('ComTimeago', ComTimeago)
 app.component('ComAttachWebcam', ComAttachWebcam)
 app.component('ComOpenStatus', ComOpenStatus)
 app.component('ComIFrameModal', ComIFrameModal)
- 
+app.use(DraggableResizableVue)
+
 
 // Plugins
 app.use(frappe)

@@ -246,7 +246,7 @@ fixtures = [
         ],
         
     },
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Blank Guest Registration Card"]]},
+    {"dt": "Country"},
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Shortcut Menu Help"]]},
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Vendor Detail"]]},
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Cashier Shift Folio Transaction Detail"]]},

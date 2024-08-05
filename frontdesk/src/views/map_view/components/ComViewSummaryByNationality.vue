@@ -1,10 +1,14 @@
 <template>
-    <ComDialogContent  hideButtonClose titleButtonOK="Ok" :hideIcon="false" :loading="loading" >
-    <Button v-for="(view_type, index) in displayBy" :key="index" @click="onLoadData(view_type)">{{ view_type }}</Button>
-    <hr>
-    {{ filters }}
-    <hr>
-    <ComSummaryKPI :report_summary ="data?.report_summary"/>
+    <ComDialogContent  hideButtonClose titleButtonOK="Ok" :hideIcon="false" :loading="loading" > 
+    <div class="grid gap-2">
+<Button :class="{ 'active_btn': activeIndex === index }" class="conten-btn" v-for="(view_type, index) in displayBy" :key="index" @click="onLoadData(view_type,index)">{{ view_type }}</Button>
+    </div>
+      
+    <hr class="my-2">
+    <div class="mt-2">
+       <ComSummaryKPI :report_summary ="data?.report_summary" bgColor="surface-100"/>
+    </div>
+   
 
     <ComChartView v-if="data?.chart" :chart="data?.chart"/>
 
@@ -19,18 +23,19 @@
     import ComSummaryKPI from "@/views/map_view/components/ComSummaryKPI.vue"
     import ComViewDataInTable from "@/views/map_view/components/ComViewDataInTable.vue"
     import ComChartView from "@/views/map_view/components/ComChartView.vue"
-
+    const activeIndex = ref(0);
     const { t: $t } = i18n.global;
     const dialog = useDialog()
     const moment = inject("$moment")
     const dialogRef = inject("dialogRef");
     const displayBy =["Date","Month","Year", "Room Type","Room", "Business Source","Business Source Type","Guest Type"]
     const filters = ref()
- 
+    const defaultFilter = "Month"
     const data = ref()
     const loading = ref(true)
 
-async function onLoadData(view_type="Month") {
+async function onLoadData(view_type=defaultFilter,index) {
+  activeIndex.value = index;
   await nextTick();
   if (filters.value.timespan=="Date Range"){
     if (!filters.value.start_date || !filters.value.end_date){
@@ -61,8 +66,10 @@ async function onLoadData(view_type="Month") {
         
         filters.value = dialogRef.value.data.filters
         
-
-        onLoadData()
+        const defaultIndex = displayBy.indexOf(defaultFilter);
+  if (defaultIndex !== -1) {
+    onLoadData(defaultFilter, defaultIndex);
+  }
     })
 
 </script>

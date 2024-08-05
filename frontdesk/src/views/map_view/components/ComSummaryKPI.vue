@@ -1,5 +1,5 @@
 <template>
-  <div class="grid bg-white card border-round-lg">
+  <div :class="bgColor" class="grid card border-round-lg">
 <div v-for="(s, index) in report_summary" :key="index" class="col p-3" :class="s.indicator">
   <div class="white-space-nowrap text-center">
  {{ s.label }}
@@ -17,7 +17,11 @@ import { i18n } from "@/i18n";
 const { t: $t } = i18n.global;
  
 const props = defineProps({
-  report_summary:Object
+  report_summary:Object,
+  bgColor:{
+    type:String,
+    default:"bg-white"
+  }
 })
  
 
