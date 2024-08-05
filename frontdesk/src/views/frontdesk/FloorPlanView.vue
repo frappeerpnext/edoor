@@ -1,28 +1,47 @@
 <template>
-  <ComFrontDeskLayout :title="$t('Map View')">
-<DataTable :value="data" tableStyle="min-width: 50rem">
-    <Column field="name" header="Name"></Column>
-    <Column field="room_number" header="room #"></Column>
-    <Column field="room type" header="room type"></Column>
-    
-</DataTable>
-</ComFrontDeskLayout>
-</template>
-<script setup>
-  import {ref,getApi,getDocList,onMounted} from "@/plugin"
-  import ComFrontDeskLayout from "@/views/frontdesk/components/ComFrontDeskLayout.vue";
-  import { i18n } from "@/i18n";
-const { t: $t } = i18n.global;
-  const data = ref([])
-  onMounted(()=>{
-    getDocList("Room",
-    {
-      fields:["name","room_number","room_type"],
-      limit:5
-    }
+ 
+  <ol-map style="height:100vh">
+    <ol-view
+      ref="view"
+      :center="center"
+      :zoom="zoom"
+      :projection="projection"
+    />
 
-    ).then(r=>{
-      data.value = r
-    })
-  })
+    <ol-tile-layer>
+      <ol-source-osm />
+    </ol-tile-layer>
+
+    <ol-overlay
+      :position="[item + 37.9 + offset, 40.1]"
+      v-for="item in list"
+      :key="item"
+      :autoPan="true"
+    >
+      <div class="overlay-content">
+        {{ item }}
+      </div>
+    </ol-overlay>
+  </ol-map>
+</template>
+
+<script setup>
+import { ref } from "vue";
+
+const center = ref([40, 40]);
+const projection = ref("EPSG:4326");
+const zoom = ref(8);
+const offset = ref(0);
+const list = ref([2, 1, 3, 5, -1]);
+
 </script>
+
+<style scoped>
+.overlay-content {
+  background: #efefef;
+  box-shadow: 0 5px 10px rgb(2 2 2 / 20%);
+  padding: 10px 20px;
+  font-size: 16px;
+  color: black;
+}
+</style>

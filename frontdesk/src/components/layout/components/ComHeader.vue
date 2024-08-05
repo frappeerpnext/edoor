@@ -10,6 +10,7 @@
             <slot name="end"></slot>
             <div v-if="isRefresh" class="border-left-1 border-primary-100"></div>
             <Button v-if="isRefresh && !isMobile" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
+            <Button v-if="isSetting && !isMobile" @click="onSetting()" icon="pi pi-cog" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
         </div>
     </div>
 </template>
@@ -21,14 +22,20 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    isSetting: {
+        type: Boolean,
+        default: false
+    },
     fillClass: String,
     wrClass: String,
     colClass:String,
 })
-const emit = defineEmits(['onRefresh'])
+const emit = defineEmits(['onRefresh','onSetting'])
 function onRefresh(){
     emit('onRefresh')
+    emit('onSetting')
 }
+
 
 </script>
 <style scoped>

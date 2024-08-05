@@ -1,6 +1,6 @@
 <template lang="">
     <div>
-        <ComHeader>
+        <ComHeader :isSetting="showSetting" :isRefresh="showRefreshButton" @onRefresh="onRefresh">
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center  w-full">
@@ -146,11 +146,21 @@ const props = defineProps({
         type:Boolean,
         default:true
     },
+    showRefreshButton:{
+        type:Boolean,
+        default:false
+    },
+    showSetting:{
+        type:Boolean,
+        default:false
+    },
+
 
     
 
 
 })
+const emit = defineEmits("onRefresh")
 
 const confirm = useConfirm()
 
@@ -184,7 +194,10 @@ let advanceFilter = ref({
 if (isMobile) {
     showSummary.value = false
 }
- 
+
+function onRefresh (){
+    emit("onRefresh")
+}
 
 provide('get_count_note', {
     getTotalNote

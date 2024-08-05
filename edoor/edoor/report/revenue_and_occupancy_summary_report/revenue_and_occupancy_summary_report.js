@@ -93,6 +93,13 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
       options: "Customer Group",
       on_change: function (query_report) {},
     },
+    {
+      fieldname: "nationality",
+      label: __("Nationality"),
+      fieldtype: "Link",
+      options: "Country",
+      on_change: function (query_report) {},
+    },
     // {
     // 	"fieldname": "parent_row_group",
     // 	"label": __("Parent Group By"),
@@ -106,7 +113,7 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
       label: __("Group By"),
       fieldtype: "Select",
       options:
-        "Date\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nGuest Type\nNationality",
+        "Date\nMonth\nYear\nRoom Type\nRoom\nReservation Type\nBusiness Source\nBusiness Source Type\nGuest Type\nNationality",
       default: "Date",
       on_change: function (query_report) {},
       hide_in_filter: 1,

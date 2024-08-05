@@ -6,3 +6,5 @@ def test_update_time():
     doc.arrival_time ='10:55:56'
     doc.save()
     frappe.db.commit()
+    
+    

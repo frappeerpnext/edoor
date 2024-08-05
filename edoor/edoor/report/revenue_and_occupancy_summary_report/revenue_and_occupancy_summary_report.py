@@ -10,6 +10,8 @@ from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_bu
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_guest_type
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_nationality
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_room_type
+from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_room
+
 from edoor.api.frontdesk import get_working_day
 from frappe import _
 from frappe.utils import date_diff,today ,add_months, add_days,getdate,add_to_date
@@ -58,6 +60,8 @@ def execute(filters=None):
 		
 	elif filters.row_group == "Room Type":
 		report =  report_by_room_type.get_report(filters, report_config)
+	elif filters.row_group == "Room":
+		report =  report_by_room.get_report(filters, report_config)
 
 	message = _("This is report is for past date transaction")
 	return report["columns"], report["data"],message,report["report_chart"], report["report_summary"],True

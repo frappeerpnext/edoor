@@ -111,6 +111,9 @@ def get_occupy_data_filters(filters):
 
 	if filters.guest_type:
 		sql = "{} and guest_type=%(guest_type)s".format(sql)
+  
+	if filters.nationality:
+		sql = "{} and nationality=%(nationality)s".format(sql)
 	
 	if filters.business_source_type:
 		sql = "{} and business_source_type=%(business_source_type)s".format(sql)
@@ -135,6 +138,9 @@ def get_folio_transaction_filters(filters):
 
 	if filters.guest_type:
 		sql = "{} and guest_type=%(guest_type)s".format(sql)
+
+	if filters.nationality:
+		sql = "{} and nationality=%(nationality)s".format(sql)
 
 	if filters.business_source_type:
 		sql = "{} and business_source_type=%(business_source_type)s".format(sql)
