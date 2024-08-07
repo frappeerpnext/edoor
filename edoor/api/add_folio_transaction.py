@@ -308,6 +308,8 @@ def get_folio_transaction_breakdown(data=None):
         
     
     account_doc = get_account_code_doc(data["account_code"])
+
+        
     package_data = []
     if account_doc.is_package:
         package_data = [{
@@ -355,11 +357,11 @@ def get_folio_transaction_breakdown(data=None):
    
     account_code_breakdown =[d for d in account_code_breakdown if d["amount"]>0 or d["is_package_account"]==0]
     account_code_breakdown = get_charge_breakdown_by_account_code_breakdown(json.dumps(account_code_breakdown)) 
-    
+
     return account_code_breakdown
 
 def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
-   
+
     if "base_account" in breakdown_data:
         base_doc = get_folio_transaction_doc_share_property(data, breakdown_data["base_account"],working_day)
         if "name" in data:
@@ -373,8 +375,8 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
         base_doc.discount_amount = breakdown_data["base_account"]["discount_amount"]
         base_doc.total_tax = breakdown_data["base_account"]["total_tax"]
         
-        base_doc.quantity= breakdown_data["base_account"]["quantity"]
-        base_doc.report_quantity= breakdown_data["base_account"]["quantity"]
+
+        
         base_doc.price =    base_doc.amount if base_doc.quantity ==0 else base_doc.amount / base_doc.quantity
         base_doc.total_amount = base_doc.amount - (base_doc.discount_amount or  0)+ (base_doc.total_tax or 0)
         
@@ -397,7 +399,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
                 base_doc.total_amount = base_doc.total_amount + base_doc.bank_fee_amount 
                 base_doc.transaction_amount = base_doc.transaction_amount + base_doc.bank_fee_amount
         update_folio_transaction_note(base_doc)
-        
+
         base_doc.insert()
     
  
@@ -631,9 +633,11 @@ def get_folio_transaction_doc_share_property(data,folio_transaction_data,working
     doc.account_group_name = account_info["account_group_name"]
     doc.tax_rule = account_info["tax_rule"]
     
+    if doc.allow_enter_quantity == 0:
+        doc.quantity = 0
     if account_info["show_quantity_in_report"]==1:
         doc.report_quantity = doc.quantity or 1
-        
+   
     
     
     doc.is_package = account_info["is_package"]

@@ -38,11 +38,15 @@
 </ComOwnerContentTitle>    
 </template>
 <script setup>
-import {  ref, onMounted,getApi,computed } from '@/plugin'
+import {  ref, onMounted,getApi,computed,defineProps } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 const loading = ref(true)
- 
+const props = defineProps({
+    date: {
+      type: Date,
+    },
+  });
  
 const data = ref({})
 const totalValues = computed(() => {

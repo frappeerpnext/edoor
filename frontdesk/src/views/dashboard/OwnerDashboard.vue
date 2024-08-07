@@ -1,20 +1,24 @@
 <template>
-    
-    <div class="w-full flex item-content-center justify-content-between mt-1">
-        <div>OwnerDashboard</div>
-  <div class="py-2" style="z-index: 200;">
+       <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
+           <template #start>
+               <div class="text-xl md:text-2xl"> {{ $t('Owner Dashboard') }} </div>
+           </template>
+           <template #center>
+            <div class="w-full flex item-content-center justify-content-center">
+    <div class="calendar_class" style="z-index: 200;">
         <Button :label="$t('Yesterday ')" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
                 :class="selected_date == yesterday  ? 'active' : ''" @click="onShowTommorowData()" />
         <Button :label="$t('Today')" class="w-8rem md:w-12rem btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == working_day.date_working_day ? 'active' : ''" @click="onShowTodayData()" />
-        
-                <Calendar v-model="selected_date" :selectOtherMonths="true" class="w-48 das-calendar" inpu panelClass="no-btn-clear"
+                <Calendar :inputClass="(selected_date != yesterday && selected_date != working_day.date_working_day)  ? 'calendar_active' : ''" v-model="selected_date" :selectOtherMonths="true" class="w-48 das-calendar" inpu panelClass="no-btn-clear"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
     </div>
     </div>
+           </template>
+       </ComHeader>
   
    
-        <div class="w-full mt-2">
+        <div class="w-full -mt-2">
             <ComOwnerDashboardKPI :date="selected_date" />
         </div>    
         <div class="grid px-2 mt-2">
@@ -92,5 +96,9 @@ function onShowTommorowData() {
 }
 onMounted(() => {
     selected_date.value = working_day.date_working_day;
-})       
+}) 
+function Refresh() {
+    window.postMessage({ action: "ComOwnerDashboardKPI" }, "*");
+}
+    
 </script>

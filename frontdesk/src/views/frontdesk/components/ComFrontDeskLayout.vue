@@ -38,6 +38,16 @@
         <ComWalkInReservation v-if="showWalkInReservation" />            
         <NewFITReservationButton v-if="showFITReservationButton" />
         <NewGITReservationButton v-if="showGITReservationButton" />
+        
+        <Button v-if="showSetting" :class="fillClass ? fillClass : 'content_btn_b'" style="font-size: 1.5rem"  icon="pi pi-ellipsis-v" @click="toggle"></Button>
+            <Menu ref="show" :popup="true" style="min-width: 180px;">
+                <template #start>
+                    <slot name="setting_menu">
+                           
+                    </slot>
+                </template>
+            </Menu>
+
                   
 </template>
 </div>
@@ -163,7 +173,10 @@ const props = defineProps({
 const emit = defineEmits(["onRefresh","onSetting"])
 
 const confirm = useConfirm()
-
+const show = ref()
+const toggle = (event) => {
+    show.value.toggle(event);
+};
 
 const moment = inject('$moment')
 

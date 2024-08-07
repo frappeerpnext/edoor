@@ -91,6 +91,13 @@ html {
 .active_btn{
     background-color: #bccbfd !important;
 }
+.calendar_active{
+    background-color: var(--bg-btn-color) !important;
+    color: white !important;
+}
+.calendar_class button.p-button.p-component.p-button-icon-only.p-datepicker-trigger{
+     border-left: 1px solid;
+}
 .recent_transaction_tap:hover{
     background: #6d9afb !important;
 }
@@ -1858,7 +1865,7 @@ flex-direction: column;
     color: #0000006a;
 }
 .bg-kpi-owner-db{
-    background-color: #2100A6;
+    background-color: #106ebe;
 }
 .p-highlight .p-radiobutton-box{
     border-color: #4337cb !important;

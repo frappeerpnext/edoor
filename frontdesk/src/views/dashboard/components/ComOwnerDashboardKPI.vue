@@ -1,10 +1,9 @@
 <template> 
     <div class="w-full text-white bg-kpi-owner-db p-5 border-round-xl">
-     
         <div class="grid gap-2" >
             <template v-if="loading">
                 <div v-for="index in 6" :key="index" class="col p-0">
-      <Skeleton width="100%" height="100%"></Skeleton>   
+      <Skeleton width="100%" height="75px"></Skeleton>   
     </div>
             </template>
            <template v-else> 
@@ -62,7 +61,7 @@
 import ComOwnerKPICard from '@/views/dashboard/components/ComOwnerKPICard.vue';
 import ComTitleOfKeyKPI from '@/views/dashboard/components/ComTitleOfKeyKPI.vue';
 import ComOwnerKeyValueKPI from '@/views/dashboard/components/ComOwnerKeyValueKPI.vue';
-import { inject, ref, defineProps ,watch ,onMounted, computed } from '@/plugin'
+import { inject, ref, defineProps ,watch ,onMounted, computed ,onUnmounted } from '@/plugin'
 const loading = ref(true)
 const frappe = inject("$frappe")
 const call = frappe.call()
@@ -73,15 +72,15 @@ const props = defineProps({
     },
   });
 
-  const fetchData = () => { call.get('edoor.api.frontdesk.get_owner_dashboard_current_revenue_data', {
+  const fetchData = () => { 
+    loading.value = true 
+    call.get('edoor.api.frontdesk.get_owner_dashboard_current_revenue_data', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
         end_date: props.date
     })
         .then((result) => {
             data.value = result.message
             loading.value = false 
-
-            console.log(props.date)
         }).catch((error) => {
             loading.value = false 
   });
@@ -91,5 +90,17 @@ watch(() => props.date, (newDate) => {
     fetchData();
   }
 });
-
+const windowActionHandler = async function (e) {
+        if (e.isTrusted) {
+            if (e.data.action == "ComOwnerDashboardKPI") {
+                fetchData();    
+            }
+        }
+    }
+onMounted(() => {
+        window.addEventListener('message', windowActionHandler, false);
+    })
+   onUnmounted(() => {
+     window.removeEventListener('message', windowActionHandler, false);
+   })
 </script>

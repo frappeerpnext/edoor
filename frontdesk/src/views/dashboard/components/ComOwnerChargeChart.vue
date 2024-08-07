@@ -8,7 +8,7 @@
         </div>
 <div class="col-12 h-full">
     <Skeleton v-if="loading" width="100%" height="20rem"></Skeleton>     
-<div v-else class="surface-ground rounded-lg p-2" style="min-height:20rem;max-height:20rem;">
+<div v-else class="surface-ground rounded-lg p-2" >
     <table class="w-full border-bottom-1">
   <tr class="border-bottom-1">
     <th class="text-center ">Charge List</th>

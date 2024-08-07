@@ -13,6 +13,7 @@ from dateutil.relativedelta import relativedelta
 from frappe.utils import getdate,add_to_date
 from frappe.desk.search import search_link
 from frappe import _ 
+import json
 
 @frappe.whitelist(methods="POST")
 def search(doctypes=None, txt="" ,filters=None):
@@ -3527,8 +3528,39 @@ def get_arrival_stay_over_departure_backend():
                         ) 
                     """
             data["stay_over"] = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
-
-
-    
     return data
-            
+
+@frappe.whitelist()
+def get_room_for_floor_plan(filters):
+    filters = json.loads(filters)
+    sql = "select name,room_number, room_type_alias, room_type from `tabRoom` where property=%(property)s and floor=%(floor)s"
+    data = frappe.db.sql(sql,filters,as_dict=1)
+    return data
+
+@frappe.whitelist()
+def get_room_for_floor_plan_arrangement(filters):
+    filters = json.loads(filters)
+    sql = "select name,room_number, room_type_alias, room_type from `tabRoom` where property=%(property)s and floor=%(floor)s"
+    data = frappe.db.sql(sql,filters,as_dict=1)
+    positions =  frappe.db.get_value("Floor",filters["floor"],"room_position")
+    if positions:
+        positions = json.loads(positions)
+        
+    for r in data:
+        p = [d for d in positions if d["name"] == r["name"]]
+        if p:
+            p = p[0]
+            r["x"] = 0 if not "x"  in p   else p["x"]
+            r["y"] = 0 if not "y"  in p   else p["y"]
+            r["height"] = 100 if not "height"  in p   else p["height"]
+            r["width"] = 100 if not "width"  in p   else p["width"]
+    return data
+
+@frappe.whitelist(methods="POST")
+def save_room_layout_position(floor,data):
+    doc = frappe.get_doc("Floor",floor)
+    doc.room_position = json.dumps(data)
+    doc.save()
+    frappe.msgprint("Save room floor plan successfully")
+    
+    

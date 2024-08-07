@@ -1382,12 +1382,13 @@ def update_room_status_by_reservation_stay(name):
 
 @frappe.whitelist()
 def get_tax_invoice_data(folio_number,document_type,date = None):
-    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio' and parent_account_name!='POS Transfer'".format(folio_number),as_dict=1)
+    total_vat = 0
+    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='{}' and parent_account_name!='POS Transfer'".format(folio_number,document_type),as_dict=1)
     sale=frappe.db.sql("select * from `tabSale` where name='{}'".format(folio_number),as_dict=1)
     
     tax_data = []
     pos_tax_data = get_tax_invoice_data_from_pos_bill_to_room(document_type, folio_number)
-    if document_type == 'Reservation Folio':
+    if document_type in ['Reservation Folio', 'Desk Folio']:
         tax_data = get_tax_data(data)
         tax_data = tax_data + pos_tax_data["revenue_data"]
     elif document_type == 'Sale':
@@ -1591,7 +1592,7 @@ def get_tax_invoice_vat_amount(data):
 
 @frappe.whitelist()
 def get_commercial_tax_invoice_data(folio_number,document_type,date = None):
-    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio' and is_base_transaction=1 and account_group_name='Charge'".format(folio_number),as_dict=1)
+    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio' and is_base_transaction=1 ".format(folio_number),as_dict=1)
     
     tax_data = []
     if document_type == 'Reservation Folio':

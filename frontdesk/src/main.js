@@ -158,6 +158,7 @@ import VueSortable from "vue3-sortablejs";
 import vInteract from './directives/v-interact';
 import DraggableResizableVue from 'draggable-resizable-vue3'
 
+
 app.config.globalProperties.$t = i18n.global.t;
 
 // use components //
@@ -239,6 +240,7 @@ app.component('ComTimeago', ComTimeago)
 app.component('ComAttachWebcam', ComAttachWebcam)
 app.component('ComOpenStatus', ComOpenStatus)
 app.component('ComIFrameModal', ComIFrameModal)
+ 
 app.use(DraggableResizableVue)
 
 

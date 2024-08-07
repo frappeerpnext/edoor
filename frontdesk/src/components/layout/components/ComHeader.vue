@@ -10,26 +10,14 @@
             <slot name="end"></slot>
             <div v-if="isRefresh" class="border-left-1 border-primary-100"></div>
             <Button v-if="isRefresh && !isMobile" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
-            <Button v-if="isSetting" :class="fillClass ? fillClass : 'content_btn_b'" style="font-size: 1.5rem"  icon="pi pi-ellipsis-v" @click="toggle"></Button>
-            <Menu ref="show" :popup="true" style="min-width: 180px;">
-                <template #start>
-                    <button v-if="isSetting" @click="onSetting()" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                       <i class="pi pi-cog me-2" ></i>
-                        {{ $t('Setting') }}
-                    </button>
-                </template>
-            </Menu>
-
+            
         </div>
     </div>
 </template>
 <script setup>
 import { ref } from '@/plugin'
 const isMobile = ref(window.isMobile) 
-const show = ref()
-const toggle = (event) => {
-    show.value.toggle(event);
-};
+
 const props = defineProps({
     isRefresh: {
         type: Boolean,

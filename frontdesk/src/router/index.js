@@ -4,7 +4,7 @@ import Home from "../views/Home.vue";
 import Dashboard from "../views/dashboard/Dashboard.vue";
 import OwnerDashboard from "../views/dashboard/OwnerDashboard.vue";
 import Frontdesk from "../views/frontdesk/Frontdesk.vue"
-import FloorPlanView from "../views/frontdesk/FloorPlanView.vue"
+import FloorPlanView from "../views/floor_plan_view/FloorPlanView.vue"
 import FrontdeskMapView from "@/views/map_view/FrontdeskMapView.vue"
 
 import ReservationList from "../views/frontdesk/ReservationList.vue";

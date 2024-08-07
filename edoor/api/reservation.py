@@ -48,7 +48,7 @@ def get_reservation_folio_list(reservation):
         """.format(reservation)
     
     data = frappe.db.sql(sql,as_dict=1)
-    sql = "select name, reservation_stay,reservation, posting_date, guest,guest_name, total_credit,total_debit,balance ,status,is_master,note,business_source,folio_type,folio_type_color from `tabReservation Folio` where reservation='{}'".format(reservation)
+    sql = "select name, reservation_stay,reservation, posting_date, guest,guest_name, total_credit,total_debit,balance ,status,is_master,note,business_source,folio_type,folio_type_color,show_in_pos_transfer from `tabReservation Folio` where reservation='{}'".format(reservation)
     folios = frappe.db.sql(sql,as_dict=1)
     
     if folios:
