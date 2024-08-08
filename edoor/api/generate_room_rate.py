@@ -357,9 +357,10 @@ def generate_forecast_revenue(stay_names=None,run_commit=True):
     """
     
     data = frappe.db.sql(sql,{"stay_names":stay_names},as_dict=1)
- 
+    # frappe.throw(str(data))
     # return data
     new_records =  get_new_revenue_forecast_records(data)
+  
     # return new_records
     bulk_insert("Revenue Forecast Breakdown",new_records , chunk_size=10000)
     # update account information
@@ -580,9 +581,9 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
     account_code_breakdown = json.loads(account_code_breakdown)
     # return account_code_breakdown
     tax_data_breakdown = []
-
+    
     for acc in account_code_breakdown:
-         
+       
         tax_data = get_tax_breakdown( acc["tax_rule"],
                                          rate_include_tax="No" if not acc["rate_include_tax"] else acc["rate_include_tax"], 
                                          tax_1_rate=acc["tax_1_rate"], 
@@ -593,8 +594,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
         )
         tax_data["account_code"] = acc["account_code"]
         tax_data["is_package_account"] = acc["is_package_account"]
-        tax_data_breakdown.append(tax_data)
-        
+        tax_data_breakdown.append(copy.deepcopy(tax_data))
         
     breakdown_account_codes = {"package_accounts":[],"breakdown_accounts":[]}
     # 1 Base Account
@@ -683,9 +683,11 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
         
     # package account breakdown
     package_sort_order = 100
+  
     for p in [d for d in account_code_breakdown if "is_package_account" in d and  d["is_package_account"]==1]:
         package_account = [d for d in tax_data_breakdown if d["account_code"]== p["account_code"]]
         
+            
         if package_account:
             package_account = package_account[0]
 
@@ -709,7 +711,7 @@ def get_charge_breakdown_by_account_code_breakdown(account_code_breakdown):
                 "sub_account":[],
                 "rate_include_tax":p["rate_include_tax"]
             }
-            # package_charge["rate"] = 
+
             breakdown_account_codes["package_accounts"].append(package_charge)
             # breakdown account
             

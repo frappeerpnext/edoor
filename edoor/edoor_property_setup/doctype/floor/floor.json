@@ -11,6 +11,7 @@
   "property",
   "building",
   "floor",
+  "sort_order",
   "room_position"
  ],
  "fields": [
@@ -39,11 +40,16 @@
    "fieldname": "room_position",
    "fieldtype": "JSON",
    "label": "Room Position"
+  },
+  {
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-06 11:31:28.041426",
+ "modified": "2024-08-07 15:27:19.833407",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Floor",

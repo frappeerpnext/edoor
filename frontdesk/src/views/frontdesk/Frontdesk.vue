@@ -136,6 +136,7 @@
 </template>
 <script setup>
 import { useConfirm, h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed } from '@/plugin'
+
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import { useTippy } from 'vue-tippy'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -607,6 +608,7 @@ function onSelectedDate(event) {
         if (room_type_id == "") {
             room_type_id = event.resource._resource.parentId;
         }
+       
         const dialogRef = dialog.open(NewReservation, {
             data: {
                 arrival_date: event.start,

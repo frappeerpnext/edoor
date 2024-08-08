@@ -1592,10 +1592,10 @@ def get_tax_invoice_vat_amount(data):
 
 @frappe.whitelist()
 def get_commercial_tax_invoice_data(folio_number,document_type,date = None):
-    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='Reservation Folio' and is_base_transaction=1 ".format(folio_number),as_dict=1)
+    data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='{}' and is_base_transaction=1 ".format(folio_number,document_type),as_dict=1)
     
     tax_data = []
-    if document_type == 'Reservation Folio':
+    if document_type in ['Reservation Folio', 'Desk Folio']:
         tax_data = get_commercial_tax_data(data)
     property = frappe.db.get_value("Tax Invoice", {'document_name':folio_number},"property")
     exchange_rate = frappe.db.get_value("Tax Invoice",{'document_name':folio_number},"exchange_rate")

@@ -1,100 +1,150 @@
 <template>
-  <ComFrontDeskLayout :showSetting="true">
-    <template #setting_menu>
-      <button   @click="onEnableArrangeFloorPlan" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                     <i class="pi pi-cog me-2" ></i>
-                      {{ $t('Arrange Floor Plan') }}
-     </button>
-    </template>
-<Button @click="onSavePosition">Save Setting {{ editMode }}</Button>
-<div :class="editMode==1?' edit':''">
-<draggable-resizable-container
-  :grid="[20, 20]"
-  :show-grid="editMode"
-  class="container"
->
-  <draggable-resizable-vue
-    v-for="(d, index) in room_list" :key="index"
-    v-model:x="d.x"
-    v-model:y="d.y"
-    v-model:h="d.height"
-    v-model:w="d.width"
-    v-model:active="d.isActive"
-    :draggable="editMode"
-    :resizable="editMode"
+  <ComFrontDeskLayout :showRefreshButton="true" :showSetting="true" :title="$t('Floor Plan View')"
+  :showActionButton="!editMode" 
+  @onRefresh="getFloorPlanData(filters)"
   >
+  <template #title>
+    <div   class="text-xl md:text-2xl white-space-nowrap">{{$t('Floor Plan View')}}</div> 
+    <div class="ml-8 header-title text-xl md:text-2xl white-space-nowrap">{{moment.utc(filters.date).format('DD MMM, yyyy')}}</div>
+  </template>
+    <template #setting_menu>
+      <button
+        @click="onEnableArrangeFloorPlan"
+        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround"
+      >
+        <i class="pi pi-cog me-2"></i>
+        {{ $t("Floor Plan Setting") }}
+      </button>
+    </template>
+    <template #action>
+      <template v-if="editMode">
+        <Button   @click="onSavePosition">Add Element</Button>
+        <Button   @click="onSavePosition">Change Background</Button>
+        <Button   @click="onSavePosition">Bulk Update Height & width</Button>
+        <Button   >Cancel</Button>
+        <Button :disabled="gv.loading"  @click="onSavePosition">Save Setting</Button>
+        
+      </template>
+      
+    </template>
 
-    {{ d.room_number }}
+    <ComFilter @onFilter="getFloorPlanData" @onSearch="onSearch" />
 
-  </draggable-resizable-vue>
+    <ComRenderRoomDesktop v-if="!isMobile" :roomList="roomList" :editMode="editMode" :filters="filters" />
 
-</draggable-resizable-container>
-</div>
-</ComFrontDeskLayout>
+    
+  </ComFrontDeskLayout>
 </template>
 
 <script setup>
-import { ref,getApi,onMounted,postApi } from '@/plugin'
+import { ref, getApi, onMounted, postApi, inject,onUnmounted,computed } from "@/plugin";
 import ComFrontDeskLayout from "@/views/frontdesk/components/ComFrontDeskLayout.vue";
-import DraggableResizableVue from 'draggable-resizable-vue3'
+import ComFilter from "@/views/floor_plan_view/components/ComFilter.vue";
 
+import ComRenderRoomDesktop from "@/views/floor_plan_view/components/ComRenderRoomDesktop.vue";
+import { i18n } from "@/i18n";
+ 
 
-const room_list = ref([])
-const editMode = ref(false)
-function onEnableArrangeFloorPlan(){
-editMode.value =!editMode.value
-}
-function getRoom(){
-getApi("frontdesk.get_room_for_floor_plan_arrangement",{
-  filters:{
-    property:window.property_name,
-    floor:"Ground Floor"
+const { t: $t } = i18n.global;
+const filters = ref([]);
+const room_list = ref([]);
+ 
+const editMode = ref(false);
+const moment = inject("$moment");
+const gv = inject("$gv")
+const isMobile = ref(window.isMobile)
+
+const roomList = computed(()=>{
+  if(filters.value.keyword){
+    const keyword = filters.value.keyword.toLowerCase()
+    
+    return room_list.value.filter(r=> 
+        (r.room_number || '').toLowerCase().includes(keyword) ||
+        (r.guest_name || '').toLowerCase().includes(keyword) 
+    )
+  }else {
+    return room_list.value
   }
-}).then(r=>{
-  room_list.value = r.message
 })
+
+function onEnableArrangeFloorPlan() {
+  editMode.value = !editMode.value;
+
 }
 
 
-function onSavePosition(){
-postApi("frontdesk.save_room_layout_position",{
-  floor:"Ground Floor",
-  data: room_list.value.map((r)=>{
-    return {
-      name:r.name,
-      x:r.x,
-      y:r.y,
-      width:r.width,
-      height:r.height
+
+
+function onSearch(keyword){
+  filters.value.keyword = keyword
+}
+
+function getFloorPlanData(f) {
+ 
+  gv.loading = true
+  // code read from databases
+  getApi("frontdesk.get_floor_plan_data", {
+    filters: {
+      property: property_name,
+      floor: f.floor,
+      date: moment(f.date).format("YYYY-MM-DD"),
+      floor_changed: f.floor != filters.value.floor,
+      building: f.building
+    },
+  }).then((result) => {
+    if (f.floor != filters.value.floor) {
+      room_list.value = result.message.room_list;
+gv.loading = true
     }
-  })
-}).then(r=>{
-  editMode.value = false
-})
+    room_list.value.forEach(r => {
+        r.stay = result.message.reservation_stays.find(x=>x.room_id == r.name)
+    });
+    
+    filters.value = JSON.parse(JSON.stringify(f));
+    gv.loading = false
+  }).catch(error=>{
+    gv.loading  = false
+  });
 }
-onMounted(()=>{
-getRoom();
 
-})
+function onSavePosition() {
+  gv.loading = true
+  postApi("frontdesk.save_room_layout_position", {
+    floor: filters.value.floor,
+    data: room_list.value.map((r) => {
+      return {
+        name: r.name,
+        x: r.x,
+        y: r.y,
+        width: r.width,
+        height: r.height,
+      };
+    }),
+  }).then((r) => {
+    editMode.value = false;
+    gv.loading = false
+  }).catch(error=>{
+    gv.loading = false
+  });
+}
+
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if (e.data.action == "FloorPlanView" || e.data.action == "Frontdesk") {
+          
+          getFloorPlanData(filters.value)
+
+        }
+    };
+}
+
+onMounted(() => {
+  window.addEventListener('message', actionRefreshData, false);
+});
+onUnmounted(() => {
+  window.addEventListener('message', actionRefreshData, false);
+});
+
 </script>
 
-
-<style scoped>
-
-.container {
-border:solid 1px red;
-width: 100%;
-height: 85vh;
-min-height: 768px;
-min-width: 1024px;
-max-width: 100%;
-
-}
-.edit .drv {
-  border: dashed 1px #000;
-}
-
-.drv {
-  border: solid 1px green;
-}
-</style>

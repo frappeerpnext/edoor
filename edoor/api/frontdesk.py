@@ -3531,20 +3531,63 @@ def get_arrival_stay_over_departure_backend():
     return data
 
 @frappe.whitelist()
-def get_room_for_floor_plan(filters):
+def get_floor_plan_data(filters):
     filters = json.loads(filters)
-    sql = "select name,room_number, room_type_alias, room_type from `tabRoom` where property=%(property)s and floor=%(floor)s"
-    data = frappe.db.sql(sql,filters,as_dict=1)
+    room_list = []
+    reservation_stays  = get_reservation_stay_for_floor_plan(filters)
+    
+    if (filters["floor_changed"])==True:
+        room_list = get_room_for_floor_plan_arrangement(json.dumps(filters))
+    return {
+        "room_list":room_list,
+        "reservation_stays":reservation_stays
+    }
+    
+def get_reservation_stay_for_floor_plan(filters):
+    sql ="""
+        select 
+            a.room_id,
+            a.reservation,
+            a.reservation_stay,
+            b.name as stay_room_id,
+            b.arrival_date,
+            b.departure_date,
+            a.adult,
+            a.child,
+            b.business_source,
+            b.reservation_status,
+            b.status_color,
+            b.total_credit,
+            b.total_debit,
+            b.balance,
+            b.guest,
+            b.guest_name,
+            a.is_arrival,
+            a.is_departure
+            
+        from   `tabRoom Occupy` a 
+        join `tabReservation Stay Room` b on b.name = a.stay_room_id
+        where
+            a.date = %(date)s and 
+            a.property = %(property)s and
+            a.building = %(building)s and 
+            a.floor = %(floor)s and 
+            a.is_active_reservation = 1 and 
+            b.reservation_status in ('Reserved','In-house')
+    """
+    data = frappe.db.sql(sql, filters, as_dict=1)
     return data
 
 @frappe.whitelist()
 def get_room_for_floor_plan_arrangement(filters):
     filters = json.loads(filters)
-    sql = "select name,room_number, room_type_alias, room_type from `tabRoom` where property=%(property)s and floor=%(floor)s"
+    sql = "select name,room_number, room_type_alias, room_type,room_type_id from `tabRoom` where property=%(property)s and floor=%(floor)s"
     data = frappe.db.sql(sql,filters,as_dict=1)
     positions =  frappe.db.get_value("Floor",filters["floor"],"room_position")
     if positions:
         positions = json.loads(positions)
+    else:
+        positions = []
         
     for r in data:
         p = [d for d in positions if d["name"] == r["name"]]

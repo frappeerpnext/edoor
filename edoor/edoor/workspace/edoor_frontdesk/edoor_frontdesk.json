@@ -5,7 +5,7 @@
    "label": "Monthly Occupancy"
   }
  ],
- "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"cuPl2DiJLl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Summary KPI\",\"col\":12}},{\"id\":\"y6WQqOxbQG\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Occupancy block\",\"col\":3}},{\"id\":\"A0V-ndOtX6\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Room status\",\"col\":9}},{\"id\":\"beAViI_1RS\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Shortcut Link Title\",\"col\":12}},{\"id\":\"KchfWu506H\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Dashboard\",\"col\":3}},{\"id\":\"arK7IaW6Ak\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Frontdesk btn link\",\"col\":3}},{\"id\":\"hZ260Yq0mF\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Room Inventory link btn\",\"col\":3}},{\"id\":\"cU6Y_8Rad1\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Reservations List link btn\",\"col\":3}},{\"id\":\"LcwqL7JDWu\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Guest Ledger link btn\",\"col\":3}},{\"id\":\"YRQx-Hy-c-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"City Ledger link btn\",\"col\":3}},{\"id\":\"Tmyl2hFelZ\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Guest Database link btn\",\"col\":3}},{\"id\":\"JkUHGPY5Ny\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"housekeeping link btn\",\"col\":3}},{\"id\":\"4ZwtLkxkS9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}},{\"id\":\"6-S_vsWPyk\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Remaining Shortcut Link\",\"col\":7}},{\"id\":\"Oh8e0RXSBP\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Recent Activities\",\"col\":5}}]",
+ "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"cuPl2DiJLl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Summary KPI\",\"col\":12}},{\"id\":\"y6WQqOxbQG\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Occupancy block\",\"col\":12}},{\"id\":\"beAViI_1RS\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Shortcut Link Title\",\"col\":12}},{\"id\":\"KchfWu506H\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Dashboard\",\"col\":3}},{\"id\":\"arK7IaW6Ak\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Frontdesk btn link\",\"col\":3}},{\"id\":\"hZ260Yq0mF\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Room Inventory link btn\",\"col\":3}},{\"id\":\"cU6Y_8Rad1\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Reservations List link btn\",\"col\":3}},{\"id\":\"LcwqL7JDWu\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Guest Ledger link btn\",\"col\":3}},{\"id\":\"YRQx-Hy-c-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"City Ledger link btn\",\"col\":3}},{\"id\":\"Tmyl2hFelZ\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Guest Database link btn\",\"col\":3}},{\"id\":\"JkUHGPY5Ny\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"housekeeping link btn\",\"col\":3}},{\"id\":\"4ZwtLkxkS9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}},{\"id\":\"6-S_vsWPyk\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Remaining Shortcut Link\",\"col\":12}}]",
  "creation": "2023-04-27 15:51:56.916990",
  "custom_blocks": [
   {
@@ -23,14 +23,6 @@
   {
    "custom_block_name": "Remaining Data",
    "label": "Remaining Shortcut Link"
-  },
-  {
-   "custom_block_name": "Recent Activities",
-   "label": "Recent Activities"
-  },
-  {
-   "custom_block_name": "Room status",
-   "label": "Room status"
   },
   {
    "custom_block_name": "Frontdesk btn link",
@@ -79,7 +71,7 @@
  "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2024-07-12 09:01:14.038975",
+ "modified": "2024-08-07 17:33:53.722749",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",

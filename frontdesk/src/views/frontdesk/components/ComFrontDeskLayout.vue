@@ -7,7 +7,7 @@
                         <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer me-3"></i>
                         <div class="text-xl md:text-2xl white-space-nowrap">
                             <slot name="title">
-                                 {{title}}
+                                {{title}}
                             </slot>
 
                         </div> 
@@ -16,43 +16,45 @@
                     </div>
                 </div>
             </template>
-<template #end>
-
+            <template #end>
                 <div class="flex gap-2 w-full justify-content-between md:justify-content-end">
-                
-                    <Button v-if="showUpcomingNote" :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="w-full md:w-auto bg-yellow-500 border-none" @click="showNote=!showNote">
-                       
-                        <ComIcon icon="iconNoteWhite" class="me-2" height="18px" />
-                        <span>{{$t('Upcoming Note')}}</span>
-                        <Badge
-                      style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
-                      severity="warning">
-                     
-                    </Badge>
-                    
-                    </Button>
-<template v-if="isMobile">
-    <ComNewReservationMobileButton :is_walk_in="true" />
-</template>
-<template v-else>
-        <ComWalkInReservation v-if="showWalkInReservation" />            
-        <NewFITReservationButton v-if="showFITReservationButton" />
-        <NewGITReservationButton v-if="showGITReservationButton" />
-        
-        <Button v-if="showSetting" :class="fillClass ? fillClass : 'content_btn_b'" style="font-size: 1.5rem"  icon="pi pi-ellipsis-v" @click="toggle"></Button>
-            <Menu ref="show" :popup="true" style="min-width: 180px;">
-                <template #start>
-                    <slot name="setting_menu">
-                           
-                    </slot>
-                </template>
-            </Menu>
+                <template v-if="showActionButton">  
+                <Button v-if="showUpcomingNote" :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="w-full md:w-auto bg-yellow-500 border-none" @click="showNote=!showNote">
 
-                  
-</template>
-</div>
-</template>
+                <ComIcon icon="iconNoteWhite" class="me-2" height="18px" />
+                <span>{{$t('Upcoming Note')}}</span>
+                <Badge
+                style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
+                severity="warning">
+
+                </Badge>
+
+                </Button>
+                <template v-if="isMobile">
+                <ComNewReservationMobileButton :is_walk_in="true" />
+                </template>
+                <template v-else>
+                <ComWalkInReservation v-if="showWalkInReservation" />            
+                <NewFITReservationButton v-if="showFITReservationButton" />
+                <NewGITReservationButton v-if="showGITReservationButton" />
+                
+                </template>
+            </template>
+            <slot name="action">
+                            
+                        </slot>
+                <Button v-if="showSetting" :class="fillClass ? fillClass : 'content_btn_b'" style="font-size: 1.5rem"  icon="pi pi-ellipsis-v" @click="toggle"></Button>
+                <Menu ref="show" :popup="true" style="min-width: 180px;">
+                    <template #start>
+                        <slot name="setting_menu">
+                            
+                        </slot>
+                    </template>
+                </Menu>
+                </div>
+            </template>
 </ComHeader>
+
 <div class="pb-5" style="max-width: 100%;">
     <div id="fron__desk-fixed-top">
         <div :class=" ( !isMobile && showSummary) ? 'flex gap-2' : ''">
@@ -132,45 +134,50 @@ import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import { i18n } from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({
-    title:{
-        type:String,
-        default:"Page Title"
+    title: {
+        type: String,
+        default: "Page Title"
     },
-    showUpcomingNote:{
-        type:Boolean,
-        default:true
+    showUpcomingNote: {
+        type: Boolean,
+        default: true
     },
-    showWalkInReservation:{
-        type:Boolean,
-        default:true
+    showWalkInReservation: {
+        type: Boolean,
+        default: true
     },
-    showFITReservationButton:{
-        type:Boolean,
-        default:true
+    showFITReservationButton: {
+        type: Boolean,
+        default: true
     },
-    showGITReservationButton:{
-        type:Boolean,
-        default:true
+    showGITReservationButton: {
+        type: Boolean,
+        default: true
     },
-    showSpecialColor:{
-        type:Boolean,
-        default:true
+    showSpecialColor: {
+        type: Boolean,
+        default: true
     },
-    showRefreshButton:{
-        type:Boolean,
-        default:false
+    showRefreshButton: {
+        type: Boolean,
+        default: false
     },
-    showSetting:{
-        type:Boolean,
-        default:false
+    showSetting: {
+        type: Boolean,
+        default: false
+    },
+    showActionButton: {
+        type: Boolean,
+        default: true
     },
 
 
-    
+
+
 
 
 })
-const emit = defineEmits(["onRefresh","onSetting"])
+const emit = defineEmits(["onRefresh", "onSetting"])
 
 const confirm = useConfirm()
 const show = ref()
@@ -193,7 +200,7 @@ const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_sum
 const showNote = ref(false)
 const loading = ref(false)
 const totalNotes = ref(0)
- 
+
 const isMobile = ref(window.isMobile)
 const showSummary = ref(true)
 
@@ -208,10 +215,10 @@ if (isMobile) {
     showSummary.value = false
 }
 
-function onRefresh (){
+function onRefresh() {
     emit("onRefresh")
 }
-function onSetting (){
+function onSetting() {
     emit("onSetting")
 }
 
@@ -224,7 +231,7 @@ if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
 }
 
- 
+
 
 
 function onShowSummary() {
@@ -261,7 +268,7 @@ const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
         if (e.data.action == "Frontdesk") {
             setTimeout(() => {
-                
+
             }, 1000 * 5)
 
         }
@@ -281,12 +288,12 @@ onMounted(() => {
 
 
     getTotalNote()
-  
+
 
 
 })
 
- 
+
 
 
 </script>
