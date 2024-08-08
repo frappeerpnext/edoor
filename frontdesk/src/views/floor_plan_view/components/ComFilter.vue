@@ -117,7 +117,7 @@ function getFloor() {
 
             if (!floors.value.floor) {
 
-                filters.value.floor = result[0].name
+                filters.value.floor = result.filter(r=>r.building == filters.value.building)[0].name
             }
             resolve(result.message)
 

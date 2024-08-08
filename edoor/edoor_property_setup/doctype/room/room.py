@@ -156,6 +156,14 @@ def update_fetch_from_fields(self):
 		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"room_number='{}'".format(self.room_number)})
   
 		
+	if self.has_value_changed("floor"):
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"floor='{}'".format(self.floor)})
+		
+	if self.has_value_changed("building"):
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"building='{}'".format(self.building)})
+		
+	
+	
 	if self.has_value_changed("room_type_id"):
 		data_for_updates.append({"doctype":"Room Block","update_field":"room_type_id='{}'".format(self.room_type_id)})
 		data_for_updates.append({"doctype":"Room Block","update_field":"room_type='{}'".format(self.room_type)})

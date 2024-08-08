@@ -1601,10 +1601,16 @@ def change_stay(data):
     
     for s in stays:
         if s.name == data['name']:
-            s.room_type_id=data["room_type_id"]
+           
             if room_id: 
                 s.room_id=room_id 
-
+            if "room_type_id" in data:
+                s.room_type_id= data["room_type_id"]
+            if not s.room_type_id:
+                s.room_type_id = frappe.get_cached_value("Room", s.room_id, "room_type_id")
+            
+            s.room_type = frappe.get_cached_value("Room", s.room_id, "room_type")
+            s.room_type_alias = frappe.get_cached_value("Room", s.room_id, "room_type_alias")
             s.start_date = data['start_date']
             s.end_date = data['end_date']
            
@@ -1636,7 +1642,7 @@ def change_stay(data):
             room_type = frappe.get_cached_value("Room Type", room_type_id, "room_type")
             room_type_alias = frappe.get_cached_value("Room Type", room_type_id, "room_type_alias")
         
-     
+
         sql ="""
             update `tabReservation Room Rate` 
             set

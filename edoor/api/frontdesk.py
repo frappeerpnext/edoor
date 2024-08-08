@@ -3581,7 +3581,7 @@ def get_reservation_stay_for_floor_plan(filters):
 @frappe.whitelist()
 def get_room_for_floor_plan_arrangement(filters):
     filters = json.loads(filters)
-    sql = "select name,room_number, room_type_alias, room_type,room_type_id from `tabRoom` where property=%(property)s and floor=%(floor)s"
+    sql = "select name,room_number, room_type_alias, room_type,room_type_id from `tabRoom` where property=%(property)s and floor=%(floor)s and building=%(building)s"
     data = frappe.db.sql(sql,filters,as_dict=1)
     positions =  frappe.db.get_value("Floor",filters["floor"],"room_position")
     if positions:

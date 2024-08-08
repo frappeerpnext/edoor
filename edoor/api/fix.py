@@ -216,3 +216,58 @@ def update_balance_to_city_ledger():
     frappe.db.commit()
     return "done"
     
+    
+@frappe.whitelist()
+def update_room_type_info_reservation():
+    sql="""
+        update `tabReservation Stay Room` a
+        join `tabRoom` b on b.name = a.room_id
+        set
+            a.room_type_id = b.room_type_id,
+            a.room_type = b.room_type,
+            a.room_type_alias = b.room_type_alias
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
+    # update stay
+    sql ="""
+        update `tabReservation Stay` a 
+        join (
+           select 
+                parent,
+                GROUP_CONCAT(DISTINCT  room_number SEPARATOR ',') as rooms,
+                GROUP_CONCAT(DISTINCT  room_type SEPARATOR ',') as room_types,
+                GROUP_CONCAT(DISTINCT  room_type_alias SEPARATOR ',') as room_type_alias
+                from `tabReservation Stay Room` 
+            group by parent 
+        ) b on b.parent = a.name
+        set
+            a.rooms = b.rooms,
+            a.room_types = b.room_types,
+            a.room_type_alias = b.room_type_alias
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
+    
+    # update reservation
+    sql ="""
+        update `tabReservation` a 
+        join (
+           select 
+                reservation,
+                GROUP_CONCAT(DISTINCT  room_number SEPARATOR ',') as rooms,
+                GROUP_CONCAT(DISTINCT  room_type SEPARATOR ',') as room_types,
+                GROUP_CONCAT(DISTINCT  room_type_alias SEPARATOR ',') as room_type_alias
+                from `tabReservation Stay Room` 
+            group by reservation 
+        ) b on b.reservation = a.name
+        set
+            a.room_numbers= b.rooms,
+            a.room_types = b.room_types,
+            a.room_type_alias = b.room_type_alias
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
+    
+    
+    
