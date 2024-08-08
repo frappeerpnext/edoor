@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-    {{ doc }}
+
         <div class="grid">
        
 

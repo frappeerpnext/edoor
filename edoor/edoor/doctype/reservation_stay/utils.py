@@ -10,7 +10,8 @@ def update_fetch_from_fields(self):
 	]
 	if self.has_value_changed("reservation_status"):
 		if self.reservation_status == 'In-house' and self.reservation_color:
-			frappe.db.set_value("Reservation Stay", self.name, {"reservation_color": "", "reservation_color_code": ""})
+			data_for_updates.append({"doctype":"Reservation Stay","update_field":"reservation_color=''"})
+			data_for_updates.append({"doctype":"Reservation Stay","update_field":"reservation_color_code=''"})
 
 		status_color=frappe.db.get_value("Reservation Status",self.reservation_status,"color")
 		data_value_for_update["reservation_status"] = self.reservation_status

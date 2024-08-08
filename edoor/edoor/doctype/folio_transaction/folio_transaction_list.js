@@ -1,7 +1,6 @@
 frappe.listview_settings['Folio Transaction'] = {
     add_fields: ['transaction_type',"is_auto_post","total_amount","account_code","account_name","reservation_stay"],
     get_indicator(doc) {
-        
         if (doc.transaction_type=='Reservation Folio' ) {
             return [__("Guest Folio"), "orange"];
         } else if (doc.transaction_type=='Cashier Shift' ) {
@@ -10,25 +9,6 @@ frappe.listview_settings['Folio Transaction'] = {
             return [__(doc.transaction_type), "blue"];
         }
     },
-}
-
-class CustomHotelRoomListView extends frappe.views.ListView {
-    render_row(row, data) {
-        // Your custom HTML structure for each row
-        row.innerHTML = `
-            <div class="list-item">
-                <div class="list-item__content">
-                    <div class="list-item__left">
-                        <b>${data.name}</b>
-                        <span class="badge badge-info">${data.name}</span>
-                    </div>
-                    <div class="list-item__right">
-                      
-                    </div>
-                </div>
-            </div>
-        `;
-    }
 }
 
 
