@@ -12,7 +12,8 @@
   "building",
   "floor",
   "sort_order",
-  "room_position"
+  "room_position",
+  "photo"
  ],
  "fields": [
   {
@@ -45,11 +46,17 @@
    "fieldname": "sort_order",
    "fieldtype": "Int",
    "label": "Sort Order"
+  },
+  {
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "Photo"
   }
  ],
+ "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-07 15:27:19.833407",
+ "modified": "2024-08-13 11:10:18.638259",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Floor",

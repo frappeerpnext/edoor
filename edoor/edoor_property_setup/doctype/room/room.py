@@ -7,6 +7,7 @@ import json
 
 class Room(Document):
 	def validate(self): 
+		 
 		if not self.reservation_stay:
 			self.guest = None
 			self.arrival_date = None

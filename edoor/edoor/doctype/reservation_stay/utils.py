@@ -18,7 +18,7 @@ def update_fetch_from_fields(self):
 		data_value_for_update["status_color"] = status_color
 
   
-		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_status='{}'".format(status_color)})
+		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_status='{}'".format(self.reservation_status)})
 		data_for_updates.append({"doctype":"Folio Transaction","update_field":"reservation_status_color='{}'".format(status_color)})
 		
 		data_for_updates.append({"doctype":"Reservation Folio","update_field":"reservation_status='{}'".format(self.reservation_status)})

@@ -1,5 +1,5 @@
 <template>
-    <ComOwnerContentTitle label="Today Ledger Summary">  
+    <ComOwnerContentTitle :label="'Ledger Summary - ' + moment(date).format('DD-MM-YYYY')">  
       <div class="card">
         <DataTable :value="data?.ledger_summary" tableStyle="min-width: 50rem">
             <Column field="label" header="Ledger Type"></Column>
@@ -53,15 +53,21 @@
 </ComOwnerContentTitle>    
 </template>
 <script setup>
-import {  ref, onMounted,getApi,computed } from '@/plugin'
+import {  ref, onMounted,getApi,computed,inject,defineProps,watch } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 import { Colors } from 'chart.js';
+const moment = inject("$moment")
 const getTotal = ref((column_name) => {
 
     return data.value.ledger_summary?.reduce((n, d) => n + d[column_name], 0)
 
 });
+const props = defineProps({
+    date: {
+        type: Date,
+    },
+}); 
  
 const totalValues = computed(() => {
   return 10
@@ -70,7 +76,7 @@ const data = ref({})
 function renderdata() {
 const doc = getApi('frontdesk.get_day_end_summary_report', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
-        date: JSON.parse(localStorage.getItem("edoor_working_day")).date_working_day
+        date: props.date
     })
     .then((result) => {
             data.value = result.message
@@ -78,5 +84,10 @@ const doc = getApi('frontdesk.get_day_end_summary_report', {
     }    
     onMounted(() => {
     renderdata()
-})        
+}) 
+watch(() => props.date, (newDate) => {
+    if (newDate) {
+        renderdata();
+    }
+});       
 </script>

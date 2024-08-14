@@ -4,8 +4,18 @@
     :showSetting="true"
     :showRefreshButton="true"
     @onRefresh="onRefreshData"
-    @onSetting="onSetting"
   >
+  <template #setting_menu>
+      <button
+        @click="onSetting"
+        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround"
+      >
+        <i class="pi pi-cog me-2"></i>
+        {{ $t("Setting") }}
+      </button>
+    </template>
+    
+
     <ComFilter
       @onFilter="onRefreshData"
       :filters="filters"

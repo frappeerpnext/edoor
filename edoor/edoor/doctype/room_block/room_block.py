@@ -60,7 +60,7 @@ class RoomBlock(Document):
 
 			room_doc = frappe.get_doc("Room", self.room_id)
 			room_doc.housekeeping_status_code = self.unblock_housekeeping_status_code 
-			room_doc.room_status ="Vacant"
+			
 			room_doc.save()
 			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
@@ -81,9 +81,8 @@ class RoomBlock(Document):
 				working_day = get_working_day(self.property)
 				room_doc = frappe.get_doc("Room",self.room_id)
 				if  getdate(self.start_date)<= getdate(working_day["date_working_day"])  and getdate(self.end_date) > getdate(working_day["date_working_day"]):
-					room_doc.housekeeping_status_code ="Room Block"
-				else:
-					room_doc.housekeeping_status_code = "Vacant"
+					room_doc.housekeeping_status="Room Block"
+			
 				room_doc.save()
 
 

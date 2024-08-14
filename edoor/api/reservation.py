@@ -1492,7 +1492,8 @@ def change_stay(data):
         
     # when we change stay date from drap and drop in room chart calendar we allow to overlap
 
-    if frappe.db.get_single_value("eDoor Setting","enable_over_booking")==0: 
+    if frappe.get_cached_value("eDoor Setting",None,"enable_over_booking")==0: 
+       
         if room_id:        
             check_room_occupy = frappe.db.sql("select stay_room_id, date from `tabTemp Room Occupy` where is_departure = 0 and date between %(start_date)s and %(end_date)s and stay_room_id<>%(stay_room_id)s and room_id=%(room_id)s limit 1",
                 {"start_date":data["start_date"],"end_date":add_to_date(data["end_date"],days=-1),"stay_room_id":data["name"],"room_id":data["room_id"]},
@@ -1521,7 +1522,7 @@ def change_stay(data):
                 {"start_date":data["start_date"],"end_date":add_to_date(data["end_date"],days=-1),"stay_room_id":data["name"],"room_id":data["room_id"]},
                 as_dict = 1
                 )
-            
+  
             if check_room_occupy:
                 frappe.throw(_("You cannot change stay of this reservation. Because this room is not available or block on {}".format(frappe.format(check_room_occupy[0]["date"]),{"fieldtype":"Date"}) ))
             
@@ -3136,13 +3137,25 @@ def assign_room(data):
                           }
                         )
             #update room and room type to room occupy
-            frappe.db.sql("update `tabRoom Occupy`  set room_type_id=%(room_type_id)s, room_type=%(room_type)s , room_id = %(room_id)s,room_number=%(room_number)s where stay_room_id=%(stay_room_id)s", 
+            frappe.db.sql("""
+                          update `tabRoom Occupy`  
+                          set 
+                            room_type_id=%(room_type_id)s, 
+                            room_type=%(room_type)s , 
+                            room_id = %(room_id)s,
+                            room_number=%(room_number)s,
+                            floor=%(floor)s,
+                            building=%(building)s
+                        where 
+                            stay_room_id=%(stay_room_id)s""", 
                     {
                         "room_id":data["room_id"],
                         "room_number":room_number,
                         "room_type_id":data["room_type_id"],
                         "room_type":data["room_type"],
-                        "stay_room_id": s.name
+                        "stay_room_id": s.name,
+                        "floor":frappe.get_cached_value("Room", data["room_id"],"floor"),
+                        "building":frappe.get_cached_value("Room", data["room_id"],"building")
                     }
                 )
            

@@ -88,44 +88,18 @@
             <!-- <Button class="border-none" @click="onPrintFolioTransaction" label="Print" icon="pi pi-print" /> -->
         </template>
     </ComDialogContent>
-    <Dialog v-model:visible="unblockvisible" modal :header="$t('Edit Room Block Detail')" :style="{ width: '50vw' }"
-        position="top">
-        <ComDialogContent @onClose="unblockvisible = false" @onOK="onSave()" :loading="unblock_loading">
-            <div class="grid">
-                <div class="col-12 lg:col-6">
-                    <label> {{ $t('Unblock Date') }}  </label>
-                    <div class="card flex justify-content-left">
-                        <Calendar selectOtherMonths class="w-full" showIcon v-model="data.unblock_date"
-                            dateFormat="dd-mm-yy" />
-                    </div>
-                </div>
-                <div class="col-12 lg:col-6">
-                    <label> {{ $t('Housekeeping Status') }} </label>
-                    <div class="w-full">
-                        <ComSelect placeholder="Housekeeping Status" class="w-full" optionLabel="status"
-                            optionValue="status" v-model="data.unblock_housekeeping_status_code"
-                            :options="housekeeping_status_code" />
-                    </div>
-                </div>
-                <div class="col-12">
-                    <label> {{ $t('Unblock Note') }} </label>
-                    <div class="w-full card flex justify-content-left">
-                        <Textarea class="w-full" v-model="data.unblock_note" autoResize />
-                    </div>
-                </div>
-            </div>
-        </ComDialogContent>
-    </Dialog>
+ 
 </template>
 <script setup>
 import { ref, getDoc, onMounted, inject, useDialog, updateDoc, useConfirm, deleteDoc } from "@/plugin"
 import ComEditRoomBlock from "./components/ComEditRoomBlock.vue";
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
+import ComUnblockRoom  from '@/views/room_block/components/ComUnblockRoom.vue';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const confirm = useConfirm()
-const unblockvisible = ref(false);
+ 
 const unblock_loading = ref(false);
 const dialogRef = inject("dialogRef");
 const doc = ref()
@@ -157,6 +131,7 @@ function onSubmitRoomBlock() {
                     loading.value = false
                     window.postMessage({"action":"ComHousekeepingStatus"},"*")
                     window.postMessage({"action":"RoomBlockList"},"*")
+                    window.postMessage({"action":"FloorPlanView"},"*")
                 }).catch(err => {
                     loading.value = false
                 })
@@ -238,6 +213,7 @@ function onEdit() {
         },
         onClose: (options) => {
             const result = options.data;
+
             if (result) {
                 doc.value = result
                 gv.loading = false
@@ -291,7 +267,30 @@ function onUnblock() {
     data.value = JSON.parse(JSON.stringify(doc.value))
     data.value.unblock_date = moment(data.unblock_date).toDate()
     data.value.unblock_housekeeping_status_code = housekeeping_status_code.value[0].status
-    unblockvisible.value = true
+    dialog.open(ComUnblockRoom, {
+        data: data.value,
+        props: {
+            header: $t('Unblock Room') + "-" + data.value.name,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            position: 'top',
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+            
+          
+            console.log(result);
+            if (result) {
+                doc.value = result
+            }
+        }
+    })
      
 }
 

@@ -1,6 +1,6 @@
 <template lang="">
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
-    
+  
         <div class="grid">
             <div class="col-6">
                 <label>Block Date</label>
@@ -114,9 +114,13 @@ onMounted(() => {
 
     } else {
         data.value.block_date = moment(window.current_working_date).toDate()
-
-
-        data.value.start_date = moment(window.current_working_date).toDate()
+        data.value.room_id = dialogRef.value.data.room_id
+        if (dialogRef.value.data.date){
+            data.value.start_date = dialogRef.value.data.date
+        }else {
+            data.value.start_date = moment(window.current_working_date).toDate()
+        }
+        
 
         data.value.end_date = moment(data.value.start_date).add(1, 'days').toDate()
         data.value.property = property.name

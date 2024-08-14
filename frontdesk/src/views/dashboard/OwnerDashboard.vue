@@ -10,7 +10,7 @@
                 :class="selected_date == yesterday  ? 'active' : ''" @click="onShowTommorowData()" />
         <Button :label="$t('Today')" class="w-8rem md:w-12rem btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == working_day.date_working_day ? 'active' : ''" @click="onShowTodayData()" />
-                <Calendar :inputClass="(selected_date != yesterday && selected_date != working_day.date_working_day)  ? 'calendar_active' : ''" v-model="selected_date" :selectOtherMonths="true" class="w-48 das-calendar" inpu panelClass="no-btn-clear"
+                <Calendar v-model="date" :selectOtherMonths="true" class="w-48 das-calendar" panelClass="no-btn-clear"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
     </div>
     </div>
@@ -27,36 +27,36 @@
         </div>        
         <div class="lg:col-6 col-12 p-0">
             <div class="col-12 p-0 h-auto p-1">
-                <ComOwnerPaymentChart />
+                <ComOwnerPaymentChart :date="selected_date" />
             </div>
             <div class="col-12 p-0 h-auto p-1"> 
-                <ComOwnerRoomTypeChart />
+                <ComOwnerRoomTypeChart :date="selected_date"  />
             </div>
         </div>
         <div class="lg:col-6 col-12 h-auto p-0">
             <div class="h-full p-1">
-                <ComOwnerChargeChart />
+                <ComOwnerChargeChart :date="selected_date"/>
             </div>
         </div>
         <div class="lg:col-6 col-12 h-auto p-0">
             <div class="h-full p-1">
-              <ComOwnerNationalityChart />
+              <ComOwnerNationalityChart :date="selected_date" />
             </div>
         </div>
         <div class="lg:col-6 col-12 p-1">
-            <ComOwnerBusinessSourceChart />
+            <ComOwnerBusinessSourceChart :date="selected_date"/>
         </div> 
     <div class="lg:col-6 col-12 p-1">
-        <ComOwnerFBList />
+        <ComOwnerFBList :date="selected_date"/>
     </div> 
     <div class="lg:col-6 col-12 p-1">
-        <ComOwnerFBPaymentList />
+        <ComOwnerFBPaymentList :date="selected_date"/>
     </div> 
     <div class="col-12 p-1">
-        <ComOwnerTodayLedgerSummaryList />
+        <ComOwnerTodayLedgerSummaryList :date="selected_date"/>
     </div> 
     <div class="col-12 p-1">
-        <ComRecentFolioTransaction/>
+        <ComRecentFolioTransaction :date="selected_date"/>
     </div> 
 </div>
 </template>
@@ -76,26 +76,39 @@ import ComOwnerNationalityChart from '@/views/dashboard/components/ComOwnerNatio
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const selected_date = ref(null)
 const yesterday  = ref('')
+const date = ref(null)
+const moment = inject('$moment')
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 function onShowTodayData() {
-    if (JSON.parse(localStorage.getItem("edoor_working_day"))) {
     selected_date.value = working_day.date_working_day;
-  } 
+    date.value = moment(working_day.date_working_day).format("DD-MM-YYYY")
+  
+}
+function onShowTommorowData() {
+    yesterday.value = moment(working_day.date_working_day, "YYYY-MM-DD").add(-1, 'days');
+    yesterday.value = moment(yesterday.value).format("YYYY-MM-DD")
+    selected_date.value = yesterday.value
+    date.value = moment(yesterday.value).format("DD-MM-YYYY")
+    
 }
 function onDateSelect(event) {
+    const today = moment(working_day.date_working_day);
+    tomorrow.value = today.add(1, 'days');
+    tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
     selected_date.value = moment(event).format("YYYY-MM-DD")
+    
 }
 
-function onShowTommorowData() {
-    if (JSON.parse(localStorage.getItem("edoor_working_day"))) {
-    yesterday .value = moment(working_day.date_working_day, "YYYY-MM-DD").add(-1, 'days');
-    yesterday .value = moment(yesterday .value).format("YYYY-MM-DD")
-    selected_date.value = yesterday .value
-    }
-}
+
 onMounted(() => {
-    selected_date.value = working_day.date_working_day;
+    if (!selected_date.value) {
+        const edoor_working_day = working_day.date_working_day
+        selected_date.value = moment(edoor_working_day).format("YYYY-MM-DD")
+    }
+    if (!date.value) {
+        date.value = moment(selected_date.value).format("DD-MM-YYYY")
+    }
 }) 
 function Refresh() {
     window.postMessage({ action: "ComOwnerDashboardKPI" }, "*");

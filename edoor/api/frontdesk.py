@@ -14,6 +14,7 @@ from frappe.utils import getdate,add_to_date
 from frappe.desk.search import search_link
 from frappe import _ 
 import json
+import copy
 
 @frappe.whitelist(methods="POST")
 def search(doctypes=None, txt="" ,filters=None):
@@ -467,7 +468,7 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
             today_room_revenue = (today_data['today_room_revenue'] or 0) + stay_over_revenue
         else:
             today_room_revenue = (today_data['today_room_revenue'] or 0)
-        revpar = ((today_room_revenue or 0 + today_data['today_other_room_revenue'] or 0) / (1 if total_rooms == 0 else total_rooms)) or 0
+        revpar = (((today_room_revenue or 0 )+ (today_data['today_other_room_revenue'] or 0)) / (1 if total_rooms == 0 else total_rooms)) or 0
         if calculate_adr_include_all_room_occupied == 1:
             today_adr = (today_room_revenue or 0) / (1 if today_room_sold==0 else today_room_sold)
         else:
@@ -530,7 +531,7 @@ def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
             mtd_adr = (mtd_room_revenue or 0) / (1 if mtd_room_sold==0 else mtd_room_sold)
         else:
             mtd_adr = (mtd_room_revenue or 0) / ((1 if mtd_room_sold==0 else mtd_room_sold) - (mtd_complimentary + mtd_house_use))
-        mtd_revpar = (mtd_room_revenue or 0 + mtd_data['mtd_other_room_revenue'] or 0)/(1 if mtd_total_room==0 else mtd_total_room or 0)
+        mtd_revpar = ((mtd_room_revenue or 0) + (mtd_data['mtd_other_room_revenue'] or 0))/(1 if mtd_total_room==0 else mtd_total_room or 0)
     
     
     return {
@@ -651,17 +652,14 @@ def get_charge_chart_data(property=None,date=None):
                 stay_room_id in (select stay_room_id from `tabReservation Room Rate` where is_arrival = 0 and is_active = 1 and date = %(date)s) and
                 property = %(property)s and
                 date = %(date)s and
-                account_group_name in ('Charge','Tax','Discount')
+                account_group_name in ('Charge','Tax','Discount') 
             group by
                 parent_account_name
         """
     stay_over_data = frappe.db.sql(stay_over_sql,{"property":property,"date":date}, as_dict=1)
-    chart_data = {
-            "labels":[d['parent_account_name'] for d in data],
-            "datasets":[d['charge'] for d in data],
-            
-    }
+    chart_data = {}
     colors = ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
+    chart_data["labels"] = []
     chart_data["datasets"] = []
     charges_by_account = {}
 
@@ -679,13 +677,19 @@ def get_charge_chart_data(property=None,date=None):
         else:
             charges_by_account[d['parent_account_name']] = d['charge']
     for i, (parent_account_name, charge) in enumerate(charges_by_account.items()):
+        label = {
+            'labels':parent_account_name
+        }
         dataset = {
             "type": 'bar',
             "name": parent_account_name,
             "values": charge,
             "color": colors[i % len(colors)]
         }
+        
+        chart_data["labels"].append(label)
         chart_data["datasets"].append(dataset)
+        
   
     return chart_data
 @frappe.whitelist()
@@ -734,13 +738,20 @@ def get_f_and_b_chart_data(property=None,date=None):
 def get_business_source_chart_data(property=None,date=None):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
+    
+    if data and data[0]["date"]:
+        # Check if the date is a string; if so, convert it to a datetime.date object
+        if isinstance(data[0]["date"], str):
+            working_date = datetime.strptime(data[0]["date"], '%Y-%m-%d').date()
+        else:
+            working_date = data[0]["date"]
 
-    if data:
-        working_date = data[0]["date"]
-
-    if not date :
+    if not date:
         date = working_date
-    date = datetime.strptime(date, '%Y-%m-%d').date()
+    else:
+        # If date is provided as a string, convert it to datetime.date
+        if isinstance(date, str):
+            date = datetime.strptime(date, '%Y-%m-%d').date()
     sql="""
             SELECT
                 COALESCE(bs.business_source, '') AS business_source,
@@ -824,6 +835,12 @@ def get_business_source_chart_data(property=None,date=None):
                 charges_by_business_source[d['business_source']]  += d['amount'] or 0
             else:
                 charges_by_business_source[d['business_source']] = d['amount'] or 0
+    else:
+        for d in data:
+            if d['business_source'] in charges_by_business_source:
+                charges_by_business_source[d['business_source']]  += d['amount'] or 0
+            else:
+                charges_by_business_source[d['business_source']] = d['amount'] or 0
     for i, (business_source, amount) in enumerate(charges_by_business_source.items()):
         datasets = {
             "type": 'bar',
@@ -837,26 +854,39 @@ def get_business_source_chart_data(property=None,date=None):
     return chart_data
 @frappe.whitelist()
 def get_nationality_chart_data(property=None,date=None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
-    working_date =  frappe.utils.today() 
+    data = frappe.db.sql(
+        "select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",
+        {"property": property}, as_dict=1
+    )
+    working_date = frappe.utils.today()
 
-    if data:
-        working_date = data[0]["date"]
+    if data and data[0]["date"]:
+        # Check if the date is a string; if so, convert it to a datetime.date object
+        if isinstance(data[0]["date"], str):
+            working_date = datetime.strptime(data[0]["date"], '%Y-%m-%d').date()
+        else:
+            working_date = data[0]["date"]
 
-    if not date :
+    if not date:
         date = working_date
-    date = datetime.strptime(date, '%Y-%m-%d').date()
+    else:
+        # If date is provided as a string, convert it to datetime.date
+        if isinstance(date, str):
+            date = datetime.strptime(date, '%Y-%m-%d').date()
+   
     sql="""
             SELECT
                 nationality,
                 SUM(COALESCE(amount, 0) * IF(type = 'Debit', 1, -1)) AS amount
             FROM `tabFolio Transaction`               
             WHERE 
-                nationality != ''
+                nationality != '' and
+                posting_date = %(date)s
             GROUP BY
                 nationality
         """
     data = frappe.db.sql(sql,{"property":property,"date":date}, as_dict=1)
+    # frappe.msgprint(sql)
     stay_over_sql = """
                 select 
                     sum(amount * if(type='Debit',1,-1)) as amount,
@@ -864,7 +894,8 @@ def get_nationality_chart_data(property=None,date=None):
                FROM 
                 `tabRevenue Forecast Breakdown` 
             WHERE 
-                nationality != ''
+                nationality != '' and
+                date = %(date)s
             GROUP BY
                 nationality
                     
@@ -879,6 +910,7 @@ def get_nationality_chart_data(property=None,date=None):
     charges_by_nationality = {}
     if date >= working_date:
         for d in data:
+            
             if d['nationality'] in charges_by_nationality:
                 charges_by_nationality[d['nationality']]  += d['amount'] or 0
             else:
@@ -890,15 +922,27 @@ def get_nationality_chart_data(property=None,date=None):
                 charges_by_nationality[d['nationality']]  += d['amount'] or 0
             else:
                 charges_by_nationality[d['nationality']] = d['amount'] or 0
+    else:
+        for d in data:
+            
+            if d['nationality'] in charges_by_nationality:
+                charges_by_nationality[d['nationality']]  += d['amount'] or 0
+            else:
+                charges_by_nationality[d['nationality']] = d['amount'] or 0
     for i, (nationality, amount) in enumerate(charges_by_nationality.items()):
+        
         datasets = {
             "type": 'bar',
             "name": nationality,
             "values": amount,
             "color": colors[i % len(colors)]
         }
+        label = {
+            'labels':nationality
+        }
+        chart_data["labels"].append(label)
         chart_data["datasets"].append(datasets)
-  
+        
     return chart_data
 @frappe.whitelist()
 def get_owner_dashboard_current_mount_chart(property=None,duration_type="Daily", view_chart_by="Time Series"):
@@ -1026,13 +1070,19 @@ def get_owner_dashboard_current_mount_chart(property=None,duration_type="Daily",
 def get_room_type_chart_data(property=None,date=None):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
+    if data and data[0]["date"]:
+        # Check if the date is a string; if so, convert it to a datetime.date object
+        if isinstance(data[0]["date"], str):
+            working_date = datetime.strptime(data[0]["date"], '%Y-%m-%d').date()
+        else:
+            working_date = data[0]["date"]
 
-    if data:
-        working_date = data[0]["date"]
-
-    if not date :
+    if not date:
         date = working_date
-    date = datetime.strptime(date, '%Y-%m-%d').date()
+    else:
+        # If date is provided as a string, convert it to datetime.date
+        if isinstance(date, str):
+            date = datetime.strptime(date, '%Y-%m-%d').date()
     sql="""
             SELECT
                 COALESCE(rt.room_type, '') AS room_type,
@@ -1142,10 +1192,16 @@ def get_room_type_chart_data(property=None,date=None):
                 charges_by_room_type[d['room_type']]  += d['amount'] or 0
             else:
                 charges_by_room_type[d['room_type']] = d['amount'] or 0
+    else:
+        for d in data:
+            if d['room_type'] in charges_by_room_type:
+                charges_by_room_type[d['room_type']]  += d['amount'] or 0
+            else:
+                charges_by_room_type[d['room_type']] = d['amount'] or 0
   
     for i, (room_type, amount) in enumerate(charges_by_room_type.items()):
-        total_room = [g['total_room'] for g in room_type_data if g['room_type'] == room_type][0]
-        total_room_sold = [g['total_room_sold'] for g in room_sold_data if g['room_type'] == room_type][0]
+        total_room = next((g['total_room'] for g in room_type_data if g['room_type'] == room_type), 0)
+        total_room_sold = next((g['total_room_sold'] for g in room_sold_data if g['room_type'] == room_type), 0)
         values_expected = epx_data[i]['amount'] if i < len(epx_data) else None
         datasets_actual = {
             "name": room_type,
@@ -3534,16 +3590,19 @@ def get_arrival_stay_over_departure_backend():
 def get_floor_plan_data(filters):
     filters = json.loads(filters)
     room_list = []
-    reservation_stays  = get_reservation_stay_for_floor_plan(filters)
-    
+    reservation_stays  = get_reservation_stay_for_floor_plan(json.dumps(filters))
+    reservation_stays =reservation_stays + get_room_block_for_floor_plan(json.dumps(filters))
+    # get room block data
     if (filters["floor_changed"])==True:
         room_list = get_room_for_floor_plan_arrangement(json.dumps(filters))
+    
     return {
-        "room_list":room_list,
+        "floor_data":room_list,
         "reservation_stays":reservation_stays
     }
     
 def get_reservation_stay_for_floor_plan(filters):
+    filters = json.loads(filters)
     sql ="""
         select 
             a.room_id,
@@ -3556,48 +3615,134 @@ def get_reservation_stay_for_floor_plan(filters):
             a.child,
             b.business_source,
             b.reservation_status,
-            b.status_color,
+            if(coalesce(b.reservation_color,'')='',b.status_color,b.reservation_color) as status_color,
             b.total_credit,
             b.total_debit,
             b.balance,
             b.guest,
             b.guest_name,
             a.is_arrival,
-            a.is_departure
-            
+            a.is_departure,
+            a.is_stay_over,
+            a.pick_up,
+            a.drop_off,
+            a.type,
+            b.room_nights,
+            b.reservation_type,
+            c.photo as business_source_photo
         from   `tabRoom Occupy` a 
         join `tabReservation Stay Room` b on b.name = a.stay_room_id
+        join `tabBusiness Source` c on c.name = a.business_source 
         where
             a.date = %(date)s and 
             a.property = %(property)s and
             a.building = %(building)s and 
             a.floor = %(floor)s and 
             a.is_active_reservation = 1 and 
-            b.reservation_status in ('Reserved','In-house')
+            b.reservation_status in ('Reserved','In-house','Checked Out') and 
+            a.type = 'Reservation'
+
     """
     data = frappe.db.sql(sql, filters, as_dict=1)
     return data
 
+
+def get_room_block_for_floor_plan(filters):
+    filters = json.loads(filters)
+    sql ="""
+        select 
+            a.room_id,
+            b.name as room_block_name,
+            b.block_date,
+            b.start_date,
+            b.end_date,
+            b.status_color,
+            a.type,
+            b.reason,
+            b.is_unblock,
+            b.total_night_count
+
+        from   `tabRoom Occupy` a 
+        join `tabRoom Block` b on b.name = a.stay_room_id
+        where
+            a.date = %(date)s and 
+            a.property = %(property)s and
+            a.building = %(building)s and 
+            a.floor = %(floor)s and 
+            a.type = 'Block'
+
+    """
+    data = frappe.db.sql(sql, filters, as_dict=1)
+    return data
+
+
 @frappe.whitelist()
 def get_room_for_floor_plan_arrangement(filters):
     filters = json.loads(filters)
-    sql = "select name,room_number, room_type_alias, room_type,room_type_id from `tabRoom` where property=%(property)s and floor=%(floor)s and building=%(building)s"
+    sql = "select name,room_number, status_color,housekeeping_status_code,room_type_alias, room_type,room_type_id from `tabRoom` where property=%(property)s and floor=%(floor)s and building=%(building)s"
     data = frappe.db.sql(sql,filters,as_dict=1)
     positions =  frappe.db.get_value("Floor",filters["floor"],"room_position")
+    rooms = []
     if positions:
         positions = json.loads(positions)
+        rooms = copy.deepcopy([d for d in positions if "name" in d])
+        
     else:
-        positions = []
+        rooms = []
         
     for r in data:
-        p = [d for d in positions if d["name"] == r["name"]]
+        p = [d for d in rooms if d["name"] == r["name"]]
         if p:
             p = p[0]
             r["x"] = 0 if not "x"  in p   else p["x"]
             r["y"] = 0 if not "y"  in p   else p["y"]
             r["height"] = 100 if not "height"  in p   else p["height"]
             r["width"] = 100 if not "width"  in p   else p["width"]
-    return data
+            r["xp"] = None  if not "xp"  in p   else p["xp"]
+            r["yp"] = None  if not "yp"  in p   else p["yp"]
+            r["wp"] = None  if not "wp"  in p   else p["wp"]
+            r["hp"] = None  if not "hp"  in p   else p["hp"]
+            
+    data = data + [d for d in positions if "element" in d and d["element"]]
+    
+    return {"background":frappe.get_cached_value("Floor",filters["floor"], "photo"),"rooms":data}
+
+
+@frappe.whitelist()
+def get_unassign_room_by_date(filters):
+    # fitler have date and property
+    # and data pass as string
+    filters = json.loads(filters)
+    sql = """
+        select 
+            a.name,
+            a.stay_room_id,
+            a.reservation_stay,
+            a.reservation,
+            a.guest,
+            a.guest_name,
+            a.room_type_id,
+            a.room_type,
+            b.arrival_date,
+            b.departure_date,
+            b.start_date,
+            b.end_date,
+            b.input_rate,
+            b.rate_type,
+            b.business_source,
+            b.is_manual_rate
+            
+        from `tabRoom Occupy` a
+        join `tabReservation Stay Room` b on b.parent = a.reservation_stay
+        where
+            a.date = %(date)s and 
+            a.property = %(property)s and
+            a.type = 'Reservation' and 
+            a.reservation_status = 'Confirmed' 
+        
+    """
+    return frappe.db.sql(sql,filters, as_dict =1)
+
 
 @frappe.whitelist(methods="POST")
 def save_room_layout_position(floor,data):

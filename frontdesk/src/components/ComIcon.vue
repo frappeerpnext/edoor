@@ -37,6 +37,7 @@
     <img v-else-if="icon == 'IconBillToCompanywhite'" :style="{'height' : height}" :class="class" :src="IconBillToCompanywhite"/>
     <img v-else-if="icon == 'IconBillToGuest'" :style="{'height' : height}" :class="class" :src="IconBillToGuest"/>
     <img v-else-if="icon == 'iconWeekCalendar'" :style="{'height' : height}" :class="class" :src="iconWeekCalendar"/>
+    <img v-else-if="icon == 'broom'" :style="{'height' : height}" :class="class" :src="iconBroom"/>
     <img v-else-if="icon == 'icon14Day'" :style="{'height' : height}" :class="class" :src="icon14Day"/>
     <img v-else-if="icon == 'iconMonth'" :style="{'height' : height}" :class="class" :src="iconMonth"/>
     <img v-else-if="icon == 'roomRate'" :style="{'height' : height}" :class="class" :src="roomRate"/>
@@ -47,6 +48,10 @@
     <img v-else-if="icon == 'iconMoveStay'" :style="{'height' : height}" :class="class" :src="iconMoveStay"/>
     <img v-else-if="icon == 'iconWalkIn'" :style="{'height' : height}" :class="class" :src="iconWalkIn"/>
     <img v-else-if="icon == 'iconPackage'" :style="{'height' : height}" :class="class" :src="iconPackage"/>
+    <img v-else-if="icon == 'iconArrival'" :style="{'height' : height}" :class="class" :src="iconArrival"/>
+    <img v-else-if="icon == 'icondeparture'" :style="{'height' : height}" :class="class" :src="icondeparture"/>
+    <img v-else-if="icon == 'iconstayover'" :style="{'height' : height}" :class="class" :src="iconstayover"/>
+
 </template>
 <script setup>
 const theme =window.theme
@@ -61,9 +66,13 @@ const props = defineProps({
     },
     height: String
 })
+import icondeparture from '@/assets/svg/departure-icon-white.svg'
+import iconArrival from '@/assets/svg/arrival-icon-white.svg'
+import iconstayover from '@/assets/svg/stayover-icon-white.svg'
 import iconEdoorReservation from '@/assets/svg/icon-reservation.svg'
 import reservation from '@/assets/svg/icon-reservation.svg'
 import frontdesk from '@/assets/svg/icon-frontdesk.svg'
+import iconBroom from '@/assets/svg/icon-broom-white.svg'
 import iconBed from '@/assets/svg/icon-bed.svg'
 import BtnCheckinIcon from '@/assets/svg/icon-check-in.svg'
 import BtnCheckinIconBlack from '@/assets/svg/icon-check-in-black.svg'

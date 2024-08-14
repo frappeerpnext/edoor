@@ -21,6 +21,7 @@
   "phone_number",
   "email",
   "vattin_number",
+  "photo",
   "credit_card_information_section",
   "bank_name",
   "credit_card_number",
@@ -134,11 +135,17 @@
    "fieldname": "vattin_number",
    "fieldtype": "Data",
    "label": "Vattin Number"
+  },
+  {
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "Photo"
   }
  ],
+ "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-26 17:35:44.912273",
+ "modified": "2024-08-10 11:05:12.217758",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

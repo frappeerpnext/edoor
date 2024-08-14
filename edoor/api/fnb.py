@@ -14,7 +14,7 @@ def get_fnb_revenue_and_payment_data(property, date):
 	return data
 
 @frappe.whitelist(allow_guest=True)
-def get_fnb_revenue(property, date):
+def get_fnb_revenue(property, date=None):
 	sql = """select 
             sp.revenue_group,
 			sum(sp.total_revenue) as total_revenue,
@@ -47,7 +47,7 @@ def get_fnb_revenue(property, date):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_fnb_payment(property, date):
+def get_fnb_payment(property, date=None):
 	sql="""select 
 		sp.payment_type,
 		sum(sp.payment_amount + sp.fee_amount) as total_payment,

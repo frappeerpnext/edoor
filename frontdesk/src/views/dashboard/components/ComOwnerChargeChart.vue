@@ -1,6 +1,5 @@
 <template>
-    <ComOwnerContentTitle label="Charge"> 
-        
+    <ComOwnerContentTitle :label="'Charge - ' + moment(date).format('DD-MM-YYYY')"> 
         <ComPlaceholder text="No Data"  :is-not-empty="data" >   
         <div class="col-12">
             <Skeleton v-if="loading" width="100%" height="20rem"></Skeleton> 
@@ -34,12 +33,17 @@
 
 </template>
 <script setup>
-import {  ref, onMounted,getApi,computed } from '@/plugin'
+import {  ref, onMounted,getApi,computed, inject,defineProps,watch } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 import { Colors } from 'chart.js';
 const loading = ref(true)
- 
+const moment = inject("$moment")
+const props = defineProps({
+  date: {
+    type: Date,
+  },
+});
  
 const data = ref({})
 const totalValues = computed(() => {
@@ -49,7 +53,7 @@ function renderdata() {
 loading.value = true    
 const doc = getApi('frontdesk.get_charge_chart_data', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
-        date: JSON.parse(localStorage.getItem("edoor_working_day")).date_working_day
+        date: props.date
     })
     .then((result) => {
             data.value = result.message
@@ -74,6 +78,11 @@ const doc = getApi('frontdesk.get_charge_chart_data', {
 
   new Chart("#chartCharge", chartConfig);
 }
+watch(() => props.date, (newDate) => {
+    if (newDate) {
+        renderdata();
+    }
+}); 
 onMounted(() => {
     renderdata()
 })       

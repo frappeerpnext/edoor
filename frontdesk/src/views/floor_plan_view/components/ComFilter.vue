@@ -1,29 +1,42 @@
 <template>
-    {{ filters }}
-    <InputText  v-model="filters.keyword" :placeholder="$t('Search')" v-debounce="onSearch" />
+    <div class="grid">
+        <div class="flex col-12 justify-content-between ">
+            <div class="flex gap-2">
+                        <div class="">
+            <InputText  class="w-full" v-model="filters.keyword" :placeholder="$t('Search')" v-debounce="onSearch" />
+            </div>    
+            <div class="">
+                <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filters.date" @date-select="onDateChange"
+                    dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear" />
+            </div>    
+            <div class="">
+                <ComSelect v-if="buildings.length > 1" :filters="[['property', '=', property_name]]"
+                    :placeholder="$t('Building')" v-model="filters.building" doctype="Building" optionLabel="name"
+                    optionValue="name" class="w-full overflow-x-auto" :clear="false"></ComSelect>
 
-    <div>
-        <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filters.date" @date-select="onDateChange"
-            dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear" />
+            </div>
+            </div>
+            <div class="col-fix">
+    <Button  @click="onNextPrevDate(-1)" icon="pi pi-angle-double-left" v-tippy="$t('View Previous Day')" class="border-noround-right border-y-none border-left-none"></Button>
+    <Button @click="onNextPrevDate(0)"  v-tippy ="$t('View Today')"  class="border-noround border-none">Today</Button>
+    <Button @click="onNextPrevDate(1)"  v-tippy ="$t('View Next Day')" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button> 
     </div>
-    <div>
+        </div>
+        <div class="col-12 flex justify-content-between">
+        <div class="flex gap-2" v-if="floors">
+            <Button class="conten-btn" :class="{ 'active_btn': filters.floor === b.name }" @click="onFloorClick(b,index)" v-for="(b, index) in floors.filter(r => r.building == filters.building)"
+                :key="index">
+                {{ b.name }}
+            </Button>
+        </div> 
+        
 
-        <ComSelect v-if="buildings.length > 1" :filters="[['property', '=', property_name]]"
-            :placeholder="$t('Building')" v-model="filters.building" doctype="Building" optionLabel="name"
-            optionValue="name" class="w-full overflow-x-auto"></ComSelect>
+   
+</div>   
 
     </div>
 
-
-    <div v-if="floors">
-        <Button @click="onFloorClick(b)" v-for="(b, index) in floors.filter(r => r.building == filters.building)"
-            :key="index">
-            {{ b.name }}
-        </Button>
-    </div>
-    <Button @click="onNextPrevDate(1)">Next Date</Button>
-    <Button @click="onNextPrevDate(-1)">Prev Date</Button>
-    <Button @click="onNextPrevDate(0)">Today</Button>
+   
 </template>
 <script setup>
 import { ref, onMounted, inject, getDocList, nextTick } from "@/plugin"
@@ -66,7 +79,7 @@ const onFilter = async () => {
 
 const onFilterDebounce = debounce(onFilter, 500);
  
-function onFloorClick(floor) {
+function onFloorClick(floor,index) {
     filters.value.floor = floor.name
     onFilterDebounce()
 }

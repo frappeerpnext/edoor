@@ -166,7 +166,8 @@
    "fieldname": "business_source",
    "fieldtype": "Link",
    "label": "Business Source",
-   "options": "Business Source"
+   "options": "Business Source",
+   "search_index": 1
   },
   {
    "fetch_from": "room_id.floor",
@@ -296,7 +297,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-06 11:40:42.002745",
+ "modified": "2024-08-10 11:04:35.019831",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

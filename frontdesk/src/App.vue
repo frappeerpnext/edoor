@@ -50,6 +50,7 @@ import ComDepositLedgerDetail from "@/views/deposit_ledger/components/ComDeposit
 import ComPayableLedgerDetail from "@/views/payable_ledger/components/ComPayableLedgerDetail.vue";
 import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
 import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
+import NewReservation from "@/views/reservation/NewReservation.vue"
 const urlParams = new URLSearchParams(window.location.search);
 const route = useRoute();
 import {i18n} from '@/i18n';
@@ -180,9 +181,13 @@ const actionClickHandler = async function (e) {
     }else if(e.data.action){
         if(e.data.action=="view_property_data_sumary_by_date"){ 
             onViewDailySummary(e.data.date,e.data.room_type_id, e.data.room_type)
+        }else if(e.data.action=="new_fit_reservation"){
+           
+            addNewFITReservation(e.data.data)
         }
     }
 };
+
 
 function getWorkingDay(){
     getApi("frontdesk.get_working_day",{property:window.property_name}).then(r=>{
@@ -720,6 +725,7 @@ function showDeskFolioDetail(name) {
        
     });
 }
+
 function showPayableLedgerDetail(name) {
     const dialogRef = dialog.open(ComPayableLedgerDetail, {
         data: {
@@ -741,6 +747,33 @@ function showPayableLedgerDetail(name) {
         }
        
     });
+}
+
+function addNewFITReservation(data) {
+    dialog.open(NewReservation, {
+        data: data,
+        props: {
+          header: $t('New Reservation'),
+          style: {
+            width: '80vw',
+          },
+          breakpoints: {
+            '960px': '100vw',
+            '640px': '100vw'
+          },
+          modal: true,
+          maximizable: true,
+          closeOnEscape: false,
+          position: 'top',
+
+        },
+        onClose: (options) => {
+          const d = options.data;
+          if (d != undefined) {
+            window.postMessage('view_reservation_stay_detail|' + d.name, '*')
+          }
+        }
+      });
 }
 
 </script>

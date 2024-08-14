@@ -1,5 +1,5 @@
 <template>
-    <ComOwnerContentTitle label="Nationality">    
+    <ComOwnerContentTitle :label="'Nationality - ' + moment(date).format('DD-MM-YYYY')">    
         <div class="col-12">
             <Skeleton v-if="loading" class="mb-2"  width="100%" height="20rem"></Skeleton>
             <div id="chartb_nationalitys"></div>
@@ -34,22 +34,28 @@
 </ComOwnerContentTitle>    
 </template>
 <script setup>
-import {  ref, onMounted,getApi,computed } from '@/plugin'
+import {  ref, onMounted,getApi,computed,defineProps,watch,inject } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 import { Colors } from 'chart.js';
 const loading = ref(true)
+const moment = inject('$moment')
 const totaldActualValues = computed(() => {
   return data.value.datasets.reduce((sum, payment) => sum + payment.values, 0);
 }); 
-
+const props = defineProps({
+    date: {
+      type: Date,
+    },
+  });
+ 
  
 const data = ref({})
 function renderdata() {
     loading.value = true     
 const doc = getApi('frontdesk.get_nationality_chart_data', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
-        date: JSON.parse(localStorage.getItem("edoor_working_day")).date_working_day
+        date: props.date
     })
     .then((result) => {
             loading.value = false 
@@ -73,6 +79,11 @@ const doc = getApi('frontdesk.get_nationality_chart_data', {
 
   new Chart("#chartb_nationalitys", chartConfig);
 }
+watch(() => props.date, (newDate) => {
+  if (newDate) {
+    renderdata();
+  }
+});
 onMounted(() => {
     renderdata()
 })       

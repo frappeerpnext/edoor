@@ -1,6 +1,5 @@
 <template>
-    <ComOwnerContentTitle label="F&B Payment">   
-       
+    <ComOwnerContentTitle :label="'F&B Payment - ' + moment(date).format('DD-MM-YYYY')">    
     <div class="grid ">
   <div class="lg:col-6 col-12 pt-6">
     <Skeleton v-if="loading" width="100%" height="20rem"></Skeleton> 
@@ -36,12 +35,17 @@
 </ComOwnerContentTitle>    
 </template>
 <script setup>
-import {  ref, onMounted,getApi,computed } from '@/plugin'
+import {  ref, onMounted,getApi,computed,defineProps,watch,inject } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 import { Colors } from 'chart.js';
 const loading = ref(true)
- 
+const moment = inject("$moment")
+const props = defineProps({
+    date: {
+        type: Date,
+    },
+}); 
  
 const data = ref({})
 const totaldValues = computed(() => {
@@ -50,7 +54,7 @@ const totaldValues = computed(() => {
 function renderdata() {
 const doc = getApi('fnb.get_fnb_payment', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
-        date: JSON.parse(localStorage.getItem("edoor_working_day")).date_working_day
+        date: props.date
     })
     .then((result) => {
         loading.value = false  
@@ -76,6 +80,11 @@ const doc = getApi('fnb.get_fnb_payment', {
 
   new Chart("#chartChargefnbpayment", chartConfig);
 }
+watch(() => props.date, (newDate) => {
+    if (newDate) {
+        renderdata();
+    }
+});
     onMounted(() => {
     renderdata()
 })       

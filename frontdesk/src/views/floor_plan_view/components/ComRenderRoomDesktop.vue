@@ -1,42 +1,94 @@
 <template>
+
+    <div :class="editMode == 1 ? ' edit' : 'floor-plan-item'">
+
+<draggable-resizable-container
+  :grid="editMode?[10, 10]:[0,0]"
+  :show-grid="editMode"
+  class="container"
+  @contextmenu="onOpenMenu"   
+>
+ 
+    <draggable-resizable-vue v-for="(room, index) in roomList.filter(r=>(r.is_deleted || 0)==0)" :key="index"
+      v-model:x="room.x" v-model:y="room.y" v-model:h="room.height"
+    v-model:w="room.width" v-model:active="room.isActive" :draggable="editMode" :resizable="editMode" :z="room.z_index"
+     :min-width="room.element?50:180"
+     :min-height="room.element?50:120"
+    >   
+     
+      <ComRoom   :room="room" :editMode="editMode" :filters="filters"/>
+    </draggable-resizable-vue>
+
+ 
+</draggable-resizable-container>
+</div>
+
   
-<div :class="editMode == 1 ? ' edit' : ''">
-      <draggable-resizable-container
-        :grid="[20, 20]"
-        :show-grid="editMode"
-        class="container"
-      >
-        <template v-for="(d, index) in roomList" :key="index">
-          <ComRoom :room="d" :editMode="editMode" :filters="filters"/>
-        </template>
-      </draggable-resizable-container>
-    </div>
+<ContextMenu ref="menu" :model="contextMenuItems" />
+     
 </template>
 <script setup>
   import {ref} from  "@/plugin"
   import ComRoom from "@/views/floor_plan_view/components/ComRoom.vue";
+  import DraggableResizableVue from "draggable-resizable-vue3";
+  import ContextMenu from 'primevue/contextmenu';
+ 
+  const emit = defineEmits(["onAddElement"])
+
   const props = defineProps({
     roomList:Object,
     editMode:Boolean,
     filters:Object
 
   })
+  const menu = ref();
+  const contextMenuItems = ref([
+      { label: 'Add Element', icon: 'pi pi-copy',
+        command:function(event){
+    
+          emit("onAddElement")
+        }
+       },
+      {
+        label:"Set Container Height",
+        command:function(){
+          alert(123)
+        }
+      }
+  ]);
+
+  const onOpenMenu = (event) => {
+    if(props.editMode){
+      menu.value.show(event);
+    }
+    
+};
+
+
+  function test(){
+    alert(123)
+  }
 </script>
 
 <style scoped>
 .container {
-  border: solid 1px red;
+  border: none;
   width: 100%;
-  height: 85vh;
+  height:100vh ;
   min-height: 768px;
   min-width: 1024px;
   max-width: 100%;
+  background-image: var(--background-img);
+  background-size: cover;
+ 
+
 }
+.edit .container{border:  1px solid #000;}
 .edit .drv {
   border: dashed 1px #000;
 }
 
 .drv {
-  border: solid 1px green;
+  border: none
 }
 </style>

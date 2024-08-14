@@ -71,6 +71,12 @@ html {
 .bg-sysdate{
     background: #4d40ca !important;
 }
+.floor-plan-item .drv:hover{
+z-index: 100 !important;
+}
+.box-shadow-floor-item{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
 .recent_transaction_tap{
     background: none;
     color: #000;
@@ -89,7 +95,9 @@ html {
     transform: translateY(-50%);
 }
 .active_btn{
-    background-color: #bccbfd !important;
+    background-color: #4338ca !important;
+    color: white !important;
+    border: none;
 }
 .calendar_active{
     background-color: var(--bg-btn-color) !important;
