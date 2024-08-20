@@ -56,6 +56,17 @@ html {
 .border-gray-edoor-100 {
     border-color: var(--color-gray-100)
 }
+.p-fieldset .p-fieldset-legend{
+    background-color: white !important;
+}
+.room-floor-plan{
+    background-color: #25404c9c  !important;
+display: flex;
+color:white !important;
+justify-content: center;
+align-items: center;
+}
+
 .bg-yellow-op-10{
     background-color: var(--bg-yellow-op-10);
 }
@@ -71,9 +82,13 @@ html {
 .bg-sysdate{
     background: #4d40ca !important;
 }
-.floor-plan-item .drv:hover{
-z-index: 100 !important;
+.item-floor-plan-room:hover{
+    background-color: rgb(226, 255, 237) !important;
+    cursor: pointer;
 }
+.floor-plan-item .drv:hover{
+    z-index: 100 !important;
+    }
 .box-shadow-floor-item{
     box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }

@@ -11,7 +11,9 @@
             </div>
         </div>
         <template v-else>
-            <Avatar v-if="icon" :size="size" :icon="icon" class="mr-2 !bg-transparent" shape="circle" :style="{borderColor:colorStatus}" />
+            <template v-if="icon">
+                <Avatar :size="size" :icon="icon" class="mr-2 !bg-transparent" shape="circle" :style="{borderColor:colorStatus}" />
+            </template>
             <div :class="{'cursor-pointer':isDisplayImage}"  @click="onShowImage" v-else>
                 <Avatar :size="size" :image="image" class="mr-2 bg-gray-300" shape="circle" :style="{borderColor:colorStatus}" />
             </div>

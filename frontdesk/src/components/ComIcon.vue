@@ -51,7 +51,10 @@
     <img v-else-if="icon == 'iconArrival'" :style="{'height' : height}" :class="class" :src="iconArrival"/>
     <img v-else-if="icon == 'icondeparture'" :style="{'height' : height}" :class="class" :src="icondeparture"/>
     <img v-else-if="icon == 'iconstayover'" :style="{'height' : height}" :class="class" :src="iconstayover"/>
+    <img v-else-if="icon == 'RoomBlockIcon'" :style="{'height' : height}" :class="class" :src="RoomBlockIcon"/>
 
+
+    
 </template>
 <script setup>
 const theme =window.theme
@@ -120,6 +123,7 @@ import iconCamera from '@/assets/svg/icon-camera.svg'
 import iconMoveStay from '@/assets/svg/icon-move_stay.svg'
 import iconWalkIn from '@/assets/svg/walk-in-icon.svg'
 import iconPackage from '@/assets/svg/package-icon.svg'
+import RoomBlockIcon from '@/assets/svg/RoomBlockIcon.svg'
 
 
 </script>

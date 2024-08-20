@@ -38,9 +38,8 @@
             <ComChipIcon v-tippy="{ content: 'This Room Have Other Reservation', placement: 'left' }" v-if=" room.stay.length > 1" icon="pi-info" iconHeight="9" bgColor="#869e00" />
             
         </div>
-
+<div v-if="stay?.group_color" v-tippy="{ content: stay.group_name || group_code ? stay.group_name + ' - ' + stay.group_code || '' :  'Group Color', placement: 'left' }" class="absolute right-0 bottom-0 overflow-hiddent" :style="{ backgroundColor: stay?.group_color }" style="clip-path: circle(99.3% at 100% 100%);width:20px;height: 20px;"></div>
     </div>
-    
 </template>
   
   <script setup>

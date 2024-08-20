@@ -768,9 +768,10 @@ function addNewFITReservation(data) {
 
         },
         onClose: (options) => {
+           
           const d = options.data;
           if (d != undefined) {
-            window.postMessage('view_reservation_stay_detail|' + d.name, '*')
+            window.postMessage('view_reservation_detail|' + d.name, '*')
           }
         }
       });

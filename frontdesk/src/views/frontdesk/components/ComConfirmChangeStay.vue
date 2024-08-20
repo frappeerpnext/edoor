@@ -266,7 +266,7 @@ function onSave() {
             }
         }
     ).then((result) => {
-        console.log(new_data)
+
         isSaving.value = false
         //we delay wait data to update complete
         if (!dialogRef.value.data.disable_reload_frontdesk) {

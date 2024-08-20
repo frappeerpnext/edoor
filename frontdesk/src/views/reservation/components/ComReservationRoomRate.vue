@@ -30,7 +30,7 @@
           </Button>
         </div>
         <!-- hide funtion -->
-        <div>
+        <!-- <div>
           <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onDiscount">
             <i class="pi pi-percentage me-2" style="font-size: 1rem"></i>
             {{ $t('Discount') }}
@@ -39,7 +39,7 @@
               ({{ rs.selectedRoomRates.length  }})
             </template>
           </Button>
-        </div>
+        </div> -->
       </div>
     </div>
       <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"

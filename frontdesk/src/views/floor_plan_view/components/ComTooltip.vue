@@ -1,6 +1,8 @@
 <template>
     <div class="flex" >
-    <div class="p-2 w-full col" :class="index != '0' ? 'border-left-1' : ''" v-for="( data , index ) in data" v-if="data">
+    
+    <template v-for="( data , index ) in data">
+    <div  class="p-2 w-full col" :class="index != '0' ? 'border-left-1' : ''"  v-if="data.type == 'Reservation'">
         <div class="text-center mb-3 border-1 p-2 border-round-lg overflow-hidden text-overflow-ellipsis ">
             <span class="me-2"> {{ data.guest_name }}
             </span>
@@ -23,7 +25,7 @@
 
  
 
-        <table class="tip_description_stay_table m-1 pt-4">
+        <table class="tip_description_stay_table w-full m-1 pt-4">
             <tbody>
                 <tr class="table-rs-de">
                     <td> {{ $t('Res. No') }} </td>
@@ -69,7 +71,7 @@
                     <td class="px-2">:</td>
                     <td>{{ data?.reservation_type || '' }} </td>
                 </tr>
-                <!-- <tr class="table-rs-de"
+                <tr class="table-rs-de"
                     v-if="data?.group_name || data?.group_code || data?.group_color">
                     <td>{{ $t('Group') }}</td>
                     <td class="px-2">:</td>
@@ -79,7 +81,7 @@
                             v-if="data?.group_name">{{ data?.group_name || '' }}</span> <span
                             v-if="data?.group_code"> - {{ data?.group_code || '' }}</span>
                     </td>
-                </tr> -->
+                </tr>
                 <tr class="table-rs-de">
                     <td>{{ $t('Arrival') }}</td>
                     <td class="px-2">:</td>
@@ -108,23 +110,18 @@
                     <td class="px-2">:</td>
                     <td>{{ data?.adult }} / {{ data?.child }}</td>
                 </tr>
-                <!-- <tr class="table-rs-de">
-                    <td>{{ $t('Source') }}</td>
-                    <td class="px-2">:</td>
-                    <td>{{ data?.business_source || '' }}</td>
-                </tr> -->
-                <!-- <tr v-if="data?.note != 'null' && data?.note">
+                <tr v-if="data?.note != 'null' && data?.note">
                     <td colspan="3">
                         <div class="border-round-lg p-2 reason-box-style">{{ data?.note.length > 220 ?
                             data?.note.substring(0, 220) + '...' : data?.note }}</div>
                     </td>
-                </tr> -->
+                </tr>
             </tbody>
         </table>
          <hr class="my-2">
         <div class="flex gap-2 justify-content-between">
         <Button @click="onViewReservationStay(data.reservation_stay)" class="white-space-nowrap border-none">View Detail</Button>
-        <Button v-if="data?.is_arrival && data?.reservation_status == 'Reserved'" @click="onCheckIn"
+        <Button v-if="data?.is_arrival && data?.reservation_status == 'Reserved'" @click="onCheckIn(data)"
                 class="bg-green-500 border-none white-space-nowrap">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
                 {{ $t('Check In') }}
@@ -132,24 +129,68 @@
         </Button>
         <Button
                 v-if="data?.reservation_status === 'In-house' && data?.is_departure"
-                @click="onCheckOut" class="bg-red-400 border-none white-space-nowrap">
+                @click="onCheckOut(data)" class="bg-red-400 border-none white-space-nowrap">
                 <ComIcon icon="checkout" style="height: 18px;" class="me-2" />
                 {{ $t('Check Out') }}
         </Button>
         </div>
         
     </div>
-</div>
-<div class="card flex justify-center">
-        <Button label="Dialog Show" @click="visible = true" />
-        <Dialog v-model:visible="visible" >
-            <div class="flex justify-end gap-2">
-                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Save" @click="visible = false"></Button>
-            </div>
-        </Dialog>
+    <div v-else-if="data.type == 'Block'" class="w-full p-2">
+        <div class="text-center border-1 p-2 border-round-lg">Room Block</div>
+
+        <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
+            <tbody>
+
+                <tr class="table-rs-de">
+                    <td>{{ $t('Block Number') }}</td>
+                    <td class="px-3">:</td>
+                    <td> {{ data?.room_id || '' }}</td>
+                </tr>
+                <tr class="table-rs-de">
+                    <td>{{ $t('Start Date') }}</td>
+                    <td class="px-3">:</td>
+                    <td> {{ moment(data?.start_date).format('DD-MM-YYYY') }}</td>
+                </tr>
+                <tr class="table-rs-de">
+                    <td>{{ $t('Release Date') }}</td>
+                    <td class="px-3">:</td>
+                    <td> {{ moment(data?.end_date).format('DD-MM-YYYY') }}</td>
+                </tr>
+                <tr class="table-rs-de">
+                    <td>{{ $t('Night Of Block') }}</td>
+                    <td class="px-3">:</td>
+                    <td>{{data?.total_night_count }} </td>
+                </tr>
+                <tr class="table-rs-de">
+                    <td>{{ $t('Blocked by') }}</td>
+                    <td class="px-3">:</td>
+                    <td> {{ data.owner || '' }}</td>
+                </tr>
+                <tr>
+                    <td><span class="mt-2">{{ $t('Reason') }}</span></td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <div class="border-round-lg p-2 reason-box-style"> {{ data?.reason }}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr class="my-2">
+        <div class="flex gap-2 justify-content-between">
+        <Button @click="onViewRoomBlock(data.room_block_name)" class="white-space-nowrap border-none">View Detail</Button>
+        <Button
+                @click="onUnBlock(data)" class="bg-green-400 border-none white-space-nowrap">
+                <i class="pi pi-lock-open me-2" />
+                {{ $t('Unblock') }}
+        </Button>
     </div>
-    
+    </div>    
+    </template>
+</div>
+
+  
 </template>
 <script setup>
 import Dialog from 'primevue/dialog'; 
@@ -168,11 +209,17 @@ const props = defineProps({
 function onViewReservationStay(stay) {
       window.postMessage('view_reservation_stay_detail|' + stay, '*')
 }
-const emit = defineEmits(['checkin']);
-function onCheckIn(){
-    emit('checkin')
+function onViewRoomBlock(room) {
+  window.postMessage("view_room_block_detail|" + room,"*")
+  
 }
-function onCheckOut(){
-    alert(231)
+function onCheckIn(data){
+    window.postMessage({action:"Check In from Floor Plan View",data:{reservation:data.reservation,reservation_stay:data.reservation_stay}},"*")
+}
+function onCheckOut(data){
+    window.postMessage({action:"Check Out from Floor Plan View",data:{reservation:data.reservation,reservation_stay:data.reservation_stay}},"*")
+}
+function onUnBlock(data){
+    window.postMessage({action:"Unblock Room from Floor Plan View",data:{room_block_name:data.room_block_name,date:data.date}},"*")
 }
 </script>

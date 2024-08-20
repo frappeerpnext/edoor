@@ -354,7 +354,7 @@ function AddTransaction(account_code) {
         },
         onClose: (options) => {
             const data = options.data.message;
-            // console.log(data)
+        
             if (data) {
 
                 loadData()

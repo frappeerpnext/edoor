@@ -7,12 +7,15 @@
     @onRefresh="getFloorPlanData(filters)"
   >
     <template #title>
-      <div class="text-xl md:text-2xl white-space-nowrap">
+      <div class="flex">
+        <div class="text-xl md:text-2xl white-space-nowrap">
         {{ $t("Floor Plan View") }}
       </div>
       <div class="ml-8 header-title text-xl md:text-2xl white-space-nowrap">
         {{ moment.utc(filters.date).format("DD MMM, yyyy") }}
       </div>
+      </div>
+      
     </template>
     <template #setting_menu>
       <button
@@ -27,16 +30,27 @@
 
     <template #action>
       <template v-if="editMode">
-        <Button @click="onAddElement">Add Element</Button>
-        <Button @click="onSavePosition">Bulk Update Height & width</Button>
-        <Button @click="onCancelArrangePosition">Cancel</Button>
-        <Button :disabled="gv.loading" @click="onSavePosition"
-          >Save Setting</Button
+        <Button class="border-none" @click="onAddElement">
+        <i class="pi pi-plus me-2" />  
+          {{$t('Add Element')}}</Button>
+        <Button class="border-none" @click="onSavePosition">
+          <i class="pi pi-external-link me-2" />
+          {{ $t('Bulk Update Height & width') }}
+          </Button>
+        <Button class="border-none bg-red-500" @click="onCancelArrangePosition">
+          <i class="pi pi-times me-2" />
+          {{ $t('Cancel') }}
+          </Button>
+        <Button class="border-none" :disabled="gv.loading" @click="onSavePosition">
+          <img class="pi pi-check-circle mr-2"  :src="BtnOkIcon" style="height: 13px;"/>
+          {{ $t('Save Setting') }}
+          </Button
         >
       </template>
     </template>
 
     <ComFilter @onFilter="getFloorPlanData" @onSearch="onSearch" />
+    
     <ComRenderRoomDesktop
       v-if="!isMobile"
       :roomList="roomList"
@@ -54,6 +68,7 @@
 </template>
 
 <script setup>
+import BtnOkIcon from '@/assets/svg/icon-save.svg' 
 import {
   ref,
   getApi,
@@ -64,6 +79,7 @@ import {
   computed,
   useDialog,
   provide,
+  getDoc
 } from "@/plugin";
 import ComFrontDeskLayout from "@/views/frontdesk/components/ComFrontDeskLayout.vue";
 import ComFilter from "@/views/floor_plan_view/components/ComFilter.vue";
@@ -71,9 +87,11 @@ import ComFilter from "@/views/floor_plan_view/components/ComFilter.vue";
 import ComRenderRoomDesktop from "@/views/floor_plan_view/components/ComRenderRoomDesktop.vue";
 import ComRenderRoomMobile from "@/views/floor_plan_view/components/ComRenderRoomMobile.vue";
 import ComSelectElement from "@/views/floor_plan_view/components/ComSelectElement.vue";
-
+import ComConfirmCheckIn from "@/views/reservation/components/confirm/ComConfirmCheckIn.vue"
 import { i18n } from "@/i18n";
-
+import { useConfirm } from "primevue/useconfirm";
+import ComUnblockRoom from "@/views/room_block/components/ComUnblockRoom.vue"
+const confirm = useConfirm()
 const { t: $t } = i18n.global;
 const filters = ref([]);
 const room_list = ref([]);
@@ -153,16 +171,19 @@ function getFloorPlanData(f) {
     });
 }
 function update_element_size(room){
+
   if(window.isMobile){
     return
   }
-  const width = document.querySelector(".container").offsetWidth
+
+    const width = document.querySelector(".container").offsetWidth
   const height = document.querySelector(".container").offsetHeight
 
   if(room){
 
     if(room.xp){
       room.x = room.xp*width
+      
     }
     
     if(room.yp){
@@ -182,7 +203,9 @@ function update_element_size(room){
      
   room_list.value.forEach(r=>{
     if(r.xp){
+    
       r.x = r.xp*width
+
     }
     
     if(r.yp){
@@ -200,11 +223,13 @@ function update_element_size(room){
     }
 
     
- 
     
 
   })
 }
+
+  
+
 }
 
 function onAddElement(event) {
@@ -212,7 +237,7 @@ function onAddElement(event) {
     props: {
       header: $t("Select Element"),
       style: {
-        width: "80vm",
+        width: "70vw",
       },
       modal: true,
       closeOnEscape: true,
@@ -265,7 +290,7 @@ function onSavePosition() {
     .then((r) => {
       editMode.value = false;
       gv.loading = false;
-      window.location.reload();
+      // window.location.reload();
     })
     .catch((error) => {
       gv.loading = false;
@@ -283,34 +308,132 @@ const actionRefreshData = async function (e) {
   if (e.isTrusted && typeof e.data != "string") {
     if (e.data.action == "FloorPlanView" || e.data.action == "Frontdesk") {
       getFloorPlanData(filters.value);
+    } else   if (e.data.action == "Check In from Floor Plan View") {
+      checkIn(e.data.data)
+    }
+    else   if (e.data.action == "Check Out from Floor Plan View") {
+      onCheckOut(e.data.data)
+    }
+    else   if (e.data.action == "Unblock Room from Floor Plan View") {
+      onUnBlockRoom(e.data.data)
     }
   }
 };
 
+function checkIn(data){
+  dialog.open(ComConfirmCheckIn, {
+          props: {
+            header: $t('Confirm Check In'),
+            style: {
+              width: '650px',
+            },
+            modal: true,
+            closeOnEscape: false,
+            breakpoints: {
+              '960px': '650px',
+              '640px': '100vw'
+            },
+          },
+          onClose: (options) => {
+            const result = options.data;
+            if (result) {
+              gv.loading = true
+              postApi("reservation.check_in", {
+                reservation: data.reservation,
+                reservation_stays: [data.reservation_stay],
+                note: result.note,
+                arrival_time: result.checked_in_date
+              }).then((result) => {
+                gv.loading = false
+                getFloorPlanData(filters.value);
+              })
+                .catch((err) => {
+                  gv.loading = false
+                })
+            }
+          }
+        })
+}
+function onCheckOut(data) {
+    confirm.require({
+        message: 'Are you sure you want to check out this room?',
+        header: 'Confirmation',
+        acceptLabel: 'OK',
+        rejectVisible: true,
+        rejectClass: 'hidden',
+        acceptClass: 'border-none',
+        acceptIcon: 'pi pi-check-circle',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            gv.loading = true
+            postApi("reservation.check_out", {
+              reservation: data.reservation,
+              reservation_stays: [data.reservation_stay]
+            }, "Check out successfully")
+                .then((result) => {
+                  gv.loading = false
+                  getFloorPlanData(filters.value);
+                })
+                .catch((err) => {
+                  gv.loading = false
+                })
+        }
+    });
+}
+function onUnBlockRoom(data){
+  if(window.isMobile){
+          const elem = document.querySelector(".p-dialog");
+          elem?.classList.add("p-dialog-maximized"); // adds the maximized class
 
+      }
+      getDoc("Room Block",data.room_block_name).then(doc=>{
+        doc.unblock_date = moment(data.date).toDate()
+          doc.unblock_housekeeping_status_code =window.setting.housekeeping_status_code[0].status
+          dialog.open(ComUnblockRoom, {
+              data: doc,
+              props: {
+                  header: $t('Unblock Room') + "-" + doc.name,
+                  style: {
+                      width: '50vw',
+                  },
+                  modal: true,
+                  position: 'top',
+                  closeOnEscape: false,
+                  breakpoints:{
+                      '960px': '50vw',
+                      '640px': '100vw'
+                  },
+              },
+              onClose: (options) => {
+                getFloorPlanData(filters.value);
+              }
+          })
+      })
+}
 // Create a ResizeObserver instance
 const resizeObserver = new ResizeObserver(entries => {
     for (let entry of entries) {
-        const { width, height } = entry.contentRect;
-      
+    
           update_element_size()
             
     }
 });
+
+
 
 // Start observing the div element
 
 
 onMounted(() => {
   window.addEventListener("message", actionRefreshData, false);
-  if (!window.isMobile){
+  if (!window.isMobile) {
     const divElement = document.querySelector('.container');
 
-resizeObserver.observe(divElement);
+  resizeObserver.observe(divElement);
   }
-  
+
 });
 onUnmounted(() => {
-  window.addEventListener("message", actionRefreshData, false);
+  window.removeEventListener("message", actionRefreshData, false);
 });
 </script>

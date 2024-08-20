@@ -31,7 +31,7 @@
                                         </div>
                                     </template>
                                 </Column>
-                                <Column field="title" :header="$t('Title')"></Column>
+                                <Column field="custom_title" :header="$t('Title')"></Column>
                                 <Column v-if="showAttach" field="attached_to_name" header="Attach Name" headerClass="white-space-nowrap">
                                     <template #body="slotProps">
                                         <Button v-if="doctype != slotProps.data.attached_to_doctype"
@@ -39,7 +39,7 @@
                                             size="small" />
                                     </template>
                                 </Column>
-                                <Column field="description" :header="$t('Description')" headerStyle="max-width: 80%">
+                                <Column field="custom_description" :header="$t('Description')" headerStyle="max-width: 80%">
                                     <template #body="slotProps">
                                         <div class="break-words whitespace-break-spaces">
                                             {{ slotProps.data.custom_description }}

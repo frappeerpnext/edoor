@@ -285,7 +285,7 @@ function onUnblock() {
         onClose: (options) => {
             
           
-            console.log(result);
+
             if (result) {
                 doc.value = result
             }

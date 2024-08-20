@@ -3374,20 +3374,6 @@
   "time_zones": "Europe/London"
  },
  {
-  "code": "us",
-  "country_name": "United States",
-  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/us.svg",
-  "custom_lat": 38.452606635,
-  "custom_long": -102.183807579,
-  "date_format": "mm-dd-yyyy",
-  "docstatus": 0,
-  "doctype": "Country",
-  "modified": "2024-08-03 17:24:57.035553",
-  "name": "United States",
-  "time_format": "HH:mm:ss",
-  "time_zones": "America/Adak\nAmerica/Anchorage\nAmerica/Boise\nAmerica/Chicago\nAmerica/Denver\nAmerica/Detroit\nAmerica/Indiana/Indianapolis\nAmerica/Indiana/Knox\nAmerica/Indiana/Marengo\nAmerica/Indiana/Petersburg\nAmerica/Indiana/Tell_City\nAmerica/Indiana/Vevay\nAmerica/Indiana/Vincennes\nAmerica/Indiana/Winamac\nAmerica/Juneau\nAmerica/Kentucky/Louisville\nAmerica/Kentucky/Monticello\nAmerica/Los_Angeles\nAmerica/Menominee\nAmerica/Metlakatla\nAmerica/New_York\nAmerica/Nome\nAmerica/North_Dakota/Beulah\nAmerica/North_Dakota/Center\nAmerica/North_Dakota/New_Salem\nAmerica/Phoenix\nAmerica/Denver\nAmerica/Sitka\nAmerica/Yakutat\nPacific/Honolulu"
- },
- {
   "code": "th",
   "country_name": "Thailand",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/th.svg",
@@ -3414,6 +3400,20 @@
   "name": "Albania",
   "time_format": "HH:mm:ss",
   "time_zones": "Europe/Tirane"
+ },
+ {
+  "code": "us",
+  "country_name": "United States",
+  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/us.svg",
+  "custom_lat": 38.452606635,
+  "custom_long": -102.183807579,
+  "date_format": "mm-dd-yyyy",
+  "docstatus": 0,
+  "doctype": "Country",
+  "modified": "2024-08-03 17:24:57.035553",
+  "name": "United States",
+  "time_format": "HH:mm:ss",
+  "time_zones": "America/Adak\nAmerica/Anchorage\nAmerica/Boise\nAmerica/Chicago\nAmerica/Denver\nAmerica/Detroit\nAmerica/Indiana/Indianapolis\nAmerica/Indiana/Knox\nAmerica/Indiana/Marengo\nAmerica/Indiana/Petersburg\nAmerica/Indiana/Tell_City\nAmerica/Indiana/Vevay\nAmerica/Indiana/Vincennes\nAmerica/Indiana/Winamac\nAmerica/Juneau\nAmerica/Kentucky/Louisville\nAmerica/Kentucky/Monticello\nAmerica/Los_Angeles\nAmerica/Menominee\nAmerica/Metlakatla\nAmerica/New_York\nAmerica/Nome\nAmerica/North_Dakota/Beulah\nAmerica/North_Dakota/Center\nAmerica/North_Dakota/New_Salem\nAmerica/Phoenix\nAmerica/Denver\nAmerica/Sitka\nAmerica/Yakutat\nPacific/Honolulu"
  },
  {
   "code": "dz",

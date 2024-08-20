@@ -3629,7 +3629,12 @@ def get_reservation_stay_for_floor_plan(filters):
             a.type,
             b.room_nights,
             b.reservation_type,
-            c.photo as business_source_photo
+            c.photo as business_source_photo,
+            b.group_color,
+            b.group_name,
+            b.room_number,
+            b.note,
+            b.group_code
         from   `tabRoom Occupy` a 
         join `tabReservation Stay Room` b on b.name = a.stay_room_id
         join `tabBusiness Source` c on c.name = a.business_source 
@@ -3639,7 +3644,7 @@ def get_reservation_stay_for_floor_plan(filters):
             a.building = %(building)s and 
             a.floor = %(floor)s and 
             a.is_active_reservation = 1 and 
-            b.reservation_status in ('Reserved','In-house','Checked Out') and 
+            b.reservation_status in ('Reserved','In-house') and 
             a.type = 'Reservation'
 
     """
@@ -3702,6 +3707,7 @@ def get_room_for_floor_plan_arrangement(filters):
             r["yp"] = None  if not "yp"  in p   else p["yp"]
             r["wp"] = None  if not "wp"  in p   else p["wp"]
             r["hp"] = None  if not "hp"  in p   else p["hp"]
+            r["z_index"] = None  if not "z_index"  in p   else p["z_index"]
             
     data = data + [d for d in positions if "element" in d and d["element"]]
     

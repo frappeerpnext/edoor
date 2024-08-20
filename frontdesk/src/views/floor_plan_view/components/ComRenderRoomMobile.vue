@@ -1,9 +1,14 @@
 <template>
 
-   
-  <template v-for="(d, index) in roomList.filter(r=>r.name && (r.is_deleted || 0)==0)" :key="index" >
-    <ComRoom   :room="d" :editMode="editMode" :filters="filters"/>
-  </template>
+   <div class="grid mt-2">
+    <template v-for="(d, index) in roomList.filter(r=>r.name && (r.is_deleted || 0)==0)" :key="index" >
+      <div class="col-6 p-1">
+    <ComRoom   :room="d" :editMode="editMode" :filters="filters"/>    
+      </div>
+    
+  </template> 
+   </div>
+ 
     
 </template>
 <script setup>

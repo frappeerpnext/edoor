@@ -1,5 +1,5 @@
 <template>
-  <div class="border-round-lg p-2 overflow-hidden box-shadow-floor-item" @contextmenu="onOpenMenu" style="height: 100%;background-color: white;min-height: 100px;min-width:150px;">
+  <div @click=" onClickMobile($event)" class="border-round-lg p-2 overflow-hidden item-floor-plan-room box-shadow-floor-item" @contextmenu="onOpenMenu" style="height: 100%;background-color: white;min-height: 100px;min-width:150px;">
 <div class="line-height-1">
   <div class="text-lg  font-medium">{{ room?.room_type_alias }} - {{ room.room_number }}</div>
 <div class="w-full text-overflow-ellipsis">
@@ -14,7 +14,9 @@
         </div>
 </div>
 </div> 
-      
+<Dialog v-model:visible="showMenuOnMobile" modal :header="room?.room_type_alias + ' - ' + room?.room_number" :style="{ width: '25rem' }">
+          <Menu :model="contextMenuItems" />  
+        </Dialog>    
    
 
     <!-- {{ pageData }} -->
@@ -30,6 +32,8 @@ import ContextMenu from 'primevue/contextmenu';
 import { useTippy } from "vue-tippy";
 import ComChipIcon from '@/views/floor_plan_view/components/ComChipIcon.vue'
 const pageData = inject('pageData')
+const isMobile = ref(window.isMobile)
+const showMenuOnMobile = ref(false);
 const menu = ref()
 const dialog = useDialog()
 const contextMenuItems = ref([])
@@ -58,6 +62,15 @@ contextMenuItems.value.push({
   }
 })
 
+function onClickMobile(event){
+  if (window.isMobile) {
+    showMenuOnMobile.value = true
+  onOpenMenu(event);
+  }else{
+    return
+  }
+  
+}
 // new fit
 contextMenuItems.value.push({
   label: $t('New FIT Reservation'), icon: 'pi pi-copy',
@@ -144,7 +157,9 @@ contextMenuItems.value.push({
 
 })
 const onOpenMenu = (event) => {
-  menu.value.show(event);
+  if(!window.isMobile){
+      menu.value.show(event);
+  }
 };
 
 

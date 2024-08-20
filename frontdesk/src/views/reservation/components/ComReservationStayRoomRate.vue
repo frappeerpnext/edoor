@@ -21,7 +21,7 @@
         </Button>
       </div>
       <!-- hide funtion -->
-      <!-- <div>
+      <div>
         <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onDiscount">
           <i class="pi pi-percentage me-2" style="font-size: 1rem"></i>
           {{$t('Discount') }}
@@ -30,7 +30,7 @@
             ({{ rs.selectedRoomRates.length  }})
           </template>
         </Button>
-      </div> -->
+      </div>
     </div>
     <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
@@ -360,11 +360,12 @@ function onChangePax (event) {
 }
 
 function onDiscount (event) { 
-  const hasDiscount = computed(() => 
-  rs.value.selectedRoomRates.some(rate => 
-    (Array.isArray(rate.allow_discount) && rate.allow_discount.length > 1) || rate.is_house_use
-  )
-);
+  const hasDiscount = computed(() => {
+    return rs.value.selectedRoomRates.some(rate => 
+      (Array.isArray(rate.allow_discount) && rate.allow_discount.length > 1) || rate.is_house_use
+    )
+  });
+
   if(!hasDiscount){
     gv.toast('warn', 'This Rate Type Not Allow Discount')
       return
