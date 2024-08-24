@@ -358,62 +358,12 @@ def update_sub_account_description(self):
 	if self.target_transaction_type =="Reservation Folio" and self.target_transaction_number:
 		self.report_description = "{} (to {})".format(self.account_name, self.target_transaction_number)
 	elif self.target_transaction_type =="City Ledger" and self.target_transaction_number:
-		self.report_description = _("City Ledger Transfer ( to {city_ledger} - {city_ledger_name})".format(city_ledger = self.target_transaction_number, city_ledger_name=self.city_ledger_name))
+		self.report_description = _("{account_name} ( to {city_ledger} - {city_ledger_name})".format( account_name = self.account_name, city_ledger = self.target_transaction_number, city_ledger_name=self.city_ledger_name))
         
 	elif self.source_transaction_type =="Reservation Folio" and self.source_transaction_number:
-   		self.report_description = _("Folio Transfer (from {source_transaction_number})".format(source_transaction_number = self.source_transaction_number))
+   		self.report_description = _("{account_name} (from {source_transaction_number})".format(account_name = self.account_name,source_transaction_number = self.source_transaction_number))
      
-def add_sub_account_to_folio_transaction(self, account_code, amount,note):
-		
-		if account_code:
-			docs = frappe.db.get_list("Folio Transaction",filters={"account_code": account_code,"parent_reference":self.name })
-			if docs:
-				frappe.db.set_value("Folio Transaction",docs[0].name,
-				{
-					"quantity":1,
-					"amount":amount or 0,
-					"input_amount":amount or 0,
-					"posting_date": self.posting_date,
-					"note":note
-				}
-				)
-			else:
-				if amount> 0:
-					
-					doc = frappe.get_doc({
-						'doctype': 'Folio Transaction',
-						'transaction_type':self.transaction_type,
-						'transaction_number':self.transaction_number,
-						'reference_number': self.reference_number,
-						'naming_series':self.name + '.-.##',
-						'property': self.property,
-						'room_type_id':self.room_type_id,
-						'room_type':self.room_type,
-						'room_number':self.room_number,
-						'room_id':self.room_id,
-						'reservation': self.reservation,
-						'reservation_stay': self.reservation_stay,
-						'posting_date': self.posting_date,
-						'working_day': self.working_day,
-						'cashier_shift': self.cashier_shift,
-						'working_date': self.working_date,
-						'account_code': account_code,
-						"quantity":1,
-						'input_amount': amount,
-						'amount': amount,
-						"note":note,
-						"parent_reference":self.name,
-						"is_auto_post":self.is_auto_post,
-						"is_night_audit_posting":self.is_night_audit_posting,
-						"reservation_room_rate": self.reservation_room_rate,
-						"source_reservation_stay": self.source_reservation_stay,
-						"stay_room_id": self.stay_room_id,
-						"is_package_charge":self.is_package_charge
-					}).insert()
-					
-
-
-
+     
 
 def update_report_description_field(self):
  

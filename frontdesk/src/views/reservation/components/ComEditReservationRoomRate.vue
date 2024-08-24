@@ -128,7 +128,7 @@
                         <div class="relative">
                             <label>{{ $t('Room Rate') }}</label>
                             <ComInputCurrency classCss="w-full"  v-model="doc.input_rate"
-                                :disabled="doc.is_manual_rate == 0" @update:modelValue="get_room_rate_breakdown()" />
+                                :disabled="doc.is_manual_rate == 0 || !doc.allow_user_to_edit_rate" @update:modelValue="get_room_rate_breakdown()" />
                             <div v-tippy="$t('Use Manually Update Rate')" class="absolute right-2 top-2/4 mb-2">                                
                                 <Checkbox :disabled="!doc.allow_user_to_edit_rate"  input-id="manual_rate" v-model="doc.is_manual_rate" :trueValue="1"
                                     :falseValue="0" :binary="true" @change="onUseManualRate" />

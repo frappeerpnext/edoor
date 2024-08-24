@@ -19,82 +19,112 @@
 
   <OverlayPanel
     ref="op"
-    class="style_panel bg-white p-4 rounded-lg shadow-lg max-w-md w-full"
+    class="style_panel bg-white p-2 rounded-lg shadow-lg max-w-md w-full"
   >
-    <InputText type="text" v-model="elementStyle.elementText" />
-
-    <p>
-      TextTransform:
-      <ComSelect
-        v-model="elementStyle.textTransform"
-        :options="['none', 'uppercase', 'lowercase', 'capitalize']"
+  <div class="grid w-full">
+    <div class="text-xl font-semibold">Style element</div>
+    <hr class="w-full">
+    <div class="col-12 flex gap-2">
+      <div>
+        <label>Input Text</label>
+        <InputText class="w-full" type="text" v-model="elementStyle.elementText" />
+      </div>
+      <div>
+       <label>Color</label> 
+        <div class="w-3rem h-3rem rounded-lg border-1" style="border-color: #a0bde0;"
+        @click="toggleColor($event , 'color')" :style="{ background: elementStyle.color }"></div>
+      </div>
+    </div>
+    <div class="col-12">
+      <label>Font Size - {{ elementStyle.fontSize }} px</label>
+      <Slider
+        v-model="elementStyle.fontSize"
+        :min="5"
+        :max="50"
+        class="w-full mt-2"
       />
-    </p>
-
-    <p>
-      Text Effect:
+    </div> 
+    <div class="col-12">
+      <label>TextTransform</label>
       <ComSelect
+        inputClass="w-full"
+        v-model="elementStyle.textTransform"
+        :options="['none', 'uppercase', 'lowercase', 'capitalize','inherit']"
+      />
+    </div>
+    <div class="col-12">
+     <label>Text Effect</label> 
+      <ComSelect
+      
         v-model="elementStyle.textEffect"
         :options="['none', 'rotate']"
       />
-    </p>
-    <p v-if="elementStyle.textEffect === 'rotate'">
-      Rotate Degree
+    </div>
+    <div>
+      
+    </div>
+    <div class="col-6">
+      <label>Justify Content</label>
+      <ComSelect
+        v-model="elementStyle.justifyContent"
+        :options="['left', 'center', 'right']"
+        inputClass="w-full"
+      />
+    </div>
+    <div class="col-6">
+      <label>Align Items</label>
+      <ComSelect
+        v-model="elementStyle.alignItems"
+        :options="alignItemsOptions"
+        optionValue="value" optionLabel="label"
+        inputClass="w-full"
+      />
+    </div>
+    <div class="col-12" v-if="elementStyle.textEffect === 'rotate'">
+      <label>Rotate Degree - {{ elementStyle.rotateDegree }}°</label>
       <Slider
         v-model="elementStyle.rotateDegree"
         :min="0"
         :max="360"
-        class="w-56"
+        class="w-full mt-2"
       />
-    </p>
-
-    <p>
-      Font Size
-      <Slider
-        v-model="elementStyle.fontSize"
-        :min="10"
-        :max="30"
-        class="w-56 my-2"
-      />
-    </p>
-    <p>
-      Text Color:
-      <div class="w-3rem h-3rem rounded-lg border-1" style="border-color: #a0bde0;"
-      @click="toggleColor($event , 'color')" :style="{ background: elementStyle.color }"></div>
-    </p>
-    <p>
-      Background Color:
-      <div class="w-3rem h-3rem rounded-lg border-1" style="border-color: #a0bde0;"
+    </div> 
+    <hr class="w-full mt-2 mb-1">
+    <div class="flex col-12 gap-2">
+<div class="col-6 p-0 ">
+      <label>Background Color</label>
+      <div class="w-full h-3rem rounded-lg border-1" style="border-color: #a0bde0;"
       @click="toggleColor($event , 'background')" :style="{ background: elementStyle.background }"></div>
-    </p>
-    <p>
-      Border Color:
-      <div class="w-3rem h-3rem rounded-lg border-1" style="border-color: #a0bde0;"
+    </div>
+    <div class="col-6 p-0">
+      <label>Border Color</label>
+      <div class="w-full h-3rem rounded-lg border-1" style="border-color: #a0bde0;"
       @click="toggleColor($event , 'borderColor')" :style="{ background: elementStyle.borderColor }"></div>
-    </p>
-    <p class="my-2">
-      Border Width:
+    </div>
+    </div>
+      <div class="col-12">
+        <label>Border Width</label>
       <Slider
         v-model="elementStyle.borderWidth"
         :min="1"
         :max="10"
-        class="w-56"
+        class="w-full mt-"
       />
-    </p>
-    <p>
-      Justify Content:
-      <ComSelect
-        v-model="elementStyle.justifyContent"
-        :options="['left', 'center', 'right', 'start', 'end']"
-      />
-    </p>
-    <p>
-      Align Items:
-      <ComSelect
-        v-model="elementStyle.alignItems"
-        :options="['start', 'center', 'end']"
-      />
-    </p>
+      </div>
+  </div>
+    
+
+ 
+
+    
+    
+
+
+
+   
+    
+  
+
 
     <OverlayPanel ref="overlay">
             <ComColorPicker v-if="overlayName == 'color'" v-model="elementStyle.color" />
@@ -124,6 +154,11 @@ const toggleColor = ($event,NameEvent) => {
     overlayName.value = NameEvent
     overlay.value.toggle($event);
 }
+const alignItemsOptions = [
+  { value: 'start', label: 'Top' },
+  { value: 'center', label: 'Center' },
+  { value: 'end', label: 'Bottom' }
+];
 const menu = ref();
 const elementStyle = ref({
   color: "000000",
