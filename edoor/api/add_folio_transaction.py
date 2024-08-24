@@ -164,7 +164,7 @@ def get_folio_transaction_calculation(folio_transaction_data=None):
 
 
 @frappe.whitelist(methods="POST")
-def create_folio_transaction(data): 
+def create_folio_transaction(data):
     
     get_cache_data.cache_clear()
     
@@ -258,7 +258,9 @@ def validate_add_folio_transaction(data,working_day):
     
     
     # validate if folio transaction parent transaction is not close
+    
     parent_doc_status = frappe.db.get_value(data["transaction_type"],data["transaction_number"],"status")
+    
     if parent_doc_status=="Closed":
          frappe.throw(_("{transaction_type} number {transaction_number} is already closed.".format(transaction_type=data["transaction_type"],transaction_number=data["transaction_number"])))
          
@@ -757,7 +759,7 @@ def update_transaction_type_summary(data):
         update_reservation_folio(name= data["transaction_number"], run_commit=False, ignore_validate=True)
 
     elif data["transaction_type"]=='Deposit Ledger':
-        update_deposit_ledger( name=  ["transaction_number"], run_commit=False, ignore_validate=True, ignore_on_update=True )
+        update_deposit_ledger(name=data["transaction_number"], run_commit=False, ignore_validate=True, ignore_on_update=True )
     elif data["transaction_type"]=='Desk Folio':
         update_desk_folio(name=data["transaction_number"], ignore_on_update=True, ignore_validation= True , run_commit= False)	
     elif data["transaction_type"]=='Payable Ledger':

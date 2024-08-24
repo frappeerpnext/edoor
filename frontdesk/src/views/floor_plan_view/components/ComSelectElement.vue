@@ -7,25 +7,33 @@
   >
     <div class="card">
       <Fieldset
-        class="mt-2"
+        class="my-2"
         v-for="(d, index) in Categories"
         :key="index"
         :legend="d"
       >
-        <div class="element cursor-pointer grid">
+        <div class="element cursor-pointer grid pb-3">
           <div
             class="flex"
             v-for="(d, index) in datas.filter((r) => r.category == d)"
             :key="index"
             style="height: 100px; width: 150px"
           >
+          <div class="mb-2">
             <div
               style="width: 100px; height: 100px"
               :id="'el_' + d.name"
               @click="onSelect('#el_' + d.name)"
               v-html="d.custom_shape"
-            ></div>
+            ></div> 
+            <div class="text-center border-round-lg mt-1 bg-primary-50">
+               {{ d.element_name }}
+            </div>
+           
           </div>
+          
+          </div>
+         
         </div>
       </Fieldset>
     </div>
@@ -48,7 +56,7 @@ function onSelect(id) {
 }
 const Categories = ref([]);
 getDocList("Floor Plant Element", {
-  fields: ["category", "name", "custom_shape", "photo"],
+  fields: ["category", "name", "custom_shape", "photo","element_name"],
 }).then((doc) => {
   datas.value = doc;
   Categories.value = [...new Set(doc.map((i) => i.category))];
