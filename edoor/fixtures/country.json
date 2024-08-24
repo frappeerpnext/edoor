@@ -3304,20 +3304,6 @@
   "time_zones": "Europe/Vienna"
  },
  {
-  "code": "cn",
-  "country_name": "China",
-  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/cn.svg",
-  "custom_lat": 35.889239264,
-  "custom_long": 98.793558941,
-  "date_format": "yyyy-mm-dd",
-  "docstatus": 0,
-  "doctype": "Country",
-  "modified": "2024-08-03 17:24:50.974506",
-  "name": "China",
-  "time_format": "HH:mm:ss",
-  "time_zones": "Asia/Chongqing\nAsia/Harbin\nAsia/Kashgar\nAsia/Shanghai\nAsia/Urumqi"
- },
- {
   "code": "am",
   "country_name": "Armenia",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/am.svg",
@@ -3414,6 +3400,20 @@
   "name": "United States",
   "time_format": "HH:mm:ss",
   "time_zones": "America/Adak\nAmerica/Anchorage\nAmerica/Boise\nAmerica/Chicago\nAmerica/Denver\nAmerica/Detroit\nAmerica/Indiana/Indianapolis\nAmerica/Indiana/Knox\nAmerica/Indiana/Marengo\nAmerica/Indiana/Petersburg\nAmerica/Indiana/Tell_City\nAmerica/Indiana/Vevay\nAmerica/Indiana/Vincennes\nAmerica/Indiana/Winamac\nAmerica/Juneau\nAmerica/Kentucky/Louisville\nAmerica/Kentucky/Monticello\nAmerica/Los_Angeles\nAmerica/Menominee\nAmerica/Metlakatla\nAmerica/New_York\nAmerica/Nome\nAmerica/North_Dakota/Beulah\nAmerica/North_Dakota/Center\nAmerica/North_Dakota/New_Salem\nAmerica/Phoenix\nAmerica/Denver\nAmerica/Sitka\nAmerica/Yakutat\nPacific/Honolulu"
+ },
+ {
+  "code": "cn",
+  "country_name": "China",
+  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/cn.svg",
+  "custom_lat": 35.889239264,
+  "custom_long": 98.793558941,
+  "date_format": "yyyy-mm-dd",
+  "docstatus": 0,
+  "doctype": "Country",
+  "modified": "2024-08-03 17:24:50.974506",
+  "name": "China",
+  "time_format": "HH:mm:ss",
+  "time_zones": "Asia/Chongqing\nAsia/Harbin\nAsia/Kashgar\nAsia/Shanghai\nAsia/Urumqi"
  },
  {
   "code": "dz",
