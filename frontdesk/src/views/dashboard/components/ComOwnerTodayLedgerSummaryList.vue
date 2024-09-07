@@ -1,24 +1,24 @@
 <template>
-    <ComOwnerContentTitle :label="'Ledger Summary - ' + moment(date).format('DD-MM-YYYY')">  
+    <ComOwnerContentTitle :label="'Ledger Summary'" :date="moment(date).format('DD-MM-YYYY')">  
       <div class="card">
         <DataTable :value="data?.ledger_summary" tableStyle="min-width: 50rem">
-            <Column field="label" header="Ledger Type"></Column>
-            <Column header="Opening" bodyClass="text-right" headerClass="text-right">
+            <Column field="label" :header="$t('Ledger Type')"></Column>
+            <Column :header="$t('Opening')" bodyClass="text-right" headerClass="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.opening" />
                 </template>
             </Column>
-            <Column  header="Debit" bodyClass="text-right" headerClass="text-right">
+            <Column  :header=" $t('Debit') " bodyClass="text-right" headerClass="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.debit" />
                 </template>
             </Column>
-            <Column header="Credit" bodyClass="text-right" headerClass="text-right">
+            <Column :header=" $t('Credit') " bodyClass="text-right" headerClass="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.credit" />
                 </template>
             </Column>
-            <Column  header="Balance" bodyClass="text-right" headerClass="text-right">
+            <Column  :header=" $t('Balance') " bodyClass="text-right" headerClass="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat :value="(slotProps.data.debit - slotProps.data.credit)" />
                 </template>
@@ -53,6 +53,8 @@
 </ComOwnerContentTitle>    
 </template>
 <script setup>
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 import {  ref, onMounted,getApi,computed,inject,defineProps,watch } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'

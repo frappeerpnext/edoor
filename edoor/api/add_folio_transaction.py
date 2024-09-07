@@ -253,9 +253,14 @@ def validate_add_folio_transaction(data,working_day):
             frappe.throw(_("Please enter quantity"))
         
     if account_code_doc.required_select_product :
-        if not "product" in data or not data["product"]:
+        if not "items" in data:
             frappe.throw(_("Please select product for this account {account_code} - {account_name}".format( account_code =  account_code_doc.name, account_name = account_code_doc.account_name)))
-    
+
+        if   [item for item in data["items"] if not item.get("product_code")]:  # Check if product_code is empty or missing
+            frappe.throw(_("Please input all products".format(
+                account_code=account_code_doc.name,
+                account_name=account_code_doc.account_name
+            )))
     
     # validate if folio transaction parent transaction is not close
     
@@ -410,6 +415,19 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
                 base_doc.total_amount = base_doc.total_amount + base_doc.bank_fee_amount 
                 base_doc.transaction_amount = base_doc.transaction_amount + base_doc.bank_fee_amount
         update_folio_transaction_note(base_doc)
+
+        if "items" in data:    
+            for item_data in data["items"]:
+                base_doc.append("items", {
+                    "product_code":item_data["product_code"],
+                    "price": item_data["price"],
+                    "quantity": item_data["quantity"],
+                    "product_name":item_data["product_name"],
+                    "total_amount": item_data["price"] * (1 if item_data["quantity"] ==0 else item_data["quantity"])
+                })
+            product_description = ", ".join(["{}{} - {}".format("" if  d.quantity ==0 else str(d.quantity) + " x ", d.product_name, frappe.format(d.total_amount,{"fieldtype":"Currency"}) ) for d in base_doc.items])
+            base_doc.report_description = "{} {}".format( base_doc.account_name,"({})".format(product_description)) 
+                
 
         base_doc.insert()
     
@@ -606,7 +624,9 @@ def get_folio_transaction_doc_share_property(data,folio_transaction_data,working
     doc = frappe.new_doc("Folio Transaction")
     # dynamic set property from input form
     for key, value in data.items():
-        setattr(doc, key, value)
+        if key!="items":
+            # key = items is for account code that require select product and it hold array of selected product list
+            setattr(doc, key, value)
 
     
     
@@ -771,5 +791,7 @@ def update_transaction_type_summary(data):
         
 def delete_transaction(parent_transaction_name):
     frappe.db.sql("delete from `tabFolio Transaction` where reference_folio_transaction='{0}' or name='{0}'".format(parent_transaction_name))
+    frappe.db.sql("delete from `tabFolio Transaction Products` where parent='{0}'".format(parent_transaction_name))
+    
     # update tab series
     frappe.db.sql("select * from `tabSeries` where name like '{}-%'".format(parent_transaction_name))

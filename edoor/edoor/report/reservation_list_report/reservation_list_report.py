@@ -130,8 +130,7 @@ def get_filters(filters):
 		filters.reservation_stays = get_reservation_stays(filters)
 		sql = sql + " and rst.name in %(reservation_stays)s"
 	elif filters.filter_date_by == "Reservation":
-		filters.reservations = get_reservation(filters)
-		sql = sql + " and rst.reservation in %(reservations)s"
+		sql = sql +  " and rst.reservation_date between %(start_date)s and %(end_date)s "
 	elif filters.filter_date_by == "Departure Date":
 		sql = sql +  " and rst.departure_date between %(start_date)s and %(end_date)s "
 

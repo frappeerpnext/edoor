@@ -1,5 +1,5 @@
 <template>
-    <ComOwnerContentTitle :label="'Payment & Refund - ' + moment(date).format('DD-MM-YYYY')">
+    <ComOwnerContentTitle :label="'Payment & Refund'" :date="moment(date).format('DD-MM-YYYY')">
         <div class="grid">
             <div class="lg:col-6 col-12 pt-6">
                 <div v-if="loading" class="flex w-full justify-content-center">
@@ -14,8 +14,8 @@
                     <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets?.length > 0">
                         <table class="w-full border-bottom-1 relative">
                             <tr class="border-bottom-1 surface-ground" style="position: sticky;top: 0;">
-                                <th class="text-center ">Payment Type</th>
-                                <th class="text-right  border-left-1">Amount</th>
+                                <th class="text-center ">{{ $t('Payment Type') }} </th>
+                                <th class="text-right  border-left-1">{{ $t('Amount') }} </th>
                             </tr>
                             <tr v-for="(payment, index) in data?.datasets" :key="index">
                                 <td class="text-center">
@@ -29,7 +29,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th class="text-right border-1 pe-2">Total</th>
+                                <th class="text-right border-1 pe-2">{{ $t('Total') }} </th>
                                 <th class="text-right border-1">
                                     <CurrencyFormat :value="totalValues" />
                                 </th>
@@ -43,6 +43,8 @@
     </ComOwnerContentTitle>
 </template>
 <script setup>
+    import {i18n} from '@/i18n';
+    const { t: $t } = i18n.global;
 import { ref, onMounted, getApi, computed, defineProps, watch, inject } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'

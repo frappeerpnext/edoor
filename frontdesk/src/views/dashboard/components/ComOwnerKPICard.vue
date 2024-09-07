@@ -5,7 +5,8 @@
       <i v-else :class="[icon, 'text-white', 'text-2xl']"></i>
       </div>
       <div class="text-lg">
-        {{ label }}
+
+        {{ $t(label) }}
       </div>
       <div class="text-3xl font-bold">
         <slot name="value" v-if="$slots.value"></slot>
@@ -16,6 +17,8 @@
   </template>
   
   <script setup>
+  import {i18n} from '@/i18n';
+  const { t: $t } = i18n.global;
   const props = defineProps({
     label: {
       type: String,

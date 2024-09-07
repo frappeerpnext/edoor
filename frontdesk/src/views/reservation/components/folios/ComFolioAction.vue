@@ -433,7 +433,7 @@ function generateTaxInvoice() {
          document_type:"Reservation Folio"
      },
      props: {
-         header: "Generate Tax Invoice",
+         header: $t("Generate Tax Invoice"),
          style: {
              width: '30vw',
          },
@@ -459,7 +459,7 @@ function generateTaxInvoice() {
 }
 
 function EditFolio() {
- 
+
     const dialogRef = dialog.open(ComNewReservationStayFolio, {
 
         data: {
@@ -644,7 +644,7 @@ function onTransferFolioItem() {
     const selectedFolioTransactions = JSON.parse( sessionStorage.getItem("folo_transaction_table_state_" + selectedFolio.value.name) ).selection
     
     if (selectedFolioTransactions.length == 0) {
-        toast.add({ severity: 'warn', summary: "", detail: "Please select a filio transaction to transfer", life: 3000 })
+        toast.add({ severity: 'warn', summary: "", detail: $t("Please select a folio transaction to transfer"), life: 3000 })
         return
     }
 

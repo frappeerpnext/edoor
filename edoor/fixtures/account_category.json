@@ -144,15 +144,6 @@
   "sort_order": 0
  },
  {
-  "account_category": "Other Charge Discount",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:25.072913",
-  "name": "Other Charge Discount",
-  "note": null,
-  "sort_order": 1300
- },
- {
   "account_category": "Service Charge",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -160,6 +151,15 @@
   "name": "Service Charge",
   "note": null,
   "sort_order": 600
+ },
+ {
+  "account_category": "Other Charge Discount",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:11:25.072913",
+  "name": "Other Charge Discount",
+  "note": null,
+  "sort_order": 1300
  },
  {
   "account_category": "City Ledger",
@@ -180,15 +180,6 @@
   "sort_order": 2000
  },
  {
-  "account_category": "Other Room Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-02-10 15:36:06.384615",
-  "name": "Other Room Charge",
-  "note": null,
-  "sort_order": 300
- },
- {
   "account_category": "Room Discount",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -196,6 +187,15 @@
   "name": "Room Discount",
   "note": null,
   "sort_order": 1100
+ },
+ {
+  "account_category": "Other Room Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-02-10 15:36:06.384615",
+  "name": "Other Room Charge",
+  "note": null,
+  "sort_order": 300
  },
  {
   "account_category": "POS Bill to Room",
@@ -207,15 +207,6 @@
   "sort_order": 2400
  },
  {
-  "account_category": "F&B Tax",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-05-11 11:36:32.351577",
-  "name": "F&B Tax",
-  "note": null,
-  "sort_order": 1600
- },
- {
   "account_category": "F&B Revenue",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -223,6 +214,15 @@
   "name": "F&B Revenue",
   "note": null,
   "sort_order": 1500
+ },
+ {
+  "account_category": "F&B Tax",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-05-11 11:36:32.351577",
+  "name": "F&B Tax",
+  "note": null,
+  "sort_order": 1600
  },
  {
   "account_category": "Room Charge Adjustment",

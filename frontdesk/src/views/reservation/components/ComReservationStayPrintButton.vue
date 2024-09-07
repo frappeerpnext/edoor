@@ -176,7 +176,7 @@ items.value.push({
                 "doctype": "Reservation%20Stay",
                 name: props.reservation_stay,
                 report_name:  "eDoor Folio Transaction Summary by Reservation Stay",
-                filter_options:["invoice_style","show_account_code","show_room_number","show_summary"],
+                filter_options:["invoice_style","show_account_code","show_room_number","show_summary","show_all_room_rate"],
             },
             props: {
                 header: $t("Folio Summary by Reservation Stay"),
@@ -205,7 +205,7 @@ items.value.push({
                 "doctype": "Reservation Stay",
                 name: props.reservation_stay,
                 report_name:  "eDoor Folio Transaction Detail by Reservation Stay",
-                filter_options:["invoice_style","show_account_code","show_room_number","show_summary"],
+                filter_options:["invoice_style","show_account_code","show_room_number","show_summary","show_all_room_rate"],
             },
             props: {
                 header: $t("Folio Detail by Reservation Stay"),

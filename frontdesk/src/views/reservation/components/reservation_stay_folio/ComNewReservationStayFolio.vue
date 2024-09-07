@@ -27,6 +27,7 @@
             </div>
             <div class="col-12">
                 <div class="flex justify-item-center">
+                   
                   <Checkbox v-model="doc.show_in_pos_transfer" inputId="show_in_pos_transfer" :binary="true" :trueValue="1" :falseValue="0" />
                   <label class="white-space-nowrap ms-2 cursor-pointer" for="show_in_pos_transfer">Show In Pos Transfer</label>
                   
@@ -61,15 +62,19 @@ function onSave() {
         window.postMessage({action:"GuestLedgerTransaction"},"*")
         window.postMessage({action:"ReservationDetail"},"*")
     }).catch(()=>{
-        
         isSaving.value = false
-
     })
 }
 
 
 onMounted(() => {
     doc.value = dialogRef.value.data 
+    if (doc.value.name){
+        getDoc("Reservation Folio",doc.value.name).then(result=>{
+            doc.value = result
+        })
+    }
+
     getDoc("Reservation Stay", doc.value.reservation_stay).then((result)=>{
         guests.value.push({
             name: result.guest,

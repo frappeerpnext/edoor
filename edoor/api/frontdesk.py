@@ -2365,7 +2365,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
     total_room = frappe.db.sql("select count(name) as total_room from `tabRoom` where property=%(property)s",{"property":property}, as_dict=1)
     resources.append({
         "id":"property_summary",
-        "title":property,
+        "title":_(property),
         "sort_order":-1000,
         "alias":"",
         "type":"property_summary",
@@ -2971,6 +2971,10 @@ def run_night_audit(property, working_day):
     
     working_day = get_working_day(property)
     frappe.db.commit()
+    # get last cashier shift
+    sql ="select name from `tabCashier Shift` where is_edoor_shift = 1 and pos_profile = 'eDoor Profile' and working_day='{}' order by creation desc limit 1".format(old_working_day_data["name"])
+    working_day["last_cashier_shift"] = frappe.db.sql(sql,as_dict=1)[0]["name"]
+    
     return working_day
 
 

@@ -4,12 +4,14 @@
             <CurrencyFormat :value="value" />
         </div>
         <div>
-            {{label}}
+            {{$t(label)}}
         </div>
     </div>
 </template>
   
   <script setup>
+    import {i18n} from '@/i18n';
+    const { t: $t } = i18n.global;
   const props = defineProps({
     label: {
       type: String,

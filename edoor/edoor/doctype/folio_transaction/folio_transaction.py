@@ -13,6 +13,7 @@ from frappe import _
 
 class FolioTransaction(Document):
 	def validate(self):
+		
 		if self.is_new():
 			if self.transaction_type =="Reservation Folio":
 				
@@ -44,13 +45,14 @@ class FolioTransaction(Document):
 				validate_desk_folio_posting(self)
 			update_sub_account_description(self)
 		
+		
 	def after_insert(self):
 		 
-
+	 
 		#add audit trail
-		if self.flags.ignore_post_audit_trail:
-			if not self.parent_reference:
-				content =f"Post {self.account_group_name} to {self.transaction_type}. {self.transaction_type} #: {self.transaction_number}"
+		if not self.flags.ignore_post_audit_trail:
+			if not self.parent_reference and not self.flags.old_doc:
+				content =f"Post {self.account_group_name} to {self.transaction_type}. {self.transaction_type} #: {self.transaction_number}, Account: {self.account_code} - {self.report_description}, Amount: {frappe.format(self.total_amount,{'fieldtype':'Currency'})}"
 				if self.transaction_type=="Reservation Folio":
 					if self.target_transaction_type:
 						content = content +  f", {'To folio: ' + self.target_transaction_number + ',' if self.target_transaction_number else '' } Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
@@ -75,7 +77,7 @@ class FolioTransaction(Document):
 		
 
 		#update to inventory
-		if self.product:
+		if self.items:
 			update_inventory(self)
 
 	def on_update(self):
@@ -177,7 +179,7 @@ class FolioTransaction(Document):
 			"custom_posting_date": working_day["date_working_day"]
 		}
 		if self.transaction_type =="Reservation Folio":
-			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, Folio #:<a data-action='view_folio_detail' data-name='{self.transaction_number}'>{self.transaction_number}</a>, Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>,  Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
+			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, Folio #:<a data-action='view_folio_detail' data-name='{self.transaction_number}'>{self.transaction_number}</a>, Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>,  Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>, Account: <a> {self.account_code} - {self.account_name}</a>, Amount: {frappe.format(self.total_amount,{'fieldtype':'Currency'})}"
 		else:
 			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, "
 			if self.reservation_stay:
@@ -187,6 +189,9 @@ class FolioTransaction(Document):
 				
 			if self.guest:
 				comment["content"] = comment["content"] +  f"Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
+			if self.account_code:
+				comment["content"] = comment["content"] +  f"Account Code: <a> {self.account_code} - {self.account_name}</a>, "
+				comment["content"] = comment["content"] +  f"Amount: {frappe.format(self.total_amount,{'fieldtype':'Currency'})}"
 				
 			
 		if (self.deleted_note):
@@ -362,10 +367,12 @@ def update_sub_account_description(self):
         
 	elif self.source_transaction_type =="Reservation Folio" and self.source_transaction_number:
    		self.report_description = _("{account_name} (from {source_transaction_number})".format(account_name = self.account_name,source_transaction_number = self.source_transaction_number))
-     
+    
+    
      
 
 def update_report_description_field(self):
+ 
  
 	self.report_description = self.account_name
 	if self.target_transaction_type:
@@ -376,30 +383,52 @@ def update_report_description_field(self):
 	elif self.source_transaction_type:
 		if self.source_transaction_number:
 			self.report_description = "{} (from {})".format(self.report_description, self.source_transaction_number)
-	elif self.product:
-		self.report_description = "{} ({})".format(self.report_description, self.product_name)
-
+	
 
 def update_inventory(self):
-	product_doc = frappe.get_doc("Product",self.product)
-	if product_doc.is_inventory_product==1:
-		working_day = get_working_day(self.property)
-		cost = get_product_cost(working_day["stock_location"], self.product)
-		add_to_inventory_transaction({
-			'doctype': 'Inventory Transaction',
-			'transaction_type':"Folio Transaction",
-			'transaction_date':self.posting_date,
-			'transaction_number':self.name,
-			'product_code': self.product,
-			'portion':"",
-			'unit':self.unit,
-			'stock_location':working_day["stock_location"],
-			'out_quantity': self.quantity if self.type=='Debit' else 0,
-			'in_quantity': self.quantity if self.type=='Credit' else 0,
-			"uom_conversion":1,
-			'note': f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}',
-			'action': 'Submit'
-		})
+	products = []
+	working_day = get_working_day(self.property)
+	if self.flags.old_doc:
+		# frappe.throw(str([d.product_name for d in self.flags.old_doc.items]))
+		products = [{"product_code":d.product_code, "quantity":d.quantity*-1} for d in self.flags.old_doc.items]
 
-			
+	products = products + [{"product_code":d.product_code, "quantity":d.quantity} for d in self.items]
+
+	for product_code in set([d["product_code"] for d in products]):
+		quantity = sum([d["quantity"] for d in products if d["product_code"] == product_code])
+		if quantity!=0:
+			is_inventory_product,unit = frappe.get_cached_value("Product",product_code,['is_inventory_product','unit'])
+			if is_inventory_product==1:
+				
+				in_quantity = 0
+				out_quantity = 0
+				if quantity>0 :
+					if self.type=='Debit':
+						out_quantity = quantity
+					else:
+						in_quantity = quantity
+				else:
+					if self.type=='Debit':
+						in_quantity = abs(quantity)
+					else:
+						out_quantity = abs(quantity)
+						
+				
+				add_to_inventory_transaction({
+					'doctype': 'Inventory Transaction',
+					'transaction_type':"Folio Transaction",
+					'transaction_date':self.posting_date,
+					'transaction_number':self.name,
+					'product_code': product_code,
+					'portion':"",
+					'unit':unit,
+					'stock_location':working_day["stock_location"],
+					'out_quantity': out_quantity,
+					'in_quantity': in_quantity,
+					"uom_conversion":1,
+					'note': f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}',
+					'action': 'Submit'
+				})
+
+				
  

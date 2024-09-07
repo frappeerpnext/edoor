@@ -138,7 +138,7 @@ def get_folio_summary_by_transaction_type(transaction_type, transaction_number,s
     )
   
     data = frappe.db.sql(sql, as_dict=1)
-    #validate to reservation filio 
+    #validate to reservation folio 
     balance = frappe.db.get_value(transaction_type,transaction_number,"balance")
     
 
@@ -2394,8 +2394,9 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
 
 @frappe.whitelist()
 def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None,show_package_breakdown=0,show_note=0):
- 
+
     if cint(show_package_breakdown)==1:
+         
         return get_folio_transaction_summary_with_breadown_account_code(
             transaction_type=transaction_type,
             transaction_number=transaction_number,
@@ -2408,6 +2409,7 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
             show_note=show_note
         )
     else:
+        
         return get_folio_transaction_summary_without_breadwon_account_code(
             transaction_type=transaction_type,
             transaction_number=transaction_number,
@@ -2554,11 +2556,14 @@ def get_folio_transaction_summary_with_breadown_account_code( transaction_type="
     #  check if room show all room charge then get data from room rate include in guest invoice
     
     if show_all_room_rate=="1":
-        room_rates = get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,transaction_number,int(show_room_number),show_package_breakdown=1) or []
+        room_rates = get_folio_room_charge_summary_from_reservation_room_rate( reservation=reservation, reservation_stay= reservation_stay, folio_number= transaction_number,show_room_number=int(show_room_number or 0),show_package_breakdown=1) or []
         
-        
+
         for r in room_rates:
-            charge = [d for d in data  if d["account_code"] == r["account_code"]]
+            if int(show_room_number or 0)==0:
+                charge = [d for d in data  if d["account_code"] == r["account_code"]]
+            else:
+                 charge = [d for d in data  if "room_number" in d and d["room_number"] == r["room_number"]  and  d["account_code"] == r["account_code"]  ]
             if charge:
                 charge=charge[0]
                 charge["quantity"] = charge["quantity"] + r["quantity"]
@@ -2634,7 +2639,7 @@ def get_folio_transaction_summary_without_breadwon_account_code( transaction_typ
     #  check if room show all room charge then get data from room rate include in guest invoice
     
     if show_all_room_rate=="1":
-        room_rates = get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,transaction_number,show_room_number) or []
+        room_rates = get_folio_room_charge_summary_from_reservation_room_rate(reservation=reservation, reservation_stay= reservation_stay, folio_number= transaction_number,show_room_number= show_room_number) or []
         for r in room_rates:
             charge = [d for d in data  if d["account_code"] == r["account_code"]]
             if charge:
@@ -2666,16 +2671,50 @@ def get_folio_transaction_summary_without_breadwon_account_code( transaction_typ
     return summary_data
 
 
-def get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,folio_number,show_room_number=0,show_package_breakdown=0):
-     
+def get_folio_room_charge_summary_from_reservation_room_rate(reservation="", reservation_stay="",folio_number="",show_room_number=0,show_package_breakdown=0):
+    is_master_folio = 0
+    if folio_number:
+        # show all rate is only for master folio
+        is_master_folio = frappe.get_cached_value("Reservation Folio", folio_number,"is_master")
+        if is_master_folio  == 0:
+            return []
+    if reservation_stay:
+        if frappe.get_cached_value("Reservation Stay", reservation_stay,"is_master") ==0:
+            return []
+        
+        
+    use_stay_room_ids = frappe.db.sql("""
+                                      select 
+                                        reservation_room_rate
+                                      from `tabFolio Transaction` 
+                                     
+                                      where 
+                                        reservation_stay=if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') and 
+                                        transaction_number=if('{folio_number}'='',transaction_number,'{folio_number}') and  
+                                        reservation_room_rate !='' 
+                                    """.format(reservation_stay=reservation_stay, folio_number=folio_number),as_dict=1)
     
-    use_stay_room_ids = frappe.db.sql("select reservation_room_rate from `tabFolio Transaction` where reservation_stay='{reservation_stay}' and transaction_number='{folio_number}' and  reservation_room_rate !='' ".format(reservation_stay=reservation_stay, folio_number=folio_number),as_dict=1)
     use_stay_room_ids = list(set([d["reservation_room_rate"] for d in use_stay_room_ids]))
     
     
     if not use_stay_room_ids:
         use_stay_room_ids.append("dummy")
         # we add this to prevent error when use in operator in sql statment
+        
+    reservation_stay_to_filters = [reservation_stay]
+    if is_master_folio==1:
+        # we check if folio is master folio then we find all room charge from any stay that mark as pay by master room
+        stays = frappe.db.get_list('Reservation Stay', 
+                                        filters={
+                                            'reservation': reservation,
+                                            'is_active_reservation':1
+                                        },
+                                        page_length=10000
+                                , pluck='name')
+        
+        reservation_stay_to_filters = reservation_stay_to_filters + stays
+    
+    
     
     room_rates = []
     sql ="""
@@ -2692,7 +2731,7 @@ def get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,fo
             inner join `tabAccount Category` c on c.name = b.account_category
 
         where
-            a.reservation_stay = '{reservation_stay}'  and 
+            a.reservation_stay in %(reservation_stays)s  and 
             a.room_rate_id not in %(stay_room_ids)s and 
             a.is_base_transaction = 1 and 
             a.is_package_charge = if({show_package_breakdown}=1,a.is_package_charge, 0)
@@ -2705,14 +2744,14 @@ def get_folio_room_charge_summary_from_reservation_room_rate(reservation_stay,fo
 
 
     """.format(
-        reservation_stay=reservation_stay,
+       
         show_room_number=show_room_number,
         amount_field ="transaction_amount" if show_package_breakdown ==1 else "total_amount" ,
         show_package_breakdown = show_package_breakdown
     )
+   
+    room_rates = frappe.db.sql(sql,{ "reservation_stays":reservation_stay_to_filters,"stay_room_ids": use_stay_room_ids},as_dict=1)
  
-    room_rates = frappe.db.sql(sql,{"stay_room_ids": use_stay_room_ids},as_dict=1)
-
     return room_rates
 
     

@@ -25,7 +25,7 @@ def get_report_columns(filters,min_max_day):
 	
 	for n in range(min_max_day["min_day"], min_max_day["max_day"]+1):
 		columns.append({
-			"fieldname":"col_" + str(n),"label": "{}".format(n), "width":50, "align":"center"
+			"fieldname":"col_" + str(n),"label": "{}<br/>Jan".format(n), "width":50, "align":"center"
 	})
 		
 	return columns

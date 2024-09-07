@@ -1,5 +1,5 @@
 <template>
-    <ComOwnerContentTitle :label="'F&B Payment - ' + moment(date).format('DD-MM-YYYY')">    
+    <ComOwnerContentTitle :label="'F&B Payment'" :date="moment(date).format('DD-MM-YYYY')">    
     <div class="grid ">
   <div class="lg:col-6 col-12 pt-6">
     <Skeleton v-if="loading" width="100%" height="20rem"></Skeleton> 
@@ -11,8 +11,8 @@
      <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets?.length > 0">
     <table class="w-full border-bottom-1">
         <tr class="border-bottom-1">
-            <th class="text-center ">Payment Type</th>
-            <th class="text-center border-left-1">Amount</th>
+            <th class="text-center "> {{ $t('Payment Type') }}</th>
+            <th class="text-center border-left-1">{{ $t('Amount') }} </th>
         </tr>
         <tr v-for="(payment, index) in data?.datasets" :key="index">
             <td class="text-center"> 
@@ -23,7 +23,7 @@
             <td class="text-center border-left-1">  <CurrencyFormat :value="payment.values" /></td>
         </tr>
         <tr>
-            <th class="text-right border-1 pe-2">Total</th>
+            <th class="text-right border-1 pe-2">{{$t('Total')}}</th>
             <th class="border-1"><CurrencyFormat :value="totaldValues" /></th>
         </tr>
     </table>
@@ -35,6 +35,8 @@
 </ComOwnerContentTitle>    
 </template>
 <script setup>
+  import {i18n} from '@/i18n';
+  const { t: $t } = i18n.global;
 import {  ref, onMounted,getApi,computed,defineProps,watch,inject } from '@/plugin'
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'

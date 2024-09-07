@@ -1,5 +1,5 @@
 <template>
-    <ComOwnerContentTitle :label="'Room Type Sales - '+ moment(date).format('DD-MM-YYYY')">
+    <ComOwnerContentTitle label="Room Type Sales" :date="moment(date).format('DD-MM-YYYY')">
         <div class="col w-full p-0">
             <Skeleton v-if="loading" class="mb-2" v-for="index in 3" :key="index" width="100%" height="50px"></Skeleton>
             <template v-else>

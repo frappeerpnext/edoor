@@ -1,5 +1,5 @@
 <template>
-  <ComOwnerContentTitle :label="'Transaction - ' + moment(date).format('DD-MM-YYYY')">
+  <ComOwnerContentTitle :label="'Transaction'" :date="moment(date).format('DD-MM-YYYY')">
     <div class="flex-col flex">
       <div class="px-2 mb-4 border-bottom-1">
         <Button class="ms-2 col px-3 border-1 mt-2 p-tabview-nav-link recent_transaction_tap"

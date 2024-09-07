@@ -10,7 +10,7 @@
             <TabPanel>
         <template #header>
             <div class="flex align-items-center gap-2 ">
-                <span class="font-bold white-space-nowrap">Chart</span>
+                <span class="font-bold white-space-nowrap">{{ $t('Chart') }} </span>
             </div>
         </template>
         <div>
@@ -24,14 +24,15 @@
     <TabPanel>
         <template #header>
             <div class="flex align-items-center gap-2">
-                <span class="font-bold white-space-nowrap">Data</span>
+                <span class="font-bold white-space-nowrap">{{ $t('Data') }}  </span>
             </div>
         </template>
         <div class="w-full overflow-auto px-2 py-4">
       <table class="w-full" >
           <tr class="border-1 p-2 w-full">
-            <th>Revenue</th>
-            <th v-for="l in data.labels" class="p-2 border-1">{{l}}</th>
+        
+            <th>{{ $t('Revenue') }}</th>
+            <th v-for="l in data.labels" class="p-2 border-1">{{$t(l)}}</th>
           </tr>
           <tr class="border-1" v-for="dataset in data.datasets">
               <th class="white-space-nowrap py-2 px-4 " >{{ dataset.name }}</th>

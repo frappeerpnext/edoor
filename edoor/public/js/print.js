@@ -1,7 +1,7 @@
 class MyPrintPreview extends frappe.ui.form.PrintView{
     
 	show(frm) {
-        alert(123)
+        
 		this.frm = frm;
 		this.set_title();
 		this.set_breadcrumbs();

@@ -3,6 +3,14 @@
 
 frappe.ui.form.on("Reservation Folio", {
   refresh(frm) {
+    setTimeout(() => {
+     
+      frm.page.wrapper.find('[data-label="Remind%20Me"]').closest('.dropdown-item').hide();
+      frm.page.wrapper.find('[data-label="New%20Reservation%20Folio"]').closest('.dropdown-item').hide();
+      frm.page.wrapper.find('[data-label="Delete"]').closest('.dropdown-item').hide();
+      frm.page.wrapper.find('[data-label="Duplicate"]').closest('.dropdown-item').hide();
+            
+    },100)
 
     set_indicator(frm);
     if (frm.doc.tax_invoice_number) {
@@ -48,6 +56,12 @@ frappe.ui.form.on("Reservation Folio", {
     if (!frm.doc.__islocal) {
       getItemListFromGuestFolio(frm);
     }
+  },
+  onload(frm){
+   
+ 
+  
+
   },
   setup(frm) {
     for (const key in frm.fields_dict) {

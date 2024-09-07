@@ -1,5 +1,5 @@
 <template>
-    <ComOwnerContentTitle :label="'Charge - ' + moment(date).format('DD-MM-YYYY')"> 
+    <ComOwnerContentTitle :label="'Charge'" :date="moment(date).format('DD-MM-YYYY')"> 
         <ComPlaceholder text="No Data"  :is-not-empty="data" >   
         <div class="col-12">
             <Skeleton v-if="loading" width="100%" height="20rem"></Skeleton> 
@@ -10,8 +10,8 @@
 <div v-else class="surface-ground rounded-lg p-2" >
     <table class="w-full border-bottom-1">
   <tr class="border-bottom-1">
-    <th class="text-center ">Charge List</th>
-    <th class="text-center border-left-1">Amount</th>
+    <th class="text-center ">{{ $t('Charge List') }} </th>
+    <th class="text-center border-left-1"> {{ $t('Amount') }} </th>
   </tr>
   <tr v-for="(payment, index) in data?.datasets" :key="index">
       <td class="text-center"> 
@@ -22,7 +22,7 @@
       <td class="text-center border-left-1">  <CurrencyFormat :value="payment.values" /></td>
  </tr>
  <tr>
-            <th class="text-right border-1 pe-2">Total</th>
+            <th class="text-right border-1 pe-2">{{ $t("Total") }} </th>
             <th class="border-1"><CurrencyFormat :value="totalValues" /></th>
         </tr>
 </table>
@@ -37,6 +37,8 @@ import {  ref, onMounted,getApi,computed, inject,defineProps,watch } from '@/plu
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTitle.vue'
 import { Colors } from 'chart.js';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const loading = ref(true)
 const moment = inject("$moment")
 const props = defineProps({

@@ -1,12 +1,12 @@
 <template>
-       <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
-           <template #start>
+       <ComHeader colClass="col-12" isRefresh @onRefresh="Refresh()">
+           <template  #start>
                <div class="text-xl md:text-2xl"> {{ $t('Owner Dashboard') }} </div>
            </template>
-           <template #center>
+           <template  #center>
             <div class="w-full flex item-content-center justify-content-center">
     <div class="calendar_class" style="z-index: 200;">
-        <Button :label="$t('Yesterday ')" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
+        <Button :label="$t('Yesterday')" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
                 :class="selected_date == yesterday  ? 'active' : ''" @click="onShowTommorowData()" />
         <Button :label="$t('Today')" class="w-8rem md:w-12rem btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == working_day.date_working_day ? 'active' : ''" @click="onShowTodayData()" />
@@ -94,10 +94,9 @@ function onShowTommorowData() {
 }
 function onDateSelect(event) {
     const today = moment(working_day.date_working_day);
-    tomorrow.value = today.add(1, 'days');
-    tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
+    yesterday.value = today.add(1, 'days');
+    yesterday.value = moment(yesterday.value).format("YYYY-MM-DD")
     selected_date.value = moment(event).format("YYYY-MM-DD")
-    
 }
 
 

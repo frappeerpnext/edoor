@@ -80,7 +80,7 @@ function closeMessage () {
 function showReport() {
     const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
     let date = window.current_working_date
-    let cashier_shift = working_day.cashier_shift.name
+    let cashier_shift = working_day.last_cashier_shift
     if (selectedReport.value.default_audit_date == 'Previous Audit Date') {
         date = moment(date).add(-1, 'Days').format("YYYY-MM-DD")
     }

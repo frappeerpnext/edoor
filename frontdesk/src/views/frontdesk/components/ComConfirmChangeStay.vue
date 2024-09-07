@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+        
         <div class="mb-3 flex overflow-auto">
             <span @click="onViewReservationDetail(doc?.reservation)">
                 <ComTagReservation title="RS#:" :value="doc?.reservation" class="link_line_action w-auto">

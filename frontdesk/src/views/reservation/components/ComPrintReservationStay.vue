@@ -1,4 +1,5 @@
 <template>
+    
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog grid" id="view-table-iframe-dialog" style="height: 85vh;">
             <div class="xl:mb-3 mb-0 overflow-auto col-12  xl:col-3 gap-2">
@@ -142,7 +143,10 @@ const refreshReport = () => {
     url.value = url.value + "&show_package_breakdown=" + filters.value.show_package_breakdown || 0
     if (filters.value.selected_folio) {
         url.value = url.value + "&folio=" + filters.value.selected_folio.name
+        url.value = url.value + "&reservation=" + filters.value.selected_folio.reservation
     }
+    
+ 
 
     document.getElementById("report-view").contentWindow.location.replace(url.value)
     }

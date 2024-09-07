@@ -2,21 +2,22 @@
 <div>
   <div class="flex w-full rounded-lg gap-2 pe-2" >
       <div class="col font-bold">
-        Room Type
+        {{ $t('Room Type') }}
+        
       </div>
       <div class="col-fix w-10rem px-3 rounded-lg relative" >
         <div class="font-bold value_room_type_chart">
-          Actual
+        {{ $t('Actual') }}  
         </div>
       </div>
       <div class="col-fix w-10rem px-3 rounded-lg relative" >
         <div class="font-bold value_room_type_chart">
-          Expected
+        {{ $t('Expected') }}  
         </div>
       </div>
     </div>
-  <div v-for="(room, index) in data?.datasets" :key="index" class="p-2 surface-50 flex w-full rounded-lg mb-2 gap-2 " >
-      <div class="col">
+  <div v-for="(room, index) in data?.datasets" :key="index" class="p-2 surface-50 grid w-full rounded-lg mb-2 gap-2 " >
+      <div class="lg:col col-12">
         <div class="flex justify-content-between">
           <div>{{ room.name }} - {{ room.room_sold }} / {{ room.total_room }}</div>
           <div>{{ ((room.room_sold / room.total_room) * 100).toFixed(2) }}%</div>
@@ -42,7 +43,7 @@
     <hr class="my-2">
     <div class="p-2 surface-50 flex w-full rounded-lg mb-2 gap-2 " >
       <div class="col font-bold">
-        Total: {{ getTotal('room_sold') }} / {{ getTotal('total_room') }}
+      {{ $t('Total') }} : {{ getTotal('room_sold') }} / {{ getTotal('total_room') }}
       </div>
       <div class="col-fix w-10rem px-3 surface-200 rounded-lg relative" >
         <div class="font-bold value_room_type_chart">
@@ -63,7 +64,8 @@
 
 <script setup>
 import { defineProps } from 'vue'
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
   data: Object
 });

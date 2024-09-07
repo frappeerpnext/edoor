@@ -86,8 +86,13 @@
                 <ComPanel :title="$t('Summary')">
                     <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
 
-                        <ComKPI v-tippy="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' ' + $t('Checked-in') + ' & ' +  $t('Total Arrival') + ' ' + (data?.arrival|| 0) " @onClick="viewSummary('Arrival')" :value="!gv.loading ? ( (  ((data.arrival || 0) -(data.arrival_remaining || 0)) + '/' + data?.arrival ||0)) :''" :title="$t('Arrival')"
+                        <ComKPI 
+                        v-tippy="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' ' + $t('Checked-in') + ' & ' +  $t('Total Arrival') + ' ' + (data?.arrival|| 0) "
+                         @onClick="viewSummary('Arrival')" 
+                         :value="!gv.loading ? ( (  ((data.arrival || 0) -(data.arrival_remaining || 0)) + '/' + data?.arrival ||0)) :''" :title="$t('Arrival')"
+
                             class="primary-btn-edoor cursor-pointer border-round-lg"> </ComKPI>
+
                         <ComKPI @onClick="viewSummary('Stay Over')" :value="data.stay_over" :title="$t('Stay Over')"
                             class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
                         <ComKPI v-tippy="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' ' + $t('Checked-out') + ' & '+ $t('Total Departure') + ' ' + (data?.departure ||0)   " @onClick="viewSummary('Departure')" :value="!gv.loading ? ( (data.departure - data?.departure_remaining)  +'/'+  data?.departure ||0) : ''" :title="$t('Departure')"
@@ -494,8 +499,7 @@ const viewSummary = (name) => {
     if (name == "Arrival") {
         onViewData(
             'Business Branch',
-            // "eDoor%20Dashboard%20Arrival%20Guest",
-            "eDoor Dashboard Arrival Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest"),
             'Arrival Guest',
             [{ key: 'action', value: "view_arrival" }, { key: "date", value: selected_date.value }],
             ['keyword', 'building', 'floor', 'room_type', 'reservation_status']

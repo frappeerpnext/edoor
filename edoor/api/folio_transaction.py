@@ -162,13 +162,14 @@ def update_reservation_folio(name=None, doc=None,run_commit=True,ignore_validate
     return doc
 
 def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_folio,run_commit = True):
+    
     # get_all stay doc with check in to master
     folio_names = []
     if master_folio:
         folio_names.append(master_folio.name)
         
     stays_info = get_reservation_stay_list_infor(stay_names =[d["stay_name"] for d in stays])
- 
+    
     for s in stays_info:
         folio = {}
         if s["paid_by_master_room"] == 1:
@@ -200,6 +201,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
             
     charge_list = get_charge_list_for_posting_room_charge(stay_names=[d["name"] for d in stays_info], working_day=working_day)
     
+
     folio_transaction_list = get_folio_transaction_new_record(stays_infor=stays_info,charge_list=charge_list, working_day = working_day)
     bulk_insert("Folio Transaction",folio_transaction_list , chunk_size=10000)
     
@@ -218,6 +220,7 @@ def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rat
     sql="""
         select 
             name, 
+            date as posting_date,
             stay_room_id,
             parent_reference,
             reservation_stay,
@@ -258,13 +261,15 @@ def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rat
             total_sub_package_charge
         from `tabRevenue Forecast Breakdown`
         where
-            date=%(date)s
+            date<=%(date)s
+       
         """
     if stay_names:
         sql = sql + " and reservation_stay in %(stay_names)s "
     if reservation_room_rate_names:
         sql = sql + " and room_rate_id in %(reservation_room_rate_names)s "
-    sql = sql + " order by room_rate_id, sort_order"
+    sql = sql + " order by date, room_rate_id, sort_order"
+
     
     return  frappe.db.sql(sql,{"stay_names":stay_names, "reservation_room_rate_names":reservation_room_rate_names,"date":working_day["date_working_day"]},as_dict=1)
 
@@ -279,7 +284,7 @@ def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
     folio_transaction_list = []
     
     folio_transaction_list = get_folio_transaction_name([d for d in charge_list if d["parent_reference"] ==""], charge_list)
-    
+  
     for t in folio_transaction_list:
         
         stay = [d for d in stays_infor if d["name"]==t.source_reservation_stay][0]
@@ -288,7 +293,7 @@ def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
         
         
         t.property= stay["property"]
-        t.posting_date = working_day["date_working_day"]
+        
         t.working_day = working_day["name"]
         t.cashier_shift = working_day["cashier_shift"]["name"]
         t.working_date = working_day["date_working_day"]
@@ -331,6 +336,7 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
             doc.name  = make_autoname(parent_doc.name + ".-.##")
             doc.parent_reference = parent_doc.name
 
+        doc.posting_date = t["posting_date"]
         doc.transaction_type = "Reservation Folio"
         doc.stay_room_id = t["stay_room_id"]
         # more doc property heres

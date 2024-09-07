@@ -175,7 +175,9 @@
   "unit",
   "required_select_product",
   "column_break_wshx",
-  "product_name"
+  "product_name",
+  "section_break_riha",
+  "items"
  ],
  "fields": [
   {
@@ -1145,11 +1147,21 @@
    "fieldname": "transaction_amount",
    "fieldtype": "Currency",
    "label": "Transaction Amount"
+  },
+  {
+   "fieldname": "section_break_riha",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Folio Transaction Products"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-13 18:01:22.659840",
+ "modified": "2024-08-26 09:58:37.988044",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

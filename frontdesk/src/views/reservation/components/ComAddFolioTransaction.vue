@@ -41,13 +41,15 @@
                             class="auto__Com_Cus w-full" 
                             @onSelected="onSelectAccountCode"
                             :pageLength="20"
-                            :filters="accountCodeFilter" />
+                            :filters="accountCodeFilter"
+                            
+                            />
 
                     </div>
                     <div class="col-6">
                         <label for="input_amount">{{ $t('Amount') }}</label>
                         
-                        <ComInputCurrency  classCss="w-full" :disabled="!canEdit" v-model="doc.input_amount"
+                        <ComInputCurrency   classCss="w-full" :disabled="!canEdit || doc.required_select_product==1" v-model="doc.input_amount"
                             id="input_amount" @update:modelValue="onRateCalculation" />
                             
                     </div>
@@ -132,18 +134,48 @@
                     </div>
                     <!-- Pax -->
                     <!-- Quantity -->
-                    <div v-if="account_code.allow_enter_quantity && doc?.account_code" class="col-6">
+                    <div v-if="account_code.allow_enter_quantity && doc?.account_code && !doc.required_select_product==1" class="col-6">
                         <label for="quantity">{{ $t('Quantity') }}</label>
                         <InputNumber class="w-full" @update:modelValue="onRateCalculation" v-model="doc.quantity" :minFractionDigits="0" :maxFractionDigits="2" />
                     </div>
                     <!-- /Quantity -->
 
                     <!-- Select Product -->
-                    <div class="col-6" v-if="doc.required_select_product==1">
+         <!--          <div class="col-6" v-if="doc.required_select_product==1">
                        
                         <label >{{ $t('Product') }}</label>
                         <ComAutoComplete :filters="JSON.parse( account_code.default_product_filter || '{}')" class="auto__Com_Cus w-full"  doctype="Product" v-model="doc.product" @onSelected="onSelectProduct" />
                         
+
+    </div>--> 
+    <div  v-if="doc.required_select_product==1" class="col-12 " >
+    <div v-for="(item, index) in doc.items" :key="index" class="w-full grid">
+        <div class="col">
+        <label v-if="index == 0">Product</label>
+        <ComAutoComplete :filters="JSON.parse( account_code.default_product_filter || '{}')" class="auto__Com_Cus w-full"  doctype="Product" v-model="item.product_code" @onSelected="onSelectProduct($event ,index)" />        
+        </div>
+        <div class="col">
+            <label v-if="index == 0">Product Name</label>
+    <InputText class="w-full" disabled  type="text" v-model="item.product_name" placeholder="Name"/>        
+        </div >
+        <div class="col">
+            <label v-if="index == 0">QTY</label>
+    <InputNumber class="w-full" @update:modelValue="calculateTotalAmounts(index)" v-model="item.quantity" :minFractionDigits="0" :maxFractionDigits="2" />  
+        </div>
+    <div class="col">
+        <label v-if="index == 0">Price</label>
+     <ComInputCurrency @update:modelValue="calculateTotalAmounts(index)" classCss="w-full" :disabled="!canEdit" v-model="item.price" />    
+    </div> 
+    <div class="col">
+        <label v-if="index == 0">Total Amount</label>
+     <ComInputCurrency  classCss="w-full" disabled v-model="item.total_amount" />    
+    </div> 
+      <div class="col-fixed w-4rem" >
+      <Button class="tr-h__custom text-3xl h-12" icon="pi pi-trash" v-if="index !== 0" @click="removeItem(index)">
+      </Button></div>
+      
+    </div>
+      <Button @click="addItem" class="px-4 mt-2 conten-btn">Add Item</Button>
                     </div>
                     <div class="col-12">
                         <div v-if="doc.product" class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
@@ -273,7 +305,7 @@
             </div>
             <!-- /note -->
         </div>
-        <div v-if="tax_rule && account_code.allow_tax && doc?.account_code" class="col-4">
+        <div v-if="tax_rule && account_code.allow_tax && doc?.account_code && !doc.required_select_product==1" class="col-4">
             <div class="card">
         <Accordion :activeIndex="0">
             <AccordionTab header="Room Rate Breakdown">
@@ -436,6 +468,29 @@ const extra_account_code_filter = ref({})
 const doc = ref({});
 const dialog_data =ref()
 const data = ref()
+
+const addItem = () => {
+    doc.value.items.push({
+    product_code: '',
+    product_name:'',
+    quantity: 1,
+    price: 0,
+    total_amount:0
+  });
+};
+function removeItem(index) {
+    doc.value.items.splice(index, 1);
+    doc.value.input_amount = doc.value.items.reduce((sum, item) => sum + item.total_amount, 0)
+    onRateCalculation()
+}
+function calculateTotalAmounts(index) {
+    setTimeout(() => {
+    doc.value.items[index].total_amount = (doc.value.items[index].quantity ==0?1:doc.value.items[index].quantity) * doc.value.items[index].price;
+    doc.value.input_amount = doc.value.items.reduce((sum, item) => sum + item.total_amount, 0)
+    onRateCalculation()
+  }, 50);
+
+}
 const accountCodeFilter = computed(()=>{
     if(extra_account_code_filter.value){
         return {...{ 'account_group': doc.value.account_group },...extra_account_code_filter.value}
@@ -508,7 +563,7 @@ function onUseTax3Change() {
 
 } 
 const canEdit = computed(() => {
-    return edoor_setting?.folio_transaction_style_credit_debit == 0 || doc.value.name == undefined;
+    return true; // edoor_setting?.folio_transaction_style_credit_debit == 0 || doc.value.name == undefined;
 });
 
 const tax_rule = computed(() => {
@@ -596,12 +651,23 @@ function onSelectAccountCode(data) {
                 const input = document.getElementById("input_amount").querySelector('input')
                 input.focus()
                 input.select()
-
+                if(doc.value.required_select_product){
+              doc.value.items = [
+      {
+        product_code: '',
+        product_name:'',
+        quantity: 1,
+        price: 0,
+        total_amount:0
+      }
+    ];
+        }  
             })
             .catch((error) => {
 
             });
     } else {
+
         doc.value.account_name = ''
         doc.value.rate_include_tax = 'No'
         doc.value.input_amount = 0
@@ -613,38 +679,47 @@ function onSelectAccountCode(data) {
         doc.value.target_transaction_type = ""
         doc.value.required_select_product= 0
         doc.value.product=  ""
-
+        doc.value.items = []
 
     }
 }
  
 
 
-function onSelectProduct(data){
-    doc.value.product_description = data.description || ''
+function onSelectProduct(data,index){
     if (data?.value){
-        getDoc("Product", data.value).then(r=>{
-            if (r.product_price){
-               
+        getDoc("Product", data.value).then(r=>{  
+            if(r?.product_name_en){
+         doc.value.items[index].product_name = r?.product_name_en || ''       
+            }
+            if (r.product_price){   
                 let price = r.product_price.find(x=>x.business_branch == window.property_name && x.price_rule == window.setting.pos_profile.price_rule) 
-                
-                if (price){
-                    doc.value.input_amount = price.price
+        
+                if (price){ 
+                    console.log(doc.value.items[index].price)
+                    doc.value.items[index].price = price.price
+                    
                 }else {
               
                         price = r.product_price.find(x=>x.price_rule == window.setting.pos_profile.price_rule)
-
                         if(price){
-                            doc.value.input_amount = price.price
+                            doc.value.items[index].price = price.price
                         }else {
-                            doc.value.input_amount = r.price || 0
+                            doc.value.items[index].price = r.price || 0
                         }
                 }
             }else {
-                doc.value.input_amount = r.price || 0
+                doc.value.items[index].price = r.price || 0
             }
-            onRateCalculation()
+            calculateTotalAmounts(index) 
+           
         })
+    }else{
+        doc.value.items[index].price = 0
+        doc.value.items[index].product_name = ''
+        doc.value.items[index].total_amount = 0
+        doc.value.input_amount = doc.value.items.reduce((sum, item) => sum + item.total_amount, 0)
+         calculateTotalAmounts(index) 
     }
     
 }
@@ -797,10 +872,10 @@ onMounted(() => {
             })
  
     } else {
-        //when user add new folio transaction
+        //when user add new folio transaction'
         reservation = dialogRef.value.data.new_doc.reservation
-        doc.value = dialogRef.value.data.new_doc  
-        
+        doc.value = dialogRef.value.data.new_doc
+      
         doc.value.is_base_transaction = 1
 
         extra_account_code_filter.value = dialogRef.value.data.account_code_filter

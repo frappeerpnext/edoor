@@ -1,5 +1,5 @@
 <template>
-    <ComOwnerContentTitle :label="'F&B - ' + moment(date).format('DD-MM-YYYY')">
+    <ComOwnerContentTitle :label="'F&B'" :date="moment(date).format('DD-MM-YYYY')">
 
         <div class="grid ">
             <div class="lg:col-6 col-12 pt-6 relative">
@@ -12,8 +12,8 @@
                     <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets?.length > 0">
                         <table class="w-full border-bottom-1">
                             <tr class="border-bottom-1">
-                                <th class="text-center ">Item</th>
-                                <th class="text-right border-left-1">Amount</th>
+                                <th class="text-center "> {{ $t('Item') }} </th>
+                                <th class="text-right border-left-1">{{ $t('Amount') }} </th>
                             </tr>
                             <tr v-for="(payment, index) in data?.datasets" :key="index">
                                 <td class="text-center">
@@ -27,8 +27,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th class="text-right border-1 pe-2">Total</th>
-                                <th class="border-1 text-right">
+                                <th class="text-right border-1 pe-2">{{ $t('Total') }} </th>
+                                <th class="border-1 text-right"> 
                                     <CurrencyFormat :value="totaldValues" />
                                 </th>
                             </tr>
@@ -47,6 +47,8 @@ import ComOwnerContentTitle from '@/views/dashboard/components/ComOwnerContentTi
 import { Colors } from 'chart.js';
 const loading = ref(true)
 const moment = inject("$moment")
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     date: {
         type: Date,
