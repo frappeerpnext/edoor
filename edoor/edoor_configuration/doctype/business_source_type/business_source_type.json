@@ -8,6 +8,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "business_source_group",
   "business_source_type",
   "note"
  ],
@@ -24,11 +25,18 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Note"
+  },
+  {
+   "fieldname": "business_source_group",
+   "fieldtype": "Link",
+   "label": "Business Source Group",
+   "options": "Business Source Type Group",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-19 11:56:06.478038",
+ "modified": "2024-09-09 16:17:01.023548",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source Type",

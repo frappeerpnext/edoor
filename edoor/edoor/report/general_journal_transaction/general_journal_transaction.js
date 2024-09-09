@@ -208,18 +208,27 @@ frappe.query_reports["General Journal Transaction"] = {
 		 
 		let currentUrl = window.location.href;
 
-	// Create a URLSearchParams object
-	let urlParams = new URLSearchParams(window.location.search);
+		// Create a URLSearchParams object
+		let urlParams = new URLSearchParams(window.location.search);
 
-	// Get the value of the 'auto_refresh' parameter
-	let autoRefreshValue = urlParams.get('auto_refresh');
-	if (autoRefreshValue==1){
-		setTimeout(function(){
-			frappe.query_report.refresh();
-		},300)
-		
-		
-	}
+		// Get the value of the 'auto_refresh' parameter
+		let autoRefreshValue = urlParams.get('auto_refresh');
+		if (autoRefreshValue==1){
+			setTimeout(function(){
+				frappe.query_report.refresh();
+			},300)
+			
+			
+		}
+		report.page.add_inner_button("Print Report", function () {
+			frappe.ui.get_print_settings(false, function(print_settings) {
+			  frappe.query_report.print_report({
+				  format: print_settings.format,
+				  orientation: print_settings.orientation,
+				  letter_head: print_settings.letter_head
+			  });
+		  });
+		}).addClass('btn-print-custom').html('<i class="fa fa-print"></i> Print Report');
 	},
 	"formatter": function(value, row, column, data, default_formatter) {
 		const origninal_value = value  || 0

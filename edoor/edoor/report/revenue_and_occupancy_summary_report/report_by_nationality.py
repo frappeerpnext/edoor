@@ -56,6 +56,10 @@ def get_report_data(filters,report_config):
     
 	#assign value for data
     report_data = []
+    total_occupy_room = sum([d['occupy'] for d in data] )
+    if total_occupy_room ==0:
+        total_occupy_room = 1
+
     for parent in parent_row_group_data:
         parent_record = None
         if parent["parent_row_group"] !="":
@@ -74,8 +78,9 @@ def get_report_data(filters,report_config):
           
         else:
             sub_report_data =copy.deepcopy( report_group_data)
+        
 
-
+            
         for row in sub_report_data:
             row["is_group"] = 0 
             row["is_total_row"] = 0 
@@ -108,12 +113,13 @@ def get_report_data(filters,report_config):
            
             occupy_records = [d for d in data if str(d["row_group"]) == str(row["row_group"]) and str(d["parent_row_group"]) == str(parent["parent_row_group"])]
 
-            
+      
             if len(occupy_records)> 0:
                     #occupy
                     occupy_record = occupy_records[0]
                     # set value occupy dynamic field
                     for f in  [x for x in report_config.report_fields if x.fieldname not in ["room_block"]] :
+                         
                         if f.show_in_report==1 and f.reference_doctype=="Room Occupy":
                             #set static field
                             #room occupy
@@ -123,6 +129,8 @@ def get_report_data(filters,report_config):
                                 else:
                                     row["occupancy"] = (row["occupy"] or 0) / (1 if (row["room_available"]  - row["room_block"])<=0 else (row["room_available"]  - row["room_block"]))
                                 row["occupancy"] = row["occupancy"] * 100
+                            elif f.fieldname == "night_percent":
+                                row["night_percent"] = (row["occupy"] /total_occupy_room ) * 100
                             else:
                                 row[f.fieldname] =   occupy_record[f.fieldname]
                 
@@ -137,6 +145,7 @@ def get_report_data(filters,report_config):
                 if len(folio_transaction_records)> 0:
                     folio_transaction_record  = folio_transaction_records[0]
                     for f in report_config.report_fields :
+                        
                         if f.show_in_report==1 and f.reference_doctype=="Folio Transaction":
                             #f.fildname is from report config
                             if f.fieldname=='adr':
@@ -149,6 +158,7 @@ def get_report_data(filters,report_config):
                                 if occupy<=0:
                                     occupy =1
                                 row['adr'] = (row["room_charge"] or 0) /  occupy
+                             
                             else:
                                 row[f.fieldname] =   folio_transaction_record[f.fieldname]
 

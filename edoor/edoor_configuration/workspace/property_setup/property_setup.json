@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"H23d6Aos7d\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Property Setup</span>\",\"col\":12}},{\"id\":\"gTaOG1wNjw\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property Information\",\"col\":3}},{\"id\":\"MRg_EcyGYz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"eDoor Setting\",\"col\":3}},{\"id\":\"XcU3A4Qw-p\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Account Code\",\"col\":3}},{\"id\":\"g8ejjVpDGU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"City Ledger\",\"col\":3}},{\"id\":\"8GqsojA_8c\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"id\":\"aLqIX9k9oQ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"YneE2VS8Jk\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Setup\",\"col\":4}},{\"id\":\"NNlJcfwux3\",\"type\":\"card\",\"data\":{\"card_name\":\"Room Rate Setting\",\"col\":4}},{\"id\":\"us9oHJE_SO\",\"type\":\"card\",\"data\":{\"card_name\":\"Account Code Setup\",\"col\":4}},{\"id\":\"YliVXLUXAk\",\"type\":\"card\",\"data\":{\"card_name\":\"Housekeeping Setting\",\"col\":4}},{\"id\":\"knfVjAJVk3\",\"type\":\"card\",\"data\":{\"card_name\":\"eDoor Setting\",\"col\":4}}]",
+ "content": "[{\"id\":\"H23d6Aos7d\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Property Setup</span>\",\"col\":12}},{\"id\":\"gTaOG1wNjw\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property Information\",\"col\":3}},{\"id\":\"MRg_EcyGYz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"eDoor Setting\",\"col\":3}},{\"id\":\"XcU3A4Qw-p\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Account Code\",\"col\":3}},{\"id\":\"g8ejjVpDGU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"City Ledger\",\"col\":3}},{\"id\":\"8GqsojA_8c\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"id\":\"aLqIX9k9oQ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"YneE2VS8Jk\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Setup\",\"col\":4}},{\"id\":\"NNlJcfwux3\",\"type\":\"card\",\"data\":{\"card_name\":\"Room Rate Setting\",\"col\":4}},{\"id\":\"us9oHJE_SO\",\"type\":\"card\",\"data\":{\"card_name\":\"Account Code Setup\",\"col\":4}},{\"id\":\"FkskG22uQ4\",\"type\":\"card\",\"data\":{\"card_name\":\"Business Source Setting\",\"col\":4}},{\"id\":\"YliVXLUXAk\",\"type\":\"card\",\"data\":{\"card_name\":\"Housekeeping Setting\",\"col\":4}},{\"id\":\"knfVjAJVk3\",\"type\":\"card\",\"data\":{\"card_name\":\"eDoor Setting\",\"col\":4}}]",
  "creation": "2023-12-12 10:46:48.780688",
  "custom_blocks": [],
  "custom_menu_icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g><g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g><g id=\"SVGRepo_iconCarrier\"> <path d=\"M22 22L2 22\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M21 22V13M11.0044 5C11.0223 3.76022 11.1143 3.05733 11.5858 2.58579C12.1716 2 13.1144 2 15 2H17C18.8857 2 19.8285 2 20.4143 2.58579C21 3.17157 21 4.11438 21 6V9\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M15 22V16M3 22V13M3 9C3 7.11438 3 6.17157 3.58579 5.58579C4.17157 5 5.11438 5 7 5H11C12.8856 5 13.8284 5 14.4142 5.58579C15 6.17157 15 7.11438 15 9V12\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M9 22V19\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M6 8H12\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M6 11H7M12 11H9.5\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> <path d=\"M6 14H12\" stroke=\"#000000\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path> </g></svg>",
@@ -291,9 +291,55 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Source Setting",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Source Type Group",
+   "link_count": 0,
+   "link_to": "Business Source Type Group",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Source Type",
+   "link_count": 0,
+   "link_to": "Business Source Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "custom_show_in_app_menu": 0,
+   "custom_sort_order": 0,
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Business Source",
+   "link_count": 0,
+   "link_to": "Business Source",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-08-09 14:35:30.751837",
+ "modified": "2024-09-09 16:15:27.989156",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Property Setup",

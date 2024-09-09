@@ -131,7 +131,16 @@ frappe.query_reports["Reservation Forecast"] = {
 			frappe.query_report.refresh();
 		});
 
-		setLinkField()
+		setLinkField();
+		report.page.add_inner_button("Print Report", function () {
+			frappe.ui.get_print_settings(false, function(print_settings) {
+			  frappe.query_report.print_report({
+				  format: print_settings.format,
+				  orientation: print_settings.orientation,
+				  letter_head: print_settings.letter_head
+			  });
+		  });
+		}).addClass('btn-print-custom').html('<i class="fa fa-print"></i> Print Report');
 
 
 	},

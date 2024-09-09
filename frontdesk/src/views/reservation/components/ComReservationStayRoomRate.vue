@@ -58,7 +58,6 @@
               <span v-if="slotProps.data.room_number">{{ slotProps.data.room_number }}</span>     
               <span v-else>
                 {{ $t('Room No (Unassign)') }}
-                
               </span>                          
           </div>
         </template>
@@ -222,7 +221,7 @@ function onCloseDis(){
   showDiscount.value.hide()
 }
 const onSaveDiscount = () => {
-  alert(3434)
+    alert("This option is under development")
 }
 const onSaveChangePax = () => {
   isLoading.value = true
