@@ -36,7 +36,7 @@ class FolioTransaction(Document):
 			
 			if not self.report_description:
 				self.report_description = self.account_name
-    
+	
 			if self.transaction_type == "Reservation Folio":
 				validate_reservation_folio_posting(self)
 			elif self.transaction_type =="City Ledger":
@@ -44,6 +44,7 @@ class FolioTransaction(Document):
 			elif self.transaction_type =="Desk Folio":
 				validate_desk_folio_posting(self)
 			update_sub_account_description(self)
+
 		
 		
 	def after_insert(self):

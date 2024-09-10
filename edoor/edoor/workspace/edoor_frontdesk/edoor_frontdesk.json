@@ -71,7 +71,7 @@
  "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2024-08-09 14:35:20.143276",
+ "modified": "2024-09-10 14:53:30.077135",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
@@ -80,7 +80,20 @@
  "parent_page": "",
  "public": 1,
  "quick_lists": [],
- "roles": [],
+ "roles": [
+  {
+   "role": "Frontdesk Clerk"
+  },
+  {
+   "role": "Frontdesk Manager"
+  },
+  {
+   "role": "eDoor Admin Read Only"
+  },
+  {
+   "role": "FOM"
+  }
+ ],
  "sequence_id": 1.0,
  "shortcuts": [],
  "title": "eDoor Frontdesk"

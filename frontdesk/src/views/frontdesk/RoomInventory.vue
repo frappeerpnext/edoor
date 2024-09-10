@@ -495,6 +495,7 @@ function getEvents(date_range=null) {
                 r.total_room_night = (days * total_rooms) -  result.message.room_occupy.reduce((n, d) => n + (d.total || 0), 0)
             }else if (r.id == "occupany"){
                 r.total_room_night = parseInt(result.message.room_occupy.reduce((n, d) => n + (d.total || 0), 0) / (total_rooms*days) * 100 )   + "%"
+            
             } else if (r.id == "out_of_order"){
                 r.total_room_night = result.message.room_occupy.reduce((n, d) => n + (d.block || 0), 0)
             }else if (r.id == "arrival_departure"){
@@ -551,7 +552,14 @@ function getEvents(date_range=null) {
                     event.color="green"
                     event.textcolor="white"
                     
-                } else if (r.id == "arrival") {
+                
+                } else if (r.id == "occupy") {
+                    event.title = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)
+                    event.color="green"
+                    event.textcolor="white" 
+                } 
+                
+                else if (r.id == "arrival") {
 
                     event.arrival = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.arrival || 0), 0) || 0
                     event.title = event.arrival

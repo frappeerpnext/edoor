@@ -80,10 +80,10 @@ frappe.query_reports["Reservation List Report"] = {
 		},
 
 		{
-			"fieldname": "group_by",
+			"fieldname": "row_group",
 			"label": __("Group By"),
 			"fieldtype": "Select",
-			"options": "\nArrival Date\nDeparture Date\nReservation Date\nReservation\nGuest\nReservation Type\nRoom Type\nBusiness Source\nBusiness Source Type\nNationality\nRate Type\nReservation Status",
+			"options": "\narrival_date\ndeparture_date\nreservation_date\nreservation\nguest\nreservation_type\nroom_type\nbusiness_source\nbusiness_source_type\nnationality\nrate_type\nreservation_status",
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
@@ -239,21 +239,17 @@ frappe.query_reports["Reservation List Report"] = {
 		var parser = new DOMParser(); // create a DOMParser object
 		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
 		var element = doc.querySelector("a"); // get the element by selector
-		if (data && data.indent==0) {
-			
-			if(element){
+		if ((data && data.is_group == 1) || (data && data.is_total_row == 1)) {
 
-				value =$(`<span>${element.dataset.value}</span>`);  
-			}else {
-				
-				value = $(`<span>${value}</span>`);
-			}
-			 
-				var $value = $(value).css("font-weight", "bold");
-				value = $value.wrap("<p></p>").parent().html();
-			 
-		
-		}else {
+			value = $(`<span>${value}</span>`);
+
+			var $value = $(value).css("font-weight", "bold");
+
+
+			value = $value.wrap("<p></p>").parent().html();
+		}
+
+else {
 			if(column.fieldtype=="Link"){
 				var parser = new DOMParser(); // create a DOMParser object
 				var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object

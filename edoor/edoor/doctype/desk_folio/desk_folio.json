@@ -228,7 +228,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-07 11:14:08.807595",
+ "modified": "2024-09-10 14:31:16.931335",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Desk Folio",
@@ -246,6 +246,27 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin Read Only",
+   "share": 1
   }
  ],
  "search_fields": "guest,guest_name,room_number",

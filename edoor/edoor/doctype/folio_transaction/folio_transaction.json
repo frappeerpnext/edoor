@@ -1161,7 +1161,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-26 09:58:37.988044",
+ "modified": "2024-09-10 14:15:29.596392",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",
@@ -1260,6 +1260,18 @@
    "read": 1,
    "report": 1,
    "role": "Night Auditor",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin Read Only",
    "share": 1,
    "write": 1
   }

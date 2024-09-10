@@ -51,7 +51,10 @@ class ReservationFolio(Document):
 				#self.reservation_status_color = frappe.db.get_value("Reservation Stay", self.reservation_stay, "business_source")
 		else:
 			if self.is_master == 1 and self.status == 'Closed':
-				frappe.throw("Master folio is not allow to close")
+				# check if have active stay then not allow to close
+				sql = "select name from `tabReservation Stay` where reservation_status in ('In-house','Reserved','Confirmed') and paid_by_master_room = 1 and is_active_reservation = 1 and name !='{}' and reservation='{}'".format(self.reservation_stay,self.reservation)
+				if frappe.db.sql(sql,as_dict=1):
+					frappe.throw("Master folio is not allow to close")
 					
 
 

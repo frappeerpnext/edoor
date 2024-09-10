@@ -5,18 +5,19 @@ from frappe.utils.data import strip
 import datetime
 import uuid
 def execute(filters=None): 
-
+	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Arrival Guest Report"} )
 	if filters.summary_filter:
 		if not filters.summary_fields:
 			filters.summary_fields = ['total_record', 'room_night']
 
 	 
 
-	data = get_get_reservation_stay(filters)
-	summary = get_summary(filters,data)
-	chart = get_chart(filters,data)
-	report_data = get_report_data(filters,data)
-	return get_columns(filters),report_data,None,chart, summary
+	# data = get_get_reservation_stay(filters)
+	
+	# chart = get_chart(filters,report_config.report_fields)
+	report_data = get_report_data(filters, report_config.report_fields)
+	summary = get_report_summary(filters,report_config.report_fields,report_data)
+	return get_report_columns(filters,report_config.report_fields),report_data,None,None, summary
 
 def validate(filters):
 	datediff = date_diff(filters.end_date, filters.start_date)
@@ -26,103 +27,139 @@ def validate(filters):
 		if datediff > 30:
 			frappe.throw("Your Max date for viewing transaction is only One Month.".format(filters.start_date, filters.end_date))
 
-def get_columns(filters):
-	columns =   [
-		{"fieldname":"reservation", "label":"Res #",'align':'left', "fieldtype":"Link","options":"Reservation","width":130,"show_in_report":1,"post_message_action": "view_reservation_detail","url":"/frontdesk/reservation-detail","style": {"white-space": "nowrap"}},
-		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail","style": {"white-space": "nowrap"}},
-		{"fieldname":"reference_number", "label":"Ref #",'align':'left',"width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
-		{'fieldname':'reservation_type','align':'center','label':'Type',"width":60 ,"show_in_report":1},
-		{"fieldname":"reservation_date",'align':'center', "label":"Res. Date", "fieldtype":"Date","width":100,"show_in_report":1,"style": {"white-space": "nowrap"}},
-		{'fieldname':'rooms','label':'Room','align':'center',"width":40,"show_in_report":1},
-		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
-		{"fieldname":"arrival_date", 'align':'center',"label":"Arrival", "fieldtype":"Date","width":100,"show_in_report":1,"style": {"white-space": "nowrap"}},
-		{"fieldname":"departure_date",'align':'center', "label":"Departure", "fieldtype":"Date","width":100,"show_in_report":1,"style": {"white-space": "nowrap"}},
-		{'fieldname':'room_nights','label':'Nights',"width":40,"show_in_report":1,'align':'center',"fieldtype":"Int"},
-		{'fieldname': 'total_pax', 'label': 'Pax','align':'center',"width":40,"show_in_report":1},
-		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
-		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
-		{"fieldname":"guest_name", "label":"Guest",'align':'left',"width":90,"show_in_report":1},
-		{'fieldname':'reservation_status','label':'Status','align':'left',"width":95,"show_in_report":1},
-		{'fieldname':'adr','label':'ADR','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'total_amount','label':'Total Rate','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'total_debit','label':'Debit','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'total_credit','label':'Credit', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'balance','label':'Balance', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-	]
+def get_report_columns(filters,  report_fields):
+	columns = []
+	report_fields = [d for d in report_fields if d.show_in_report==1]
+
+	if filters.show_columns:
+		report_fields = [d for d in report_fields if d.fieldname in filters.show_columns]
+
+	for g in report_fields:
+		columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
+
+	if filters.show_in_group_by:
+		columns = [d for d in columns if d["fieldname"] != filters.show_in_group_by]
+
 	return columns
 
-
-def get_summary(filters,data):
-	get_count = {d['reservation'] for d in data}
-	if filters.show_summary:
-		return [
-			{ "label":"Total Room","value":len(data),"indicator":"red"},
-			{ "label":"Total Reservation","value":len(get_count),"indicator":"red"},
-			{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data ]),"indicator":"blue"},
-			{ "label":"Total Pax(A/C)","value":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data]))},
-			{ "label":"Total Debit","value": sum([d["total_debit"] for d in data ]),"datatype": "Currency","indicator":"red"},
-			{ "label":"Total Credit","value":sum([d["total_credit"] for d in data ]),"datatype": "Currency","indicator":"green"},
-			{ "label":"Total Balance","value":sum([d["balance"] for d in data ]),"datatype": "Currency","indicator":"blue"},
-		]
-
-def get_chart(filters,data):
-	currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
-	 
-	chart_series = filters.get("chart_series")
-	if filters.chart_type=="None" or not chart_series or not  filters.view_chart_by:
-		return None
-
-	dataset = []
-	colors = []
-
-	report_fields = get_chart_series()
- 
+def get_report_data (filters, report_fields):
+	data = get_data(filters,report_fields)
 	
+	report_data = []
+	if filters.show_in_group_by:
+		parent_row = get_parent_row_row_by_data(filters,data)
+		for parent in parent_row:
+			d = parent
+			if filters.show_in_group_by=="arrival_date":
+				d  = frappe.format(parent,{"fieldtype":"Date"})
+			report_data.append({
+				"indent":0,
+				report_fields[0].fieldname: d,
+				"is_group":1
+			})
 
-	group_column = get_field(filters)
-
-
-	group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
-	
-	for d in chart_series:
-		field = [x for x in report_fields if x["label"] == d][0]
-		
-
-		dataset_values = []
-		for g in group_data: 
-			amount = sum([d[field["data_field"]] for d in data if d[group_column["data_field"]] == g])
+			report_data = report_data + [d for d in data if d[filters.show_in_group_by] == parent]
 			
-			if field["fieldtype"]  =="Currency":
-				amount = round(amount,int(currency_precision))
+	else:
+		report_data = data
+
+	return report_data
+
+def get_parent_row_row_by_data(filters, data):
+	
+	rows = set([d[filters.show_in_group_by] for d in  data])
+
+	return rows
+	
+def get_data (filters,report_fields):
+	sql ="select {} as indent, 0 as is_group, ".format(1 if filters.show_in_group_by else 0)
+
+	sql ="{} {}".format(sql, ",".join([d.sql_expression for d in report_fields if d.sql_expression]))
+
+	if filters.show_in_group_by and len([d for d in report_fields if d.fieldname == filters.show_in_group_by]) == 0:
+		sql = "{} , {}".format(sql, filters.show_in_group_by)
+
+	sql = "{} from `tabReservation Stay` as rst ".format(sql)
+	sql = "{} {}".format(sql, get_filters(filters))
+	# frappe.throw(sql)
+	data = frappe.db.sql(sql, filters ,as_dict=1)
+	return data
 
 
-			dataset_values.append(
-				amount
-			)
+
+def get_report_summary(filters,report_fields, data):
+	summary = []
+	summary_fields = [d for d in report_fields if d.show_in_summary==1 ]
+
+	if filters.show_in_summary:
+		summary_fields = [d for d in summary_fields if d.fieldname in filters.show_in_summary]
+	for x in summary_fields:
+		summary.append({
+        "value": sum([d[x.fieldname] for d in data if d["is_group"] == 0 and x.fieldname in d]),
+        "indicator": x.summary_indicator,
+        "label": x.label,
+        "datatype": x.fieldtype
+})
+	return summary
+
+# def get_chart(filters,data):
+# 	currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+	 
+# 	chart_series = filters.get("chart_series")
+# 	if filters.chart_type=="None" or not chart_series or not  filters.view_chart_by:
+# 		return None
+
+# 	dataset = []
+# 	colors = []
+
+# 	report_fields = get_chart_series()
+ 
+	
+
+# 	group_column = get_field(filters)
+
+
+# 	group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
+	
+# 	for d in chart_series:
+# 		field = [x for x in report_fields if x["label"] == d][0]
+		
+
+# 		dataset_values = []
+# 		for g in group_data: 
+# 			amount = sum([d[field["data_field"]] for d in data if d[group_column["data_field"]] == g])
+			
+# 			if field["fieldtype"]  =="Currency":
+# 				amount = round(amount,int(currency_precision))
+
+
+# 			dataset_values.append(
+# 				amount
+# 			)
 
 
 
-		dataset.append({'name':field["label"],'values':dataset_values})
-		colors.append(field["chart_color"])
+# 		dataset.append({'name':field["label"],'values':dataset_values})
+# 		colors.append(field["chart_color"])
 
  
-	chart = {
-		'data':{
-			'labels': [frappe.format(d,{"fieldtype":group_column["fieldtype"]}) for d in  group_data] ,
-			'datasets':dataset
-		},
-		"type": filters.chart_type,
-		# "lineOptions": {
-		# 	"regionFill": 1,
-		# },
-		'valuesOverPoints':1,
-		"axisOptions": {"xIsSeries": 1},
+# 	chart = {
+# 		'data':{
+# 			'labels': [frappe.format(d,{"fieldtype":group_column["fieldtype"]}) for d in  group_data] ,
+# 			'datasets':dataset
+# 		},
+# 		"type": filters.chart_type,
+# 		# "lineOptions": {
+# 		# 	"regionFill": 1,
+# 		# },
+# 		'valuesOverPoints':1,
+# 		"axisOptions": {"xIsSeries": 1},
 		
-	}
-	return chart
+# 	}
+# 	return chart
 
 def get_filters(filters):
-	sql = " and property=%(property)s "
+	sql = " where property=%(property)s "
 
 	if filters.filter_date_by =="Arrival Date":
 		sql = sql +  " and rst.arrival_date between %(start_date)s and %(end_date)s "
@@ -162,7 +199,7 @@ def get_filters(filters):
 
 	return sql
 
-def get_order_field():
+def get_order_field(): 
 	return [
 		{"label":"Created On","field":"rst.creation"},
 		{"label":"Reservation","field":"rst.reservation"},
@@ -219,124 +256,6 @@ def get_reservation(filters):
 		
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation"] for d in data]
-
-def get_get_reservation_stay(filters):
-	sql="""
-			select 
-				name,
-				reference_number,
-				reservation_date,
-				arrival_date,
-				departure_date,
-				rooms,
-				modified,
-				creation,
-				reservation_type,
-				reservation,
-				room_type_alias,
-				room_types,
-				nationality,
-				business_source,
-				adult,
-				child,
-				concat(adult,'/',child) as total_pax,
-				pax,
-				room_nights,
-				business_source_type,
-				rate_type,
-				guest,
-				guest_name,
-				is_active_reservation,
-				reservation_status,
-				adr,
-				total_room_rate,
-				total_amount,
-				total_debit,
-				total_credit,
-				balance,
-				1 as is_data,
-				1 as total_record
-			from `tabReservation Stay` rst
-			where
-				1=1  
-				{}
-			
-		""".format(get_filters(filters))
-
-	
-
-	data =   frappe.db.sql(sql,filters,as_dict=1)
-	return data
-
-def get_report_data(filters,data):
-
-	if filters.group_by:
-		group_column = get_group_by_column(filters)
-		
-		group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
-		report_data = []
-		for g in group_data:
-			d = g
-			if group_column["fieldtype"]=="Date":
-				d  = frappe.format(g,{"fieldtype":"Date"})
-			id =  str(uuid.uuid4())
-			report_data.append({
-				"indent":0,
-				"reservation": d,
-				"is_group":1,
-				"id":id
-			})
-			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d[group_column["data_field"]]==g]
-			
-			report_data.append({
-				"indent":0,
-				"reservation": "Total",
-				"room_nights":sum([d["room_nights"] for d in data if d[group_column["data_field"]]==g]),
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g]),sum([d["child"] for d in data if d[group_column["data_field"]]==g])),
-				"total_debit":sum([d["total_debit"] for d in data if d[group_column["data_field"]]==g]),
-				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
-				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
-				"adr":sum([d["adr"] for d in data if d[group_column["data_field"]]==g]),
-				"total_amount":sum([d["total_amount"] for d in data if d[group_column["data_field"]]==g]),
-				"is_total_row":1,
-				"is_group":0,
-				"parent":id
-			})
-
-		report_data.append({
-				"indent":0,
-				"reservation": "",
-				"is_separator":1})
-		report_data.append({
-				"indent":0,
-				"reservation": "Grand Total",
-				"room_nights":sum([d["room_nights"] for d in data ]),
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
-				"total_debit":sum([d["total_debit"] for d in data]),
-				"total_credit":sum([d["total_credit"] for d in data]),
-				"balance":sum([d["balance"] for d in data ]),
-				"adr":sum([d["adr"] for d in data ]),
-				"total_amount":sum([d["total_amount"] for d in data ]),
-				"is_total_row":1,
-				"is_group":0,
-				"is_grand_total":1
-			})
-
-		return report_data
-	else:
-		data.append({
-			"indent":0,
-			"reservation": "Total",
-			"total_debit":sum([d["total_debit"] for d in data]),
-			"total_credit":sum([d["total_credit"] for d in data]),
-			"balance":sum([d["balance"] for d in data ]),
-			"adr":sum([d["adr"] for d in data ]),
-			"total_amount":sum([d["total_amount"] for d in data ]),
-			"room_nights":sum([d["room_nights"] for d in data ]),
-			"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
-			"is_total_row":1
-		})
-		return data
 
 def get_group_by_column(filters):
  

@@ -2264,10 +2264,17 @@ def get_logged_user():
     can_see_rate_role = frappe.db.get_single_value("eDoor Setting","can_see_rate_and_amount_role")
     roles = frappe.get_roles(frappe.session.user)
     
+    sql = "select position from `tabEmployee` where user_id='{}'".format(data.name)
+    position = frappe.db.sql(sql,as_dict=1)
+    if position:
+        position = position[0]["position"]
+    else:
+        position=""
+        
     return {
         "name":data.name,
         "full_name":data.full_name,
-        "role":data.role_profile_name,
+        "role":position,
         "phone_number":data.phone,
         "photo":data.user_image,
         "property":property,
@@ -2462,37 +2469,43 @@ def get_room_inventory_resource(property = ''):
     })
   
     resources.append({
+        "id": "occupy",
+        "title": _("Occupy"),
+        "sort_order":1002
+    })
+  
+    resources.append({
         "id": "out_of_order",
         "title": "Out of Order",
-        "sort_order":1002
+        "sort_order":1003
     })
     
     resources.append({
         "id": "arrival",
         "title": "Arrival",
-        "sort_order":1003
+        "sort_order":1004
     })
     resources.append({
         "id": "stay_over",
         "title": "Stay Over",
-        "sort_order":1004
+        "sort_order":1005
     })
     
     resources.append({
         "id": "departure",
         "title": "Departure",
-        "sort_order":1005
+        "sort_order":1006
     })
 
     resources.append({
         "id": "pax",
         "title": "Pax(A/C)",
-        "sort_order":1006
+        "sort_order":1007
     })
     resources.append({
         "id": "dummy",
         "title": " ",
-        "sort_order":1007
+        "sort_order":1008
     })
 
 

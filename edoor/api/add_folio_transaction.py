@@ -415,8 +415,8 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
                 base_doc.total_amount = base_doc.total_amount + base_doc.bank_fee_amount 
                 base_doc.transaction_amount = base_doc.transaction_amount + base_doc.bank_fee_amount
         update_folio_transaction_note(base_doc)
-
-        if "items" in data:    
+          
+        if "items" in data and data["items"]:    
             for item_data in data["items"]:
                 base_doc.append("items", {
                     "product_code":item_data["product_code"],
@@ -428,7 +428,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
             product_description = ", ".join(["{}{} - {}".format("" if  d.quantity ==0 else str(d.quantity) + " x ", d.product_name, frappe.format(d.total_amount,{"fieldtype":"Currency"}) ) for d in base_doc.items])
             base_doc.report_description = "{} {}".format( base_doc.account_name,"({})".format(product_description)) 
                 
-
+        
         base_doc.insert()
     
  

@@ -227,7 +227,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-01 13:18:05.177556",
+ "modified": "2024-09-10 10:18:30.831561",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger",
@@ -255,6 +255,39 @@
    "read": 1,
    "report": 1,
    "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin Read Only",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Account Manager",
    "share": 1,
    "write": 1
   }

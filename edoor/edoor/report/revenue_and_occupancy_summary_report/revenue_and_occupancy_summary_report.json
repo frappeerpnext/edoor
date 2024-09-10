@@ -6,11 +6,11 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 17,
+ "idx": 319,
  "is_standard": "Yes",
  "letter_head": "Default Letterhead",
  "letterhead": null,
- "modified": "2023-12-16 12:03:24.327861",
+ "modified": "2024-09-10 15:23:43.184893",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Revenue and Occupancy Summary Report",
@@ -37,6 +37,18 @@
   },
   {
    "role": "Night Auditor"
+  },
+  {
+   "role": "eDoor Admin Read Only"
+  },
+  {
+   "role": "eDoor Admin"
+  },
+  {
+   "role": "Account Manager"
+  },
+  {
+   "role": "Accounts User"
   }
  ]
 }

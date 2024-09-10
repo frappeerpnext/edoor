@@ -592,7 +592,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-09-06 15:45:45.563856",
+ "modified": "2024-09-10 14:54:48.528797",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",
@@ -601,7 +601,20 @@
  "parent_page": "",
  "public": 1,
  "quick_lists": [],
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "eDoor Admin"
+  },
+  {
+   "role": "eDoor Admin Read Only"
+  },
+  {
+   "role": "FOM"
+  }
+ ],
  "sequence_id": 17.0,
  "shortcuts": [
   {

@@ -145,7 +145,7 @@
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-10 11:05:12.217758",
+ "modified": "2024-09-10 15:09:30.584623",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",
@@ -192,6 +192,15 @@
    "read": 1,
    "report": 1,
    "role": "Frontdesk Manager",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin Read Only",
    "share": 1
   }
  ],
