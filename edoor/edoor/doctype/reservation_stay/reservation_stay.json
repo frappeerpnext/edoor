@@ -1016,7 +1016,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-22 11:11:03.674204",
+ "modified": "2024-09-10 15:31:08.034157",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
@@ -1094,6 +1094,27 @@
    "role": "Night Auditor",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin Read Only",
+   "share": 1
   }
  ],
  "search_fields": "reservation,reference_number,guest,guest_name,guest_phone_number,guest_email,rooms,internal_reference_number,group_code,group_name",

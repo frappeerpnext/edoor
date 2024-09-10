@@ -30,40 +30,31 @@ def validate(filters):
 def get_report_columns(filters,  report_fields):
 	columns = []
 	report_fields = [d for d in report_fields if d.show_in_report==1]
-
-	if filters.show_columns:
-		report_fields = [d for d in report_fields if d.fieldname in filters.show_columns]
-
+	report_fields = report_fields if not filters.show_columns else [d for d in report_fields if d.fieldname in filters.show_columns]
+		
 	for g in report_fields:
-		columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
+		if g.fieldtype=='Link' and g.link_field_doctype:
+			columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":"Link","options":g.link_field_doctype,"align": g.align })
+		else:
+			columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
 
-	if filters.show_in_group_by:
-		columns = [d for d in columns if d["fieldname"] != filters.show_in_group_by]
+	if filters.row_group:
+		columns = [d for d in columns if d["fieldname"] != filters.row_group]
 
-	return columns
+def get_data (filters,report_fields):
+	sql ="select {} as indent, 0 as is_group, ".format(1 if filters.row_group else 0)
 
-def get_report_data (filters, report_fields):
-	data = get_data(filters,report_fields)
+	sql ="{} {}".format(sql, ",".join([d.sql_expression for d in report_fields if d.sql_expression]))
+
+	if filters.row_group and len([d for d in report_fields if d.fieldname == filters.row_group]) == 0:
+		sql = "{} , {}".format(sql, filters.row_group)
+
+	sql = "{} from `tabReservation Stay`  rst ".format(sql)
+	sql = "{} {}".format(sql, get_filters(filters))
+
 	
-	report_data = []
-	if filters.show_in_group_by:
-		parent_row = get_parent_row_row_by_data(filters,data)
-		for parent in parent_row:
-			d = parent
-			if filters.show_in_group_by=="arrival_date":
-				d  = frappe.format(parent,{"fieldtype":"Date"})
-			report_data.append({
-				"indent":0,
-				report_fields[0].fieldname: d,
-				"is_group":1
-			})
-
-			report_data = report_data + [d for d in data if d[filters.show_in_group_by] == parent]
-			
-	else:
-		report_data = data
-
-	return report_data
+	data = frappe.db.sql(sql, filters ,as_dict=1)
+	return data
 
 def get_parent_row_row_by_data(filters, data):
 	
