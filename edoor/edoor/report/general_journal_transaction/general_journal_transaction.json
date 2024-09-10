@@ -10,7 +10,7 @@
  "is_standard": "Yes",
  "letter_head": "Default Letterhead",
  "letterhead": null,
- "modified": "2024-09-10 15:32:09.760586",
+ "modified": "2024-09-10 15:33:01.652499",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "General Journal Transaction",
@@ -37,6 +37,12 @@
   },
   {
    "role": "eDoor Admin Read Only"
+  },
+  {
+   "role": "Account Manager"
+  },
+  {
+   "role": "Accounts User"
   }
  ]
 }

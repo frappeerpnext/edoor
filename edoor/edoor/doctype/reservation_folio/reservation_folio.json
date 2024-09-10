@@ -369,12 +369,12 @@
    "fieldtype": "Data",
    "is_virtual": 1,
    "label": "Rooms",
-   "options": "f\"{doc.rooms} - {doc.room_types}\""
+   "options": "f\"{doc.rooms} - {doc.room_types} \""
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-03 11:29:44.206571",
+ "modified": "2024-09-10 15:36:22.734596",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",
@@ -439,6 +439,15 @@
    "role": "Night Auditor",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin Read Only",
+   "share": 1
   }
  ],
  "search_fields": "rooms, guest_name",

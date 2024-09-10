@@ -5,19 +5,18 @@ from frappe.utils.data import strip
 import datetime
 import uuid
 def execute(filters=None): 
-	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Arrival Guest Report"} )
-	if filters.summary_filter:
-		if not filters.summary_fields:
-			filters.summary_fields = ['total_record', 'room_night']
+	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Reservation List Report"} )
+	# if filters.summary_filter:
+	# 	if not filters.summary_fields:
+	# 		filters.summary_fields = ['total_record', 'room_night']
 
 	 
 
 	# data = get_get_reservation_stay(filters)
-	
-	# chart = get_chart(filters,report_config.report_fields)
 	report_data = get_report_data(filters, report_config.report_fields)
 	summary = get_report_summary(filters,report_config.report_fields,report_data)
-	return get_report_columns(filters,report_config.report_fields),report_data,None,None, summary
+	chart = get_report_chart(filters,report_data,report_config.report_fields)
+	return get_report_columns(filters,report_config.report_fields),report_data,None,chart, summary
 
 def validate(filters):
 	datediff = date_diff(filters.end_date, filters.start_date)
@@ -30,17 +29,61 @@ def validate(filters):
 def get_report_columns(filters,  report_fields):
 	columns = []
 	report_fields = [d for d in report_fields if d.show_in_report==1]
-	report_fields = report_fields if not filters.show_columns else [d for d in report_fields if d.fieldname in filters.show_columns]
-		
+
+	if filters.show_columns:
+		report_fields = [d for d in report_fields if d.fieldname in filters.show_columns]
+
 	for g in report_fields:
-		if g.fieldtype=='Link' and g.link_field_doctype:
-			columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":"Link","options":g.link_field_doctype,"align": g.align })
-		else:
-			columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
+		columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
 
 	if filters.row_group:
 		columns = [d for d in columns if d["fieldname"] != filters.row_group]
 
+	return columns
+
+def get_report_data (filters, report_fields):
+	data = get_data(filters,report_fields)
+	
+	report_data = []
+	if filters.row_group:
+		parent_row = get_parent_row_row_by_data(filters,data)
+		for parent in parent_row:
+			d = parent
+			if filters.row_group=="arrival_date":
+				d  = frappe.format(parent,{"fieldtype":"Date"})
+			report_data.append({
+				"indent":0,
+				report_fields[0].fieldname: d,
+				"is_group":1
+			})
+
+			report_data = report_data + [d for d in data if d[filters.row_group] == parent]
+			total_row = {
+				"row_group":_("Total"),
+				"is_total_row": 1,
+			
+			}
+			for f in [d for d in report_fields if d.show_in_report==1 and d.show_in_summary==1]:
+				total_row[f.fieldname] = (sum([d[f.fieldname] for d in data if f.fieldname in d])) 
+			report_data.append(total_row)
+
+		# report_data.append({"indent":0}) 
+		# grand_total_row = ({"indent":0,report_fields[0].fieldname: "Grand Total","is_group":1,"document_name":len([d for d in data])}) 
+		# for f in [d for d in report_fields if d.show_in_report==1 and d.fieldtype!='Date' and d.fieldtype!='Data' and d.fieldtype!='Link' and d.show_in_summary==1]:
+		# 	grand_total_row[f.fieldname] = (sum([d[f.fieldname] for d in data]))
+		# report_data.append(grand_total_row)
+			
+	else:
+		report_data = data
+
+	return report_data
+
+def get_parent_row_row_by_data(filters, data):
+	
+	rows = set([d[filters.row_group] for d in  data])
+
+	return rows
+	
 def get_data (filters,report_fields):
 	sql ="select {} as indent, 0 as is_group, ".format(1 if filters.row_group else 0)
 
@@ -48,27 +91,6 @@ def get_data (filters,report_fields):
 
 	if filters.row_group and len([d for d in report_fields if d.fieldname == filters.row_group]) == 0:
 		sql = "{} , {}".format(sql, filters.row_group)
-
-	sql = "{} from `tabReservation Stay`  rst ".format(sql)
-	sql = "{} {}".format(sql, get_filters(filters))
-
-	
-	data = frappe.db.sql(sql, filters ,as_dict=1)
-	return data
-
-def get_parent_row_row_by_data(filters, data):
-	
-	rows = set([d[filters.show_in_group_by] for d in  data])
-
-	return rows
-	
-def get_data (filters,report_fields):
-	sql ="select {} as indent, 0 as is_group, ".format(1 if filters.show_in_group_by else 0)
-
-	sql ="{} {}".format(sql, ",".join([d.sql_expression for d in report_fields if d.sql_expression]))
-
-	if filters.show_in_group_by and len([d for d in report_fields if d.fieldname == filters.show_in_group_by]) == 0:
-		sql = "{} , {}".format(sql, filters.show_in_group_by)
 
 	sql = "{} from `tabReservation Stay` as rst ".format(sql)
 	sql = "{} {}".format(sql, get_filters(filters))
@@ -84,70 +106,78 @@ def get_report_summary(filters,report_fields, data):
 
 	if filters.show_in_summary:
 		summary_fields = [d for d in summary_fields if d.fieldname in filters.show_in_summary]
-	for x in summary_fields:
-		summary.append({
-        "value": sum([d[x.fieldname] for d in data if d["is_group"] == 0 and x.fieldname in d]),
-        "indicator": x.summary_indicator,
-        "label": x.label,
-        "datatype": x.fieldtype
-})
+		for x in summary_fields:
+			summary.append({
+			"value": sum([d[x.fieldname] for d in data if x.fieldname in d]),
+			"indicator": x.summary_indicator,
+			"label": x.label,
+			"datatype": x.fieldtype
+	})
 	return summary
 
-# def get_chart(filters,data):
-# 	currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
-	 
-# 	chart_series = filters.get("chart_series")
-# 	if filters.chart_type=="None" or not chart_series or not  filters.view_chart_by:
-# 		return None
-
-# 	dataset = []
-# 	colors = []
-
-# 	report_fields = get_chart_series()
- 
+def get_report_chart(filters,data,report_fields):
+	precision = frappe.db.get_single_value("System Settings","currency_precision")
+	report_fields = [d for d in report_fields if d.show_in_chart ==1]
 	
-
-# 	group_column = get_field(filters)
-
-
-# 	group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
+	if filters.show_chart_series:
+		report_fields = [d for d in report_fields if d.show_in_chart ==1 and d.fieldname in filters.show_chart_series]
+	else:
+		report_fields = [d for d in report_fields if d.show_in_chart_when_no_fields_selected ==1]
 	
-# 	for d in chart_series:
-# 		field = [x for x in report_fields if x["label"] == d][0]
-		
+	if len(report_fields)==0:
+		return None
+	
+	
+	columns =[]
+	
+	datasets = []
+	
+	if filters.row_group:
+		chart_label_field = "name"
+		columns = [d[chart_label_field] for d in  data if 'is_group' in d and  d["is_group"] == 1 and d['name']!="Total" and d['name']!="Grand Total"]
+	else:
+		chart_label_field = "name"
+		columns = [d[chart_label_field] for d in  data if 'is_group' in d and  d["is_group"] == 0 and d['name']!="Total" and d['name']!="Grand Total"]
 
-# 		dataset_values = []
-# 		for g in group_data: 
-# 			amount = sum([d[field["data_field"]] for d in data if d[group_column["data_field"]] == g])
-			
-# 			if field["fieldtype"]  =="Currency":
-# 				amount = round(amount,int(currency_precision))
+	for f in report_fields:
+		if f.show_in_chart==1:
+			if filters.row_group:
+				if (f.fieldtype=="Currency"):
+					datasets.append({
+						"name": f.label,
+						"values": [round(d[f.fieldname],int(precision)) for d in  data if 'is_group_total' in d and  d["is_group_total"] ==1]
+					})
 
+				else:
+					datasets.append({
+						"name": f.label,
+						"values": [d[f.fieldname] for d in  data if    'is_group_total' in d and  d["is_group_total"] ==1]
+					})
+			else:
+				if (f.fieldtype=="Currency"):
+					datasets.append({
+						"name": f.label,
+						"values": [round(d[f.fieldname],int(precision)) for d in  data if 'is_group' in d and  d["is_group"] ==0]
+					})
 
-# 			dataset_values.append(
-# 				amount
-# 			)
-
-
-
-# 		dataset.append({'name':field["label"],'values':dataset_values})
-# 		colors.append(field["chart_color"])
-
- 
-# 	chart = {
-# 		'data':{
-# 			'labels': [frappe.format(d,{"fieldtype":group_column["fieldtype"]}) for d in  group_data] ,
-# 			'datasets':dataset
-# 		},
-# 		"type": filters.chart_type,
-# 		# "lineOptions": {
-# 		# 	"regionFill": 1,
-# 		# },
-# 		'valuesOverPoints':1,
-# 		"axisOptions": {"xIsSeries": 1},
-		
-# 	}
-# 	return chart
+				else:
+					datasets.append({
+						"name": f.label,
+						"values": [d[f.fieldname] for d in  data if    'is_group' in d and  d["is_group"] ==0]
+					})
+	chart = {
+		'data':{
+			'labels':columns,
+			'datasets':datasets
+		},
+		"type": filters.chart_type,
+		"lineOptions": {
+			"regionFill": 1,
+		},
+		'valuesOverPoints':1,
+		"axisOptions": {"xIsSeries": 1}
+	}
+	return chart
 
 def get_filters(filters):
 	sql = " where property=%(property)s "
