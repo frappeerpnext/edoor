@@ -5,7 +5,14 @@
             <InputNumber v-model="setting.increasement_day"    showButtons :min="1" :max="7" />
  
         </div>
-    </ComDialogContent>
+        <div class="flex-auto mt-4">
+            <label  class="font-bold block mb-2"> {{$t("Show/Hide Unassign Room")}} </label>
+            <Checkbox input-id="rate_tax" class="w-full flex "
+                                v-model="setting.show_unassign_room" :binary="true" :trueValue="1" :falseValue="0"  />
+ 
+        </div>
+
+</ComDialogContent>
 </template>
 <script setup>
 import { inject, ref, onMounted} from "@/plugin"
@@ -21,7 +28,7 @@ const setting = ref({increasement_day:3})
 function onSave() {
      
     localStorage.setItem("room_inventory_setting", JSON.stringify(setting.value))
-    dialogRef.value.close()
+    dialogRef.value.close(true)
 }
   
 onMounted(() => {

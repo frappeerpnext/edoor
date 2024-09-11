@@ -1,0 +1,56 @@
+{
+ "charts": [
+  {
+   "chart_name": "Monthly Occupancy Chart",
+   "label": "Monthly Occupancy Chart"
+  }
+ ],
+ "content": "[{\"id\":\"vRmJF7Ir8n\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Reservation\",\"col\":4}},{\"id\":\"cRnsGSpJoS\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Today Res. Nights\",\"col\":4}},{\"id\":\"FPi4D2TItG\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy Chart\",\"col\":12}}]",
+ "creation": "2024-09-11 11:01:11.142969",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "today",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Sale and Marketing",
+ "links": [],
+ "modified": "2024-09-11 11:37:58.326530",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Sale and Marketing",
+ "number_cards": [
+  {
+   "label": "Today Reservation",
+   "number_card_name": "Today Reservation"
+  },
+  {
+   "label": "Today Res. Nights",
+   "number_card_name": "Today Reservation Stay"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "eDoor Sales & Marketing"
+  },
+  {
+   "role": "eDoor Admin"
+  },
+  {
+   "role": "eDoor Admin Read Only"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 11.0,
+ "shortcuts": [],
+ "title": "Sale and Marketing"
+}

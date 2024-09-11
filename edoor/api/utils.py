@@ -1131,6 +1131,19 @@ def update_account_code_to_folio_transaction():
          update `tabFolio Transaction` f set flash_report_revenue_group = (select flash_report_revenue_group from `tabAccount Code` t where t.name = f.account_code )
     """
     frappe.db.sql(sql)
+    
+    sql = """
+        update `tabFolio Transaction` a 
+        join `tabAccount Code` b on a.account_code = b.name
+        set 
+            a.payment_type = b.payment_type,
+            a.payment_type_group = b.payment_type_group
+    
+    """
+    frappe.db.sql(sql)
+    
+    
+    
     # update parent account name to account code doctye
     sql="""
          update `tabAccount Code` a

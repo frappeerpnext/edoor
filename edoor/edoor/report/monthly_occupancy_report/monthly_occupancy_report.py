@@ -103,7 +103,7 @@ def get_report_chart(filters, data):
 
 	datasets = []
 	for c in report_columns:
-		if c["fieldname"] !="month":		
+		if not c["fieldname"] in ["month","room_available"]:		
 			datasets.append({
 						"name": c["label"],
 						"values": [d[c["fieldname"]] for d in data]

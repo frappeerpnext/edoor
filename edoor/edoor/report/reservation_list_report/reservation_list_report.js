@@ -137,24 +137,6 @@ frappe.query_reports["Reservation List Report"] = {
 			"on_change": function (query_report) {},
 		},
 		{
-			"fieldname": "chart_type",
-			"label": __("Chart Type"),
-			"fieldtype": "Select",
-			"options": "None\nbar\nline\npie", 
-			hide_in_filter:1,
-			"on_change": function (query_report) {},
-		},
-
-		{
-			"fieldname": "show_chart_series",
-			"label": __("Show Chart Series"),
-			"fieldtype": "MultiSelectList",
-			"on_change": function (query_report) { },
-			"hide_in_filter": 1,
-		},
-		
-		
-		{
 			"fieldname": "order_by",
 			"label": __("Order By"),
 			"fieldtype": "Select",
@@ -183,6 +165,22 @@ frappe.query_reports["Reservation List Report"] = {
 		{
 			"fieldname": "show_in_summary",
 			"label": __("Show in Summary"),
+			"fieldtype": "MultiSelectList",
+			"on_change": function (query_report) { },
+			"hide_in_filter": 1,
+		},
+		{
+			"fieldname": "chart_type",
+			"label": __("Chart Type"),
+			"fieldtype": "Select",
+			"options": "None\nbar\nline\npie",
+			"default": "None",
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
+		},
+		{
+			"fieldname": "show_chart_series",
+			"label": __("Show Chart Series"),
 			"fieldtype": "MultiSelectList",
 			"on_change": function (query_report) { },
 			"hide_in_filter": 1,
@@ -257,6 +255,7 @@ else {
 };
 
 function setLinkField() {
+	
 	const property = frappe.query_report.get_filter_value("property")
 	if (property) {
 		const business_source_filter = frappe.query_report.get_filter('business_source');
@@ -279,44 +278,43 @@ function setLinkField() {
 
 	}
 
-		frappe.call({
-			method: "edoor.api.utils.get_report_config",
+	frappe.call({
+		method: "edoor.api.utils.get_report_config",
 
-			args: {
-				property: property,
-				report: "Reservation List Report"
-			},
-			callback: function (r) {
-				const show_columns = frappe.query_report.get_filter('show_columns');
-				show_columns.df.options = r.message.report_fields.map(x => {
-					return {
-						value: x.fieldname,
-						description: x.label
-					}
-				})
-				const show_chart_series = frappe.query_report.get_filter('show_chart_series');
-				show_chart_series.df.options = r.message.report_fields.filter(y=>y.show_in_chart==1).map(x => {
-					return {
-						value: x.fieldname,
-						description: x.label
-					}
-				})
-				
-				const show_in_summary = frappe.query_report.get_filter('show_in_summary');
-				show_in_summary.df.options = r.message.report_fields.filter(y=>y.show_in_summary==1).map(x => {
-					return {
-						value: x.fieldname,
-						description: x.label
-					}
-				})
-				
-			},
-			error: function (r) {
-				frappe.throw(_("Please update report configuration"))
-			},
-		});
-
-
+		args: {
+			property: property,
+			report: "Reservation List Report"
+		},
+		callback: function (r) {
+			// const show_columns = frappe.query_report.get_filter('show_columns');
+			// console.log()
+			// show_columns.df.options = r.message.report_fields.map(x => {
+			// 	return {
+			// 		value: x.fieldname,
+			// 		description: x.label
+			// 	}
+			// })
+			const show_chart_series = frappe.query_report.get_filter('show_chart_series');
+			show_chart_series.df.options = r.message.report_fields.filter(y=>y.show_in_chart==1).map(x => {
+				return {
+					value: x.fieldname,
+					description: x.label
+				}
+			})
+			
+			const show_in_summary = frappe.query_report.get_filter('show_in_summary');
+			show_in_summary.df.options = r.message.report_fields.filter(y=>y.show_in_summary==1).map(x => {
+				return {
+					value: x.fieldname,
+					description: x.label
+				}
+			})
+			
+		},
+		error: function (r) {
+			frappe.throw(_("Please update report configuration"))
+		},
+	});
 
 }
 

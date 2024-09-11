@@ -115,6 +115,7 @@ function onSelectLetterHead(l) {
 
 const onSelectStartDate = (date) => {
     if (moment(date).isSame(moment(filter.value.end_date).format("yyyy-MM-DD")) || moment(date).isAfter(filter.value.end_date)) {
+    
         filter.value.end_date = moment(date).add(0, 'days').toDate();
     }
 }

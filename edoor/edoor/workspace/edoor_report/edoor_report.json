@@ -538,7 +538,7 @@
    "is_query_report": 1,
    "label": "Reservation List",
    "link_count": 0,
-   "link_to": "Daily reservation pick up list",
+   "link_to": "Reservation List Report",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -592,7 +592,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-09-10 14:54:48.528797",
+ "modified": "2024-09-11 14:57:18.241634",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

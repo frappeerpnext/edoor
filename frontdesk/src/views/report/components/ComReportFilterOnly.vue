@@ -18,7 +18,7 @@
             <!-- {{filter.cashier_shift}} -->
             <ComAutoComplete v-model="filter.cashier_shift" placeholder="Cashier Shift" doctype="Cashier Shift"
             class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" 
-            :filters="{ is_edoor_shift:1,posting_date: moment(filter.start_date).format('DD-MM-YYYY')}"/>
+            :filters="{is_edoor_shift: 1,posting_date:filter.start_date}" />
         </div>
         <div class="col-12 lg:col-3" v-if="hasFilter('end_date')">
             <label> {{ $t('End date') }} </label><br>

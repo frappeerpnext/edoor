@@ -119,6 +119,7 @@
    "options": "Housekeeping Status"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "permission_and_role_tab",
    "fieldtype": "Tab Break",
    "label": "Permission and Role"
@@ -344,6 +345,7 @@
    "label": "Calculate Room Occupancy Include Room Block"
   },
   {
+   "depends_on": "eval:frappe.user.has_role(\"Administrator\")",
    "fieldname": "global_search_tables_tab",
    "fieldtype": "Tab Break",
    "label": "Global Search Tables"
@@ -423,7 +425,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-10 16:41:22.347849",
+ "modified": "2024-09-11 09:07:54.942398",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

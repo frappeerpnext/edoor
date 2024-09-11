@@ -252,6 +252,7 @@
   {
    "fieldname": "reservation_status",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Reservation Status",
    "options": "Reservation Status"
   },
@@ -480,6 +481,7 @@
    "fetch_from": "reservation.business_source",
    "fieldname": "business_source",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Business Source",
    "options": "Business Source"
   },
@@ -797,6 +799,7 @@
    "fetch_if_empty": 1,
    "fieldname": "reservation_date",
    "fieldtype": "Date",
+   "in_standard_filter": 1,
    "label": "Reservation Date"
   },
   {
@@ -1016,7 +1019,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 16:45:05.231426",
+ "modified": "2024-09-11 12:23:22.994916",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

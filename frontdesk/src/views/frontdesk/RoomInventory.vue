@@ -1,6 +1,7 @@
 <template lang=""> 
     <div>
         <ComHeader isRefresh @onRefresh="onRefresh()">
+        
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
@@ -111,10 +112,8 @@ import { useTippy } from 'vue-tippy'
 import interactionPlugin from '@fullcalendar/interaction'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import ComCalendarEventTooltip from '@/views/frontdesk/components/ComCalendarEventTooltip.vue'
-import NewReservation from '@/views/reservation/NewReservation.vue';
-import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
-import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
-import ComConfirmChangeStay from "@/views/frontdesk/components/ComConfirmChangeStay.vue"
+
+
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import ReservationStatusLabel from '@/views/frontdesk/components/ReservationStatusLabel.vue';
@@ -190,7 +189,9 @@ let roomChartResourceFilter = reactive({
     view_type: filter.value.view_type // room_type = true or room = false
 })
 let dateIncrement = ref(3)
+
 const room_inventory_setting = localStorage.getItem("room_inventory_setting")
+ 
 if (room_inventory_setting){
     dateIncrement.value = JSON.parse(room_inventory_setting).increasement_day
 }
@@ -216,10 +217,10 @@ const settingMenu = ref([
                             },
                         },
                         onClose: (options) => {
-                            const room_inventory_setting = localStorage.getItem("room_inventory_setting")
-                            if (room_inventory_setting){
-                                dateIncrement.value = JSON.parse(room_inventory_setting).increasement_day
-                            }
+                    
+                             if(options.data){
+                                window.location.reload()
+                             }
                         }
                     });
                 }
@@ -508,7 +509,7 @@ function getEvents(date_range=null) {
                 r.total_room_night = (days * r.total_room) -  result.message.room_occupy.filter(x=>x.room_type_id==r.id).reduce((n, d) => n + (d.total || 0), 0)
             }
             
-
+            const room_inventory_setting = JSON.parse(localStorage.getItem("room_inventory_setting"))
             while (current_date < cal.view.currentEnd) {
                 let title = ""
                 let event = {
@@ -526,10 +527,10 @@ function getEvents(date_range=null) {
                     if ((event.vacant_room || 0)<0){
                         event.color="red"
                     }else {
-                        event.color="#fd952c"
+                        event.color="rgb(239 237 234 / 67%)"
                     }
                     
-                    event.textcolor="white"
+                    event.textcolor="black"
                     
                 } 
                 else if (r.id == "out_of_order") {
@@ -549,8 +550,8 @@ function getEvents(date_range=null) {
 
                     event.title = event.occupancy + "%"
                     
-                    event.color="green"
-                    event.textcolor="white"
+                  event.color="rgb(239 237 234 / 67%)"
+                    event.textcolor="black"
                     
                 
                 } else if (r.id == "occupy") {
@@ -564,33 +565,39 @@ function getEvents(date_range=null) {
                     event.arrival = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.arrival || 0), 0) || 0
                     event.title = event.arrival
 
-                    event.color="#F2CB38"
-                    event.textcolor="white"
+                  event.color="rgb(239 237 234 / 67%)"
+                    event.textcolor="black"
                     
                 } else if (r.id == "stay_over") {
                     event.stay_over = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.stay_over || 0), 0) || 0
                     event.title = event.stay_over
-                    event.color="#F2CB38"
-                    event.textcolor="white"
+                    event.color="rgb(239 237 234 / 67%)"
+                    event.textcolor="black"
                     
                 } else if (r.id == "departure") {
                     event.departure = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.departure || 0), 0) || 0
                     event.title = event.departure
 
-                    event.color="#F2CB38"
+                   event.color="rgb(239 237 234 / 67%)"
                     event.textcolor="red"
                     
                 } else if (r.id == "pax") {
                     event.title = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.adult || 0), 0)
                     event.title = event.title + " | " +  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.child || 0), 0)
-                    event.color="#76E2E8"
-                    event.textcolor="white"
+                   event.color="rgb(239 237 234 / 67%)"
+                    event.textcolor="black"
                     
                 } else {
                     const current_date_occupy = result.message.room_occupy.find(x => x.room_type_id == r.id && x.date == moment(current_date).format("YYYY-MM-DD"))
                     event.title = r.total_room - ((current_date_occupy?.total || 0) + (current_date_occupy?.block || 0))   
                     if((current_date_occupy?.unassign_room || 0)!=0){
-                        event.title = event.title + " | "  +  (current_date_occupy?.unassign_room || 0)
+                       
+                        if(room_inventory_setting && room_inventory_setting.show_unassign_room==1){
+                            event.title = event.title + " | "  +  (current_date_occupy?.unassign_room || 0)    
+                        }else {
+                            event.title = event.title
+                        }
+                        
                     }
                   
                   

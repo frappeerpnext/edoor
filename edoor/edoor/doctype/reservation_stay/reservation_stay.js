@@ -26,6 +26,18 @@ frappe.ui.form.on("Reservation Stay", {
                         getReservationStayFolio(frm)
                 }
                 renderGeneralInforamtion(frm);
+                if(frappe.session.user !="Administrator"){
+                        setTimeout(() => {
+     
+                                frm.page.wrapper.find('[data-label="Remind%20Me"]').closest('.dropdown-item').hide();
+                                frm.page.wrapper.find('[data-label="New%20Reservation%20Folio"]').closest('.dropdown-item').hide();
+                                frm.page.wrapper.find('[data-label="Delete"]').closest('.dropdown-item').hide();
+                                frm.page.wrapper.find('[data-label="Duplicate"]').closest('.dropdown-item').hide();
+                                      
+                              },100)
+                }
+                
+
         },
 });
 function set_indicator(frm) {
