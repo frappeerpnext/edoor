@@ -763,7 +763,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 16:20:05.160881",
+ "modified": "2024-09-10 17:12:05.345063",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
@@ -853,15 +853,6 @@
    "role": "eDoor Admin",
    "share": 1,
    "write": 1
-  },
-  {
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "eDoor Admin Read Only",
-   "share": 1
   }
  ],
  "search_fields": "reference_number,guest,guest_name,phone_number,email_address,room_numbers, group_code, group_name",

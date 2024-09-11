@@ -135,7 +135,7 @@ def get_row_group(filters):
 def get_room_number(filters):
 	rooms= []
 	if filters.room_types:
-		rooms= frappe.db.sql("select name as room_id, room_number, room_type,room_type from `tabRoom` where property=%(property)s and room_type_id in %(room_type_id)s order by sort_order, room_number",filters,as_dict=1)
+		rooms= frappe.db.sql("select name as room_id, room_number, room_type,room_type from `tabRoom` where property=%(property)s and room_type_id in %(room_types)s order by sort_order, room_number",filters,as_dict=1)
 	else:
 		rooms= frappe.db.sql("select name as room_id, room_number, room_type,room_type from `tabRoom` where property=%(property)s order by sort_order, room_number",filters,as_dict=1)
 	return rooms

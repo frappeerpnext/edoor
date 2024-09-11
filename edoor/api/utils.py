@@ -19,6 +19,23 @@ from functools import lru_cache
 from edoor.api.update_reservation import update_reservation_stay
 from edoor.api.backup import run_backup_command
 
+
+@frappe.whitelist()
+def create_role():
+    if not frappe.db.exists("Custom DocPerm",{"parent":"Reservation","role":"eDoor Admin Read Only"}):
+        doc = frappe.new_doc("Custom DocPerm")
+        doc.parent="Reservation"
+        doc.role = "eDoor Admin Read Only"
+        doc.read = 1
+        doc.print = 1
+            
+        doc.save()
+        
+    else:
+        return "exists"
+    frappe.db.commit()
+    return doc
+
 @frappe.whitelist(allow_guest=True)
 def get_theme():
     return frappe.db.get_single_value("ePOS Settings","app_theme")

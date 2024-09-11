@@ -83,7 +83,7 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldname": "row_group",
 			"label": __("Group By"),
 			"fieldtype": "Select",
-			"options": "\narrival_date\ndeparture_date\nreservation_date\nreservation\nguest\nreservation_type\nroom_type\nbusiness_source\nbusiness_source_type\nnationality\nrate_type\nreservation_status",
+			"options": "\narrival_date\ndeparture_date\nreservation_date\nreservation\nguest_name\nreservation_type\nroom_types\nbusiness_source\nbusiness_source_type\nnationality\nrate_type\nreservation_status",
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
