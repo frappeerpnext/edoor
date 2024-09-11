@@ -2643,7 +2643,7 @@ def get_room_inventory_calendar_event(property, start=None,end=None, keyword=Non
             sum(if(type='Block',1,0)) as block, 
             sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation=1) as unassign_room, 
             sum(is_arrival=1 and is_active=1 and is_active_reservation=1) as arrival,
-            sum(is_departure=1 and is_active=1 and is_active_reservation=1) as departure,
+            sum(is_departure=1 and is_active_reservation=1) as departure,
             sum(type='Reservation' and is_stay_over=1 and is_active=1 and is_active_reservation = 1) as stay_over,
             sum(adult) as adult, 
             sum(child) as child 
