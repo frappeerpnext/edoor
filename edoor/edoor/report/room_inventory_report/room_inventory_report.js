@@ -124,6 +124,7 @@ frappe.query_reports["Room Inventory Report"] = {
 			"fieldtype": "Check",
 			hide_in_filter: 1,
 			"on_change": function (query_report) { },
+			"default": 0,
 		},
 	],
 	onload: function (report) {

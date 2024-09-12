@@ -185,6 +185,19 @@
                 </div>
             </div>   
         </div>
+        <div class="col-12 lg:col-3 mt-4"  v-if="hasFilter('view_separate_month')">
+            <div class="h-full" >
+                <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                <div>
+                    <label for="filter_is_active" class="font-medium cursor-pointer">View in Separate Month</label>
+                </div>
+                <div>
+                    <Checkbox class="mx-3" v-model="filter.view_separate_month" :binary="true" trueValue="1"
+                            falseValue="0" /> 
+                </div>
+                </div>
+            </div>   
+        </div>
         
         <div class="col-12 lg:col-3 mt-4"  v-if="hasFilter('show_account_code')">
             <div class="h-full" >

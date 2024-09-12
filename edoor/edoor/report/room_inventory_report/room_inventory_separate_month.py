@@ -24,7 +24,7 @@ def get_report_columns(filters,min_max_day):
 	
 	for n in range(min_max_day["min_day"], min_max_day["max_day"]+1):
 		columns.append({
-			"fieldname":"col_" + str(n),"label": "{}<br/>Jan".format(n), "width":50, "align":"center"
+			"fieldname":"col_" + str(n),"label": "{}".format(n), "width":50, "align":"center"
 	})
 		
 	return columns
@@ -392,7 +392,7 @@ def get_report_chart(filters,months,data):
 	precision = frappe.db.get_single_value("System Settings","currency_precision")
 	columns = []
 	datasets = [
-		{"name":"Vacant Roomx"},
+		{"name":"Vacant Room"},
 		{"name":"Occupy"},
 		{"name":"Occupancy(%)"},
 		{"name":"Out of Order"},
@@ -432,5 +432,3 @@ def get_report_chart(filters,months,data):
 	}
 
 	return chart
-
-

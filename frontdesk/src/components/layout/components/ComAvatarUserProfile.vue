@@ -60,7 +60,7 @@ const auth = inject("$auth")
 const show = ref()
 const dialog = useDialog()
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname + ":" + window.setting.backend_port;
 
  
 const { t: $t } = i18n.global;
