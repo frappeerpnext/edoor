@@ -1,5 +1,6 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
-# For license information, please see license.txt\
+# For license information, please see license.txt
+
 
 from edoor.api.folio_transaction import update_reservation_folio
 import frappe
@@ -90,8 +91,8 @@ class FolioTransaction(Document):
 			self.name = self.flags.doc_name
 		 
 	def on_trash(self):
+		frappe.throw("x")
 		#if this transaction is auto post 
-		
 		if self.is_auto_post and frappe.session.user !="Administrator":
 			if (frappe.db.get_default("allow_user_to_daddelete_auto_post_transaction") or 0)==0:
 				frappe.throw("Auto post transaction is not allow to delete.")

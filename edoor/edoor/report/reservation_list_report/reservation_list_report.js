@@ -87,6 +87,7 @@ frappe.query_reports["Reservation List Report"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
+
 		// {
 		// 	"fieldname": "summary_filter",
 		// 	"label": __("Summary By"),
@@ -136,24 +137,7 @@ frappe.query_reports["Reservation List Report"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
-		{
-			"fieldname": "order_by",
-			"label": __("Order By"),
-			"fieldtype": "Select",
-			"options": "Last Update On\nCreated On\nReservation\nReservation Date\nReservation Stay\nArrival Date\nDeparture Date\nBusiness Source\nRoom Type\nReservation Status",
-			default:"Last Update On",
-			hide_in_filter:1,
-			"on_change": function (query_report) {},
-		},
-		{
-			"fieldname": "sort_order",
-			"label": __("Sort Order"),
-			"fieldtype": "Select",
-			"options": "ASC\nDESC",
-			default:"ASC",
-			hide_in_filter:1,
-			"on_change": function (query_report) {},
-		},
+		
 		{
 			"fieldname": "show_summary",
 			"label": __("Show Summary"),
@@ -185,9 +169,35 @@ frappe.query_reports["Reservation List Report"] = {
 			"on_change": function (query_report) { },
 			"hide_in_filter": 1,
 		},
+		{
+			"fieldname": "order_by",
+			"label": __("Order By"),
+			"fieldtype": "Select",
+			"options": "Last Update On\nCreated On\nReservation\nReservation Date\nReservation Stay\nArrival Date\nDeparture Date\nBusiness Source\nRoom Type\nReservation Status",
+			default:"Last Update On",
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "sort_order",
+			"label": __("Sort Order"),
+			"fieldtype": "Select",
+			"options": "ASC\nDESC",
+			default:"ASC",
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "show_columns",
+			"label": __("Show Columns"),
+			"fieldtype": "MultiSelectList",
+			"on_change": function (query_report) { },
+			"hide_in_filter": 1,
+		},
 
 	],
 	onload: function(report) {
+		
 		report.page.add_inner_button ("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
@@ -286,14 +296,13 @@ function setLinkField() {
 			report: "Reservation List Report"
 		},
 		callback: function (r) {
-			// const show_columns = frappe.query_report.get_filter('show_columns');
-			// console.log()
-			// show_columns.df.options = r.message.report_fields.map(x => {
-			// 	return {
-			// 		value: x.fieldname,
-			// 		description: x.label
-			// 	}
-			// })
+			const show_columns = frappe.query_report.get_filter('show_columns');
+			show_columns.df.options = r.message.report_fields.filter(y=>y.show_in_report==1).map(x => {
+				return {
+					value: x.fieldname,
+					description: x.label
+				}
+			})
 			const show_chart_series = frappe.query_report.get_filter('show_chart_series');
 			show_chart_series.df.options = r.message.report_fields.filter(y=>y.show_in_chart==1).map(x => {
 				return {

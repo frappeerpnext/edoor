@@ -65,6 +65,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			"fieldname": "room_name_types",
 			"label": __("Room Type"),
 			"fieldtype": "MultiSelectList",
+			"hidden": 1,
 			get_data: function (txt) {
 				return frappe.db.get_link_options('Room Type', txt);
 			},
@@ -74,6 +75,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
+			"hidden": 1,
 			"options": "None\nbar\nline\npie",
 			hide_in_filter: 1,
 			"on_change": function (query_report) { }
@@ -82,6 +84,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			"fieldname": "chart_option",
 			"label": __("Chart Option"),
 			"fieldtype": "Select",
+			"hidden": 1,
 			"options": "\nOccupancy by Month\nRoom Type\nRoom",
 			hide_in_filter: 1,
 			"on_change": function (query_report) { }

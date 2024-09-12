@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:business_source_group",
  "creation": "2024-09-09 16:12:35.095645",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -12,7 +13,8 @@
   {
    "fieldname": "business_source_group",
    "fieldtype": "Data",
-   "label": "Business Source Group"
+   "label": "Business Source Group",
+   "unique": 1
   },
   {
    "fieldname": "note",
@@ -22,10 +24,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-09 16:13:21.832726",
+ "modified": "2024-09-12 11:57:02.496868",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source Type Group",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

@@ -45,7 +45,7 @@ def get_report_columns(filters,  report_fields):
 def get_report_data(filters, report_fields, data):
 	report_data = []
 	if filters.row_group:
-		parent_rows = get_parent_row_row_by_data(filters, data)
+		parent_rows = sorted(set(get_parent_row_row_by_data(filters, data)))
 		
 		for parent in parent_rows:
 			formatted_parent = frappe.format(parent, {"fieldtype": "Date"}) if filters.row_group in ["arrival_date", "departure_date", "reservation_date"] else parent
@@ -53,20 +53,24 @@ def get_report_data(filters, report_fields, data):
 			report_data.append({
 				"indent": 0,
 				"name": formatted_parent,
-				"is_group": 1
+				"is_group": 1,
+				"parent":parent
 			} if filters.row_group == 'reservation' else {
 				"indent": 0,
 				report_fields[0].fieldname: formatted_parent,
-				"is_group": 1
+				"is_group": 1,
+				"parent":parent
 			})
 
-			report_data.extend([d for d in data if d[filters.row_group] == parent])
+			report_data.extend([d.update({"parent":parent}) or d for d in data if d[filters.row_group] == parent])
 
 			total_row = {
 				report_fields[0].fieldname: _("Total"),
 				"is_total_row": 1,
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d[filters.row_group] == parent]),sum([d["child"] for d in data if d[filters.row_group] == parent])),
-				"adr":sum([d["adr"] for d in data if d[filters.row_group] == parent])
+				"adr":sum([d["total_amount"] for d in data if d[filters.row_group] == parent])/sum([d["room_nights"] for d in data if d[filters.row_group] == parent]),
+				"parent":parent,
+				"reservation_type":len([d for d in data if d[filters.row_group] == parent])
 			}
 
 			for field in [d for d in report_fields if d.show_in_report and d.show_in_summary]:
@@ -80,6 +84,7 @@ def get_report_data(filters, report_fields, data):
 				"indent":0,
 				report_fields[0].fieldname: "Total",
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data]),sum([d["child"] for d in data])),
+				"adr":sum([d["total_amount"] for d in data ])/sum([d["room_nights"] for d in data ]),
 				"is_total_row":1,
 				"is_group":1,
 				"reservation_type":len([d for d in data])
@@ -98,61 +103,52 @@ def get_parent_row_row_by_data(filters, data):
 	return rows
 	
 def get_data (filters,report_fields):
-	# Initialize the SQL query
-	sql = "select {} as indent, 0 as is_group, ".format(1 if filters.row_group else 0)
+	sql ="select {} as indent, 0 as is_group, ".format(1 if filters.row_group else 0)
 
-	# Add fields from report_fields using their sql_expression
-	sql += "{} ".format(",".join([d.sql_expression for d in report_fields if d.sql_expression]))
+	sql ="{} {}".format(sql, ",".join([d.sql_expression for d in report_fields if d.sql_expression]))
 
-	# If row_group is not in report_fields, add it manually
-	if filters.row_group and not any(d.fieldname == filters.row_group for d in report_fields):
-		sql += ", {}".format(filters.row_group)
+	if filters.row_group and len([d for d in report_fields if d.fieldname == filters.row_group]) == 0:
+		sql = "{} , {}".format(sql, filters.row_group)
 
-	# Add the table source
-	sql += " from `tabReservation Stay` "
+	sql = "{} from `tabReservation Stay` ".format(sql)
+	sql = sql + " where property=%(property)s "
 
-	# Add mandatory filter conditions
-	sql += " where property=%(property)s "
-
-	# Add date filters based on filter_date_by
-	if filters.filter_date_by == "Arrival Date":
-		sql += " and arrival_date between %(start_date)s and %(end_date)s "
+	if filters.filter_date_by =="Arrival Date":
+		sql = sql +  " and arrival_date between %(start_date)s and %(end_date)s "
 	elif filters.filter_date_by == "Stay Date":
 		filters.reservation_stays = get_reservation_stays(filters)
-		sql += " and name in %(reservation_stays)s"
+		sql = sql + " and name in %(reservation_stays)s"
 	elif filters.filter_date_by == "Reservation":
-		sql += " and reservation_date between %(start_date)s and %(end_date)s "
+		sql = sql +  " and reservation_date between %(start_date)s and %(end_date)s "
 	elif filters.filter_date_by == "Departure Date":
-		sql += " and departure_date between %(start_date)s and %(end_date)s "
+		sql = sql +  " and departure_date between %(start_date)s and %(end_date)s "
 
-	# Add optional filters if provided
 	if filters.reservation:
-		sql += " and reservation = %(reservation)s"
+		sql = sql +  " and reservation  =  %(reservation)s"
 	if filters.business_source:
-		sql += " and business_source = %(business_source)s"
+		sql = sql + " and business_source = %(business_source)s"
 	if filters.guest:
-		sql += " and guest = %(guest)s"
+		sql = sql + " and guest = %(guest)s"
+
 	if filters.get("reservation_status"):
-		sql += " and reservation_status in %(reservation_status)s"
+		sql = sql + " and reservation_status in %(reservation_status)s"
+
+	# if filters.get("room_types"):
+	# 	sql = sql + " and room_types in %(room_types)s"
+		
+
+	
 	if filters.reservation_type:
-		sql += " and reservation_type = %(reservation_type)s"
+		sql = sql + " and reservation_type = %(reservation_type)s"
+ 
 	if filters.is_active_reservation:
-		sql += " and is_active_reservation = %(is_active_reservation)s"
+		sql = sql + " and is_active_reservation = %(is_active_reservation)s"
 
-	# Determine the ordering field
-	order_field = next((d["field"] for d in get_order_field() if d["label"] == filters.order_by), None)
-
-	# Apply ordering logic
-	if filters.row_group:
-		# Order first by row_group, then by order_field with specified sort_order
-		sql += " order by {0} {2}, {1} {2}".format(filters.row_group, order_field, filters.sort_order)
-	else:
-		# Only order by order_field if row_group is not used
-		sql += " order by {} {}".format(order_field, filters.sort_order)
-
-	# Execute the SQL query
-	data = frappe.db.sql(sql, filters, as_dict=1)
-
+	order_field = [d for d in get_order_field() if d["label"] == filters.order_by][0]["field"]
+	sql = sql + " order by {} {}".format(order_field, filters.sort_order)
+	
+ 	# frappe.throw(sql)
+	data = frappe.db.sql(sql, filters ,as_dict=1)
 	
 	return data
 

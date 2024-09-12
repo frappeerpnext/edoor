@@ -329,7 +329,7 @@
         <div class="col-12 lg:col-3" v-if="hasFilter('group_by')">
             <label> {{ $t('Group By') }} </label><br/>
             <ComSelect class="auto__Com_Cus w-full" v-model="filter.group_by" placeholder="Group By"
-                :options="['Arrival Date', 'Departure Date', 'Reservation','Reservation Date','Reservation Type','Guest','Room Type','Business Source','Business Source Type','Nationality','Rate Type','Reservation Status']" 
+                :options="['arrival_date', 'departure_date', 'reservation','reservation_date','reservation_type','guest','room_type','business_source','business_source_type','nationality','rate_type','reservation_status']" 
                     />
         </div> 
         <div class="col-12 lg:col-3" v-if="hasFilter('order_by')">

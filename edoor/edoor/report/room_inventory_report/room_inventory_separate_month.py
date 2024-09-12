@@ -4,16 +4,15 @@ from frappe.utils import getdate, add_to_date
 import frappe
 
 
-def execute(filters=None):
-	if getdate(filters.start_date) > getdate(filters.end_date):
-		frappe.throw("Start date cannot less than end date")
-
-	min_max_day = get_min_max_day(filters)
-	columns = get_report_columns(filters,min_max_day)
-	report_data = get_report_data(filters,min_max_day)
-
-
-	return columns, report_data["report_data"],None, report_data["report_chart"], report_data["report_summary"]
+def get_report(filters, report_data):
+    min_max_day = get_min_max_day(filters)
+    report_data = get_report_data(filters,min_max_day)
+    return {
+        "columns":get_report_columns(filters,min_max_day),
+        "data": report_data["report_data"],
+        "report_summary": report_data["report_summary"],
+        "report_chart": report_data["report_chart"]
+    }
 
 def get_report_columns(filters,min_max_day):
 	columns = [
@@ -393,7 +392,7 @@ def get_report_chart(filters,months,data):
 	precision = frappe.db.get_single_value("System Settings","currency_precision")
 	columns = []
 	datasets = [
-		{"name":"Vacant Room"},
+		{"name":"Vacant Roomx"},
 		{"name":"Occupy"},
 		{"name":"Occupancy(%)"},
 		{"name":"Out of Order"},

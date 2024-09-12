@@ -20,16 +20,37 @@ frappe.query_reports["Room Inventory Report"] = {
 			"fieldtype": "Date",
 			default: new Date((new Date()).getFullYear(), (new Date()).getMonth(), 1),
 			"reqd": 1,
-			"on_change": function (query_report) { },
+			"on_change": function (query_report) {
+				// Get the selected start date
+				let start_date = frappe.query_report.get_filter_value('start_date');
+				
+				// Convert to JavaScript Date object
+				let startDateObj = new Date(start_date);
+				
+				// Calculate end date as exactly 30 or 31 days later
+				let endDateObj = new Date(startDateObj);
+				endDateObj.setDate(startDateObj.getDate() + 30); // Add 30 days
+				
+				// Adjust for months with 31 days or months with fewer days
+				// If the end date is in the next month and exceeds the last day of that month
+				let lastDayOfEndMonth = new Date(endDateObj.getFullYear(), endDateObj.getMonth() + 1, 0); // Last day of the end month
+				if (endDateObj > lastDayOfEndMonth) {
+					endDateObj = lastDayOfEndMonth;
+				}
+				
+				// Set the end date filter value to ensure it falls within 30/31 day range
+				frappe.query_report.set_filter_value('end_date', endDateObj);
+			},
 		},
 		{
 			"fieldname": "end_date",
 			"label": __("End Date"),
 			"fieldtype": "Date",
 			default: new Date((new Date()).getFullYear(), (new Date()).getMonth() + 1, 0),
-			"on_change": function (query_report) { },
-			"reqd": 1
-		},
+			"reqd": 1,
+			"on_change": function (query_report) { }
+		},		
+				
 		{
 			"fieldname": "show_decimal_place_in_room_occupy",
 			"label": __("Show/Hide Decimal Places in Occupancy Record"),
@@ -96,6 +117,13 @@ frappe.query_reports["Room Inventory Report"] = {
 				{"value":"Pax","description":"Pax"},
 			]
 
+		},
+		{
+			"fieldname": "view_separate_month",
+			"label": __("View in Separate Month"),
+			"fieldtype": "Check",
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
 		},
 	],
 	onload: function (report) {
