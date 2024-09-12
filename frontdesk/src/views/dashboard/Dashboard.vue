@@ -223,7 +223,7 @@ const upCommingNoteUrl = ref("");
 const chartOccupancy = ref([])
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const tomorrow = ref('')
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;

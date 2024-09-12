@@ -61,7 +61,7 @@ const { t: $t } = i18n.global;
 
 const isMobile = ref(window.isMobile) 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const url = ref("")
 const gv = inject("$gv")
 

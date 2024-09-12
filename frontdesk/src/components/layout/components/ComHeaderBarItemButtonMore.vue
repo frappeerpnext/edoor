@@ -13,7 +13,7 @@ import { ref } from '@/plugin'
 import ComHeaderBarItemButton from './ComHeaderBarItemButton.vue';
 import iconEdoorMores from '../../../assets/svg/icon-mores.svg'
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const show = ref()
 const toggle = (event) => {
     show.value.toggle(event);

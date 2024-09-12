@@ -51,7 +51,7 @@ import OpenLayersMap from "vue3-openlayers";
 
 const app = createApp(App);
 
-
+ 
 
 const auth = reactive(new Auth());
 const frappe = new FrappeApp()
@@ -325,10 +325,9 @@ const apiCall = frappe.call()
 
 
 const config = await getConfigData()
-
-
 if (!auth.isLoggedIn) {
-	const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + config.backend_port:"https://" + window.location.hostname;
+	const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;
+
 	window.location.replace(serverUrl)
 }
  
@@ -364,7 +363,7 @@ if (setting) {
 			// this route requires auth, check if logged in
 			// if not, redirect to login page.
 			if (!getCookie("user_id") || getCookie("user_id") == "Guest") {
-				const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+				const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 				window.location.replace(serverUrl)
 			} else {
 				if (to?.name) {
@@ -404,7 +403,7 @@ f
 			} else {
 
 
-				const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+				const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 				window.location.replace(serverUrl)
 
 
@@ -428,7 +427,7 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 	
 	const data = r.message
 	if (data.user.name == "Guest") {
-		const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+		const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 
 		window.location.replace(serverUrl)
 	} else {
