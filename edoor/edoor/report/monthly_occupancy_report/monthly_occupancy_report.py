@@ -90,11 +90,13 @@ def get_occupy_data(filters):
 			from `tabRoom Occupy` 
 			where 
 				property = %(property)s and 
-				date between %(start_date)s and %(end_date)s group by date_format(date,'%%b-%%Y') and 
+				date between %(start_date)s and %(end_date)s and
 				is_active_reservation = 1 
+			group by date_format(date,'%%b-%%Y')  
+				
 	"""
 
- 
+	
 	return frappe.db.sql(sql,filters,as_dict=1)
 
 
@@ -103,11 +105,20 @@ def get_report_chart(filters, data):
 
 	datasets = []
 	for c in report_columns:
-		if not c["fieldname"] in ["month","room_available"]:		
-			datasets.append({
-						"name": c["label"],
-						"values": [d[c["fieldname"]] for d in data]
-			})
+		if not c["fieldname"] in ["month","room_available"]:	
+ 
+			if c["label"] =="Occupancy(%)":
+				datasets.append({
+							"name": c["label"],
+							"values": [round(d[c["fieldname"]] * 100,2) for d in data]
+				})
+
+			else:
+
+				datasets.append({
+							"name": c["label"],
+							"values": [d[c["fieldname"]] for d in data]
+				})
 				
 	chart = {
 		'data':{

@@ -79,7 +79,7 @@ frappe.query_reports["Reservation Forecast"] = {
 		},
 		{
 			"fieldname": "row_group",
-			"label": __("Group By"),
+			"label": __("View Report By"),
 			"fieldtype": "Select",
 			"options": "Date\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nGuest Type\nNationality",
 			"default": "Date",

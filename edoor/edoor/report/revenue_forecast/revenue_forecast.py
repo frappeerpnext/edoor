@@ -13,6 +13,7 @@ from edoor.edoor.report.revenue_forecast import report_by_room_type
 from edoor.api.frontdesk import get_working_day
 import frappe
 def execute(filters=None):
+	 
 	if filters.parent_row_group==filters.row_group:
 		frappe.throw("Parent row group and row group can not be the same")
 		

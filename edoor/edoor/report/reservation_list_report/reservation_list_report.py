@@ -80,11 +80,15 @@ def get_report_data(filters, report_fields, data):
 
 	else:
 		report_data = data
+		total_room_nights = sum([d["room_nights"] for d in data ])
+		# we set total room niht to 1 when it 0 because we prevent error devide by 0
+		if total_room_nights==0:
+			total_room_nights=1
 		total_row = ({
 				"indent":0,
 				report_fields[0].fieldname: "Total",
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data]),sum([d["child"] for d in data])),
-				"adr":sum([d["total_amount"] for d in data ])/sum([d["room_nights"] for d in data ]),
+				"adr":sum([d["total_amount"] for d in data ])/ total_room_nights,
 				"is_total_row":1,
 				"is_group":1,
 				"reservation_type":len([d for d in data])

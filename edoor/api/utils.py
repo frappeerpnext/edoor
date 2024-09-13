@@ -123,8 +123,9 @@ def get_chart():
     chart.save(chart_file_path)
 
 def successful_login(login_manager):
+    # fsrappe.msgprint("u login success")
     pass
- 
+    
 
 
 def update_fetch_from_field(doc, method=None, *args, **kwargs):

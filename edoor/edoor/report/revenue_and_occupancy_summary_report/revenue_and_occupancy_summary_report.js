@@ -110,13 +110,13 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
     // },
     {
       fieldname: "row_group",
-      label: __("Group By"),
+      label: __("View Report By"),
       fieldtype: "Select",
       options:
         "Date\nMonth\nYear\nRoom Type\nRoom\nReservation Type\nBusiness Source\nBusiness Source Type\nGuest Type\nNationality",
       default: "Date",
       on_change: function (query_report) {},
-      hide_in_filter: 1,
+      
     },
     {
       fieldname: "show_columns",
