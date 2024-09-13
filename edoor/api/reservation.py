@@ -4002,8 +4002,6 @@ def reinstate(data):
     comment_doc = []
     for s in data["stays"]:
         doc = frappe.get_doc("Reservation Stay", s)
-        if  doc.arrival_date< working_day["date_working_day"]:
-            frappe.throw(_("You can reinstate a reservation only if the arrival date is earlier than the current working date."))
             
         if doc.rooms:
             doc.reservation_status = "Reserved"
