@@ -67,7 +67,7 @@ def get_report_data(filters, report_fields, data):
 			total_row = {
 				report_fields[0].fieldname: _("Total"),
 				"is_total_row": 1,
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["adult"] in d and d[filters.row_group] == parent]),sum([d["child"] for d in data if d["child"] in d and d[filters.row_group] == parent])),
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if  d[filters.row_group] == parent]),sum([d["child"] for d in data if d[filters.row_group] == parent])),
 				"adr":sum([d["total_amount"] for d in data if d[filters.row_group] == parent])/sum([d["room_nights"] for d in data if d[filters.row_group] == parent]),
 				"parent":parent,
 				"reservation_type":len([d for d in data if d[filters.row_group] == parent])

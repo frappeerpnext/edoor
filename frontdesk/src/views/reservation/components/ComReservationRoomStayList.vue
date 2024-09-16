@@ -75,7 +75,7 @@
             </DataTable>
             </div>
             <div class="flex justify-end mt-3" v-if="canNotUpgradeRoom">
-                <Button class="conten-btn" @click="onUpgradeRoom"><ComIcon :icon="theme == 'estc' ? 'iconBedPurple' : 'iconBedWhite' " class="me-2" /> {{$t('Upgrade Room')}} </Button>
+                <Button class="conten-btn" @click="onUpgradeRoom"><ComIcon :icon="theme == 'estc' ? 'iconBedPurple' : 'iconBedWhite' " class="me-2" /> {{$t('Split Room')}} </Button>
             </div>
         </template>
     </ComReservationStayPanel>
@@ -109,7 +109,7 @@ function onUpgradeRoom() {
             rs: rs
         },
         props: {
-            header: $t(`Upgrade Room`),
+            header: $t(`Split Room`),
             style: {
                 width: '80vw',
             },

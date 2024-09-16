@@ -1,9 +1,7 @@
 <template>
  
     <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
-        show_sort_order_option:{{print_format?.show_sort_order_option}} | 
-        short_order_field{{ sortOrderFields }}
-        {{ sortOrderFields }}
+     
         <div class="p-3" :class="(view || '') != 'ui' ? 'grid': ''">
             <div :class="(view || '') != 'ui' ? 'col-4 lg:col-3' : ''">
                 <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
@@ -231,7 +229,7 @@
                         </div>
 
                         <div v-if="print_format && print_format?.show_sort_order_option " class="flex ml-2">
-                           Order By Option
+                           <!-- Order By Option -->
                         </div>
 
                     </div>
