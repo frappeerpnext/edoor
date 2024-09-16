@@ -253,6 +253,7 @@ def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rat
             tax_2_rate,
             tax_3_rate,
             total_tax,
+            rate_include_tax,
             is_package_charge,
             is_package_breakdown,
             room_rate_id,
@@ -284,7 +285,7 @@ def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
     folio_transaction_list = []
     
     folio_transaction_list = get_folio_transaction_name([d for d in charge_list if d["parent_reference"] ==""], charge_list)
-  
+
     for t in folio_transaction_list:
         
         stay = [d for d in stays_infor if d["name"]==t.source_reservation_stay][0]
@@ -319,14 +320,11 @@ def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
         yield t
         
 
-    # return ("x", folio_transaction_list)
-
- 
 
 # recursion fution to get doc with doc name
 def get_folio_transaction_name(data,charge_list,parent_doc=None):
     result = []
-
+     
     for t in data:
         
         doc = frappe.new_doc("Folio Transaction") 
@@ -403,10 +401,13 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
                 else:
                     doc.discount_description = account_info["discount_account_name"]
                     
-        doc.discount_type = "" if "discount_type" in t else t["discount_type"] 
-        doc.discount = "" if "discount" in t else t["discount"] 
+        doc.discount_type = "Percent" if "discount_type" in t else t["discount_type"] 
+        doc.discount = 0 if "discount" in t else t["discount"] 
         doc.discount_amount= "" if "discount_amount" in t else t["discount_amount"] 
         
+
+        doc.tax_rule = account_info["tax_rule"]
+        doc.rate_include_tax = t["rate_include_tax"]
         # tax 1 description
         if "tax_1_account" in  account_info:
             doc.tax_1_account = account_info["tax_1_account"]
@@ -434,7 +435,7 @@ def get_folio_transaction_name(data,charge_list,parent_doc=None):
         
   
         # end set doc property
-
+        
         result.append(doc)
         
         result = result +  get_folio_transaction_name(
