@@ -755,11 +755,13 @@ function onFolioFilterTypeChange(d){
 
 async function onRateCalculation(newValue){
     await nextTick();
-   
+    
     if (doc.value.account_code && doc.value.input_amount){
+        const send_doc = JSON.parse(JSON.stringify(doc.value))
+        send_doc.discount_amount = 0
         postApi("add_folio_transaction.get_folio_transaction_calculation",
         {
-            folio_transaction_data:doc.value
+            folio_transaction_data:send_doc 
         },
         "",
         false
