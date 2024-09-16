@@ -150,7 +150,7 @@
         </div>
         <div class="relative mt-2 pt-0 col-12">
             <span class="absolute w-full"><Checkbox @update:modelValue="checkChangePax()"   class="w-full" v-model="doc.is_manual_change_pax" :binary="true" :trueValue="1"
-                                :falseValue="0" /></span>
+              :falseValue="0" /></span>
             <span class="pl-5">Manual Change Pax</span>
         </div> 
         </div>
@@ -225,14 +225,18 @@
                     <div class="col-12 pb-0">
                 <div class="grid justify-end ">
                     <div class="col-12">
+                        
+                        
                         <table >
                     <tbody>
                         <ComStayInfoNoBox label="Base Rate"
                             :value="RoomRateCalculation.room_charge_data?.rate" isCurrency="true" valueClass="text-end" />
+                           
                             <ComStayInfoNoBox v-if="RoomRateCalculation.room_charge_data?.discount_amount" label="Discount" :value="RoomRateCalculation.room_charge_data?.discount_amount" isCurrency="true" valueClass="text-end" />    
                             <ComStayInfoNoBox label="Rate Include Tax" valueClass="text-end">
                                 <div class="flex gap-2"> 
-                             <Checkbox  v-if="RoomRateCalculation.room_charge_data?.rate_include_tax"    v-model="doc.rate_include_tax" :binary="true"
+                             <Checkbox  v-if="RoomRateCalculation.room_charge_data?.rate_include_tax" 
+                                    :disabled="!RoomRateCalculation?.room_charge_data?.allow_user_to_change_tax"    v-model="doc.rate_include_tax" :binary="true"
                                     trueValue="Yes" falseValue="No" @update:modelValue="get_room_rate_breakdown()" /> 
                                 </div>    
                               
@@ -240,7 +244,10 @@
                             <ComStayInfoNoBox v-if="tax_rule && tax_rule.tax_1_rate > 0" :label="($t(tax_rule.tax_1_name ?? '') || '') + ' ' + (tax_rule.tax_1_rate || 0) + '%'" valueClass="text-end">
                                 <div class="flex gap-2"> 
                                     <CurrencyFormat :value="RoomRateCalculation.room_charge_data?.tax_1_amount || 0 " />
-                                <Checkbox input-id="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change"
+                                    
+                                <Checkbox input-id="tax-1" v-model="use_tax.use_tax_1"
+                                :disabled="!RoomRateCalculation?.room_charge_data?.allow_user_to_change_tax"
+                                @input="onUseTax1Change"
                                                                           :binary="true" />
                                 </div>
                             </ComStayInfoNoBox>
@@ -248,6 +255,7 @@
                                 <div class="flex gap-2"> 
                                     <CurrencyFormat :value="RoomRateCalculation.room_charge_data?.tax_2_amount || 0 " />
                                 <Checkbox input-id="tax-2" @input="onUseTax2Change" v-model="use_tax.use_tax_2"
+                                        :disabled="!RoomRateCalculation?.room_charge_data?.allow_user_to_change_tax"
                                                             :binary="true" />
                                 </div>
                             </ComStayInfoNoBox>
@@ -255,6 +263,7 @@
                                 <div class="flex gap-2"> 
                                     <CurrencyFormat :value="RoomRateCalculation.room_charge_data?.tax_3_amount || 0 " />
                                 <Checkbox input-id="tax-3" @input="onUseTax3Change" v-model="use_tax.use_tax_3"
+                                    :disabled="!RoomRateCalculation?.room_charge_data?.allow_user_to_change_tax"
                                                             :binary="true" />
                                 </div>
                             </ComStayInfoNoBox>
@@ -307,6 +316,7 @@ Package Charge Breakdown
                                     />
                                 </div>
                             </ComStayInfoNoBox>
+                            
                            <ComStayInfoNoBox v-if="item.tax_2_rate > 0" :label="($t(item.tax_2_name ?? '') || '') + ' ' + (item.tax_2_rate || 0) + '%'" valueClass="text-end">
                                 <div class="flex gap-2"> 
                                     <CurrencyFormat :value="item.tax_2_amount || 0 " />

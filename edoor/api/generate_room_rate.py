@@ -835,8 +835,9 @@ def get_room_rate_account_code_breakdown(room_rate_data):
     base_code = {
                 "account_code":account_code_doc.name,
                 "account_name":account_code_doc.account_name,
+                "allow_user_to_change_tax":account_code_doc.allow_user_to_change_tax,
                 "is_package_account":0,
-                 "allow_discount":account_code_doc.allow_discount,
+                "allow_discount":account_code_doc.allow_discount,
                 "parent_account_name":account_code_doc.parent_account_name,
                 "input_rate": room_rate_data["input_rate"],
                 "amount":0,
@@ -850,6 +851,7 @@ def get_room_rate_account_code_breakdown(room_rate_data):
                 "quantity":quantity,
                 "is_package":room_rate_data["is_package"]
             }
+    
     # sub account of main account
     base_code["tax_rule"] = room_rate_data["tax_rule"]
     base_code["rate_include_tax"] = room_rate_data["rate_include_tax"]
@@ -931,6 +933,7 @@ def package_base_account_code_charge_breakdown(room_rate_data):
             "account_code": p["account_code"],
             "allow_discount": account_code_doc.allow_discount,
             "parent_account_name": account_code_doc.parent_account_name,
+            "allow_user_to_change_tax": account_code_doc.allow_user_to_change_tax,
             "is_package_account": 1,
             "is_package_charge":1,
             "tax_1_rate":0,
@@ -1030,6 +1033,8 @@ def get_room_rate_calculation(room_rate_data=None,rate=100):
             "is_package": 1,
             "package_charge_data": "[{\"account_code\": \"10837\", \"posting_rule\": \"Everyday\", \"charge_rule\": \"Adult\", \"rate\": 0.0, \"adult_rate\": 6.0, \"child_rate\": 0.0, \"breakdown_account_code\": \"10119\", \"discount_breakdown_account_code\": \"40103\", \"tax_1_breakdown_account_code\": \"\", \"tax_2_breakdown_account_code\": \"\", \"tax_3_breakdown_account_code\": \"20107\"}, {\"account_code\": \"10838\", \"posting_rule\": \"Everyday\", \"charge_rule\": \"Child\", \"rate\": 0.0, \"adult_rate\": 0.0, \"child_rate\": 3.0, \"breakdown_account_code\": \"10119\", \"discount_breakdown_account_code\": \"40103\", \"tax_1_breakdown_account_code\": \"\", \"tax_2_breakdown_account_code\": \"\", \"tax_3_breakdown_account_code\": \"20107\"}]"
             }
+    
+    
     if "discount_amount" not in room_rate_data:
         room_rate_data["discount_amount"] = 0
     room_rate_data["discount"] = room_rate_data["discount"] or 0
@@ -1072,6 +1077,7 @@ def get_room_rate_calculation(room_rate_data=None,rate=100):
         tax_data["rate_include_tax"] = acc["rate_include_tax"]
         tax_data["allow_discount"] = acc["allow_discount"]
         tax_data["discount_amount"] = acc["discount_amount"]
+        tax_data["allow_user_to_change_tax"] =0 if not "allow_user_to_change_tax" in acc else acc["allow_user_to_change_tax"]
         tax_data["quantity"] = 0 if "quantity" not in acc else  acc["quantity"]
         tax_data["is_package"] = 0 if not "is_package_account" in acc else  acc["is_package_account"]
         data.append(

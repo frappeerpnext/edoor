@@ -91,14 +91,14 @@ def get_master_folio_name_cache(reservation):
 
 @lru_cache(maxsize=128)
 def get_rate_type_info_with_cache(name):
-    doc = frappe.get_doc("Rate Type", name)
+    doc = frappe.get_cached_doc("Rate Type", name)
     if not doc.account_code:
         frappe.throw("This rate type does not have account code")
     
-    account_doc =frappe.get_doc("Account Code", doc.account_code)
+    account_doc =frappe.get_cached_doc("Account Code", doc.account_code)
     tax_rule=None
     if account_doc.tax_rule:
-        tax_rule = frappe.get_doc("Tax Rule",account_doc.tax_rule)
+        tax_rule = frappe.get_cached_doc("Tax Rule",account_doc.tax_rule)
     
 
     if doc.is_house_use==1 or doc.is_complimentary==1:

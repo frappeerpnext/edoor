@@ -1,6 +1,9 @@
 <template>
  
     <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
+        show_sort_order_option:{{print_format?.show_sort_order_option}} | 
+        short_order_field{{ sortOrderFields }}
+        {{ sortOrderFields }}
         <div class="p-3" :class="(view || '') != 'ui' ? 'grid': ''">
             <div :class="(view || '') != 'ui' ? 'col-4 lg:col-3' : ''">
                 <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
@@ -227,13 +230,13 @@
                             </div>
                         </div>
 
+                        <div v-if="print_format && print_format?.show_sort_order_option " class="flex ml-2">
+                           Order By Option
+                        </div>
+
                     </div>
                  
-                        <!-- <div v-if="(view || '') != 'ui'">
-                            <ComPrintButton
-                                :BtnClassPrinter="dialogRef.data.BtnClassPrinter ? dialogRef.data.BtnClassPrinter : ''"
-                                :url="url" @click="onPrint" />
-                        </div> -->
+                       
                         <div v-if="(view || '') == 'ui'">
                             <Button @click="loadIframe" icon="pi pi-refresh" :class="BtnClass ? BtnClass : ''"
                                 class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
@@ -274,7 +277,8 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, inject, onUnmounted } from "@/plugin"
+import { ref, onMounted, inject, onUnmounted,getDoc } from "@/plugin"
+import { computed } from "vue";
 const dialogRef = inject("dialogRef");
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 
@@ -308,9 +312,21 @@ const filter_options = ref([]) // list array string like ["keyword","business_so
 const gv = inject("$gv")
 const property_name = ref(window.property_name)
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+const print_format = ref()
+
+
 const props = defineProps({
     BtnClassPrinter: String,
     BtnClass: String,
+})
+
+const sortOrderFields = computed(()=>{
+    
+    if(print_format.value?.short_order_field==""){
+        return []
+    }else {
+        return print_format.value?.short_order_field
+    }
 })
 const loading = ref(false)
 
@@ -461,7 +477,11 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => {
+    
    
+    getDoc("Print Format",decodeURIComponent(dialogRef.value.data.report_name)).then((doc)=>{
+        print_format.value = doc
+    })
     if (window.isMobile) {
         let elem = document.querySelectorAll(".p-dialog");
         if (elem) {

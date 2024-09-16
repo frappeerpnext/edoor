@@ -411,7 +411,7 @@ function resourceColumn() {
                 width: 60,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
-                         el.innerHTML = `<div id='resource_total_${arg.resource._resource.id}' class="cell-status text-center"> ${ arg.resource.extendedProps.total_room || ""}</div>`;
+                         el.innerHTML = `<div id='resource_total_${arg.resource._resource.id}' class="cell-status text-center"> ${ arg.resource.extendedProps.total_room || ""} </div>`;
                     let dom = [el.innerHTML]
                     return { html: dom }
                 }
@@ -467,6 +467,7 @@ function debouncer(fn, delay) {
 function getResources() {
     getApi('frontdesk.get_room_inventory_resource', { property: window.property_name }).then((result) => {
         resources.value = result.message
+ 
         getEvents()
     })
 }
@@ -494,10 +495,13 @@ function getEvents(date_range=null) {
            
             if (r.id == "vacant_room"){
                 r.total_room_night = (days * total_rooms) -  result.message.room_occupy.reduce((n, d) => n + (d.total || 0), 0)
-            }else if (r.id == "occupany"){
+            }
+            else if (r.id == "occupany"){
                 r.total_room_night = parseInt(result.message.room_occupy.reduce((n, d) => n + (d.total || 0), 0) / (total_rooms*days) * 100 )   + "%"
             
-            } else if (r.id == "out_of_order"){
+            } 
+            
+            else if (r.id == "out_of_order"){
                 r.total_room_night = result.message.room_occupy.reduce((n, d) => n + (d.block || 0), 0)
             }else if (r.id == "arrival_departure"){
                 r.total_room_night = result.message.room_occupy.reduce((n, d) => n + (d.arrival || 0), 0) 
@@ -539,7 +543,6 @@ function getEvents(date_range=null) {
                     event.textcolor="white"
                     
                 } else if (r.id == "occupany") {
-
                     if (window.setting.calculate_room_occupancy_include_room_block==0){
                         const room_block = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.block || 0), 0)
                         
@@ -547,7 +550,6 @@ function getEvents(date_range=null) {
                     }else {
                         event.occupancy =( result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)/ total_rooms  * 100).toFixed(2) 
                     }
-
                     event.title = event.occupancy + "%"
                     
                   event.color="rgb(239 237 234 / 67%)"
@@ -627,6 +629,7 @@ function getEvents(date_range=null) {
             document.querySelector("#resource_total_departure").textContent = result.message.room_occupy.reduce((n, d) => n + (d.departure || 0), 0)
             document.querySelector("#resource_total_out_of_order").textContent = result.message.room_occupy.reduce((n, d) => n + (d.block || 0), 0)
             document.querySelector("#resource_total_pax").textContent = result.message.room_occupy.reduce((n, d) => n + (d.adult || 0), 0) + "/" +  result.message.room_occupy.reduce((n, d) => n + (d.child || 0), 0)
+            document.querySelector("#resource_total_occupy").textContent =  result.message.room_occupy.reduce((n, d) => n + (d.total || 0), 0)
             
             const toatlRoomNight = moment(cal.view.currentEnd).diff(moment(cal.view.currentStart), "days") * total_rooms
             if (window.setting.calculate_room_occupancy_include_room_block=0){

@@ -123,7 +123,8 @@ def get_chart():
     chart.save(chart_file_path)
 
 def successful_login(login_manager):
-    frappe.throw(frappe.local.request_ip)
+    # fsrappe.msgprint("u login success")
+    pass
     
 
 
