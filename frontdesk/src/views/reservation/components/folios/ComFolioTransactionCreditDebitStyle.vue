@@ -1,5 +1,6 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
+     
         <DataTable v-model:selection="selectedfolioTransactions" @row-dblclick="onViewFolioDetail"
             :value="folioTransactions" tableStyle="min-width: 50rem" :rowClass="rowStyleClass" paginator
             :stateKey="'folo_transaction_table_state_' + selectedFolio.name" :rows="10"

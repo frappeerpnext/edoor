@@ -9,7 +9,8 @@ def get_data_for_folio_transaction_detail(
         reservation_stay="",
         show_package_breakdown = 1,
         show_account_code = 1,
-        show_all_room_rate = 0
+        show_all_room_rate = 0,
+        folio_transactions=""
     ):
     
     show_all_room_rate = int(show_all_room_rate or 0)
@@ -25,14 +26,16 @@ def get_data_for_folio_transaction_detail(
         reservation_stay= reservation_stay,
         transaction_type=transaction_type,
         transaction_number=transaction_number,
-        show_package_breakdown=show_package_breakdown
+        show_package_breakdown=show_package_breakdown,
+        folio_transactions=folio_transactions
     )
     if show_all_room_rate==1:
         data = data +  get_uncharge_data_from_revenue_forecast_breakdown(
                             reservation=reservation,
                             reservation_stay=reservation_stay,
                             transaction_number=transaction_number,
-                            show_package_breakdown=show_package_breakdown
+                            show_package_breakdown=show_package_breakdown,
+                            folio_transactions=folio_transactions
                         )
     
     data = sorted(data, key=lambda x: (x['posting_date'], x["account_code_sort_order"] ))
@@ -73,9 +76,16 @@ def get_data_from_folio_transaction(
         transaction_number="",
         show_package_breakdown=1,
         reservation="",
-        reservation_stay=""
+        reservation_stay="",
+        folio_transactions=""
     ):
-     
+    
+    # convert folio transaction string comma separator to array
+    if folio_transactions:
+        folio_transactions = folio_transactions.split(",")
+    else:
+        folio_transactions=[]
+        
     amount_field = 'total_amount'
     if show_package_breakdown==1:
         amount_field = 'transaction_amount'
@@ -120,13 +130,19 @@ def get_data_from_folio_transaction(
         amount_field = amount_field
     )
     
+    if folio_transactions:
+        sql = sql + " and name in %(folio_transactions)s"
+    
+    
     data = frappe.db.sql(sql, {
                                 "transaction_type":transaction_type,
                                 "transaction_number":transaction_number,
                                 "reservation":reservation,
                                 "reservation_stay":reservation_stay,
-                                "show_package_breakdown":show_package_breakdown
+                                "show_package_breakdown":show_package_breakdown,
+                                "folio_transactions":folio_transactions
                             },as_dict=1)
+     
     return data
 
 
@@ -135,10 +151,17 @@ def get_uncharge_data_from_revenue_forecast_breakdown(
     reservation="",
     reservation_stay="",
     transaction_number="",
-    show_package_breakdown=0
+    show_package_breakdown=0,
+    folio_transactions=""
 ):
     use_stay_room_ids = frappe.db.sql("select reservation_room_rate from `tabFolio Transaction` where reservation_stay='{reservation_stay}' and transaction_number='{transaction_number}' and  reservation_room_rate !='' ".format(reservation_stay=reservation_stay, transaction_number=transaction_number),as_dict=1)
     use_stay_room_ids = list(set([d["reservation_room_rate"] for d in use_stay_room_ids]))
+    
+    
+    if folio_transactions or str(folio_transactions) =="":
+        # if have folio transaction mean that user want to print only selected record
+        # so we skip the rest of record
+        return []
     
     
     if not use_stay_room_ids:
@@ -184,11 +207,14 @@ def get_uncharge_data_from_revenue_forecast_breakdown(
             reservation = if(%(reservation)s='',reservation,%(reservation)s) and  
             reservation_stay= if(%(reservation_stay)s='',reservation_stay,%(reservation_stay)s) and  
             is_package_charge = if(%(show_package_breakdown)s=0,0, is_package_charge ) and 
-            room_rate_id not in %(room_rate_ids)s
+            room_rate_id not in %(room_rate_ids)s  
+            
         
     """.format(
         amount_field = amount_field
     )
+    
+
 
     data = frappe.db.sql(sql, {
                                
@@ -206,11 +232,16 @@ def get_folio_transaction_summary_amount(
     transaction_number , 
     show_package_breakdown=0,
     reservation_stay="",
-    show_all_room_rate=1
+    show_all_room_rate=1,
+    folio_transactions=""
     ):
     show_package_breakdown = int(show_package_breakdown or 0)
-
-    summary_data =frappe.db.sql("""
+    if folio_transactions:
+        folio_transactions = folio_transactions.split(",")
+    else:
+        folio_transactions = []
+    
+    sql = """
         select 
             account_category,
             account_category_sort_order,
@@ -221,21 +252,35 @@ def get_folio_transaction_summary_amount(
             transaction_number = '{transaction_number}' and 
             is_base_transaction = 1 and 
             is_package_charge = if({show_package_breakdown}=0,0,is_package_charge) 
-        group by 
-            account_category 
-        order by 
-            account_category_sort_order
+        
         """.format(
             show_package_breakdown = show_package_breakdown,
             amount_field = "total_amount" if show_package_breakdown == 0 else "transaction_amount",
             transaction_number = transaction_number
-        ),as_dict=1)
+        )
     
-    if int(show_all_room_rate) ==1:
+    
+    
+    # append where statement when user select folio transaction to print
+    if folio_transactions:
+        sql = sql + " and name in %(folio_transactions)s "
+        
+    sql = sql +  """
+        group by 
+            account_category 
+        order by 
+            account_category_sort_order
+    """
+    summary_data =frappe.db.sql(sql,{"folio_transactions":folio_transactions},as_dict=1)
+
+    
+    
+    if int(show_all_room_rate) ==1 and not folio_transactions:
         room_rate_summary = get_uncharge_room_rate_summary_amount_group_by_account_category(
             reservation_stay=reservation_stay,
             transaction_number=transaction_number,
-            show_package_breakdown=show_package_breakdown
+            show_package_breakdown=show_package_breakdown,
+            folio_transactions=folio_transactions
         )
        
         if room_rate_summary :
@@ -261,8 +306,15 @@ def get_folio_transaction_summary_amount(
 def get_uncharge_room_rate_summary_amount_group_by_account_category(
     reservation_stay="",
     transaction_number="",
-    show_package_breakdown=1
+    show_package_breakdown=1,
+    folio_transactions = ""
 ):
+    
+    # check if use parse folio transaction mean that use want to see only selected record
+    
+    if folio_transactions:
+        return []
+    
     room_rate_ids = frappe.db.sql("select reservation_room_rate from `tabFolio Transaction` where reservation_stay='{reservation_stay}' and transaction_number='{transaction_number}' and reservation_room_rate!=''".format(reservation_stay=reservation_stay, transaction_number=transaction_number),as_dict=1)
     room_rate_ids = list(set([d["reservation_room_rate"] for d in room_rate_ids]))
     if not room_rate_ids:

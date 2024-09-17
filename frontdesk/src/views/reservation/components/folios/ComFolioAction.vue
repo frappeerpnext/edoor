@@ -178,7 +178,6 @@ const toggle = (event) => {
 const print_menus = ref([])
 
 function viewFolioSummaryReport() {
-    
     const print_format = window.setting.default_folio_print_format?window.setting.default_folio_print_format :"eDoor Reservation Stay Folio Summary Report";
     let filter =  [ ["reservation_stay", "=", props.folio.reservation_stay]]
     
@@ -220,6 +219,7 @@ function viewFolioSummaryReport() {
     });
 })
 }
+
 function viewfoliotaxinvoicedetail() {
     getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
         dialog.open(ComIFrameModal, {
@@ -258,6 +258,7 @@ function getTaxInvoice(){
     }
     
 }
+
 //Folio Summary Report
 print_menus.value.push({
     label: $t("Folio Summary Report"),
@@ -312,6 +313,48 @@ print_menus.value.push({
 
 
 })
+
+//print selected selected folio item
+
+
+print_menus.value.push({
+    label: $t("Print Selected Folio Transaction"),
+    icon: 'pi pi-print',
+    command: () => {
+        const selectedFolioTransactions = JSON.parse( sessionStorage.getItem("folo_transaction_table_state_" + selectedFolio.value.name) ).selection
+        if(selectedFolioTransactions.length==0){
+            toast.add({ severity: 'warn', summary: "", detail: "Please select folio transaction", life: 5000 })
+            return
+        }
+        dialog.open(ComPrintReservationStay, {
+            data: {
+                doctype: "Reservation%20Stay",
+                reservation_stay: selectedFolio.value.reservation_stay,
+               folio: selectedFolio.value,
+                folios: [],
+                report_name:gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"),
+                view: "print",
+                selected_folio_transactions:selectedFolioTransactions.map(d => d["name"])
+            },
+            props: {
+                header: $t("Folio Detail Report"),
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+
+            },
+        });
+    }
+})  
+
 
 if (selectedFolio?.value?.tax_invoice_number) {
     print_menus.value.push({

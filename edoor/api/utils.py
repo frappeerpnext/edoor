@@ -811,6 +811,8 @@ def clear_reservation():
         # frappe.db.sql("delete from `tabRevenue Forecast Breakdown`")
         # frappe.db.sql("delete from `tabTax Invoice`")
         # frappe.db.sql("delete from `tabGeneral Ledger`")
+        # frappe.db.sql("delete from `tabAccess Log`")
+        # frappe.db.sql("delete from `tabRoute History`")
 
         # frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
         # frappe.db.sql("delete from `tabComment` where custom_is_note=1")
@@ -1436,7 +1438,7 @@ def get_tax_invoice_data(folio_number,document_type,date = None):
 
     tax_summary = get_tax_summary(data + pos_tax_data["tax_summary_raw_data"])
     
-    if document_type == 'Reservation Folio':
+    if document_type in ['Reservation Folio', 'Desk Folio']:
         total_vat = get_tax_invoice_vat_amount(data) 
     elif document_type == 'Sale':
         # tax 3 is alway vat
