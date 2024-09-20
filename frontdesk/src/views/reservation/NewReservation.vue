@@ -88,12 +88,26 @@
                     <div class="">
                         <div class="grid">
                             <div class="col-12 lg:col-6">
+                                <div class="pt-2" v-if="isFieldHidden('business_source_type_group')">
+                                    <label>{{ $t('Business Source Type Group') }}</label><br />
+                                    <ComAutoComplete v-model="doc.reservation.business_source_group" :placeholder="$t('Business Source Type Group')"
+                                        @onSelected="onBusinessSourceTypeGroupChange" doctype="Business Source Type Group"
+                                        class="auto__Com_Cus w-full"  />
+                                </div>
+                                <div class="pt-2" v-if="isFieldHidden('business_source_type')">
+                                    <label>{{ $t('Business Source Type') }}</label><br />
+                                    <ComAutoComplete v-model="doc.reservation.business_source_type" :placeholder="$t('Business Source Type')"
+                                        @onSelected="onBusinessSourceTypeChange" doctype="Business Source Type"
+                                        class="auto__Com_Cus w-full" :filters="business_source_type_filter"  />
+                                </div>
+                               
                                 <div class="pt-2">
-                                    <label>{{ $t('Business Source') }}<span class="text-red-500">*</span></label><br />
+                                    <label>{{ $t('Business Source') }}</label><br />
                                     <ComAutoComplete v-model="doc.reservation.business_source" :placeholder="$t('Business Source')"
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
                                         class="auto__Com_Cus w-full" :filters="business_source_filter" />
                                 </div>
+
                             </div>
                             <div class="col-12 lg:col-6">
                                 <div class="pt-2">
@@ -190,7 +204,7 @@
                                         class="w-full" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                                    <label>{{ $t('Country') }}</label><br />
+                                    <label>{{ $t('Country') }}<span class="text-red-500">*</span></label><br />
                                     <ComAutoComplete v-model="doc.guest_info.country" class="w-full" placeholder="Country"
                                         doctype="Country" />
                                 </div>
@@ -478,6 +492,17 @@ const room_tax = ref()
 const minDate = ref()
 const hasFutureResertion = ref(false)
 const checkFutureReservationInfo = ref({})
+const meta = ref()
+
+
+
+const isFieldHidden = computed(() => (fieldname) => {
+  if(!meta.value?.fields){
+    return true 
+  }
+  return meta.value.fields.find(r=>r.fieldname == fieldname).hidden ==0
+
+}); 
 
 const onOpenChangeRate = (event, stay) => {
     selectedStay.value = stay
@@ -485,6 +510,9 @@ const onOpenChangeRate = (event, stay) => {
    
     op.value.toggle(event);
 }
+
+
+
 function onSelectChangeColor() {
     if (itemscolorreservation_select.value) {
        doc.value.reservation.reservation_color_code = itemscolorreservation_select.value.name 
@@ -526,7 +554,33 @@ const doc = ref({
 })
 
 
-const business_source_filter =ref({ property: property.name })
+const business_source_filter = computed(()=>{
+    let filter = { property: property.name  }
+
+    if(doc.value.reservation.business_source_group){
+        filter.business_source_group=  doc.value.reservation.business_source_group 
+    }
+    
+    if(doc.value.reservation.business_source_type){
+        filter.business_source_type=  doc.value.reservation.business_source_type 
+    }
+
+
+    return filter
+
+        
+    
+    
+})
+const business_source_type_filter = computed(()=>{
+    if(doc.value.reservation.business_source_group){
+        return { business_source_group:  doc.value.reservation.business_source_group }
+    }
+    return {}
+    
+})
+
+
 if (doc.value.reservation.is_walk_in==1){
     doc.value.reservation.business_source = window.setting.property?.default_walk_in_business_source
     business_source_filter.value.is_walk_in_business_source = 1
@@ -932,7 +986,16 @@ const onSave = () => {
         });
 }
 
+function getMeta(){
+    getApi("api.get_meta",{doctype:"Reservation"},"epos_restaurant_2023.api.").then(result=>{
+         
+        meta.value= result.message
+    })
+}
+
 onMounted(() => {
+    getMeta()
+
     getDocList("Reservation Color Code", {
         fields: ["name", "color"],
         limit: 1000
@@ -1054,6 +1117,22 @@ const onBusinessSourceChange = (source) => {
         getRoomType()
     }
 }
+
+const onBusinessSourceTypeChange = (business_source_type) => {
+
+
+    doc.value.reservation.business_source =""
+
+}
+ 
+const onBusinessSourceTypeGroupChange = (business_source_type) => {
+    
+ doc.value.reservation.business_source_type =""
+    doc.value.reservation.business_source =""
+
+}
+ 
+
 const onRateTypeChange = (rate_type) => {
 
 

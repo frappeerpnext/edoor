@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "property",
+  "business_source_group",
   "business_source_type",
   "business_source",
   "country",
@@ -140,12 +141,21 @@
    "fieldname": "photo",
    "fieldtype": "Attach Image",
    "label": "Photo"
+  },
+  {
+   "fetch_from": "business_source_type.business_source_group",
+   "fieldname": "business_source_group",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Business Source Group",
+   "options": "Business Source Type"
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 15:09:30.584623",
+ "modified": "2024-09-19 15:50:10.215420",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

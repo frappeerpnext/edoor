@@ -33,6 +33,10 @@ def get_report_data(filters,report_config):
     data = get_occupy_data(filters,report_config)
 
     room_rate_data = get_room_rate_data(filters,report_config)
+
+    total_room_occupy = sum([d["occupy"] for d in data ])
+    if total_room_occupy==0:
+        total_room_occupy = 1
  
     parent_row_group_data =[{"parent_row_group":""}]
     if filters.parent_row_group:
@@ -120,6 +124,10 @@ def get_report_data(filters,report_config):
                                 else:
                                     row["occupancy"] = (row["occupy"] or 0) / (1 if (row["room_available"]  - row["room_block"])<=0 else (row["room_available"]  - row["room_block"]))
                                 row["occupancy"] = row["occupancy"] * 100
+
+                            
+                            elif f.fieldname == "night_percent":
+                                row["night_percent"] = (row["occupy"] /total_room_occupy ) * 100
                             else:
                                 row[f.fieldname] =   occupy_record[f.fieldname]
                 

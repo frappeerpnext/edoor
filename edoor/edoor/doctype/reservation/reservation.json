@@ -43,8 +43,9 @@
   "room_numbers",
   "is_walk_in",
   "section_break_21",
-  "business_source",
+  "business_source_type_group",
   "business_source_type",
+  "business_source",
   "column_break_23",
   "rate_type",
   "is_complimentary",
@@ -758,12 +759,18 @@
    "fieldname": "total_amount",
    "fieldtype": "Currency",
    "label": "Total Amount"
+  },
+  {
+   "fieldname": "business_source_type_group",
+   "fieldtype": "Link",
+   "label": "Business Source Type Group",
+   "options": "Business Source Type Group"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 17:12:05.345063",
+ "modified": "2024-09-19 15:44:42.272566",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
