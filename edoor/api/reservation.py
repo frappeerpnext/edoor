@@ -444,8 +444,9 @@ def add_new_reservation(doc):
             ],
             "inclusion_items":package_items
         }
-       
+        
         stay_doc = frappe.get_doc(stay).insert()
+        
         stay_names.append(stay_doc.name)
 
 

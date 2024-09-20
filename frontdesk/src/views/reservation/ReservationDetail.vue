@@ -114,6 +114,10 @@
                         :attacheds="rs.attacheds" :docname="name" @updateCount="onUpdateDocumentCount" />
                 </TabPanel>
 
+                <TabPanel :header="$t('Market Survey')">
+                    <ComReservationMarketSurvey :reservation="rs.reservation.name"/>
+                </TabPanel>
+
             </TabView>
         </div>
         <template #footer-left>
@@ -150,8 +154,9 @@ import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirm
 import ComReservationFolio from '@/views/reservation/components/reservation_folio/ComReservationFolio.vue'
 import ReservationPrintButton from '@/views/reservation/components/ReservationPrintButton.vue'
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
+import ComReservationMarketSurvey from '@/views/reservation/components/ComReservationMarketSurvey.vue'
 
-import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
+import ComReservationMoreOptionsButton  from './components/ComReservationMoreOptionsButton.vue'
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const moment = inject('$moment');

@@ -90,7 +90,7 @@
                             <div class="col-12 lg:col-6">
                                 <div class="pt-2" v-if="isFieldHidden('business_source_type_group')">
                                     <label>{{ $t('Business Source Type Group') }}</label><br />
-                                    <ComAutoComplete v-model="doc.reservation.business_source_group" :placeholder="$t('Business Source Type Group')"
+                                    <ComAutoComplete v-model="doc.reservation.business_source_type_group" :placeholder="$t('Business Source Type Group')"
                                         @onSelected="onBusinessSourceTypeGroupChange" doctype="Business Source Type Group"
                                         class="auto__Com_Cus w-full"  />
                                 </div>

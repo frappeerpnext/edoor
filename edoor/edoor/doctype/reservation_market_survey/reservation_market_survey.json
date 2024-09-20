@@ -1,0 +1,166 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:reservation",
+ "creation": "2024-09-20 14:59:56.762839",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "reservation",
+  "guest_comment_section",
+  "guest_comment",
+  "how_do_you_find_us_section",
+  "booking_engine",
+  "column_break_ndlc",
+  "search_engine",
+  "column_break_scbj",
+  "is_return_guest",
+  "purpose_of_visit_section",
+  "holiday",
+  "column_break_rhuf",
+  "business",
+  "column_break_zjkg",
+  "celebration"
+ ],
+ "fields": [
+  {
+   "fieldname": "how_do_you_find_us_section",
+   "fieldtype": "Section Break",
+   "label": "How do you find us?"
+  },
+  {
+   "default": "0",
+   "fieldname": "booking_engine",
+   "fieldtype": "Check",
+   "label": "Booking Engine"
+  },
+  {
+   "fieldname": "column_break_ndlc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "search_engine",
+   "fieldtype": "Check",
+   "label": "Search Engine"
+  },
+  {
+   "fieldname": "purpose_of_visit_section",
+   "fieldtype": "Section Break",
+   "label": "Purpose of Visit"
+  },
+  {
+   "default": "0",
+   "fieldname": "holiday",
+   "fieldtype": "Check",
+   "label": "Holiday"
+  },
+  {
+   "fieldname": "column_break_rhuf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "business",
+   "fieldtype": "Check",
+   "label": "Business"
+  },
+  {
+   "fieldname": "reservation",
+   "fieldtype": "Data",
+   "label": "Reservation",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_scbj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_return_guest",
+   "fieldtype": "Check",
+   "label": "Return Guest"
+  },
+  {
+   "fieldname": "guest_comment_section",
+   "fieldtype": "Section Break",
+   "label": "Guest Comment"
+  },
+  {
+   "fieldname": "guest_comment",
+   "fieldtype": "Small Text",
+   "label": "Guest Comment"
+  },
+  {
+   "fieldname": "column_break_zjkg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "celebration",
+   "fieldtype": "Check",
+   "label": "Celebration"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-20 17:16:02.002769",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Reservation Market Survey",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Clerk",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

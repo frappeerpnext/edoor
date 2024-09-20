@@ -198,6 +198,45 @@
                 </div>
             </div>   
         </div>
+        <div class="col-12 lg:col-3 mt-4"  v-if="hasFilter('show_room_rate')">
+            <div class="h-full" >
+                <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                <div>
+                    <label for="filter_is_active" class="font-medium cursor-pointer">Show/Hide Room Rate</label>
+                </div>
+                <div>
+                    <Checkbox class="mx-3" v-model="filter.show_room_rate" :binary="true" trueValue="1"
+                            falseValue="0" /> 
+                </div>
+                </div>
+            </div>   
+        </div>
+        <div class="col-12 lg:col-3 mt-4"  v-if="hasFilter('show_room_charge')">
+            <div class="h-full" >
+                <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                <div>
+                    <label for="filter_is_active" class="font-medium cursor-pointer">Show/Hide Room Charge</label>
+                </div>
+                <div>
+                    <Checkbox class="mx-3" v-model="filter.show_room_charge" :binary="true" trueValue="1"
+                            falseValue="0" /> 
+                </div>
+                </div>
+            </div>   
+        </div>
+        <div class="col-12 lg:col-3 mt-4"  v-if="hasFilter('show_other_charge')">
+            <div class="h-full" >
+                <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                <div>
+                    <label for="filter_is_active" class="font-medium cursor-pointer">Show/Hide Other Charge</label>
+                </div>
+                <div>
+                    <Checkbox class="mx-3" v-model="filter.show_other_charge" :binary="true" trueValue="1"
+                            falseValue="0" /> 
+                </div>
+                </div>
+            </div>   
+        </div>
         
         <div class="col-12 lg:col-3 mt-4"  v-if="hasFilter('show_account_code')">
             <div class="h-full" >

@@ -113,11 +113,23 @@
                     <div class="">
                         <div class="grid">
                             <div class="col-12 lg:col-6">
+                                <div class="pt-2" v-if="isFieldHidden('business_source_type_group')">
+                                    <label>{{ $t('Business Source Type Group') }}</label><br />
+                                    <ComAutoComplete v-model="doc.reservation.business_source_type_group" :placeholder="$t('Business Source Type Group')"
+                                        @onSelected="onBusinessSourceTypeGroupChange" doctype="Business Source Type Group"
+                                        class="auto__Com_Cus w-full"  />
+                                </div>
+                                <div class="pt-2" v-if="isFieldHidden('business_source_type')">
+                                    <label>{{ $t('Business Source Type') }}</label><br />
+                                    <ComAutoComplete v-model="doc.reservation.business_source_type" :placeholder="$t('Business Source Type')"
+                                        @onSelected="onBusinessSourceTypeChange" doctype="Business Source Type"
+                                        class="auto__Com_Cus w-full" :filters="business_source_type_filter"  />
+                                </div>
                                 <div class="pt-2">
-                                    <label>{{ $t('Business Source') }}<span class="text-red-500">*</span></label><br />
-                                    <ComAutoComplete v-model="doc.reservation.business_source" :placeholder=" $t('Business Source') "
+                                    <label>{{ $t('Business Source') }}</label><br />
+                                    <ComAutoComplete v-model="doc.reservation.business_source" :placeholder="$t('Business Source')"
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
-                                        class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
+                                        class="auto__Com_Cus w-full" :filters="business_source_filter" />
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6">
@@ -512,7 +524,7 @@ import ComRoomInventory from  "@/components/ComRoomInventory.vue"
 import ComRoomAvailable from  "@/components/ComRoomAvailable.vue"
 import { useToast } from "primevue/usetoast";
 import ComViewRoomRateBreakdown from '@/views/reservation/components/ComViewRoomRateBreakdown.vue';
-
+const meta = ref()
 const dialogRef = inject("dialogRef");
 
 const toast = useToast();
@@ -528,7 +540,50 @@ const opColor = ref();
 const toggleColor = (event) => {
     opColor.value.toggle(event);
 }
+const isFieldHidden = computed(() => (fieldname) => {
+  if(!meta.value?.fields){
+    return true 
+  }
+  return meta.value.fields.find(r=>r.fieldname == fieldname).hidden ==0
 
+});
+const onBusinessSourceTypeChange = (business_source_type) => {
+
+
+doc.value.reservation.business_source =""
+
+}
+const onBusinessSourceTypeGroupChange = (business_source_type) => {
+    
+    doc.value.reservation.business_source_type =""
+       doc.value.reservation.business_source =""
+   
+   }
+   const business_source_filter = computed(()=>{
+    let filter = { property: property.name  }
+
+    if(doc.value.reservation.business_source_group){
+        filter.business_source_group=  doc.value.reservation.business_source_group 
+    }
+    
+    if(doc.value.reservation.business_source_type){
+        filter.business_source_type=  doc.value.reservation.business_source_type 
+    }
+
+
+    return filter
+
+        
+    
+    
+})
+const business_source_type_filter = computed(()=>{
+    if(doc.value.reservation.business_source_group){
+        return { business_source_group:  doc.value.reservation.business_source_group }
+    }
+    return {}
+    
+})   
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const room_types = ref([])
@@ -1126,17 +1181,16 @@ function viewRoomRateBreakdown(room_type){
 
 const onBusinessSourceChange = (source) => {
 
-    if (source) {
-        doc.value.reservation.business_source = source.value
-    } else {
-        doc.value.reservation.business_source = null
-    }
+if (source) {
+    doc.value.reservation.business_source = source.value
+} else {
+    doc.value.reservation.business_source = null
+}
 
-    //check if stay have not manully rate update
-    if (doc.value.reservation_stay.filter(r => r.is_manual_rate == false).length > 0) {
-        getRoomType()
-    }
-
+//check if stay have not manully rate update
+if (doc.value.reservation_stay.filter(r => r.is_manual_rate == false).length > 0) {
+    getRoomType()
+}
 }
 const onRateTypeChange = (rate_type) => {
     if (rate_type) {

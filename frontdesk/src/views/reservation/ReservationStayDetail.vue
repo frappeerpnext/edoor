@@ -127,6 +127,9 @@
                             :doctypes="['Reservation Stay', 'Reservation Folio', 'Folio Transaction']" :docname="name"
                             :fill="false"  />
                     </TabPanel>
+                    <TabPanel :header="$t('Market Survey')">
+                    <ComReservationMarketSurvey :reservation="rs.reservation.name"/>
+                </TabPanel>
                 </TabView>
             </div>
         </div>
@@ -218,6 +221,8 @@ import ComReservationStayHeaderStatus from '@/views/reservation/components/ComRe
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import ComReservationStayPackageItems from '@/views/reservation/components/ComReservationStayPackageItems.vue'
+import ComReservationMarketSurvey from '@/views/reservation/components/ComReservationMarketSurvey.vue'
+
 import Message from 'primevue/message';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
