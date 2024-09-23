@@ -12,7 +12,9 @@ def get_data_for_folio_transaction_detail(
         show_all_room_rate = 0,
         folio_transactions=""
     ):
-    
+    # show all room rate use for show room rate from the future
+    # folio_transactions is use to filter folio transaction when user want to print only selected ft record
+
     show_all_room_rate = int(show_all_room_rate or 0)
     show_package_breakdown = int(show_package_breakdown or 0)
     
@@ -29,7 +31,22 @@ def get_data_for_folio_transaction_detail(
         show_package_breakdown=show_package_breakdown,
         folio_transactions=folio_transactions
     )
-    if show_all_room_rate==1:
+    # check if reservation is mark as hide rate 
+    if not reservation:
+        if reservation_stay:
+            reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
+    
+    if not reservation:
+        if transaction_number and transaction_type=="Reservation Folio":
+            reservation = frappe.get_cached_value("Reservation Folio", transaction_number, "reservation")
+    show_room_rate_in_guest_folio = 1 
+
+    if reservation:
+         show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
+         
+    # end check if reservation is mark as hide rate 
+
+    if show_all_room_rate==1 and show_room_rate_in_guest_folio==1:
         data = data +  get_uncharge_data_from_revenue_forecast_breakdown(
                             reservation=reservation,
                             reservation_stay=reservation_stay,
@@ -79,13 +96,34 @@ def get_data_from_folio_transaction(
         reservation_stay="",
         folio_transactions=""
     ):
-    
+    # folio_transactions is use to filter folio transaction when user want to print only selected ft record
     # convert folio transaction string comma separator to array
     if folio_transactions:
         folio_transactions = folio_transactions.split(",")
     else:
         folio_transactions=[]
-        
+
+    # check if reservation is mark as hide rate 
+    if not reservation:
+        if reservation_stay:
+            reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
+    
+    if not reservation:
+        if transaction_number and transaction_type=="Reservation Folio":
+            reservation = frappe.get_cached_value("Reservation Folio", transaction_number, "reservation")
+    show_room_rate_in_guest_folio = 1 
+    hide_account_codes = ["dummy"]
+    
+    if reservation:
+         show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
+         if  show_room_rate_in_guest_folio == 0:
+            hide_acounts = frappe.db.sql("select name from `tabAccount Code` where hide_account_reservation_not_allow_see_rate=1",as_dict=1)
+            hide_account_codes = hide_account_codes + [d["name"] for d in hide_acounts]
+            hide_account_codes = [d for d in hide_account_codes if d]
+    
+    # end check if reservation is mark as hide rate 
+
+
     amount_field = 'total_amount'
     if show_package_breakdown==1:
         amount_field = 'transaction_amount'
@@ -124,6 +162,7 @@ def get_data_from_folio_transaction(
             transaction_number = %(transaction_number)s and 
             reservation = if(%(reservation)s='',reservation,%(reservation)s) and  
             reservation_stay= if(%(reservation_stay)s='',reservation_stay,%(reservation_stay)s) and  
+            account_code not in %(hide_account_codes)s and 
             is_package_charge = if(%(show_package_breakdown)s=0,0, is_package_charge )
         
     """.format(
@@ -140,7 +179,8 @@ def get_data_from_folio_transaction(
                                 "reservation":reservation,
                                 "reservation_stay":reservation_stay,
                                 "show_package_breakdown":show_package_breakdown,
-                                "folio_transactions":folio_transactions
+                                "folio_transactions":folio_transactions,
+                                "hide_account_codes":hide_account_codes
                             },as_dict=1)
      
     return data
@@ -236,13 +276,36 @@ def get_folio_transaction_summary_amount(
         show_all_room_rate=1,
         folio_transactions=""
     ):
+    # show all room rate use to show future room rate charge to folio invoice
+    # folio transaction use this parameter filter ft data when user want to print selected folio transaction only
+
     show_package_breakdown = int(show_package_breakdown or 0)
+    
     if folio_transactions:
         folio_transactions = folio_transactions.split(",")
     else:
         folio_transactions = []
     
+    # check if reservation enable to show or hide room rate
+    if not reservation:
+        if reservation_stay:
+            reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
     
+    if not reservation:
+        if transaction_number:
+            reservation = frappe.get_cached_value("Reservation Folio", transaction_number, "reservation")
+    show_room_rate_in_guest_folio = 1 
+    hide_account_codes = ["dummy"]
+    if reservation:
+         show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
+         if  show_room_rate_in_guest_folio == 0:
+            hide_acounts = frappe.db.sql("select name from `tabAccount Code` where hide_account_reservation_not_allow_see_rate=1",as_dict=1)
+            hide_account_codes = hide_account_codes + [d["name"] for d in hide_acounts]
+            hide_account_codes = [d for d in hide_account_codes if d]
+
+    # end check if reservation enable to show or hide room rate
+
+
     sql = """
         select 
             account_category,
@@ -256,6 +319,7 @@ def get_folio_transaction_summary_amount(
             reservation =  if('{reservation}'='',reservation,'{reservation}') and 
             transaction_number = if('{transaction_number}'='',transaction_number,'{transaction_number}') and 
             is_base_transaction = 1 and 
+            account_code not in %(hide_account_codes)s and
             is_package_charge = if({show_package_breakdown}=0,0,is_package_charge) 
         
         """.format(
@@ -277,11 +341,11 @@ def get_folio_transaction_summary_amount(
         order by 
             account_category_sort_order
     """
-    summary_data =frappe.db.sql(sql,{"folio_transactions":folio_transactions},as_dict=1)
+    summary_data =frappe.db.sql(sql,{"folio_transactions":folio_transactions,"hide_account_codes":hide_account_codes},as_dict=1)
 
     
    
-    if int(show_all_room_rate) ==1 and not folio_transactions:
+    if int(show_all_room_rate) ==1 and not folio_transactions and show_room_rate_in_guest_folio==1:
         room_rate_summary = get_uncharge_room_rate_summary_amount_group_by_account_category(
             reservation = reservation,
             reservation_stay=reservation_stay,

@@ -86,6 +86,7 @@
                         </div>
                     </div>
                 </div>
+                <ComWarningPrintRoomRate v-if="filters?.selected_folio?.reservation" :reservation="filters.selected_folio.reservation" display="toast"/>
                 <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
             </div>
         </div>
@@ -95,6 +96,8 @@
 
 <script setup>
 import { ref, onMounted, inject , onUnmounted , getApi} from "@/plugin"
+import ComWarningPrintRoomRate from '@/views/reservation/components/ComWarningPrintRoomRate.vue';
+
 const visible = ref(false);
 const isMobile = ref(window.isMobile)
 const dialogRef = inject("dialogRef");

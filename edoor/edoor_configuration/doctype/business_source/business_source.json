@@ -17,6 +17,7 @@
   "auto_create_city_ledger_account",
   "city_ledger_type",
   "is_walk_in_business_source",
+  "show_room_rate_in_guest_folio",
   "column_break_nyis",
   "contact_name",
   "phone_number",
@@ -145,17 +146,22 @@
   {
    "fetch_from": "business_source_type.business_source_group",
    "fieldname": "business_source_group",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Business Source Group",
-   "options": "Business Source Type"
+   "label": "Business Source Group"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_room_rate_in_guest_folio",
+   "fieldtype": "Check",
+   "label": "Show Room Rate in Guest Folio"
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-23 08:32:49.289959",
+ "modified": "2024-09-23 20:26:45.207455",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

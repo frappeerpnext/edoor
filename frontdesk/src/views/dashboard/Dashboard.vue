@@ -71,7 +71,7 @@
                                     :title="$t('Cancelled')" :style="{ backgroundColor: statusColor.cancelled }">
                                 </ComChartStatus>
                             </tippy>
-                            <ComChartStatus v-tippy="$t('Today') + ' ' + $t('Void') + ' ' + data.today_void + ' & ' + $t('Void') + data.total_void"
+                            <ComChartStatus v-tippy="$t('Today') + ' ' + $t('Void') + ' ' + data.today_void + ' & ' + $t('Void') + ' ' + data.total_void"
                                 @onClick="onViewVoidReservation"
                                 :value="!gv.loading ? (data.today_void + ' / ' + data.total_void) : ''" :title="$t('Void')"
                                 :style="{ backgroundColor: statusColor.void }">

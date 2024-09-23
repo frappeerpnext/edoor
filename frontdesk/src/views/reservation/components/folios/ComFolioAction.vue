@@ -1,5 +1,4 @@
 <template>
-    
     <div class="overflow-x-auto overflow-y-hidden lg:overflow-y-hidden">
         <div class="flex gap-1 justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2 overflow-x-auto lg:overflow-x-hidden w-max lg:w-full">
             <slot name="button"></slot>
@@ -109,6 +108,8 @@
                     </div>
                   
                 </Message>
+
+                <ComWarningPrintRoomRate :reservation="selectedFolio.reservation"/>
     </div>
 </template>
 <script setup>
@@ -127,6 +128,8 @@ import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
 import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTaxInvoice.vue";
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
+import ComWarningPrintRoomRate from '@/views/reservation/components/ComWarningPrintRoomRate.vue';
+
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const displayViewFolio = ref('');
@@ -151,7 +154,7 @@ const dialog = useDialog();
 const confirm = useConfirm();
 const toast = useToast();
 const gv = inject("$gv")
-const rs = inject("$reservation_stay")
+
 const setting =window.setting
 const folio_menu = ref();
 
@@ -184,6 +187,7 @@ function viewFolioSummaryReport() {
     if (props.parentComponent=="Reservation"){
         filter = [ ["reservation", "=", props.folio.reservation]]
     }
+
     getDocList("Reservation Folio", {
             filters: [ ["reservation_stay", "=", props.folio.reservation_stay]],
             limit:100,
@@ -192,31 +196,31 @@ function viewFolioSummaryReport() {
 
 
             
-    dialog.open(ComPrintReservationStay, {
-        data: {
-            doctype: "Reservation%20Stay",
-            reservation_stay: selectedFolio.value.reservation_stay,
-            folio: selectedFolio.value,
-            folios: docs,
-            report_name:gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
-            view: "print"
-        },
-        props: {
-            header: $t("Folio Summary Report"),
-            style: {
-                width: '80vw',
+        dialog.open(ComPrintReservationStay, {
+            data: {
+                doctype: "Reservation%20Stay",
+                reservation_stay: selectedFolio.value.reservation_stay,
+                folio: selectedFolio.value,
+                folios: docs,
+                report_name:gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
+                view: "print"
             },
-            position: "top",
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            props: {
+                header: $t("Folio Summary Report"),
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                breakpoints:{
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
 
-        },
-    });
+            },
+        });
 })
 }
 
@@ -571,7 +575,7 @@ function MarkasMasterFolio() {
 
 function openFolio() {
 
-    if(rs.reservationStay.reservation_status=='No Show'){
+    if(selectedFolio.value.reservation_status=='No Show'){
         gv.toast('warn', 'No Show reservation is not allow to open folio.')
     }
     else{
@@ -738,10 +742,11 @@ function onTransferFolioItem() {
 const arr = ref()
 
 function onAuditTrail() {
+    
     const dialogRef = dialog.open(ComAuditTrail, {
         data: {
             doctype: 'Reservation',
-            docname: rs.reservation.name,
+            docname: selectedFolio.value.reservation,
             referenceTypes:[
                 { doctype: 'Reservation Folio', label: 'Reservation Folio' },
                 { doctype: 'Folio Transaction', label: 'Folio Transaction' },

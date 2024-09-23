@@ -50,6 +50,7 @@
   "rate_type",
   "is_complimentary",
   "is_house_use",
+  "show_room_rate_in_guest_folio_invoice",
   "guest_information_section",
   "guest",
   "guest_name",
@@ -767,12 +768,18 @@
    "hidden": 1,
    "label": "Business Source Type Group",
    "options": "Business Source Type Group"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_room_rate_in_guest_folio_invoice",
+   "fieldtype": "Check",
+   "label": "Show Room Rate in Guest Folio Invoice"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-23 08:33:16.311815",
+ "modified": "2024-09-23 17:12:40.891211",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

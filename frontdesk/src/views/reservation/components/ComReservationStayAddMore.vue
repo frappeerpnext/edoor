@@ -189,6 +189,13 @@
                    
                 </Button>
             </div>
+            <div class="mt-3">
+            <div>
+                <label>{{ $t('Note') }}</label><br />
+                <Textarea v-model="note" rows="5" :placeholder="$t('Note')" cols="30"
+                    class="w-full border-round-xl" />
+            </div>
+        </div>
         </div>
         <Message severity="warn"  v-if="warningMessage" v-for="(m, index) in warningMessage" :key="index" >
                 <p v-html="m"></p>
@@ -222,6 +229,7 @@ const rooms = ref([])
 const data = ref({
     reservation_stays:[]
 })
+const note = ref("")
 const room_tax = ref()
 const edoor_working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 
@@ -382,7 +390,7 @@ const onSave = () => {
     let save_data = JSON.parse(JSON.stringify(data.value))
     save_data.arrival_date = moment(save_data.arrival_date).format("yyyy-MM-DD")
     save_data.departure_date = moment(save_data.departure_date).format("yyyy-MM-DD")
-    
+    save_data.note = note.value
     postApi("reservation.stay_add_more_rooms", { reservation: rs.reservation.name, data: save_data }).then((r) => {
 
         if (r) {

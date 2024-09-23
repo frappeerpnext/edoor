@@ -64,7 +64,7 @@
    "default": "0",
    "fieldname": "holiday",
    "fieldtype": "Check",
-   "label": "Holiday"
+   "label": "Holiday/Vacation"
   },
   {
    "fieldname": "column_break_rhuf",
@@ -141,7 +141,7 @@
    "default": "0",
    "fieldname": "other",
    "fieldtype": "Check",
-   "label": "Other"
+   "label": "Others"
   },
   {
    "fieldname": "column_break_oszt",
@@ -165,12 +165,12 @@
    "default": "0",
    "fieldname": "other_purpose_of_visit",
    "fieldtype": "Check",
-   "label": "Other"
+   "label": "Others"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-21 10:43:49.295641",
+ "modified": "2024-09-23 16:56:06.763540",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Market Survey",

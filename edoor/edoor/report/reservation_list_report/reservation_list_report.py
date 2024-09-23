@@ -10,7 +10,8 @@ def execute(filters=None):
 	# 	if not filters.summary_fields:
 	# 		filters.summary_fields = ['total_record', 'room_night']
 
-	 
+	frappe.local.flags.print_letterhead = "Default Letterhead"
+	  
 
 	raw_data = get_data(filters,report_config.report_fields)
 	report_data = get_report_data(filters = filters, report_fields= report_config.report_fields,data= raw_data)

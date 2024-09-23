@@ -460,6 +460,7 @@ def add_new_reservation(doc):
     
     update_reservation_stay_and_reservation(reservation = reservation.name, reservation_stay=stay_names,run_commit=False)
     
+ 
     frappe.db.commit()
 
     
@@ -560,6 +561,10 @@ def stay_add_more_rooms(reservation=None, data=None):
  
     #END VALIDATE ROOM OVER BOOKING
     stay_doc_names = []
+    note = ""
+    if "note" in data:
+        note = data["note"]
+        
     for d in data["reservation_stays"]:
          
         if data['departure_date'] <= data['arrival_date']:
@@ -577,7 +582,7 @@ def stay_add_more_rooms(reservation=None, data=None):
             "tax_1_rate":data["tax_1_rate"] or 0,
             "tax_2_rate":data["tax_2_rate"] or 0,
             "tax_3_rate":data["tax_3_rate"] or 0,
-            "note":reservation.note,
+            "note":note,
             "child":d["child"],
             "adult":d["adult"],
             "stays": [{
@@ -1419,7 +1424,7 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
         doc.rate_include_tax = rate_include_tax
         doc.regenerate_rate = regenerate_new_rate
         doc.flags.regenerate_rate = regenerate_new_rate
-        
+      
         if is_complimentary ==1 or is_house_use==1:
             doc.input_rate = 0
             doc.package_charge_data = "[]"
@@ -1431,6 +1436,7 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
                 doc.package_charge_data = json.dumps([d for d in package_data if d["posting_rule"] in ["Everyday"]])
                     
         doc.flags.ignore_on_update = True
+
         doc.save(ignore_permissions=True)
 
     #update rate type to reservation stay
@@ -2523,8 +2529,36 @@ def get_uncharge_room_rate_summary_amount_group_by_account_category(reservation_
 
 
 @frappe.whitelist()
-def get_folio_transaction_summary_with_breadown_account_code( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None,show_note = 0):
+def get_folio_transaction_summary_with_breadown_account_code( 
+                transaction_type="Reservation Folio",
+                transaction_number='', 
+                reservation="", 
+                reservation_stay='',
+                sort_by_field='account_category_sort_order',
+                show_room_number = 1,
+                show_account_code=None, 
+                show_all_room_rate=None,
+                show_note = 0
+    ):
+
+    if not reservation:
+        if reservation_stay:
+            reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
     
+    if not reservation:
+        if transaction_number and transaction_type=="Reservation Folio":
+            reservation = frappe.get_cached_value("Reservation Folio", transaction_number, "reservation")
+    show_room_rate_in_guest_folio = 1 
+    hide_account_codes = ["dummy"]
+    
+    if reservation:
+         show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
+         if  show_room_rate_in_guest_folio == 0:
+            hide_acounts = frappe.db.sql("select name from `tabAccount Code` where hide_account_reservation_not_allow_see_rate=1",as_dict=1)
+            hide_account_codes = hide_account_codes + [d["name"] for d in hide_acounts]
+            hide_account_codes = [d for d in hide_account_codes if d]
+            
+     
     if show_account_code == None:
         show_account_code =str(frappe.get_cached_value("eDoor Setting",None,"show_account_code_in_folio_transaction"))
     
@@ -2548,6 +2582,7 @@ def get_folio_transaction_summary_with_breadown_account_code( transaction_type="
                         transaction_type = '{transaction_type}' and 
                         reservation_stay = if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') and 
                         reservation = if('{reservation}'='',reservation,'{reservation}') and 
+                        account_code not in ({"'" + "','".join(hide_account_codes) + "'"}) and 
                         is_base_transaction = 1   
                     group by 
                     account_category,
@@ -2565,14 +2600,14 @@ def get_folio_transaction_summary_with_breadown_account_code( transaction_type="
                         account_code_sort_order
                 """,as_dict=1)
     
+
     
-   
     summary_data = []
     balance = 0
-   
+    
     #  check if room show all room charge then get data from room rate include in guest invoice
     
-    if show_all_room_rate=="1":
+    if show_all_room_rate=="1" and show_room_rate_in_guest_folio==1:
         room_rates = get_folio_room_charge_summary_from_reservation_room_rate( reservation=reservation, reservation_stay= reservation_stay, folio_number= transaction_number,show_room_number=int(show_room_number or 0),show_package_breakdown=1) or []
         
 
@@ -2611,10 +2646,38 @@ def get_folio_transaction_summary_with_breadown_account_code( transaction_type="
 
 
 @frappe.whitelist()
-def get_folio_transaction_summary_without_breadwon_account_code( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None,show_note=0):
+def get_folio_transaction_summary_without_breadwon_account_code(
+        transaction_type="Reservation Folio",
+        transaction_number='', 
+        reservation="", 
+        reservation_stay='',
+        sort_by_field='account_category_sort_order',
+        show_room_number = 1,
+        show_account_code=None,
+        show_all_room_rate=None,
+        show_note=0
+    ):
+
+    # check if reservatin not allow to view room rate
+    if not reservation:
+        if reservation_stay:
+            reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
+    
+    if not reservation:
+        if transaction_number and transaction_type=="Reservation Folio":
+            reservation = frappe.get_cached_value("Reservation Folio", transaction_number, "reservation")
+    show_room_rate_in_guest_folio = 1 
+    hide_account_codes = ["dummy"]
+    if reservation:
+         show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
+         if  show_room_rate_in_guest_folio == 0:
+            hide_acounts = frappe.db.sql("select name from `tabAccount Code` where hide_account_reservation_not_allow_see_rate=1",as_dict=1)
+            hide_account_codes = hide_account_codes + [d["name"] for d in hide_acounts]
+            hide_account_codes = [d for d in hide_account_codes if d]
+    # end checking hide room rate from reservation setting
 
     if show_account_code == None:
-        show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
+        show_account_code =str(frappe.get_cached_value("eDoor Setting",None,"show_account_code_in_folio_transaction"))
    
     data = frappe.db.sql(f"""
                     select 
@@ -2634,6 +2697,7 @@ def get_folio_transaction_summary_without_breadwon_account_code( transaction_typ
                         transaction_type = '{transaction_type}' and 
                         reservation_stay = if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') and 
                         reservation = if('{reservation}'='',reservation,'{reservation}') and
+                        account_code not in ({"'" + "','".join(hide_account_codes) + "'"}) and
                         coalesce(parent_reference,'') = '' 
                     group by 
                         account_code,
@@ -2655,7 +2719,7 @@ def get_folio_transaction_summary_without_breadwon_account_code( transaction_typ
    
     #  check if room show all room charge then get data from room rate include in guest invoice
     
-    if show_all_room_rate=="1":
+    if show_all_room_rate=="1" and show_room_rate_in_guest_folio==1:
         room_rates = get_folio_room_charge_summary_from_reservation_room_rate(reservation=reservation, reservation_stay= reservation_stay, folio_number= transaction_number,show_room_number= show_room_number) or []
         for r in room_rates:
             charge = [d for d in data  if d["account_code"] == r["account_code"]]
@@ -2870,6 +2934,7 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
         doc.rate_include_tax = data["rate_include_tax"]
 
         doc.flags.ignore_on_update = True
+        doc.flags.allow_server_script = True
         doc.save()
     generate_forecast_revenue(reservation_stays, run_commit=False)
     

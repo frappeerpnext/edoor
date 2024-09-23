@@ -10,6 +10,8 @@ from edoor.edoor.report.reservation_forecast import report_by_business_source_ty
 from edoor.edoor.report.reservation_forecast import report_by_guest_type
 from edoor.edoor.report.reservation_forecast import report_by_nationality
 from edoor.edoor.report.reservation_forecast import report_by_room_type
+from edoor.edoor.report.reservation_forecast import report_by_rate_type
+from edoor.edoor.report.reservation_forecast import report_by_business_source_type_group
 import frappe
 def execute(filters=None):
 	if filters.parent_row_group==filters.row_group:
@@ -30,12 +32,19 @@ def execute(filters=None):
 		report =  report_by_reservation_type.get_report(filters, report_config)
 	elif filters.row_group == "Business Source Type":
 		report =  report_by_business_source_type.get_report(filters, report_config)
+	elif filters.row_group == "Business Source Group":
+		report =  report_by_business_source_type_group.get_report(filters, report_config)
+
 	elif filters.row_group == "Guest Type":
 		report =  report_by_guest_type.get_report(filters, report_config)
 	elif filters.row_group == "Nationality":
 		report =  report_by_nationality.get_report(filters, report_config)
 	elif filters.row_group == "Room Type":
 		report =  report_by_room_type.get_report(filters, report_config)
+	elif filters.row_group == "Rate Type":
+		report =  report_by_rate_type.get_report(filters, report_config)
+
+
 	
 	message = None
 	return report["columns"], report["data"],message,report["report_chart"], report["report_summary"],True

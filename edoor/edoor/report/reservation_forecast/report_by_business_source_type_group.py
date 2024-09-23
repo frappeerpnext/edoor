@@ -6,7 +6,6 @@ from edoor.api.frontdesk import get_working_day
 import frappe
 
 def get_report(filters, report_config):
-      
     report_data = get_report_data(filters,report_config)
     return {
         "columns":get_report_columns(filters,report_config),
@@ -19,7 +18,7 @@ def get_report(filters, report_config):
 def get_report_columns(filters,report_config):
     report_fields =  get_report_fields (filters, report_config)
     columns = [
-        {'key': "Nationality","fieldname":"row_group","label":"Nationality","width":150},
+        {'key': "Business Source Group","fieldname":"row_group","label":"Business Source Group","width":150},
     ]
 
     for g in report_fields:
@@ -33,11 +32,11 @@ def get_report_data(filters,report_config):
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
     data = get_occupy_data(filters,report_config)
 
+    room_rate_data = get_room_rate_data(filters,report_config)
+
     total_room_occupy = sum([d["occupy"] for d in data ])
     if total_room_occupy==0:
         total_room_occupy = 1
-
-    room_rate_data = get_room_rate_data(filters,report_config)
  
     parent_row_group_data =[{"parent_row_group":""}]
     if filters.parent_row_group:
@@ -267,23 +266,26 @@ def get_report_data(filters,report_config):
  
 
 def get_occupy_data(filters,report_config):
-    sql = "select if(coalesce(nationality,'') = '','Not Set',nationality) as row_group, "
+    sql = "select bt.business_source_group as row_group, "
     sql = "{} {} as parent_row_group,".format(sql,get_room_occupy_group_by_field(filters))
 
     #other aggregate field
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Room Occupy' and d.sql_expression]) )
     #filter
-    sql = sql+ " from `tabRoom Occupy` a  where 1=1 "
+    sql = sql+ """ from `tabRoom Occupy` a  
+                    JOIN `tabBusiness Source Type` bt on bt.name = a.business_source_type
+            where 1=1 
+        """
     
     sql = "{} {}".format(sql,get_occupy_data_filters(filters)) 
     
     #add exclude empty record
-    sql = "{} ".format(sql)
+    sql = "{} and ifnull(bt.business_source_group,'') !='' ".format(sql)
 
 
     # group by
     
-    sql = "{} group by if(coalesce(nationality,'') = '','Not Set',nationality) ".format(sql)
+    sql = "{} group by bt.business_source_group".format(sql)
 
     #add parent row group
     if filters.parent_row_group:
@@ -291,7 +293,7 @@ def get_occupy_data(filters,report_config):
  
 
     data = frappe.db.sql(sql,filters,as_dict = 1)
- 
+   
     return data
  
 
@@ -348,17 +350,19 @@ def get_room_block_data(filters):
 
 
 def get_room_rate_data(filters, report_config ):
-    sql = "select if(coalesce(nationality,'') = '','Not Set',nationality)  as row_group,"
+    sql = "select bt.business_source_group  as row_group,"
     sql = "{} {} as parent_row_group,".format(sql,get_room_rate_group_by_field(filters))
         
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Revenue Forecast Breakdown' and d.sql_expression]) )
     #filter
-    sql = sql+ " from `tabRevenue Forecast Breakdown` a where 1=1 "
+    sql = sql+ """ from `tabRevenue Forecast Breakdown` a 
+                join `tabBusiness Source Type` bt on bt.name = a.business_source_type
+                where 1=1 """
    
     sql = "{} {}".format(sql, get_room_rate_filters(filters))
 
     # group by
-    sql = "{} group by if(coalesce(nationality,'') = '','Not Set',nationality)".format(sql)
+    sql = "{} group by bt.business_source_group".format(sql)
     
     #add parent row group
     if filters.parent_row_group:

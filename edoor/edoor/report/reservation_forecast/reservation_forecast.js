@@ -72,8 +72,9 @@ frappe.query_reports["Reservation Forecast"] = {
 		{
 			"fieldname": "parent_row_group",
 			"label": __("Parent Group By"),
+			hidden:1,
 			"fieldtype": "Select",
-			"options": "\nDate\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nGuest Type\nNationality",
+			"options": "\nDate\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nBusiness Source Group\nGuest Type\nNationality",
 			"on_change": function (query_report) { },
 			hide_in_filter: 1,
 		},
@@ -81,7 +82,7 @@ frappe.query_reports["Reservation Forecast"] = {
 			"fieldname": "row_group",
 			"label": __("View Report By"),
 			"fieldtype": "Select",
-			"options": "Date\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nGuest Type\nNationality",
+			"options": "Date\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nBusiness Source Group\nRate Type\nGuest Type\nNationality",
 			"default": "Date",
 			"on_change": function (query_report) { },
 			
