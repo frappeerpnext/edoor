@@ -229,17 +229,19 @@ def get_uncharge_data_from_revenue_forecast_breakdown(
 
 @frappe.whitelist()
 def get_folio_transaction_summary_amount(
-    transaction_number , 
-    show_package_breakdown=0,
-    reservation_stay="",
-    show_all_room_rate=1,
-    folio_transactions=""
+        reservation="",
+        transaction_number ="", 
+        show_package_breakdown=0,
+        reservation_stay="",
+        show_all_room_rate=1,
+        folio_transactions=""
     ):
     show_package_breakdown = int(show_package_breakdown or 0)
     if folio_transactions:
         folio_transactions = folio_transactions.split(",")
     else:
         folio_transactions = []
+    
     
     sql = """
         select 
@@ -249,11 +251,15 @@ def get_folio_transaction_summary_amount(
             sum({amount_field} * if(type='Debit',1,-1)) as amount 
         from `tabFolio Transaction` 
         where 
-            transaction_number = '{transaction_number}' and 
+
+            transaction_type = 'Reservation Folio' and 
+            reservation =  if('{reservation}'='',reservation,'{reservation}') and 
+            transaction_number = if('{transaction_number}'='',transaction_number,'{transaction_number}') and 
             is_base_transaction = 1 and 
             is_package_charge = if({show_package_breakdown}=0,0,is_package_charge) 
         
         """.format(
+            reservation = reservation,
             show_package_breakdown = show_package_breakdown,
             amount_field = "total_amount" if show_package_breakdown == 0 else "transaction_amount",
             transaction_number = transaction_number
@@ -274,14 +280,16 @@ def get_folio_transaction_summary_amount(
     summary_data =frappe.db.sql(sql,{"folio_transactions":folio_transactions},as_dict=1)
 
     
-    
+   
     if int(show_all_room_rate) ==1 and not folio_transactions:
         room_rate_summary = get_uncharge_room_rate_summary_amount_group_by_account_category(
+            reservation = reservation,
             reservation_stay=reservation_stay,
             transaction_number=transaction_number,
             show_package_breakdown=show_package_breakdown,
             folio_transactions=folio_transactions
         )
+          
        
         if room_rate_summary :
             for r in room_rate_summary:
@@ -304,19 +312,49 @@ def get_folio_transaction_summary_amount(
 
 
 def get_uncharge_room_rate_summary_amount_group_by_account_category(
+    reservation="",
     reservation_stay="",
     transaction_number="",
     show_package_breakdown=1,
     folio_transactions = ""
 ):
+    stay_names = [reservation_stay]
+    # if  reservation pass to this parameter then get all stay name from this reservation to the array stay_names
+    if reservation:
+        data = frappe.db.sql("select name from `tabReservation Stay` where reservation = '{}' and is_active_reservation =1".format(reservation),as_dict=1)
+        stay_names = stay_names + [d["name"] for d in data]
+        
+    
+    # check if reservation stay is master stay and transaction_number is master 
+    if reservation_stay and transaction_number:
+        if frappe.get_cached_value("Reservation Stay",reservation_stay, "is_master") ==1 and  frappe.get_cached_value("Reservation Folio",transaction_number,"is_master")==1:
+            reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
+            
+            sql = "select name from `tabReservation Stay` where is_active_reservation=1 and reservation = '{}' and paid_by_master_room=1".format(reservation)
+            stay_names  = stay_names +  [d["name"] for d in  frappe.db.sql(sql, as_dict=1)]
+           
+    stay_names = [d for d in stay_names if d!=""]
+    
     
     # check if use parse folio transaction mean that use want to see only selected record
     
     if folio_transactions:
         return []
     
-    room_rate_ids = frappe.db.sql("select reservation_room_rate from `tabFolio Transaction` where reservation_stay='{reservation_stay}' and transaction_number='{transaction_number}' and reservation_room_rate!=''".format(reservation_stay=reservation_stay, transaction_number=transaction_number),as_dict=1)
+    room_rate_ids = frappe.db.sql("""
+                                  select 
+                                    reservation_room_rate 
+                                from `tabFolio Transaction` 
+                                where 
+                                    reservation_stay in %(stay_names)s and 
+                                    transaction_number= if('{transaction_number}'='',transaction_number,'{transaction_number}') and 
+                                    reservation_room_rate!=''
+                                """.format(
+                                    transaction_number=transaction_number
+                                ),{"stay_names":stay_names},as_dict=1)
+    
     room_rate_ids = list(set([d["reservation_room_rate"] for d in room_rate_ids]))
+    
     if not room_rate_ids:
         room_rate_ids.append("dummy")
         
@@ -330,7 +368,7 @@ def get_uncharge_room_rate_summary_amount_group_by_account_category(
             inner join `tabAccount Code` b on b.name = a.account_code 
             inner join `tabAccount Category` c on c.name = b.account_category
         where
-            a.reservation_stay = '{reservation_stay}'  and 
+            a.reservation_stay in %(stay_names)s  and 
             a.room_rate_id not in %(room_rate_ids)s and 
             a.is_base_transaction = 1 and 
             a.is_package_charge = if({show_package_breakdown}=1,a.is_package_charge, 0)
@@ -338,11 +376,10 @@ def get_uncharge_room_rate_summary_amount_group_by_account_category(
             a.account_category,
             c.sort_order
     """.format(
-        reservation_stay=reservation_stay,
         amount_field ="transaction_amount" if show_package_breakdown ==1 else "total_amount" ,
         show_package_breakdown = show_package_breakdown
     )
-
-    return  frappe.db.sql(sql,{"room_rate_ids":room_rate_ids},as_dict =1)
+ 
+    return  frappe.db.sql(sql,{"stay_names":stay_names, "room_rate_ids":room_rate_ids},as_dict =1)
 
 

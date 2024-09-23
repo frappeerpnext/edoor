@@ -943,8 +943,6 @@ function onViewFutureReservation() {
 }
 
 const onSave = () => {
-
-
     const data = JSON.parse(JSON.stringify(doc.value))
     if (data.reservation.reservation_date) data.reservation.reservation_date = moment(data.reservation.reservation_date).format("yyyy-MM-DD")
     if (data.reservation.arrival_date) data.reservation.arrival_date = moment(data.reservation.arrival_date).format("yyyy-MM-DD")
@@ -968,9 +966,6 @@ const onSave = () => {
         if(data.reservation.arrival_date==window.current_working_date || data.reservation.departure_date==window.current_working_date  ){
             window.postMessage({"action":"Dashboard"},"*")
         }
-        
-        
-
         
         window.postMessage({action:"ReservationList"},"*")
         window.postMessage({action:"ReservationStayList"},"*")

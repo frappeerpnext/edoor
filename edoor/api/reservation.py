@@ -296,6 +296,7 @@ def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=
 
 @frappe.whitelist(methods="POST")
 def add_new_reservation(doc):
+    
     get_rate_type_doc.cache_clear()
     get_account_code_doc.cache_clear()
     
@@ -922,7 +923,11 @@ def update_room_occupy_information_after_no_show_check_in(stay_names):
     frappe.db.commit()
 
 def is_master_room_check_in(reservation,reservation_stays):
-
+    master_reservation = frappe.db.sql("select name from `tabReservation Stay` where is_active_reservation = 1 and is_master=1 and reservation = '{}'".format(reservation),as_dict=1)
+    if master_reservation:
+        if frappe.db.exists("Reservation Folio",{"reservation_stay": master_reservation[0]["name"],"is_master":1}):
+            return True
+                
     for s in reservation_stays:
         if frappe.db.get_value("Reservation Stay",s,"is_master")==1:
             return True
@@ -2394,7 +2399,18 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
     return folio_transactions
 
 @frappe.whitelist()
-def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None, show_all_room_rate=None,show_package_breakdown=0,show_note=0):
+def get_folio_transaction_summary( 
+                                  transaction_type="Reservation Folio",
+                                  transaction_number='', 
+                                  reservation="", 
+                                  reservation_stay='',
+                                  sort_by_field='account_category_sort_order',
+                                  show_room_number = 1,
+                                  show_account_code=None, 
+                                  show_all_room_rate=None,
+                                  show_package_breakdown=0,
+                                  show_note=0
+    ):
 
     if cint(show_package_breakdown)==1:
          

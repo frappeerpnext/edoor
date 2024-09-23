@@ -426,6 +426,16 @@ const props = defineProps({
     filter: Object
 })
 
+let report_filter =  localStorage.getItem("report_filter")
+if (report_filter){
+    report_filter = JSON.parse(report_filter)
+    props.filter.show_room_charge = report_filter.show_room_charge?.toString()
+    props.filter.show_room_rate = report_filter.show_room_rate?.toString()
+    props.filter.show_other_charge = report_filter.show_other_charge?.toString()
+
+}
+
+
 const { selectedReport } = toRefs(props);
 watch(selectedReport, (newVal, oldVal) => {
     if (newVal.filter_default_value){

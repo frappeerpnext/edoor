@@ -54,7 +54,7 @@ const items = ref([
         getDocList("Reservation Folio", {
             filters: [["reservation", "=", props.reservation]],
             limit:100,
-            fields:["name","reservation_stay"]
+            fields:["name","reservation_stay","reservation"]
         }).then((docs) => {
 
             if (docs.length == 0) {
@@ -89,7 +89,8 @@ const items = ref([
 
     }
 },
-    {
+    
+{
     label: $t("Folio Detail Report"),
     icon: 'pi pi-print',
     command: () => {
@@ -174,6 +175,22 @@ const items = ref([
                 })
         },
     },
+    {
+        label: $t("Group Invoice By Reservation Stay"),
+        icon: 'pi pi-dollar',
+        command: () => {
+
+            openReport("Group Invoice By Reservation Stay",
+                {
+                    doctype: "Reservation",
+                    name: props.reservation,
+                    report_name: "eDoor Group Invoice By Reservation Stay",
+                    show_letter_head: true,
+                    filter_options: ["show_summary"],
+                })
+        },
+    },
+    
     {
 
         label: $t("Reservation Detail"),

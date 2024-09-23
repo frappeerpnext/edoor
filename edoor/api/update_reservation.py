@@ -117,7 +117,9 @@ def update_reservation_stay(stay_names,run_commit=True):
                 reservation_stay,
                 sum(if(type='Debit',amount,0)) as debit,
                 sum(if(type='Credit',amount,0)) as credit,
-                sum(amount* (if(type='Debit',1,-1))) as balance
+                sum(amount* (if(type='Debit',1,-1))) as balance,
+                sum(if(parent_account_name = 'Room Charge' and is_base_transaction=1, total_amount * if(type='Debit',1,-1) , 0 )) as total_room_charge,
+                sum(if(parent_account_name != 'Room Charge' and account_group_name ='Charge' and is_base_transaction=1, total_amount * if(type='Debit',1,-1) , 0 )) as total_other_charge
             from `tabFolio Transaction` 
             where
                 reservation_stay in %(stay_names)s and 
@@ -128,12 +130,70 @@ def update_reservation_stay(stay_names,run_commit=True):
         SET
             s.total_debit = coalesce(a.debit,0),
             s.total_credit = coalesce(a.credit,0),
-            s.balance = coalesce(a.balance,0)
+            s.balance = coalesce(a.balance,0),
+            s.total_room_charge = coalesce(a.total_room_charge,0),
+            s.total_other_charge = coalesce(a.total_other_charge,0)
+
             
         where
             s.name in %(stay_names)s
     """
     frappe.db.sql(sql,{"stay_names":stay_names})
+
+    # update total room charge and total other charge by source_reservation_stay
+    sql = """
+        update `tabReservation Stay` s 
+        LEFT JOIN (
+            select  
+                source_reservation_stay,
+                sum(if(parent_account_name in ('Room Charge', 'Room Charge Discount','Room Charge Tax') and is_base_transaction=1, transaction_amount * if(type='Debit',1,-1) , 0 )) as total_room_charge,
+                sum(if(parent_account_name not in ('Room Charge', 'Room Charge Discount','Room Charge Tax') and account_group_name in ('Charge','Discount','Tax') and is_base_transaction=1, transaction_amount * if(type='Debit',1,-1) , 0 )) as total_other_charge
+            from `tabFolio Transaction` 
+            where
+                source_reservation_stay in %(stay_names)s and 
+                transaction_type = 'Reservation Folio'
+            group by 
+                source_reservation_stay 
+        ) as a on s.name = a.source_reservation_stay
+        SET
+            s.total_room_charge = coalesce(a.total_room_charge,0),
+            s.total_other_charge = coalesce(a.total_other_charge,0)            
+        where
+            s.name in %(stay_names)s
+    """
+    frappe.db.sql(sql,{"stay_names":stay_names})
+    
+    #update total room charge and total other charge from revenue forcast breakdown 
+    # but skip record from revenue forecast breakdown that already post to guest folio
+    use_room_rates = frappe.db.sql("select distinct reservation_room_rate from `tabFolio Transaction` where coalesce(reservation_room_rate,'') !='' and  transaction_type='Reservation Folio' and source_reservation_stay in %(stay_names)s", {"stay_names":stay_names},as_dict=1)
+    if not use_room_rates:
+            use_room_rates.append("dummy") # we use this for where statement in operator that not accepot empty array
+    else:
+        use_room_rates = [d["reservation_room_rate"] for d in use_room_rates]
+
+    sql = """
+        update `tabReservation Stay` s 
+        LEFT JOIN (
+            select  
+                reservation_stay,
+                sum(if(parent_account_name = 'Room Charge' and is_base_transaction=1, transaction_amount * if(type='Debit',1,-1) , 0 )) as total_room_charge,
+                sum(if(parent_account_name != 'Room Charge' and account_group_name ='Charge' and is_base_transaction=1, transaction_amount * if(type='Debit',1,-1) , 0 )) as total_other_charge
+            from `tabRevenue Forecast Breakdown` 
+            where
+                reservation_stay in %(stay_names)s  and 
+                room_rate_id not in %(use_room_rates)s
+            group by 
+                reservation_stay 
+        ) as a on s.name = a.reservation_stay
+        SET
+            s.total_room_charge = s.total_room_charge +  coalesce(a.total_room_charge,0),
+            s.total_other_charge = s.total_other_charge  +  coalesce(a.total_other_charge,0)            
+        where
+            s.name in %(stay_names)s
+    """
+    frappe.db.sql(sql,{"stay_names":stay_names, "use_room_rates":use_room_rates})
+    
+
     
     # update field like room type, is com, and is house from room rate to room occupy
     sql = """

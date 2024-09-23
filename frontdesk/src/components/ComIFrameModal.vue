@@ -287,6 +287,8 @@ const iframe_id = "iframe_" + Math.random().toString().replace(".", "_")
 const moment = inject("$moment")
 const frappe = inject("$frappe")
 const call = frappe.call()
+
+
 const filters = ref({
     invoice_style: window.setting.folio_transaction_style_credit_debit == 1 ? "Debit/Credit Style" : "Simple Style",
     show_room_number: 1,
@@ -330,10 +332,19 @@ const loading = ref(false)
 
 const html = ref()
 
+let save_filter =  localStorage.getItem("ifram_modal_filter")
+if(save_filter){
+    save_filter = JSON.parse(save_filter )
+    filters.value.show_summary = save_filter.show_summary
+}
+
+
 function onSelectLetterHead(l) {
     letter_head.value = l
     loadIframe()
 }
+
+
 const hasFilter = ref((f) => {
     if (filter_options.value) {
         return filter_options.value.includes(f.trim())
@@ -440,6 +451,9 @@ const loadIframe = () => {
         document.getElementById(iframe_id).contentWindow.location.replace(url.value)
 
     }
+
+
+    localStorage.setItem("ifram_modal_filter",JSON.stringify(filters.value))
 
 
 

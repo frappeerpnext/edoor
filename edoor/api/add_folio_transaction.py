@@ -253,8 +253,13 @@ def create_folio_transaction(data):
     # update reservation reservation reservation folio
     
     update_transaction_type_summary(data=data)
+    
     if "reservation_stay" in data:
-        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=[data["reservation_stay"]])
+        stays = [data["reservation_stay"]]
+        if "source_reservation_stay" in data:
+            if data["reservation_stay"] != data["source_reservation_stay"]:
+                stays.append(data["source_reservation_stay"])
+        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=stays)
     
     # update creation and ownere when user edit
          
@@ -426,6 +431,7 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
 
     if "base_account" in breakdown_data:
         base_doc = get_folio_transaction_doc_share_property(data, breakdown_data["base_account"],working_day)
+        
         if "name" in data:
             base_doc.flags.doc_name =data["name"]
             base_doc.flags.old_doc = old_doc
@@ -679,7 +685,7 @@ def get_folio_transaction_doc_share_property(data,folio_transaction_data,working
     doc.working_day = working_day["name"]
     doc.working_date = working_day["date_working_day"]
     doc.cashier_shift = working_day["cashier_shift"]["name"]
-     
+    
     # guest info
     # get cache data for guest
 
@@ -735,7 +741,7 @@ def get_folio_transaction_doc_share_property(data,folio_transaction_data,working
 
     # room info
     update_room_information(doc)
-
+     
     if doc.target_transaction_type and doc.target_transaction_number:
         doc.city_ledger_name = frappe.get_cached_value("City Ledger",doc.target_transaction_number,"city_ledger_name")
         doc.city_ledger_type = frappe.get_cached_value("City Ledger",doc.target_transaction_number,"city_ledger_type")
@@ -780,8 +786,17 @@ def get_folio_transaction_doc_share_property(data,folio_transaction_data,working
     return doc
 
 def update_room_information(doc):
-    if not doc.room_id:
-        room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabRoom Occupy` where reservation_stay=%(reservation_stay)s and property=%(property)s and date=%(date)s limit 1",{"property":doc.property,"reservation_stay":doc.reservation_stay,"date": doc.posting_date},as_dict=1)
+    room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabRoom Occupy` where reservation_stay=%(reservation_stay)s and property=%(property)s and date=%(date)s limit 1",{"property":doc.property,"reservation_stay":(doc.source_reservation_stay or  doc.reservation_stay),"date": doc.posting_date},as_dict=1)
+    if room_info:
+        room_info = room_info[0]
+        doc.room_id = room_info["room_id"]
+        doc.room_number = room_info["room_number"]
+        doc.room_type_id = room_info["room_type_id"]
+        doc.room_type = room_info["room_type"]
+        doc.room_type_alias = room_info["room_type_alias"]
+    else:
+        # get froom from `tabReservation Room`
+        room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabReservation Stay Room` where parent=%(reservation_stay)s and property=%(property)s  limit 1",{"property":doc.property,"reservation_stay":doc.reservation_stay},as_dict=1)
         if room_info:
             room_info = room_info[0]
             doc.room_id = room_info["room_id"]
@@ -789,18 +804,6 @@ def update_room_information(doc):
             doc.room_type_id = room_info["room_type_id"]
             doc.room_type = room_info["room_type"]
             doc.room_type_alias = room_info["room_type_alias"]
-        else:
-            # get froom from `tabReservation Room`
-            room_info = frappe.db.sql( "select room_id,room_number,room_type,room_type_id, room_type_alias from `tabReservation Stay Room` where parent=%(reservation_stay)s and property=%(property)s  limit 1",{"property":doc.property,"reservation_stay":doc.reservation_stay},as_dict=1)
-            if room_info:
-                room_info = room_info[0]
-                doc.room_id = room_info["room_id"]
-                doc.room_number = room_info["room_number"]
-                doc.room_type_id = room_info["room_type_id"]
-                doc.room_type = room_info["room_type"]
-                doc.room_type_alias = room_info["room_type_alias"]
-    else:
-        doc.room_number , doc.room_type_id, doc.room_type , doc.room_type_alias = frappe.db.get_value("Room",doc.room_id,["room_number","room_type_id","room_type","room_type_alias"])
 
 
 def update_folio_transaction_note(doc,base_doc=None):

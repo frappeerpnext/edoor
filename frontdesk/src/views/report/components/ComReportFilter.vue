@@ -142,7 +142,7 @@ function onSearch() {
     }
     
     window.report_filter = filter.value
- 
+    localStorage.setItem("report_filter",JSON.stringify(filter.value) )
     emit("onFilter", f)
  
 }

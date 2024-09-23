@@ -187,7 +187,7 @@ function viewFolioSummaryReport() {
     getDocList("Reservation Folio", {
             filters: [ ["reservation_stay", "=", props.folio.reservation_stay]],
             limit:100,
-            fields:["name","reservation_stay"]
+            fields:["name","reservation_stay","reservation"]
         }).then((docs) => {
 
 

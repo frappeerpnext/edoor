@@ -4,15 +4,11 @@
        <div class="col grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
                 <div class="grid">
-                    <div class="col-12 " v-if="(dialog_data?.show_source_reservation_stay || false)">
+                   
+                    <div class="col-6">
                         <label for="source_reservation_stay">{{ $t('Reservation Stay') }}</label>
                         <ComAutoComplete :disabled="!canEdit" v-model="doc.source_reservation_stay" placeholder="Reservation Stay associated with this Transaction" doctype="Reservation Stay"
                             class="auto__Com_Cus w-full" :filters="{ 'property': doc.property,'reservation':doc.reservation,'reservation_status':'In-house' }" />
-                    </div>
-                    <div class="col-6 " v-if="(dialog_data?.show_room || false)">
-                        <label for="room">{{ $t('Room (Optional)') }}</label>
-                        <ComAutoComplete :disabled="!canEdit" v-model="doc.room_id" placeholder="Select Room" doctype="Room"
-                            class="auto__Com_Cus w-full" :filters="{ 'property': doc.property }" />
                     </div>
                     <div class="col-6 " v-if="doc.reservation">
                         <label for="room">{{ $t('Guest (Optional)') }}</label>

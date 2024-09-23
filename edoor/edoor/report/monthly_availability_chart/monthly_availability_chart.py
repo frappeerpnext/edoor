@@ -10,17 +10,24 @@ from dateutil.rrule import rrule, MONTHLY
 from datetime import datetime
 import copy
 import calendar
+from edoor.edoor.report.monthly_availability_chart.monthly_avalability_chart_separate_by_month import get_report_datas
+
 def execute(filters=None):
-	data = get_data(filters)
-	report_data = get_report_data(filters,data)
-	chart = get_chart(filters,report_data)
-	return get_columns(filters),report_data,None,chart, None
+    
+	# data = get_data(filters)
+	# report_data = get_report_data(filters,data)
+	# chart = get_chart(filters,report_data)
+
+	report_datas = get_report_datas(filters)
+	return report_datas["columns"],report_datas["report_data"],None,report_datas["report_chart"], None
 
 
 def get_columns(filters):
 	columns = [
 		{'fieldname':'row_header','align':'left','label':'Room',"width":150 ,"show_in_report":1},
-		{'fieldname':'occupancy','align':'center','label':'Occ(%)',"width":75 ,"show_in_report":1},
+		{'fieldname':'occupancy','align':'center','label':'Occ(%)',"width":65 ,"show_in_report":1},
+		{'fieldname':'occupy','align':'center','label':'Occ',"width":65 ,"show_in_report":1},
+		{'fieldname':'block','align':'center','label':'OOO',"width":65 ,"show_in_report":1},
 		
 	]
 	date = getdate(filters.start_date)
@@ -69,7 +76,6 @@ def get_report_data(filters,data):
 	
 	report_data = []
 	occupy_data = get_occupy_data(filters)
-	frappe.msgprint(str(occupy_data))
 	calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block")
 	
 	#get room occupancy of current month
@@ -87,26 +93,57 @@ def get_report_data(filters,data):
 	room_types =  list(dict.fromkeys((d['room_type_id'], d['room_type']) for d in data))
  
 	for rt in room_types:
-		room_type_row = {"row_header":rt[1] }
+		rooms = copy.deepcopy([d for d in data if d["room_type_id"]==rt[0]])
+		room_type_row = {"row_header": "{} ({})".format( rt[1], len(rooms))  }
 		report_data.append(room_type_row)
   
-		rooms = copy.deepcopy([d for d in data if d["room_type_id"]==rt[0]])
-		for r in rooms:
+		
+		# show occupancy 
+		
+		date = getdate(filters.start_date)
+		while date<= getdate(filters.end_date):
+			occupy = len([d for d in occupy_data if d["type"] =="Reservation"  and date == d["date"] and d["room_type_id"] == rt[0] ])
+			block = len([d for d in occupy_data if d["type"] =="Block" and date == d["date"] and d["room_type_id"] == rt[0] ])
+			if int(frappe.get_cached_value("eDoor Setting",None, "calculate_room_occupancy_include_room_block")) ==1:
+				total_room = len(rooms)
+				if total_room == 0:
+					total_room = 1
+				room_type_row[str(date)] = round( occupy  / total_room * 100,2) 
+			else:
+				total_room = len(rooms) - block 
+				if total_room == 0:
+					total_room = 1
+				room_type_row[str(date)] = round( occupy  / total_room * 100,2)
 			
-			# for occ in [d for d in occupy_data if d["reservation_status"] in ["Reserved","In-house","Checked Out"] or d["type"] == 'Block']:
-			# 	if occ["type"] == "Block":
-			# 		r[getdate(occ["date"])] = "BL"
-			# 	else:
-			# 		r[getdate(occ["date"])] = occ["reservation_status"]
-     
-			report_data.append(r)
+			date = add_days(date,1)
+			
+		# occupancy column of room type
+		occupy = len([d for d in occupy_data if d["type"] =="Reservation"  and  d["room_type_id"] == rt[0] ])
+		block = len([d for d in occupy_data if d["type"] =="Block" and   d["room_type_id"] == rt[0] ])
+		room_type_row["occupy"] = occupy
+		room_type_row["block"] = block
+		if int(frappe.get_cached_value("eDoor Setting",None, "calculate_room_occupancy_include_room_block")) ==1:
+			room_type_row["occupancy"] = round( occupy  / total_rooms * 100,2) 
+		else:
+			total_rooms =total_rooms - block 
+			if total_room == 0:
+				total_room = 1
+			room_type_row["occupancy"] = round( occupy  / total_rooms * 100,2)
+		
 
-   
+
+		report_data = report_data + rooms
+	for occ in occupy_data:
+		room = [d for d in  report_data if "name" in d and d["name"] == occ["room_id"]] 
+		if room:
+			room = room[0]
+			status = get_status(reservation_status, occ["reservation_status"])
+			if occ["type"] == "Block":
+				room[str(occ["date"])] = "BL" 
+			else:
+				room[str(occ["date"])] = status["alias"]
 		
   
-	frappe.msgprint(str(room_types))
-	frappe.msgprint(str(report_data))
-
 	return report_data
 
 

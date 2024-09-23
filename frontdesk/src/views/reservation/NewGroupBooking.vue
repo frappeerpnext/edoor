@@ -547,6 +547,12 @@ const isFieldHidden = computed(() => (fieldname) => {
   return meta.value.fields.find(r=>r.fieldname == fieldname).hidden ==0
 
 });
+function getMeta(){
+    getApi("api.get_meta",{doctype:"Reservation"},"epos_restaurant_2023.api.").then(result=>{
+         
+        meta.value= result.message
+    })
+}
 const onBusinessSourceTypeChange = (business_source_type) => {
 
 
@@ -1051,6 +1057,7 @@ function generateRandomColor() {
 
 
 onMounted(() => {
+    getMeta()
     getDocList("Reservation Color Code", {
         fields: ["name", "color"],
         limit: 1000

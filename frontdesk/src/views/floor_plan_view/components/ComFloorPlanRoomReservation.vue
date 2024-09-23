@@ -16,8 +16,8 @@
       {{ stay.guest_name }}
      </div>
      <div class="mt-1">
-        <i v-tippy="{ content: stay?.reservation_type, placement: 'left' }" :class="stay?.reservation_type == 'FIT' ? 'pi-user' : 'pi-users'" class="pi me-1"></i>  
-        <span>{{stay?.adult}}</span>/<span>{{stay?.child}}</span> 
+        <i v-tippy="{ content: stay?.reservation_type, placement: 'left' }" :class="stay?.reservation_type == 'FIT' ? 'pi-user' : 'pi-user'" class="pi me-1"></i>  
+        <span>{{stay?.adult}}</span> | <i class="pi pi-user" style="font-size:9px"></i>  <span>{{stay?.child}}</span> 
         <span class="my-2">
           |
         </span>

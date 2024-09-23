@@ -33,11 +33,11 @@
   {
    "fieldname": "business_source_type",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Business Source Type",
-   "options": "Business Source Type",
-   "reqd": 1
+   "options": "Business Source Type"
   },
   {
    "fieldname": "business_source",
@@ -146,6 +146,7 @@
    "fetch_from": "business_source_type.business_source_group",
    "fieldname": "business_source_group",
    "fieldtype": "Link",
+   "hidden": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Business Source Group",
@@ -155,7 +156,7 @@
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-19 15:50:10.215420",
+ "modified": "2024-09-23 08:26:32.321267",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

@@ -976,13 +976,13 @@
    "fieldtype": "HTML"
   },
   {
-   "description": "Not use for not use in future",
+   "description": "This show summary of room charge from revenue forecast + folio transaction",
    "fieldname": "total_room_charge",
    "fieldtype": "Currency",
    "label": "Total Room Charge"
   },
   {
-   "description": "not use for now but will use in future",
+   "description": "This show summary of other charge from revenue forecast + folio transaction",
    "fieldname": "total_other_charge",
    "fieldtype": "Currency",
    "label": "Total Other Charge"
@@ -1019,7 +1019,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-11 12:23:22.994916",
+ "modified": "2024-09-21 08:31:23.580121",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

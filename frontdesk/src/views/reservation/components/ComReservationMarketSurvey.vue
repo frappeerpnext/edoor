@@ -1,25 +1,36 @@
 <template>
-   <div v-for="(s, index) in formModel" :key="index" >
-        <h1>{{ s.label }}</h1>
-        <div class="col" v-for="(c, col_index) in s.columns" :key="col_index">
-            Col {{ col_index + 1 }}
 
-            <div class="field" v-for="(f, f_index) in c.fields" :key="f_index">
-                {{ f.label }}:  
-                <ComFormInput :field="f" :model="doc"  />
-                
+<BlockUI :blocked="loading">
+    <div class="card">
+        <Fieldset  v-for="(s, index) in formModel.filter(item => !item.hidden)" :key="index" :legend="s.label" :toggleable="true" >
+            <div class="grid">
+               <div class="col-fixed mx-2" v-for="(c, col_index) in s.columns" :key="col_index">
+            <div class="field" v-for="(f, f_index) in c.fields" :key="f_index" >
+                    <ComFormInput v-if="!f?.hidden" :field="f" :model="doc"  />  
             </div>
-        </div>
-        <hr/>
-   </div>
-
-<Button @click="onSave">Save</Button>
+        </div> 
+            </div>
+            
+        </Fieldset>
+    </div>
+</BlockUI>    
+  <hr class="my-3" />
+  
+  <div v-if="!hideSave" class="flex justify-content-end mb-3">
+<Button type="button" label="Save" icon="pi pi-save" :loading="loading" @click="onSave" />
+  </div>
+  
 </template>
 <script setup>
+import BlockUI from 'primevue/blockui';
     import {getApi,ref,onMounted,createUpdateDoc} from "@/plugin"
     import ComFormInput  from "@/components/form/ComFormInput.vue"
     const props = defineProps({
-        reservation:String
+        reservation:String,
+        hideSave:{
+            default:false,
+            type:Boolean
+        }
     })
     const doc = ref({reservation:props.reservation})
     const meta = ref()

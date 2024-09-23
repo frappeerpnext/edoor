@@ -141,6 +141,7 @@ const refreshReport = () => {
     url.value = url.value + "&show_summary=" + filters.value.show_summary || 0
     url.value = url.value + "&show_all_room_rate=" + filters.value.show_all_room_rate || 0
     url.value = url.value + "&show_package_breakdown=" + filters.value.show_package_breakdown || 0
+ 
     if (filters.value.selected_folio) {
         url.value = url.value + "&folio=" + filters.value.selected_folio.name
         url.value = url.value + "&reservation=" + filters.value.selected_folio.reservation
@@ -158,7 +159,7 @@ const refreshReport = () => {
 
     // save state
     localStorage.setItem("print_reservation_stay_" + report_name.value.replace(" ",""), JSON.stringify(filters.value))
-
+  
     report_name.value
 }
 function onIframeLoaded() {

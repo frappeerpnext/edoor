@@ -7,20 +7,31 @@
  "engine": "InnoDB",
  "field_order": [
   "reservation",
-  "guest_comment_section",
-  "guest_comment",
   "how_do_you_find_us_section",
   "booking_engine",
   "column_break_ndlc",
   "search_engine",
   "column_break_scbj",
   "is_return_guest",
+  "column_break_resq",
+  "social_media",
+  "column_break_ohkp",
+  "recommended_by_freindfamily",
+  "column_break_csik",
+  "other",
   "purpose_of_visit_section",
+  "column_break_oszt",
+  "pleasure",
+  "column_break_xazb",
   "holiday",
   "column_break_rhuf",
   "business",
   "column_break_zjkg",
-  "celebration"
+  "celebration",
+  "column_break_wveo",
+  "other_purpose_of_visit",
+  "guest_comment_section",
+  "guest_comment"
  ],
  "fields": [
   {
@@ -84,6 +95,7 @@
   {
    "fieldname": "guest_comment_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Guest Comment"
   },
   {
@@ -100,11 +112,65 @@
    "fieldname": "celebration",
    "fieldtype": "Check",
    "label": "Celebration"
+  },
+  {
+   "fieldname": "column_break_resq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "social_media",
+   "fieldtype": "Check",
+   "label": "Social Media"
+  },
+  {
+   "fieldname": "column_break_ohkp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "recommended_by_freindfamily",
+   "fieldtype": "Check",
+   "label": "Recommended By Freind/Family"
+  },
+  {
+   "fieldname": "column_break_csik",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "other",
+   "fieldtype": "Check",
+   "label": "Other"
+  },
+  {
+   "fieldname": "column_break_oszt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "pleasure",
+   "fieldtype": "Check",
+   "label": "Pleasure"
+  },
+  {
+   "fieldname": "column_break_xazb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wveo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "other_purpose_of_visit",
+   "fieldtype": "Check",
+   "label": "Other"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-20 17:16:02.002769",
+ "modified": "2024-09-21 10:43:49.295641",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Market Survey",
