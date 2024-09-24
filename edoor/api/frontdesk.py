@@ -2154,6 +2154,7 @@ def get_edoor_setting(property = None):
         "city_ledger_report_name":edoor_setting_doc.city_ledger_report_name,
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
+        "view_room_rate_in_guest_folio":edoor_setting_doc.view_room_rate_in_guest_folio,
         "show_account_code_in_folio_transaction":edoor_setting_doc.show_account_code_in_folio_transaction,
         "enable_over_booking":edoor_setting_doc.enable_over_booking,
         "backend_port":epos_setting.backend_port,

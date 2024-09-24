@@ -1,12 +1,11 @@
 <template>
-    
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog grid" id="view-table-iframe-dialog" style="height: 85vh;">
           
             <div class="xl:mb-3 mb-0 overflow-auto col-12  xl:col-3 gap-2">
                 <div class="flex flex-column gap-2">
                     <div>
-                        <Dropdown v-model="filters.selected_folio"  :options="dialogRef.data.folios" optionLabel="name" placeholder="Select Folio" class="w-full" @change="onSelectFolio" />
+                        <Dropdown v-model="filters.selected_folio"  :options="folios" optionLabel="name" placeholder="Select Folio" class="w-full" @change="onSelectFolio" />
                     </div>
                     <div> 
                         <ComLetterHead v-if="!loading" :letterhead="filters.letterHead"  @onSelect="onSelectLetterHead"/>
@@ -33,7 +32,7 @@
                     </div>
                     <div>
                         <Checkbox v-model="filters.show_all_room_rate" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_all_room_rate" />
-                        <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate</label>
+                        <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate in Furture Stay</label>
                     </div>
                     <div>
                         
@@ -59,12 +58,21 @@
                     </div>
                     <div>
                         <Checkbox v-model="filters.show_all_room_rate" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="show_all_room_rate" />
-                        <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate</label>
+                        <label for="show_all_room_rate" class="white-space-nowrap" >Show All Room Rate in Furture Stay</label>
                     </div>
                     <div>
                         <Checkbox  v-model="filters.show_package_breakdown" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="breakdown_account_code" />
                         <label for="breakdown_account_code" class="white-space-nowrap" >Show/Hide Package Breakdown</label>
                     </div>
+ 
+                    <div v-if="filters?.selected_folio?.show_room_rate_in_guest_folio_invoice==0" style="background: #ebc174;padding: 8px;border-radius: 10px;margin: 5px 0px;">
+                        <Checkbox :disabled="!canForceToViewRoomRate"  v-model="filters.force_show_room_rate" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" 
+                        inputId="force_show_room_rate" />
+                        <label for="force_show_room_rate" class="white-space-nowrap" >Show Room Rate</label>
+                    </div>
+
+               
+                    
 </template>
                          
                 </div> 
@@ -86,7 +94,7 @@
                         </div>
                     </div>
                 </div>
-                <ComWarningPrintRoomRate v-if="filters?.selected_folio?.reservation" :reservation="filters.selected_folio.reservation" display="toast"/>
+                <ComWarningPrintRoomRate v-if="filters?.selected_folio?.show_room_rate_in_guest_folio_invoice==0" display="toast"/>
                 <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
             </div>
         </div>
@@ -95,13 +103,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject , onUnmounted , getApi} from "@/plugin"
+import { ref, onMounted, inject , onUnmounted , getApi,computed} from "@/plugin"
 import ComWarningPrintRoomRate from '@/views/reservation/components/ComWarningPrintRoomRate.vue';
-
+ 
 const visible = ref(false);
 const isMobile = ref(window.isMobile)
 const dialogRef = inject("dialogRef");
-
+const folios = ref([])
 
  
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
@@ -121,7 +129,9 @@ const filters = ref({
 
 })
 
-
+const canForceToViewRoomRate = computed(()=>{
+    return window.user.roles.includes(window.setting.view_room_rate_in_guest_folio)
+})
 if(localStorage.getItem('displayViewFolioTransaction')){
     filters.value.show_package_breakdown = parseInt( localStorage.getItem('displayViewFolioTransaction'));  
 }
@@ -144,6 +154,7 @@ const refreshReport = () => {
     url.value = url.value + "&show_summary=" + filters.value.show_summary || 0
     url.value = url.value + "&show_all_room_rate=" + filters.value.show_all_room_rate || 0
     url.value = url.value + "&show_package_breakdown=" + filters.value.show_package_breakdown || 0
+    url.value = url.value + "&force_show_room_rate=" + filters.value.force_show_room_rate || 0
  
     if (filters.value.selected_folio) {
         url.value = url.value + "&folio=" + filters.value.selected_folio.name
@@ -177,18 +188,33 @@ function onPrint(){
     }
 }
 
+function getFolioList(){
+    getApi('reservation.get_guest_folio_list', {
+
+            reservation_stay:dialogRef.value.data.reservation_stay || "",
+            reservation:dialogRef.value.data.reservation || "",
+
+        })
+            .then((result) => {
+                folios.value  = result.message
+            })
+}
+
 onMounted(() => {
+    getFolioList()
     if (dialogRef) {
         loading.value = true
         const params = dialogRef.value.data
         reservation_stay.value = params.reservation_stay
         report_name.value = params.report_name
+
         let state = localStorage.getItem("print_reservation_stay_" + report_name.value.replace(" ",""))
         if (state){
             state = JSON.parse(state)
             Object.keys(state).forEach(key => {
                 filters.value[key] = state[key]
             });
+            filters.value.force_show_room_rate = 0
         }
 
         if (!params.folio) {
@@ -202,6 +228,7 @@ onMounted(() => {
             filters.value.letterHead = window.setting.property.default_letter_head
         }
         loading.value = false
+       
         refreshReport()
 
     }

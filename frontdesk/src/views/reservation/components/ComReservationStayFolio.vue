@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { inject, ref, onUnmounted ,provide,getDocList,onMounted} from '@/plugin';
+import { inject, ref, onUnmounted ,provide,getApi,onMounted} from '@/plugin';
 import ComResevationStayFolioList from "@/views/reservation/components/reservation_stay_folio/ComResevationStayFolioList.vue"
 
 import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
@@ -90,13 +90,13 @@ function onRefresh(){
 }
 function loadReservationStayFolioList(selected_name=""){
         loading.value = true
-        getDocList('Reservation Folio', {
-            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","reservation_status","business_source","doctype","total_credit","total_debit","tax_invoice_number","folio_type","folio_type_color"],
-            filters: [['reservation_stay', '=', rs.reservationStay.name]],
-            limit: 1000
+        getApi('reservation.get_guest_folio_list', {
+            reservation:rs.reservationStay.reservation,
+            reservation_stay:rs.reservationStay.name
         })
-            .then((doc) => {
-                rs.folios = doc
+            .then((result) => {
+                rs.folios = result.message
+             
                 setSelectedFolio(selected_name)
                 loading.value = false
             }).catch((err) => {

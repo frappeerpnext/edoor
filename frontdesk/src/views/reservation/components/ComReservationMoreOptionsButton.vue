@@ -114,6 +114,11 @@
                     <i class="pi pi-history" />
                     <span class="ml-2">{{$t('Audit Trail')}}</span>
                 </button>
+                <button @click="onSetting"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-cog" />
+                    <span class="ml-2">{{ $t('Setting') }}</span>
+                </button>
 
             </template>
         </Menu>
@@ -130,6 +135,7 @@ import ComFormSetupArrivalAndDeparture from '@/views/reservation/components/ComF
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import ComConfirmTransferStay from '@/views/reservation/components/ComConfirmTransferStay.vue'
+import ComResservationSetting from "@/views/frontdesk/components/ComResservationSetting.vue";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const dialog = useDialog();
@@ -148,6 +154,40 @@ const reservation = ref({})
 
 const toggle = (event) => {
     menu.value.toggle(event);
+}
+
+function onSetting(){
+    console.log(rs.reservation.name)
+    dialog.open(ComResservationSetting, {
+        data:  {
+            reservation:rs.reservation.name,
+            property:rs.reservation.property,
+            show_room_rate_in_guest_folio_invoice:rs.reservation.show_room_rate_in_guest_folio_invoice
+        },
+        props: {
+            header: $t("Setting"),
+            style: {
+                width: '30vw',
+            },
+            modal: true,
+            maximizable: false,
+            closeOnEscape: false,
+            position: "top",
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+            if (options.data){
+                setTimeout(() => {
+                    emit('onRefresh')
+                }, 1000);
+            }
+              
+         }
+
+    });
 }
 
 function onChangeStatus(reservation_status) {

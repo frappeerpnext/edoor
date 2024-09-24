@@ -108,8 +108,8 @@
                     </div>
                   
                 </Message>
-
-                <ComWarningPrintRoomRate :reservation="selectedFolio.reservation"/>
+              
+                <ComWarningPrintRoomRate v-if="selectedFolio.show_room_rate_in_guest_folio_invoice==0"/>
     </div>
 </template>
 <script setup>
@@ -188,20 +188,12 @@ function viewFolioSummaryReport() {
         filter = [ ["reservation", "=", props.folio.reservation]]
     }
 
-    getDocList("Reservation Folio", {
-            filters: [ ["reservation_stay", "=", props.folio.reservation_stay]],
-            limit:100,
-            fields:["name","reservation_stay","reservation"]
-        }).then((docs) => {
 
-
-            
         dialog.open(ComPrintReservationStay, {
             data: {
                 doctype: "Reservation%20Stay",
                 reservation_stay: selectedFolio.value.reservation_stay,
                 folio: selectedFolio.value,
-                folios: docs,
                 report_name:gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
                 view: "print"
             },
@@ -221,7 +213,7 @@ function viewFolioSummaryReport() {
 
             },
         });
-})
+
 }
 
 function viewfoliotaxinvoicedetail() {
@@ -281,18 +273,13 @@ print_menus.value.push({
 print_menus.value.push({
     label: $t("Folio Detail Report"),
     icon: 'pi pi-print',
-    command: () => { getDocList("Reservation Folio", {
-            filters: [ ["reservation_stay", "=", props.reservation_stay]],
-            limit:100,
-            fields:["name","reservation_stay"]
-        }).then((docs) => {
+    command: () => {
 
         dialog.open(ComPrintReservationStay, {
             data: {
                 doctype: "Reservation%20Stay",
                 reservation_stay: selectedFolio.value.reservation_stay,
                folio: selectedFolio.value,
-            folios: docs,
                 report_name:gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"),
                 view: "print"
             },
@@ -312,7 +299,7 @@ print_menus.value.push({
 
             },
         });
-    })
+  
     }
 
 

@@ -3,7 +3,7 @@
 </template>
 <script setup>
 import { useToast } from "primevue/usetoast";
-import { ref, inject, useDialog, onMounted } from "@/plugin";
+import { ref, inject, useDialog, onMounted,getApi,getDocList } from "@/plugin";
 import ComPrintGuestRegistrationCard from "./ComPrintGuestRegistrationCard.vue";
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
@@ -18,8 +18,7 @@ const props = defineProps({
     folio_number:String
 })
 
-const frappe = inject("$frappe")
-const db = frappe.db();
+
 const items = ref([])
 //static print button
 items.value.push({
@@ -81,23 +80,20 @@ items.value.push({
     label: $t("Folio Summary Report"),
     icon: 'pi pi-print',
     command: () => {
-        db.getDocList("Reservation Folio", {
-            filters: [["reservation_stay", "=", props.reservation_stay]],
-            limit:100,
-            fields:["name","reservation_stay"]
-        }).then((docs) => {
+        alert(props.reservation_stay)
+        getApi("reservation.get_guest_folio_list", {
+            reservation_stay:props.reservation_stay
+        }).then((result) => {
 
-            if (docs.length == 0) {
+            if (result.message.length == 0) {
                 toast.add({ severity: 'warn', summary: 'Folio Summary Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
             } else {
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
-                        reservation_stay:docs[0].reservation_stay,
+                        reservation_stay:props.reservation_stay,
                         folio: docs[0],
-                        folios: docs,
                          report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
-
                         view: "print"
                     },
                     props: {
@@ -116,8 +112,9 @@ items.value.push({
                     },
                 });
             }
-        })
 
+
+        })      
     }
 })
 //folio detail report
@@ -125,7 +122,7 @@ items.value.push({
     label: $t("Folio Detail Report"),
     icon: 'pi pi-print',
     command: () => {
-        db.getDocList("Reservation Folio", {
+        getDocList("Reservation Folio", {
             filters: [ ["reservation_stay", "=", props.reservation_stay]],
             limit:100,
             fields:["name","reservation_stay"]
@@ -253,9 +250,7 @@ items.value.push({
         });
     }
 })
-
-
-
+ 
 //reservation stay detail
 items.value.push({
     label: $t("Reservation Stay Detail"),
@@ -299,7 +294,7 @@ onMounted(() => {
         }
     }
     if (props.reservation_stay) {
-        db.getDocList('Custom Print Format', {
+        getDocList('Custom Print Format', {
         fields: [
             'print_format',
             'icon',

@@ -121,7 +121,7 @@ def get_data (filters,report_fields):
 	if filters.filter_date_by =="Arrival Date":
 		sql = sql +  " and arrival_date between %(start_date)s and %(end_date)s "
 	elif filters.filter_date_by == "Stay Date":
-		filters.reservation_stays = get_reservation_stays(filters)
+		filters.reservation_stays =get_reservation_stays(filters)
 		sql = sql + " and name in %(reservation_stays)s"
 	elif filters.filter_date_by == "Reservation":
 		sql = sql +  " and reservation_date between %(start_date)s and %(end_date)s "
@@ -151,10 +151,10 @@ def get_data (filters,report_fields):
 
 	order_field = [d for d in get_order_field() if d["label"] == filters.order_by][0]["field"]
 	sql = sql + " order by {} {}".format(order_field, filters.sort_order)
-	
- 	# frappe.throw(sql)
+ 
+	 
+ 
 	data = frappe.db.sql(sql, filters ,as_dict=1)
-	
 	return data
 
 
@@ -291,7 +291,8 @@ def get_reservation_stays(filters):
 	# 	sql = sql + " and room_types in %(room_types)s"
 
 	data =  frappe.db.sql(sql, filters, as_dict=1)
-	return [d["reservation_stay"] for d in data]
+	
+	return [d["reservation_stay"] for d in data] + ["dummy"]
 
 def get_reservation(filters):
 	sql = """

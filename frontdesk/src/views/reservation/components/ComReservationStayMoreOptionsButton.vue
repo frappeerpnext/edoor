@@ -108,6 +108,11 @@
                     <i class="pi pi-history" />
                     <span class="ml-2">{{ $t('Audit Trail') }}</span>
                 </button>
+                <button @click="onSetting"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-cog" />
+                    <span class="ml-2">{{ $t('Setting') }}</span>
+                </button>
             </template>
         </Menu>
     </div>
@@ -117,6 +122,7 @@
 import { inject, ref, useConfirm, useToast, postApi,useDialog,computed,updateDoc } from "@/plugin";
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
 import ComReinstate from "@/views/frontdesk/components/ComReinstate.vue";
+import ComResservationSetting from "@/views/frontdesk/components/ComResservationSetting.vue";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 
@@ -197,7 +203,39 @@ function onReinstate(){
 
     });
 }
+function onSetting(){
+    dialog.open(ComResservationSetting, {
+        data:  {
+            reservation_stay: rs.reservationStay.name,
+            reservation: rs.reservationStay.reservation,
+            property:rs.reservationStay.property,
+            show_room_rate_in_guest_folio_invoice:rs.reservation.show_room_rate_in_guest_folio_invoice
+        },
+        props: {
+            header: $t("Setting"),
+            style: {
+                width: '30vw',
+            },
+            modal: true,
+            maximizable: false,
+            closeOnEscape: false,
+            position: "top",
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+            if (options.data){
+                setTimeout(() => {
+                    emit('onRefresh')
+                }, 1000);
+            }
+              
+         }
 
+    });
+}
 items.value.push({
     label: "Audit Trail",
     icon: 'pi pi-history',

@@ -27,8 +27,11 @@ from edoor.api.generate_room_rate import generate_forecast_revenue, generate_new
 def test():
     data = frappe.db.get_all("Account Code", filters={"parent_account_code":"1000"}, order_by='lft')
     return data 
+
 @frappe.whitelist()
 def get_reservation_folio_list(reservation):
+    show_room_rate_in_guest_folio_invoice = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
+    
     sql="""
         select 
             name,
@@ -48,12 +51,35 @@ def get_reservation_folio_list(reservation):
         """.format(reservation)
     
     data = frappe.db.sql(sql,as_dict=1)
-    sql = "select name, reservation_stay,reservation, posting_date, guest,guest_name, total_credit,total_debit,balance ,status,is_master,note,business_source,folio_type,folio_type_color,show_in_pos_transfer from `tabReservation Folio` where reservation='{}'".format(reservation)
+    sql = """
+            select 
+                name, 
+                reservation_stay,
+                reservation, 
+                posting_date, 
+                guest,
+                guest_name, 
+                total_credit,
+                total_debit,
+                balance ,
+                status,
+                is_master,
+                note,
+                business_source,
+                folio_type,
+                folio_type_color,
+                show_in_pos_transfer 
+            from `tabReservation Folio` 
+            where reservation='{}'
+            """.format(reservation)
     folios = frappe.db.sql(sql,as_dict=1)
     
     if folios:
         for d in data:
-            d["folios"]=[f.update({"allow_post_to_city_ledger":d["allow_post_to_city_ledger"]}) or f for f in folios if f["reservation_stay"]==d["name"]]
+            d["folios"]=[f.update({
+                                    "allow_post_to_city_ledger":d["allow_post_to_city_ledger"],
+                                    "show_room_rate_in_guest_folio_invoice":show_room_rate_in_guest_folio_invoice
+                                }) or f for f in folios if f["reservation_stay"]==d["name"]]
  
     
     return data
@@ -2415,9 +2441,11 @@ def get_folio_transaction_summary(
                                   show_account_code=None, 
                                   show_all_room_rate=None,
                                   show_package_breakdown=0,
-                                  show_note=0
+                                  show_note=0,
+                                  force_show_room_rate = 1
     ):
-
+    # force_show_room_rate we use thsi param to show room rate account event the reservation is tick not allow to show room rate
+  
     if cint(show_package_breakdown)==1:
          
         return get_folio_transaction_summary_with_breadown_account_code(
@@ -2429,7 +2457,8 @@ def get_folio_transaction_summary(
             show_room_number=show_room_number,
             show_account_code=show_account_code,
             show_all_room_rate=show_all_room_rate,
-            show_note=show_note
+            show_note=show_note,
+            force_show_room_rate=cint(force_show_room_rate)
         )
     else:
         
@@ -2442,7 +2471,8 @@ def get_folio_transaction_summary(
             show_room_number=show_room_number,
             show_account_code=show_account_code,
             show_all_room_rate=show_all_room_rate,
-            show_note=show_note
+            show_note=show_note,
+            force_show_room_rate=cint(force_show_room_rate)
         )
 
 
@@ -2538,9 +2568,11 @@ def get_folio_transaction_summary_with_breadown_account_code(
                 show_room_number = 1,
                 show_account_code=None, 
                 show_all_room_rate=None,
-                show_note = 0
+                show_note = 0,
+                force_show_room_rate=1
     ):
-
+    # force_show_room_rate we use thsi param to show room rate account event the reservation is tick not allow to show room rate
+   
     if not reservation:
         if reservation_stay:
             reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
@@ -2550,13 +2582,13 @@ def get_folio_transaction_summary_with_breadown_account_code(
             reservation = frappe.get_cached_value("Reservation Folio", transaction_number, "reservation")
     show_room_rate_in_guest_folio = 1 
     hide_account_codes = ["dummy"]
-    
-    if reservation:
-         show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
-         if  show_room_rate_in_guest_folio == 0:
-            hide_acounts = frappe.db.sql("select name from `tabAccount Code` where hide_account_reservation_not_allow_see_rate=1",as_dict=1)
-            hide_account_codes = hide_account_codes + [d["name"] for d in hide_acounts]
-            hide_account_codes = [d for d in hide_account_codes if d]
+    if force_show_room_rate == 0:
+        if reservation:
+            show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
+            if  show_room_rate_in_guest_folio == 0:
+                hide_acounts = frappe.db.sql("select name from `tabAccount Code` where hide_account_reservation_not_allow_see_rate=1",as_dict=1)
+                hide_account_codes = hide_account_codes + [d["name"] for d in hide_acounts]
+                hide_account_codes = [d for d in hide_account_codes if d]
             
      
     if show_account_code == None:
@@ -2655,25 +2687,29 @@ def get_folio_transaction_summary_without_breadwon_account_code(
         show_room_number = 1,
         show_account_code=None,
         show_all_room_rate=None,
-        show_note=0
+        show_note=0,
+        force_show_room_rate=1
     ):
-
+    # force_show_room_rate we use thsi param to show room rate account event the reservation is tick not allow to show room rate
+   
     # check if reservatin not allow to view room rate
-    if not reservation:
-        if reservation_stay:
-            reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
-    
-    if not reservation:
-        if transaction_number and transaction_type=="Reservation Folio":
-            reservation = frappe.get_cached_value("Reservation Folio", transaction_number, "reservation")
-    show_room_rate_in_guest_folio = 1 
     hide_account_codes = ["dummy"]
-    if reservation:
-         show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
-         if  show_room_rate_in_guest_folio == 0:
-            hide_acounts = frappe.db.sql("select name from `tabAccount Code` where hide_account_reservation_not_allow_see_rate=1",as_dict=1)
-            hide_account_codes = hide_account_codes + [d["name"] for d in hide_acounts]
-            hide_account_codes = [d for d in hide_account_codes if d]
+    if force_show_room_rate == 0:
+        if not reservation:
+            if reservation_stay:
+                reservation = frappe.get_cached_value("Reservation Stay", reservation_stay, "reservation")
+        
+        if not reservation:
+            if transaction_number and transaction_type=="Reservation Folio":
+                reservation = frappe.get_cached_value("Reservation Folio", transaction_number, "reservation")
+        show_room_rate_in_guest_folio = 1 
+        
+        if reservation:
+            show_room_rate_in_guest_folio = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")
+            if  show_room_rate_in_guest_folio == 0:
+                hide_acounts = frappe.db.sql("select name from `tabAccount Code` where hide_account_reservation_not_allow_see_rate=1",as_dict=1)
+                hide_account_codes = hide_account_codes + [d["name"] for d in hide_acounts]
+                hide_account_codes = [d for d in hide_account_codes if d]
     # end checking hide room rate from reservation setting
 
     if show_account_code == None:
@@ -4115,3 +4151,24 @@ def reinstate(data):
     
     update_reservation_stay_and_reservation( reservation = data["reservation"], reservation_stay=data["stays"],run_commit=False)
     frappe.enqueue("edoor.api.utils.add_audit_trail", data =comment_doc,  queue='long')
+
+@frappe.whitelist()
+def get_guest_folio_list(reservation="", reservation_stay=""):
+    data = frappe.db.sql("""
+                         select 
+                            name, status, is_master, rooms, note, room_types, guest, guest_name, phone_number, email, photo, status, balance, owner,creation,reservation,reservation_stay,reservation_status,business_source,total_credit,total_debit,tax_invoice_number,folio_type,folio_type_color
+                         from `tabReservation Folio` 
+                         where
+                            reservation=if('{reservation}'='',reservation,'{reservation}') and 
+                            reservation_stay=if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') 
+                            
+                         """.format(reservation=reservation,reservation_stay=reservation_stay),as_dict=1)
+ 
+    if not reservation:
+        reservation = frappe.get_cached_value("Reservation Stay",reservation_stay,"reservation")
+    
+    show_room_rate_in_guest_folio_invoice = frappe.get_cached_value("Reservation", reservation,"show_room_rate_in_guest_folio_invoice")
+    
+    for d in data:
+        d["show_room_rate_in_guest_folio_invoice"] = show_room_rate_in_guest_folio_invoice
+    return data

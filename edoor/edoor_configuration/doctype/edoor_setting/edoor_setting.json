@@ -53,6 +53,7 @@
   "role_for_back_date_transaction",
   "check_in_role",
   "undo_check_in_role",
+  "view_room_rate_in_guest_folio",
   "column_break_14",
   "undo_check_out_role",
   "check_out_role",
@@ -420,12 +421,19 @@
    "fieldname": "create_next_cashier_shift_after_close_shift",
    "fieldtype": "Check",
    "label": "Create Next Cashier Shift after Close Shift"
+  },
+  {
+   "default": "eDoor Admin",
+   "fieldname": "view_room_rate_in_guest_folio",
+   "fieldtype": "Link",
+   "label": "View Room Rate in Guest Folio Invoice",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-11 09:07:54.942398",
+ "modified": "2024-09-24 08:10:08.322959",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

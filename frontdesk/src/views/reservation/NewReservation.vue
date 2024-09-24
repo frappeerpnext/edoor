@@ -144,6 +144,14 @@
                             </div>
                         </div>
                         <div class="grid justify-end gap-3 mt-4">
+                            <div v-if="isFieldHidden('show_room_rate_in_guest_folio_invoice')" class="flex align-items-center relative gap-2">
+                                <label for="allowmaster" class="font-medium cursor-pointer ">{{ $t('Show Room Rate') }}
+                                    </label>
+                                <Checkbox
+                                    v-tippy="$t('If you tick this check box, That Will Show Room Rate in Guest Folio Invoice')"
+                                    v-model="doc.reservation.show_room_rate_in_guest_folio_invoice" :binary="true" :trueValue="1"
+                                    inputId="allowmaster" :falseValue="0" />
+                            </div>
                             <div class="flex align-items-center relative gap-2">
                                 <label for="allowmaster" class="font-medium cursor-pointer ">{{ $t('Mark as Paid by Master Room') }}
                                     </label>
@@ -537,6 +545,7 @@ const doc = ref({
         group_name: "",
         reservation_color_code: "",
         allow_post_to_city_ledger: 1,
+        show_room_rate_in_guest_folio_invoice:1,
         is_walk_in: dialogRef.value.data?.is_walk_in || 0,
        
     },
@@ -1100,6 +1109,11 @@ const updateRate = (stay=null) => {
 }
 
 const onBusinessSourceChange = (source) => {
+    getDoc('Business Source' , source.value).then((d) => {
+        doc.value.reservation.show_room_rate_in_guest_folio_invoice = d.show_room_rate_in_guest_folio
+    })
+    
+    
 
     if (source) {
         doc.value.reservation.business_source = source.value
