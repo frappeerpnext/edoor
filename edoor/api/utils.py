@@ -1076,16 +1076,18 @@ def get_payable_ledger_detail(name):
 
 @frappe.whitelist()
 def get_reservation_folio_detail(name):
-	doc =frappe.get_doc("Reservation Folio", name)
-	related_ids = [name]
-	folio_transaction_ids = frappe.db.get_list("Folio Transaction", filters={"transaction_type":"Reservation Folio","transaction_number":name} ,page_length=10000,  pluck='name')
-	related_ids = related_ids + folio_transaction_ids
+    doc =frappe.get_doc("Reservation Folio", name)
+    related_ids = [name]
+    folio_transaction_ids = frappe.db.get_list("Folio Transaction", filters={"transaction_type":"Reservation Folio","transaction_number":name} ,page_length=10000,  pluck='name')
+    related_ids = related_ids + folio_transaction_ids
+    
+    
 
-	
-	return {
-		"reservation_folio":doc,
-		"related_ids":related_ids
-	}  
+    return {
+        "reservation_folio":doc,
+        "show_room_rate_in_guest_folio_invoice":frappe.get_cached_value("Reservation",doc.reservation,"show_room_rate_in_guest_folio_invoice"),
+        "related_ids":related_ids
+    }  
 
 @frappe.whitelist(methods="POST")
 def sort_parent_account_code(parent_account_code, account_codes):

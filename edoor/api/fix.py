@@ -5,6 +5,31 @@ from edoor.api.utils import update_city_ledger
 
 
 @frappe.whitelist()
+def fix_update_account_code_show_hide_in_guest_folio_invoice():
+    account_codes=[
+        "10101",
+        "10102",
+        "10103",
+        "50101",
+        "50102"
+        "50103"
+        "50104",
+        "10116"
+    ]
+    
+    frappe.db.sql("update `tabAccount Code` set  hide_account_reservation_not_allow_see_rate= 1 where name in %(account_codes)s",{"account_codes":account_codes})
+    
+    frappe.db.commit()
+    
+@frappe.whitelist()
+def fix_business_source_allow_see_room_rate():
+    
+    frappe.db.sql("update `tabBusiness Source` set show_room_rate_in_guest_folio =1")
+    frappe.db.commit()
+    
+    
+    
+@frappe.whitelist()
 def fix_update_total_room_charge_amount_and_total_other_charge_amount():
     sql = """
         update `tabReservation Stay` s 

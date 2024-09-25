@@ -125,6 +125,23 @@ frappe.query_reports["Reservation Forecast"] = {
 			"on_change": function (query_report) { },
 			"hide_in_filter": 1,
 		},
+		{
+			fieldname: "sort_order_field",
+			label: __("Sort Order Field"),
+			fieldtype: "Select",
+			options:[{value:"",label:"Sort Order Field"}],
+			on_change: function (query_report) {},
+			hide_in_filter: 1,
+		},
+		{
+			fieldname: "sort_type",
+			label: __("Sort Order Type"),
+			fieldtype: "Select",
+			options:"ASC\nDESC",
+			default:"ASC",
+			on_change: function (query_report) {},
+			hide_in_filter: 1,
+		},
 
 	],
 	onload: function (report) {
@@ -142,6 +159,24 @@ frappe.query_reports["Reservation Forecast"] = {
 			  });
 		  });
 		}).addClass('btn-print-custom').html('<i class="fa fa-print"></i> Print Report');
+
+		const report_doc = report.report_doc
+		if(report_doc.json){
+		
+			const report_options  = JSON.parse(report_doc.json)
+			if(report_options?.filters){
+				for (const key of Object.keys(report_options.filters)) {
+					if (key !="start_date" && key !="end_date" && key!="room_type" && key!="business_source" && key!="business_source_type" && key!="guest_type"){
+						 
+						let field =frappe.query_report.get_filter(key);
+						field.set_input(report_options.filters[key])
+						field.refresh();
+
+					}
+				}
+			}
+		}
+		
 
 
 	},
@@ -240,6 +275,32 @@ function setLinkField() {
 						description: x.label
 					}
 				})
+
+				if(report){
+           
+					const sort_order_field = frappe.query_report.get_filter("sort_order_field");
+					
+					let sort_option = [{value:"",label:"Row Group"}]
+		  
+					r.message.report_fields
+					.filter((y) => y.allow_sort_order == 1)
+					.forEach((x) => {
+					  sort_option.push(  {
+						value: x.fieldname,
+						label: x.label,
+					  });
+					});
+					sort_order_field.df.options = sort_option
+					sort_order_field.set_input(r.message.default_sort_field);
+		  
+					sort_order_field.refresh();
+		  
+					const sort_type =frappe.query_report.get_filter("sort_type");
+					sort_type.set_input(r.message.sort_type)
+					sort_type.refresh();
+		  
+		  
+				}
 				
 			},
 			error: function (r) {

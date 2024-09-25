@@ -2,6 +2,7 @@
     <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading">
         <TabView>
             <TabPanel header="Deposit Ledger Information">
+               
                 <div v-if="doc" class="mt-2">
                     <ComFolioAction @onRefresh="onRefresh" :folio="doc"
                         :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio == 1)"
@@ -208,6 +209,7 @@ function getData() {
         name: name.value
     }).then(r => {
         doc.value = r.message.reservation_folio
+        doc.value.show_room_rate_in_guest_folio_invoice = r.message.show_room_rate_in_guest_folio_invoice
         relatedIds.value = r.message.related_ids
         loading.value = false
     }).catch(err => {

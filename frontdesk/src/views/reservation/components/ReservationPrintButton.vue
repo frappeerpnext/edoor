@@ -5,7 +5,7 @@
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
-import { ref, inject, useDialog, onMounted,getDocList,useToast } from "@/plugin";
+import { ref, inject, useDialog, onMounted,getDocList,useToast,getApi } from "@/plugin";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const toast = useToast()
@@ -51,21 +51,19 @@ const items = ref([
     label: $t("Folio Summary Report"),
     icon: 'pi pi-print',
     command: () => {
-        getDocList("Reservation Folio", {
-            filters: [["reservation", "=", props.reservation]],
-            limit:100,
-            fields:["name","reservation_stay","reservation"]
-        }).then((docs) => {
+        getApi("reservation.get_guest_folio_list", {
+            reservation:props.reservation
+        }).then((result) => {
 
-            if (docs.length == 0) {
+            if (result.message.length == 0) {
                 toast.add({ severity: 'warn', summary: 'Folio Summary Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
             } else {
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
-                        reservation_stay:docs[0].reservation_stay,
-                        folio: docs[0],
-                        folios: docs,
+                        reservation_stay:result.message[0].reservation,
+                        folio: result.message[0],
+                        folios: result.message,
                         report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
                         view: "print"
                     },
@@ -94,21 +92,19 @@ const items = ref([
     label: $t("Folio Detail Report"),
     icon: 'pi pi-print',
     command: () => {
-        getDocList("Reservation Folio", {
-            filters: [["reservation", "=", props.reservation]],
-            limit:100,
-            fields:["name","reservation_stay"]
-        }).then((docs) => {
+        getApi("reservation.get_guest_folio_list", {
+            reservation:props.reservation
+        }).then((result) => {
 
-            if (docs.length == 0) {
+            if (result.message.length == 0) {
                 toast.add({ severity: 'warn', summary: 'Folio Detail Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
             } else {
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
-                        reservation_stay:docs[0].reservation_stay,
-                        folio: docs[0],
-                        folios: docs,
+                        reservation_stay:result.message[0].reservation_stay,
+                        folio: result.message[0],
+                        folios: result.message,
                         report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"),
                         view: "print"
                     },

@@ -103,7 +103,11 @@ def get_report_data(filters,min_max_day):
             if calculate_room_occupancy_include_room_block == 0:
                 total_rooms -= ooo_record.get(col_name, 0)
             total_rooms = max(total_rooms, 1)  # Avoid division by zero
+			
             occupancy_record[col_name] = round((occupy_record.get(col_name, 0) / total_rooms) * 100, 2)
+            
+           
+            
             
             # Arrival
             arrival_record[col_name] = sum(d.get("arrival", 0) for d in room_occupy if d["date"] == date)
@@ -130,6 +134,18 @@ def get_report_data(filters,min_max_day):
             pax_record["total"] = pax_record.get("total", 0) + pax_record[col_name]
             
             date = add_to_date(date, days=1)
+
+    # total record 
+	# occupany % total
+	
+   
+    total_room =  sum(d.get("total_room", 0) for d in daily_property_data)
+    total_occupy = sum(d.get("occupy",0) for d in room_occupy)
+    if calculate_room_occupancy_include_room_block==0:
+        total_room = total_room -  sum(d.get("block",0) for d in room_occupy)
+    total_room = max(total_room,1)#avoid divide by 0
+    occupancy_record["total"] = round( total_occupy/total_room * 100,2)
+
 
     # Append summary records to report data
     report_data.extend([

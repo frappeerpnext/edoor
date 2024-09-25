@@ -145,7 +145,7 @@
                         </div>
                         <div class="grid justify-end gap-3 mt-4">
                             <div v-if="isFieldHidden('show_room_rate_in_guest_folio_invoice')" class="flex align-items-center relative gap-2">
-                                <label for="allowmaster" class="font-medium cursor-pointer ">{{ $t('Show Room Rate') }}
+                                <label for="allowmaster" class="font-medium cursor-pointer ">{{ $t('Show/Hide Room Rate in Guest Folio Invoice') }}
                                     </label>
                                 <Checkbox
                                     v-tippy="$t('If you tick this check box, That Will Show Room Rate in Guest Folio Invoice')"

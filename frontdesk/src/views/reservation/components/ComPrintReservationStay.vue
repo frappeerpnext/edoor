@@ -65,10 +65,10 @@
                         <label for="breakdown_account_code" class="white-space-nowrap" >Show/Hide Package Breakdown</label>
                     </div>
  
-                    <div v-if="filters?.selected_folio?.show_room_rate_in_guest_folio_invoice==0" style="background: #ebc174;padding: 8px;border-radius: 10px;margin: 5px 0px;">
-                        <Checkbox :disabled="!canForceToViewRoomRate"  v-model="filters.force_show_room_rate" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" 
+                    <div    v-if="filters?.selected_folio?.show_room_rate_in_guest_folio_invoice==0" style="background: #ebc174;padding: 8px;border-radius: 10px;margin: 5px 0px;" xx>
+                        <Checkbox  v-tippy="$t('This reservatin is mark as not allow to show rate to the guest.')" :disabled="!canForceToViewRoomRate"  v-model="filters.force_show_room_rate" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" 
                         inputId="force_show_room_rate" />
-                        <label for="force_show_room_rate" class="white-space-nowrap" >Show Room Rate</label>
+                        <label for="force_show_room_rate" class="white-space-nowrap" >Show Room Rate to Guest</label>
                     </div>
 
                
@@ -201,13 +201,18 @@ function getFolioList(){
 }
 
 onMounted(() => {
-    getFolioList()
+    
+    
     if (dialogRef) {
         loading.value = true
         const params = dialogRef.value.data
         reservation_stay.value = params.reservation_stay
         report_name.value = params.report_name
-
+        if(!params.folios){
+            getFolioList()
+        }else {
+            folios.value = params.folios
+        }
         let state = localStorage.getItem("print_reservation_stay_" + report_name.value.replace(" ",""))
         if (state){
             state = JSON.parse(state)
@@ -218,7 +223,10 @@ onMounted(() => {
         }
 
         if (!params.folio) {
-            filters.value.selected_folio= params.folios[0]
+            if(params.folios){
+                filters.value.selected_folio= params.folios[0]
+            }
+            
         } else {
             filters.value.selected_folio= params.folio
         }

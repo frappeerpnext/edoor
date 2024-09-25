@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-
+import copy
 def get_room_occupy_group_by_field(filters):
     if filters.parent_row_group:
         return [d["value"] for d in room_occupy_group_by_fields() if d["key"] == filters.parent_row_group][0]
@@ -165,7 +165,11 @@ def get_report_summary( filters, total_record,report_config):
 
 
 def get_report_chart(filters,report_data,report_config):
-	precision = frappe.db.get_single_value("System Settings","currency_precision")
+	if filters.sort_order_field:
+		report_data = copy.deepcopy([d for d in report_data if d.get("is_total_row",0) == 0])
+		report_data  = sorted([d for d in report_data], key=lambda x: x.get(filters.sort_order_field, 0), reverse=(filters.sort_type=="DESC"))
+
+	precision = frappe.get_cached_value("System Settings",None,"currency_precision")
 	report_fields = get_report_fields(filters, report_config)
 	 
 	if filters.show_chart_series:
