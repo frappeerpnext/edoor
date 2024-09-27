@@ -52,14 +52,6 @@ frappe.query_reports["Audit Trail Report"] = {
 			"on_change": function (query_report){}
 		},
 		{
-			"fieldname": "chart_type",
-			"label": __("Chart Type"),
-			"fieldtype": "Select",
-			"options": "None\nbar\nline\npie\ndonut",
-			hide_in_filter:1,
-			"on_change": function (query_report){}
-		},
-		{
 			"fieldname": "order_by_audit",
 			"label": __("Order By"),
 			"fieldtype": "Select",

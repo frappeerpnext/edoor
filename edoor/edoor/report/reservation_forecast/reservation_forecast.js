@@ -72,7 +72,7 @@ frappe.query_reports["Reservation Forecast"] = {
 		{
 			"fieldname": "parent_row_group",
 			"label": __("Parent Group By"),
-			hidden:1,
+			hidden:0,
 			"fieldtype": "Select",
 			"options": "\nDate\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nBusiness Source Group\nGuest Type\nNationality",
 			"on_change": function (query_report) { },

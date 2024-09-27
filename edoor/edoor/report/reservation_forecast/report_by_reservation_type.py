@@ -116,9 +116,11 @@ def get_report_data(filters,report_config):
                         if f.show_in_report==1 and f.reference_doctype=="Room Occupy":
                             #set static field
                             #room occupy
+                            
                             if f.fieldname=='occupancy':    
                                 if calculate_room_occupancy_include_room_block==1:
-                                    row["occupancy"] = (row["occupy"] or 0) / (1 if row["room_available"] <=0 else row["room_available"]) 
+                                    row["occupancy"] =  (row["occupy"] or 0) / (1 if row["room_available"] <=0 else row["room_available"]) 
+                                  
                                 else:
                                     row["occupancy"] = (row["occupy"] or 0) / (1 if (row["room_available"]  - row["room_block"])<=0 else (row["room_available"]  - row["room_block"]))
                                 row["occupancy"] = row["occupancy"] * 100
