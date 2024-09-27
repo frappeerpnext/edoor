@@ -18,9 +18,18 @@ import copy
 def execute(filters=None):
     
 	if filters.parent_row_group==filters.row_group:
-		frappe.throw("Parent row group and row group can not be the same")
+		frappe.throw("Parents row group and row group can not be the same")
+
 	if filters.parent_row_group == "Date" and filters.row_group == "Month":
-		frappe.throw("Canoot")
+		frappe.throw("Parents row group cannot be Date and Row group cannot be Month")
+
+	if filters.parent_row_group == "Date" and filters.row_group == "Year":
+		frappe.throw("Parents row group cannot be Date and Row group cannot be Year")
+	
+	if filters.parent_row_group == "Date" and filters.row_group == "Room Type":
+		frappe.throw("This Option is coming soon")
+
+	
 
 	if filters.chart_type =='pie' or filters.chart_type=="donut":
 		if len(filters.show_chart_series)!=1:
