@@ -48,6 +48,7 @@ def get_report_data(filters,columns):
             "row_group":"Total",
             "indent":1,
             "is_total_row":1,
+            "is_group":1,
             "month":m["month"],
             "year":m["year"]
         })
@@ -104,7 +105,7 @@ def get_report_data(filters,columns):
         )
     
     if len(months)>1:
-        report_data.append({"indent":0})
+        report_data.append({"indent":0, "is_group":1})
         report_data.append(
             get_grand_total_row(
                 [d for d in report_data if "is_total_row" in d  ],
@@ -165,7 +166,8 @@ def get_room_occupy(filters):
 			where 
 				property=%(property)s and 
                 date between %(start_date)s and %(end_date)s and 
-				is_active=1 
+				is_active=1  and 
+                type='Reservation'
 			group by 
 				day(date) ,
                 month(date),
@@ -177,40 +179,60 @@ def get_room_occupy(filters):
     
     return frappe.db.sql(sql,filters, as_dict=1)
 def get_report_chart(filters,data,months):
-
-    min_day = min([d["min_date"].day for d in months])
-    max_day = max([d["max_date"].day for d in months])
-    precision = frappe.db.get_single_value("System Settings","currency_precision")
-    columns = []
-    row_group = get_row_group(filters)
-    
-    datasets = []
-    # frappe.throw(str(datasets))
-    for n in range(min_day, max_day +1):
-        columns.append(n)
-            
-    for s in row_group:
-    
-        values = []
+    if not filters.chart_type in ["pie", "donut"]:
+        min_day = min([d["min_date"].day for d in months])
+        max_day = max([d["max_date"].day for d in months])
+        precision = frappe.db.get_single_value("System Settings","currency_precision")
+        columns = []
+        row_group = get_row_group(filters)
+        
+        datasets = []
+        # frappe.throw(str(datasets))
         for n in range(min_day, max_day +1):
-            col_name= "col_" + str(n)
-          
-            values.append(sum([d[col_name] for d in data if "row_group" in d and d["row_group"]==s["row_group"] and col_name in d]))
-        s["values"] = values
-        datasets.append({"name":s["row_group"],"values":s["values"]})
+            columns.append(n)
+                
+        for s in row_group:
+        
+            values = []
+            for n in range(min_day, max_day +1):
+                col_name= "col_" + str(n)
+            
+                values.append(sum([d[col_name] for d in data if "row_group" in d and d["row_group"]==s["row_group"] and col_name in d]))
+            s["values"] = values
+            datasets.append({"name":s["row_group"],"values":s["values"]})
 
-    datasets = [d for d in datasets if any(value > 0 for value in d["values"]) ]
-    chart = {
-		'data':{
-			'labels':columns,
-			'datasets':datasets
-		},
-		"type": filters.chart_type,
-		"lineOptions": {
-			"regionFill": 1,
-		},
-		'valuesOverPoints':1,
-		"axisOptions": {"xIsSeries": 1}
-	}
- 
+        datasets = [d for d in datasets if any(value > 0 for value in d["values"]) ]
+        chart = {
+            'data':{
+                'labels':columns,
+                'datasets':datasets
+            },
+            "type": filters.chart_type,
+            "lineOptions": {
+                "regionFill": 1,
+            },
+            'valuesOverPoints':1,
+            "axisOptions": {"xIsSeries": 1}
+        }
+    else:
+
+        labels=list(set([d.get("row_group") for d in data if d.get("is_group",0) == 0]))
+        
+        values = [ sum([x.get("total",0) for x in data if x.get("row_group") == d ])  for d in  labels ]
+        
+        chart = {
+            'data':{
+                'labels':labels,
+                'datasets':[{
+                    "name": "Occupy",
+                    "values":values   
+                }]
+            },
+            "type": filters.chart_type,
+            "lineOptions": {
+                "regionFill": 1,
+            },
+            'valuesOverPoints':1,
+            "axisOptions": {"xIsSeries": 1}
+        }
     return chart

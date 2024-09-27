@@ -190,9 +190,14 @@ def get_summary(filters,data):
 		]
 
 def get_chart(filters,data):
-	currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
-	 
+	currency_precision = frappe.get_cached_value("System Settings",None,"currency_precision")
+
+	if not filters.chart_series:
+		filters.chart_series = ["Total Revenue"]
+	
 	chart_series = filters.get("chart_series")
+	 
+  
 	if filters.chart_type=="None" or not chart_series or not  filters.view_chart_by:
 		return None
 
