@@ -39,7 +39,6 @@ import BlockUI from 'primevue/blockui';
 
     function getMeta(){
         getApi("api.get_meta",{doctype:"Reservation Market Survey"},"epos_restaurant_2023.api.").then(result=>{
-            
             meta.value= result.message
             formModel.value = meta.value.fields.filter(r=>r.fieldtype =='Section Break')
             formModel.value.forEach((s,index)=>{

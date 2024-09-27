@@ -226,7 +226,7 @@ def get_report_data(filters,report_config):
     report_chart = None
     #show total row  
     report_summary=[]
-    if len(report_data)>1:
+    if len(report_data)>0:
         total_record = {
             "is_total_row":1,
             "is_group" : 0, 

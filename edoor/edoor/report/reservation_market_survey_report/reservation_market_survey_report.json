@@ -1,0 +1,49 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-09-26 09:30:59.926188",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "json": "{}",
+ "letter_head": "Default Letterhead",
+ "letterhead": null,
+ "modified": "2024-09-27 09:37:16.228480",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Reservation Market Survey Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Reservation",
+ "report_name": "Reservation Market Survey Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Reservation Manager"
+  },
+  {
+   "role": "Night Auditor"
+  },
+  {
+   "role": "Frontdesk Clerk"
+  },
+  {
+   "role": "Frontdesk Manager"
+  },
+  {
+   "role": "Reservation User"
+  },
+  {
+   "role": "eDoor Admin"
+  },
+  {
+   "role": "eDoor Admin Read Only"
+  }
+ ]
+}

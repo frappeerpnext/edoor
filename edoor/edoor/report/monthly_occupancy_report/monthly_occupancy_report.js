@@ -29,11 +29,28 @@ frappe.query_reports["Monthly Occupancy Report"] = {
 			"on_change": function (query_report) {},
 			
 		},
+		 {
+			"fieldname": "chart_series",
+			"label": __("Chart Series"),
+			"fieldtype": "MultiSelectList",
+			get_data: function(txt) {
+				return [
+					{"value":"occupy","description":"Occupy",},
+					{"value":"house_use","description":"House Use",},
+					{"value":"complimentary","description":"Complimentary",},
+					{"value":"block","description":"Out of Order",},
+					{"value":"occupancy","description":"Occupancy(%)",},
+					{"value":"pax","description":"Pax",},
+				]
+			},
+			"on_change": function (query_report) {},
+			hide_in_filter:1,
+		},
 		{
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
-			"options": "None\nbar\nline\npie",
+			"options": "None\nbar\nline\npie\ndonut",
 			"default":"bar",
 			hide_in_filter:1,
 			"on_change": function (query_report) {},

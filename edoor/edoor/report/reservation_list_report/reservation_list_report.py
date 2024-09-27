@@ -11,6 +11,12 @@ def execute(filters=None):
 	# 		filters.summary_fields = ['total_record', 'room_night']
 
 	frappe.local.flags.print_letterhead = "Default Letterhead"
+
+	if filters.chart_type =='pie' or filters.chart_type=="donut":
+		if len(filters.show_chart_series)!=1:
+			frappe.throw(_("Please select only one series for the chart, either a pie or donut chart."))
+
+
 	  
 
 	raw_data = get_data(filters,report_config.report_fields)
@@ -18,6 +24,9 @@ def execute(filters=None):
 	summary = get_report_summary( filters= filters, report_fields =  report_config.report_fields, data = raw_data )
 	
 	chart = get_report_chart(filters,report_data,report_config.report_fields)
+	if report_data:
+		report_summary = get_report_summary_by_business_source(report_data)
+		report_data[0]["report_summary"] = report_summary
 	return get_report_columns(filters,report_config.report_fields),report_data,None,chart, summary
 
 def validate(filters):
@@ -162,16 +171,16 @@ def get_data (filters,report_fields):
 def get_report_summary(filters,report_fields, data):
 	summary = []
 	summary_fields = [d for d in report_fields if d.show_in_summary==1 ]
-	# frappe.throw(str(data))
+	# frappe.msgprint(str(data))
 
 	if filters.show_summary:
 		
 		if filters.row_group:
 			summary.append({
-				"value":len([d for d in data if d['indent']==1 ]),"indicator":"Red","label":"Total Res."
+				"value":len([d for d in data if d['indent']==1 and "is_total_row" not in d ]),"indicator":"Red","label":"Total Res."
 			})
 			summary.append({
-				"value":"{}/{}".format(sum([d["adult"] for d in data if d['indent']==1]),sum([d["child"] for d in data if d['indent']==1])),"indicator":"Red","label":"Total Pax"
+				"value":"{}/{}".format(sum([d["adult"] for d in data if d['indent']==1 and "is_total_row" not in d]),sum([d["child"] for d in data if d['indent']==1])),"indicator":"Red","label":"Total Pax"
 			})
 		else:
 			summary.append({
@@ -184,7 +193,7 @@ def get_report_summary(filters,report_fields, data):
 			summary_fields = [d for d in summary_fields if d.fieldname in filters.show_in_summary]
 		for x in summary_fields:
 			summary.append({
-			"value": sum([d[x.fieldname] for d in data if x.fieldname in d]),
+			"value": sum([d[x.fieldname] for d in data if x.fieldname in d if "is_total_row" not in d]),
 			"indicator": x.summary_indicator,
 			"label": x.label,
 			"datatype": x.fieldtype
@@ -192,7 +201,8 @@ def get_report_summary(filters,report_fields, data):
 	return summary
 
 def get_report_chart(filters, data, report_fields):
-	# frappe.throw(str(filters.row_group))
+	if not filters.row_group:
+		return None
 	precision = frappe.db.get_single_value("System Settings", "currency_precision")
 	report_fields = [d for d in report_fields if d.show_in_chart == 1]
 	if filters.show_chart_series:
@@ -316,3 +326,34 @@ def get_reservation(filters):
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation"] for d in data]
 
+def get_report_summary_by_business_source(data):
+	business_source = set([d["business_source"] for d in data if "business_source" in d])
+	result = []
+	for b in business_source:
+		filter_data = [d for d in data if d.get("business_source") == b ]
+
+		row = {
+			"row_group":b,
+			"room_count":len(filter_data),
+			"room_nights":sum([d.get("room_nights") for d in filter_data]),
+			"adult":sum([d.get("adult") for d in filter_data]),
+			"child":sum([d.get("child") for d in filter_data]),
+			"debit":sum([d.get("total_debit") for d in filter_data]),
+			"credit":sum([d.get("total_credit") for d in filter_data])
+		}
+
+		result.append(row)
+	if result:
+		result.append({
+			"row_group":"Total",
+			"room_count":sum([d.get("room_count") for d in result]),
+			"room_nights":sum([d.get("room_nights") for d in result]),
+			"adult":sum([d.get("adult") for d in result]),
+			"child":sum([d.get("child") for d in result]),
+			"debit":sum([d.get("debit") for d in result]),
+			"credit":sum([d.get("credit") for d in result])
+		})
+
+
+	return result
+	

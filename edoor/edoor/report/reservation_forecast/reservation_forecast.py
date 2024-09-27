@@ -12,10 +12,16 @@ from edoor.edoor.report.reservation_forecast import report_by_nationality
 from edoor.edoor.report.reservation_forecast import report_by_room_type
 from edoor.edoor.report.reservation_forecast import report_by_rate_type
 from edoor.edoor.report.reservation_forecast import report_by_business_source_type_group
+from frappe import _
 import frappe
+import copy
 def execute(filters=None):
 	if filters.parent_row_group==filters.row_group:
 		frappe.throw("Parent row group and row group can not be the same")
+
+	if filters.chart_type =='pie' or filters.chart_type=="donut":
+		if len(filters.show_chart_series)!=1:
+			frappe.throw(_("Please select only one series for the chart, either a pie or donut chart."))
 		
 	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Reservation Forecast"} )
 	
@@ -47,7 +53,17 @@ def execute(filters=None):
 
 	
 	message = None
-	return report["columns"], report["data"],message,report["report_chart"], report["report_summary"],True
+
+	if filters.sort_order_field:
+		# apply sort 
+		report_data = copy.deepcopy(report["data"] )
+		report_data  = sorted([d for d in report_data if d.get("is_total_row",0) == 0], key=lambda x: x.get(filters.sort_order_field, 0), reverse=(filters.sort_type =="DESC"))
+  
+		report_data = report_data + [d for d in report["data"] if d.get("is_total_row",0) == 1]
+	else:
+		report_data = report["data"] 
+
+	return report["columns"], report_data,message,report["report_chart"], report["report_summary"],True
 
  
 	

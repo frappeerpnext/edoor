@@ -29,7 +29,7 @@ def get_report_columns(filters,report_config):
     return columns
 
 def get_report_data(filters,report_config):
-
+    
     calculate_room_occupancy_include_room_block = frappe.get_cached_value("eDoor Setting",None, "calculate_room_occupancy_include_room_block")
     calculate_adr_include_all_room_occupied = frappe.get_cached_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
  
@@ -171,16 +171,13 @@ def get_report_data(filters,report_config):
     report_chart = None
     #show total row 
     report_summary=[]
-    if len(report_data)>1:
+    if len(report_data)>0:    
         total_record = {
             "is_total_row":1,
             "is_group" : 0, 
             "row_group": "Grand Total",
             
         }
-       
-   
-
         for f in report_config.report_fields :
             if f.fieldname=="room_available":
                 total_record["room_available"] = sum([d["total_rooms"] for d in room_available_datas])
@@ -209,9 +206,9 @@ def get_report_data(filters,report_config):
         #get report summaryt
         if filters.show_summary ==1:
             report_summary = get_report_summary(filters,total_record,report_config)
-
-        if filters.chart_type!="None":
-            report_chart = get_report_chart(filters, report_data,report_config)
+        
+    if filters.chart_type!="None":
+        report_chart = get_report_chart(filters, report_data,report_config)
         
  
     return  {"report_data":report_data, "report_summary": report_summary,"report_chart":report_chart}

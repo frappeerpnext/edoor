@@ -10,17 +10,21 @@ from dateutil.rrule import rrule, MONTHLY
 from datetime import datetime
 import copy
 import calendar
-from edoor.edoor.report.monthly_availability_chart.monthly_avalability_chart_separate_by_month import get_report_datas
+from edoor.edoor.report.monthly_availability_chart import monthly_avalability_chart_separate_by_month
 
 def execute(filters=None):
-    
-	# data = get_data(filters)
-	# report_data = get_report_data(filters,data)
-	# chart = get_chart(filters,report_data)
-
-	report_datas = get_report_datas(filters)
-	return report_datas["columns"],report_datas["report_data"],None,report_datas["report_chart"], None
-
+	total_day = date_diff(filters.end_date, filters.start_date) + 1
+	if total_day>62:
+		frappe.throw("You can only view this report for a two-month period.")
+  
+	if filters.separate_by_month==1:
+		report_datas = monthly_avalability_chart_separate_by_month.get_report_datas(filters)
+		return report_datas["columns"],report_datas["report_data"],None,report_datas["report_chart"], None
+	else:	
+		data = get_data(filters)
+		report_data = get_report_data(filters,data)
+		chart = get_chart(filters,report_data)
+		return get_columns(filters),report_data,None,chart, None
 
 def get_columns(filters):
 	columns = [
@@ -71,9 +75,7 @@ def get_data(filters):
 def get_report_data(filters,data):
 	
 	reservation_status = get_reservation_status()
-
-	
-	
+ 
 	report_data = []
 	occupy_data = get_occupy_data(filters)
 	calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block")
@@ -94,7 +96,7 @@ def get_report_data(filters,data):
  
 	for rt in room_types:
 		rooms = copy.deepcopy([d for d in data if d["room_type_id"]==rt[0]])
-		room_type_row = {"row_header": "{} ({})".format( rt[1], len(rooms))  }
+		room_type_row = {"row_header": "{} ({})".format( rt[1], len(rooms)),"is_group":1  }
 		report_data.append(room_type_row)
   
 		
@@ -122,17 +124,31 @@ def get_report_data(filters,data):
 		block = len([d for d in occupy_data if d["type"] =="Block" and   d["room_type_id"] == rt[0] ])
 		room_type_row["occupy"] = occupy
 		room_type_row["block"] = block
+		 
+		total_room_by_room_type = len(rooms) * total_day
 		if int(frappe.get_cached_value("eDoor Setting",None, "calculate_room_occupancy_include_room_block")) ==1:
-			room_type_row["occupancy"] = round( occupy  / total_rooms * 100,2) 
+			room_type_row["occupancy"] = round( occupy  / total_room_by_room_type * 100,2) 
 		else:
-			total_rooms =total_rooms - block 
-			if total_room == 0:
-				total_room = 1
-			room_type_row["occupancy"] = round( occupy  / total_rooms * 100,2)
+			total_room_by_room_type = max(total_room_by_room_type - block ,1)
+
+			room_type_row["occupancy"] = round( occupy  / total_room_by_room_type * 100,2)
 		
 
 
 		report_data = report_data + rooms
+
+		# update occupy to room row
+		for r in rooms:
+			r["occupy"] = len([d for d in occupy_data if d["type"] =="Reservation"  and  d["room_id"] == r["name"] ])
+			r["block"] = len([d for d in occupy_data if d["type"] =="Block"  and  d["room_id"] == r["name"] ])
+			if int(frappe.get_cached_value("eDoor Setting",None, "calculate_room_occupancy_include_room_block")) ==1:
+				r["occupancy"] = round( r["occupy"]  / total_day * 100,2) 
+			else:
+				r["occupancy"] = round( r["occupy"]  / (total_day - r["block"]) * 100,2) 
+    
+			
+   
+   
 	for occ in occupy_data:
 		room = [d for d in  report_data if "name" in d and d["name"] == occ["room_id"]] 
 		if room:
@@ -144,6 +160,50 @@ def get_report_data(filters,data):
 				room[str(occ["date"])] = status["alias"]
 		
   
+	# total row 
+	report_data.append({})
+ 
+	
+	total_occupy_row ={
+		"row_header":"Total Occ.",
+		"is_total_row": 1,
+  		"occupy":len([d for d in occupy_data if d["type"] =="Reservation"]),
+  		"block":len([d for d in occupy_data if d["type"] =="Block"])
+	}
+	
+	total_occupancy_row ={
+		"row_header":"Total Occ. (%)",
+		"is_total_row": 1,
+		"occupy": round( total_occupy_row["occupy"] / total_rooms * 100,2) #total room already calculate with room block  check code above
+  
+	}
+ 
+	date = getdate(filters.start_date)
+	total_rooms =  len(data)
+	while date<= getdate(filters.end_date):
+		occupy = len([d for d in occupy_data if d["type"] =="Reservation"  and date == d["date"]  ])
+		block = len([d for d in occupy_data if d["type"] =="Block" and date == d["date"]  ])
+		
+		total_occupy_row[str(date)] = occupy
+		if int(frappe.get_cached_value("eDoor Setting",None, "calculate_room_occupancy_include_room_block")) ==1:
+			total_room = len(rooms)
+			if total_room == 0:
+				total_room = 1
+			
+			total_occupancy_row[str(date)] = round( occupy  / total_rooms * 100,2) 
+		else:
+			total_room = len(rooms) - block 
+			if total_room == 0:
+				total_room = 1
+			total_occupancy_row[str(date)] = round( occupy  / (total_rooms - block)  * 100,2)
+		
+		date = add_days(date,1)
+	
+	report_data.append(total_occupy_row)
+	report_data.append(total_occupancy_row)
+ 
+	if filters.hide_zero_record ==1:
+		report_data = [d for d in report_data if d.get("occupy",0) > 0 or d.get("block",0) > 0 or d.get("indent",0) ==0]
 	return report_data
 
 
@@ -238,9 +298,6 @@ def get_chart(filters,data):
 				'datasets':dataset
 			},
 			"type": filters.chart_type,
-			# "lineOptions": {
-			# 	"regionFill": 1,
-			# },
 			'valuesOverPoints':1,
 			"axisOptions": {"xIsSeries": 1},
 			

@@ -65,17 +65,25 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			"fieldname": "room_name_types",
 			"label": __("Room Type"),
 			"fieldtype": "MultiSelectList",
-			"hidden": 1,
 			get_data: function (txt) {
 				return frappe.db.get_link_options('Room Type', txt);
 			},
 			"on_change": function (query_report) { }
 		},
+		
+		{
+			"fieldname": "hide_zero_record",
+			"label": __("Hide Zero Record"),
+			"fieldtype": "Check",
+			"default":0,
+			"on_change": function (query_report) { }
+		},
+
 		{
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
-			"hidden": 1,
+		 
 			"options": "None\nbar\nline\npie",
 			hide_in_filter: 1,
 			"on_change": function (query_report) { }
@@ -84,7 +92,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			"fieldname": "chart_option",
 			"label": __("Chart Option"),
 			"fieldtype": "Select",
-			"hidden": 1,
+		
 			"options": "\nOccupancy by Month\nRoom Type\nRoom",
 			hide_in_filter: 1,
 			"on_change": function (query_report) { }
@@ -94,6 +102,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			"label": __("Separate by Month"),
 			"fieldtype": "Check",
 			"default":0,
+			"hidden": 1,
 			hide_in_filter: 1,
 			"on_change": function (query_report) { }
 		},
@@ -101,7 +110,6 @@ frappe.query_reports["Monthly Availability Chart"] = {
 	]
 	,
 	"formatter": function (value, row, column, data, default_formatter) {
-		
 		const origninal_value = value || 0
 		value = default_formatter(value, row, column, data);
 
@@ -117,7 +125,12 @@ frappe.query_reports["Monthly Availability Chart"] = {
 
 
 
-		if (data.indent == 2 && column.is_date == 1) {
+		let data_indent = 1
+		if (frappe.query_report.get_filter_value('separate_by_month')==1){
+			data_indent = 2
+		}
+
+		if (data.indent == data_indent && column.is_date == 1) {
 			if (value) {
 				let status = reservation_status.filter(r => r.alias == value)
 				 
@@ -132,7 +145,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 				value = $(`<span>${value}</span>`);
 				var $value = $(value).css("background", color)
 					.css("height", "28px")
-					.css("width", "50px")
+					.css("width", "100%")
 					.css("display", "block")
 					.css("margin-top", "-5px")
 					.css("margin-left", "-6px")
@@ -147,8 +160,20 @@ frappe.query_reports["Monthly Availability Chart"] = {
 
 		}
 
+		if ((data && data.is_group == 1) || (data && data.is_total_row == 1)) {
+			value = $(`<span>${value}</span>`);
+			var $value = $(value).css("font-weight", "bold");
+			value = $value.wrap("<p></p>").parent().html();
+		}
+		if ((data && data.is_group == 1) || (data && data.is_total_row == 1) || data.indent ==0 ) {
+
+			value = $(`<span>${value}</span>`);
+
+			var $value = $(value).css("font-weight", "bold");
 
 
+			value = $value.wrap("<p></p>").parent().html();
+		}
 
 
 		return value;

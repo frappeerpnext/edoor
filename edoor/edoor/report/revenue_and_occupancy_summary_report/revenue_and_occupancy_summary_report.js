@@ -144,7 +144,7 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
       fieldname: "chart_type",
       label: __("Chart Type"),
       fieldtype: "Select",
-      options: "None\nbar\nline\npie",
+      options: "None\nbar\nline\npie\ndonut",
       default: "bar",
       hide_in_filter: 1,
       on_change: function (query_report) {},

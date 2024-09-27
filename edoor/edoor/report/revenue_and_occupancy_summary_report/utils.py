@@ -177,6 +177,7 @@ def get_report_chart(filters,report_data,report_config):
 	else:
 		report_fields = [d for d in report_fields if d.show_in_chart_when_no_fields_selected ==1]
 	
+	 
 	if len(report_fields)==0:
 		return None
 	

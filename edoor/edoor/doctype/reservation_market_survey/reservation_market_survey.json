@@ -30,6 +30,7 @@
   "celebration",
   "column_break_wveo",
   "other_purpose_of_visit",
+  "column_break_igsj",
   "guest_comment_section",
   "guest_comment"
  ],
@@ -166,11 +167,15 @@
    "fieldname": "other_purpose_of_visit",
    "fieldtype": "Check",
    "label": "Others"
+  },
+  {
+   "fieldname": "column_break_igsj",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-23 16:56:06.763540",
+ "modified": "2024-09-27 10:00:12.991550",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Market Survey",

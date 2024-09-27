@@ -3,7 +3,7 @@
 from datetime import datetime
 from frappe.utils.data import getdate
 import frappe
-
+from frappe import _
 
 def execute(filters=None):
 	if not filters.property:
@@ -19,7 +19,10 @@ def execute(filters=None):
 		filters.end_date =  getdate(datetime(datetime.now().year, 12, 31))
 
  
-
+	if filters.chart_type =='pie' or filters.chart_type=="donut":
+		if len(filters.chart_series or [])!=1:
+			filters.chart_series = ["occupancy"]
+		
 				
 	data = get_report_data(filters)
 	return get_columns(filters), data, None, get_report_chart(filters,data)
@@ -101,11 +104,17 @@ def get_occupy_data(filters):
 
 
 def get_report_chart(filters, data):
-	report_columns = get_columns(filters)
+	if filters.chart_type == "None":
+		return None
 
+	report_columns = get_columns(filters)
+	chart_series = filters.chart_series
+	if not chart_series:
+		chart_series = ["occupy","house_use","complimentary","block","occupancy","pax"]
+	
 	datasets = []
 	for c in report_columns:
-		if not c["fieldname"] in ["month","room_available"]:	
+		if  c["fieldname"] in chart_series:	
  
 			if c["label"] =="Occupancy(%)":
 				datasets.append({

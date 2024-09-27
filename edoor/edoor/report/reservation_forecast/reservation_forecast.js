@@ -113,7 +113,7 @@ frappe.query_reports["Reservation Forecast"] = {
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
-			"options": "None\nbar\nline\npie",
+			"options": "None\nbar\nline\npie\ndonut",
 			"default": "bar",
 			hide_in_filter: 1,
 			"on_change": function (query_report) { },
@@ -149,7 +149,7 @@ frappe.query_reports["Reservation Forecast"] = {
 			frappe.query_report.refresh();
 		});
 
-		setLinkField();
+		setLinkField(report);
 		report.page.add_inner_button("Print Report", function () {
 			frappe.ui.get_print_settings(false, function(print_settings) {
 			  frappe.query_report.print_report({
@@ -219,7 +219,7 @@ frappe.query_reports["Reservation Forecast"] = {
 
 
 
-function setLinkField() {
+function setLinkField(report=null) {
 	const property = frappe.query_report.get_filter_value("property")
 	if (property) {
 		const business_source_filter = frappe.query_report.get_filter('business_source');

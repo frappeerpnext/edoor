@@ -19,6 +19,7 @@ import frappe
 from epos_restaurant_2023.utils import get_date_range_by_timespan
 import copy
 def execute(filters=None):
+    
 	if not filters.property:
 		filters.property = frappe.defaults.get_user_default("business_branch")
 	if not filters.property: 
@@ -28,6 +29,10 @@ def execute(filters=None):
 		else:
 			filters.property = business_branch[0]
 
+	if filters.chart_type =='pie' or filters.chart_type=="donut":
+		if len(filters.show_chart_series)!=1:
+			frappe.throw(_("Please select only one series for the chart, either a pie or donut chart."))
+     
 	
 	if filters.timespan!="Date Range":
 		date_range = get_date_range_by_timespan(filters.timespan)
@@ -73,6 +78,7 @@ def execute(filters=None):
 		report_data = report_data + [d for d in report["data"] if d.get("is_total_row",0) == 1]
 	else:
 		report_data = report["data"]
+
 	return report["columns"], report_data ,message,report["report_chart"], report["report_summary"],True
 
  
