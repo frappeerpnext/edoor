@@ -28,6 +28,31 @@ def execute(filters=None):
 	
 	if filters.parent_row_group == "Date" and filters.row_group == "Room Type":
 		frappe.throw("This Option is coming soon")
+	
+	if filters.parent_row_group == "Month" and filters.row_group == "Year":
+		frappe.throw("Parents row group cannot be Month and Row group cannot be Year")
+	
+	if filters.parent_row_group == "Month" and filters.row_group == "Room Type":
+		frappe.throw("This Option is coming soon")
+	
+	if filters.parent_row_group == "Year" and filters.row_group == "Month":
+		frappe.throw("This Option is coming soon")
+	if filters.parent_row_group == "Year" and filters.row_group == "Room Type":
+		frappe.throw("This Option is coming soon")
+	if filters.parent_row_group == "Room Type" and filters.row_group:
+		frappe.throw("This Option is coming soon")
+	if filters.parent_row_group == "Reservation Type" and filters.row_group:
+		frappe.throw("This Option is coming soon")
+	if filters.parent_row_group == "Business Source" and filters.row_group:
+		frappe.throw("This Option is coming soon")
+	if filters.parent_row_group == "Business Source Type" and filters.row_group:
+		frappe.throw("This Option is coming soon")
+	if filters.parent_row_group == "Business Source Group" and filters.row_group:
+		frappe.throw("This Option is coming soon")
+	if filters.parent_row_group == "Guest Type" and filters.row_group:
+		frappe.throw("This Option is coming soon")
+	if filters.parent_row_group == "Nationality" and filters.row_group:
+		frappe.throw("This Option is coming soon")
 
 	
 

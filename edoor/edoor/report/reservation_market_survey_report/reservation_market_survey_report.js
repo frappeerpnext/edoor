@@ -16,8 +16,8 @@ frappe.query_reports["Reservation Market Survey Report"] = {
         fieldname: "chart_type",
         label: __("Chart Type"),
         fieldtype: "Select",
-        options: "\nDonut\nBar\nLine\nPie",
-        default: "Donut", 
+        options: "\ndonut\nbar\nline\npie",
+        default: "donut", 
         reqd: 1, 
         on_change: function(query_report) {
             query_report.refresh();

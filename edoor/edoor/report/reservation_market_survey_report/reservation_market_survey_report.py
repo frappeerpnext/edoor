@@ -46,16 +46,9 @@ def get_chart(filters):
         field_meta = meta.get_field(field)
         labels.append(field_meta.label) 
     values = [data[key] for key in data if key != 'reservation_name']
-    chart = {
-        "data": {
-            "labels": labels,
-            "datasets": [{
-                "values": values
-            }],
-            "type": chart_type,
-            "options": {}
-        }
-    }
+    chart = {'data': {'labels': labels, 'datasets': [{'name':view_by, 'values': values}]}, 
+             
+             'type': chart_type, 'lineOptions': {'regionFill': 1}, 'valuesOverPoints': 1, 'axisOptions': {'xIsSeries': 1}} 
     return chart
 def get_data(filters):
     conditions = []
