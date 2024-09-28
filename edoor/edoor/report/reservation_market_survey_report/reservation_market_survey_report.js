@@ -7,10 +7,7 @@ frappe.query_reports["Reservation Market Survey Report"] = {
         fieldtype: "Link",
         options: "Business Branch",
         default: frappe.defaults.get_user_default("business_branch"),
-        reqd: 1,
-        on_change: function (query_report) {
-            setLinkField();
-        },
+        reqd: 1
     },
     {
         fieldname: "chart_type",
@@ -18,10 +15,7 @@ frappe.query_reports["Reservation Market Survey Report"] = {
         fieldtype: "Select",
         options: "\ndonut\nbar\nline\npie",
         default: "donut", 
-        reqd: 1, 
-        on_change: function(query_report) {
-            query_report.refresh();
-        }
+        reqd: 1
     },    
     {
         fieldname: "view_by",
@@ -29,20 +23,14 @@ frappe.query_reports["Reservation Market Survey Report"] = {
         fieldtype: "Select",
         options: "\nHow do you find us?\nPurpose of Visit",
         default: "How do you find us?",
-        reqd: 1,
-        on_change: function(query_report) {
-            query_report.refresh();
-        }
+        reqd: 1
     },
 	{
 		fieldname: "start_arrival_date",
 		label: __("Start Arrival Date"),
 		fieldtype: "Date",
 		reqd: 0,
-		default: frappe.datetime.add_months(frappe.datetime.now_date(), -1),
-		on_change: function(query_report) {
-			query_report.refresh();
-		}
+		default: frappe.datetime.add_months(frappe.datetime.now_date(), -1)
 	},
 	{
 		fieldname: "end_arrival_date",
@@ -50,10 +38,19 @@ frappe.query_reports["Reservation Market Survey Report"] = {
 		fieldtype: "Date",
 		reqd: 0,
 		default: frappe.datetime.now_date(),
-		on_change: function(query_report) {
-			query_report.refresh();
-		}
-	}
+	},
+    {
+        fieldname: "show_chart",
+        label: __("Show/Hide Chart"),
+        fieldtype: "Check",
+        default: 1
+    },
+    {
+        fieldname: "show_summary_api",
+        label: __("Show/Hide Summary"),
+        fieldtype: "Check",
+        default: 0
+    }
 ]
 ,
 onload: function(report) {

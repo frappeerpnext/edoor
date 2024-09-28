@@ -283,45 +283,38 @@ function setLinkField(report=null) {
           };
         });
 
-      const show_summary_field =
-        frappe.query_report.get_filter("show_summary_field");
-      show_summary_field.df.options = r.message.report_fields
-        .filter((y) => y.show_in_chart == 1)
-        .map((x) => {
-          return {
+      const show_summary_field =frappe.query_report.get_filter("show_summary_field");
+      show_summary_field.df.options = r.message.report_fields.filter((y) => y.show_in_chart == 1).map((x) => {
+        return {
+          value: x.fieldname,
+          description: x.label,
+        };
+      });
+        
+      // sort order option
+      if(report){
+          
+        const sort_order_field = frappe.query_report.get_filter("sort_order_field");
+        
+        let sort_option = [{value:"",label:"Row Group"}]
+
+        r.message.report_fields
+        .filter((y) => y.allow_sort_order == 1)
+        .forEach((x) => {
+          sort_option.push(  {
             value: x.fieldname,
-            description: x.label,
-          };
-        });
-        
-        // sort order option
-        if(report){
-           
-          const sort_order_field = frappe.query_report.get_filter("sort_order_field");
-          
-          let sort_option = [{value:"",label:"Row Group"}]
-
-          r.message.report_fields
-          .filter((y) => y.allow_sort_order == 1)
-          .forEach((x) => {
-            sort_option.push(  {
-              value: x.fieldname,
-              label: x.label,
-            });
+            label: x.label,
           });
-          sort_order_field.df.options = sort_option
-          sort_order_field.set_input(r.message.default_sort_field);
+        });
+        sort_order_field.df.options = sort_option
+        sort_order_field.set_input(r.message.default_sort_field);
 
-          sort_order_field.refresh();
+        sort_order_field.refresh();
 
-          const sort_type =frappe.query_report.get_filter("sort_type");
-          sort_type.set_input(r.message.sort_type)
-          sort_type.refresh();
-
-
-        }
-        
-          
+        const sort_type =frappe.query_report.get_filter("sort_type");
+        sort_type.set_input(r.message.sort_type)
+        sort_type.refresh();
+      }  
     },
     error: function (r) {
       frappe.throw(_("Please update report configuration"));

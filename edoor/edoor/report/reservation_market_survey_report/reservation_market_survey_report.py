@@ -5,8 +5,12 @@ def execute(filters=None):
     data = get_data(filters)
     totals = calculate_totals(filters)
     data.append(totals)
-    summary = summary_totals(filters)
-    chart = get_chart(filters)
+    summary = None
+    if filters.show_summary_api:
+        summary = summary_totals(filters)
+    chart = None
+    if filters.show_chart:
+        chart = get_chart(filters)
     return columns, data ,None,chart, summary
 def section_fields():
     
@@ -25,7 +29,9 @@ def get_columns(filters):
     view_by = filters.get('view_by')
     columns = [
         {"fieldname": "reservation_name", "label": "Reservation", "fieldtype": "Data", "width": 150},
-        {"fieldname": "guest_name", "label": "Guest Name", "fieldtype": "Data", "width": 150}
+        {"fieldname": "guest_name", "label": "Guest Name", "fieldtype": "Data", "width": 150},
+        {"fieldname": "arrival_date", "label": "Arrival Date", "fieldtype": "Date", "width": 150},
+        {"fieldname": "departure_date", "label": "Departure Date", "fieldtype": "Date", "width": 150}
     ]
     for field in section_fields().get(view_by, []):
         field_meta = meta.get_field(field)
@@ -68,6 +74,8 @@ def get_data(filters):
     query = f"""
         SELECT r.name AS reservation_name,
                r.guest_name AS guest_name,
+               r.departure_date,
+               r.arrival_date,
                rms.{col_fields}
         FROM `tabReservation` r
         JOIN `tabReservation Market Survey` rms ON r.name = rms.reservation

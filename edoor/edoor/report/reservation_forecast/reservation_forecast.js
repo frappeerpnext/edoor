@@ -160,22 +160,7 @@ frappe.query_reports["Reservation Forecast"] = {
 		  });
 		}).addClass('btn-print-custom').html('<i class="fa fa-print"></i> Print Report');
 
-		const report_doc = report.report_doc
-		if(report_doc.json){
 		
-			const report_options  = JSON.parse(report_doc.json)
-			if(report_options?.filters){
-				for (const key of Object.keys(report_options.filters)) {
-					if (key !="start_date" && key !="end_date" && key!="room_type" && key!="business_source" && key!="business_source_type" && key!="guest_type"){
-						 
-						let field =frappe.query_report.get_filter(key);
-						field.set_input(report_options.filters[key])
-						field.refresh();
-
-					}
-				}
-			}
-		}
 		
 
 
@@ -242,12 +227,8 @@ function setLinkField(report=null) {
 
 		//set option for show fields
 
-
-
-
 		frappe.call({
 			method: "edoor.api.utils.get_report_config",
-
 			args: {
 				property: property,
 				report: "Reservation Forecast"
@@ -268,6 +249,8 @@ function setLinkField(report=null) {
 					}
 				})
 				
+				
+				
 				const show_summary_field = frappe.query_report.get_filter('show_summary_field');
 				show_summary_field.df.options = r.message.report_fields.filter(y=>y.show_in_chart==1).map(x => {
 					return {
@@ -277,11 +260,9 @@ function setLinkField(report=null) {
 				})
 
 				if(report){
-           
 					const sort_order_field = frappe.query_report.get_filter("sort_order_field");
 					
 					let sort_option = [{value:"",label:"Row Group"}]
-		  
 					r.message.report_fields
 					.filter((y) => y.allow_sort_order == 1)
 					.forEach((x) => {
@@ -292,14 +273,18 @@ function setLinkField(report=null) {
 					});
 					sort_order_field.df.options = sort_option
 					sort_order_field.set_input(r.message.default_sort_field);
-		  
+					
 					sort_order_field.refresh();
 		  
+
 					const sort_type =frappe.query_report.get_filter("sort_type");
 					sort_type.set_input(r.message.sort_type)
 					sort_type.refresh();
-		  
-		  
+					
+				 
+					setDefaultOption(report)
+
+
 				}
 				
 			},
@@ -310,4 +295,32 @@ function setLinkField(report=null) {
 
 	}
 
+}
+
+function setDefaultOption(report){
+	 
+	const report_doc = report.report_doc
+		if(report_doc.json){
+			 
+			const report_options  = JSON.parse(report_doc.json)
+			if(report_options?.filters){
+				for (const key of Object.keys(report_options.filters)) {
+					if (key !="start_date" && key !="end_date" && key!="room_type" && key!="business_source" && key!="business_source_type" && key!="guest_type"){
+						
+						
+						let field =frappe.query_report.get_filter(key);
+						 
+						if (field.df.fieldtype=='MultiSelectList'){
+							field.set_value(report_options.filters[key])
+						}else{
+							field.set_input(report_options.filters[key])
+						}
+						
+
+						field.refresh();
+					 
+					}
+				}
+			}
+		}
 }
