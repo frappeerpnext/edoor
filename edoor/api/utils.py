@@ -36,6 +36,17 @@ def create_role():
     frappe.db.commit()
     return doc
 
+
+@frappe.whitelist()
+def get_default_property_name():
+    property = frappe.defaults.get_user_default("business_branch")
+    if not property:
+        data = frappe.db.get_list("Business Branch")
+        if len(data)>0:
+            property = data[0].name
+    return property
+
+            
 @frappe.whitelist(allow_guest=True)
 def get_theme():
     return frappe.db.get_single_value("ePOS Settings","app_theme")

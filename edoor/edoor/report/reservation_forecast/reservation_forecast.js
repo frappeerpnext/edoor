@@ -149,7 +149,13 @@ frappe.query_reports["Reservation Forecast"] = {
 			frappe.query_report.refresh();
 		});
 
-		setLinkField(report);
+		frappe.call("edoor.api.utils.get_default_property_name").then(result=>{
+			const property =frappe.query_report.get_filter("property");
+			property.set_input(result.message)
+			property.refresh();
+			setLinkField(report);
+		})
+	
 		
 	},
 	"formatter": function (value, row, column, data, default_formatter) {
@@ -193,6 +199,7 @@ frappe.query_reports["Reservation Forecast"] = {
 
 function setLinkField(report=null) {
 	const property = frappe.query_report.get_filter_value("property")
+	 
 	if (property) {
 		const business_source_filter = frappe.query_report.get_filter('business_source');
 		business_source_filter.df.get_query = function () {
