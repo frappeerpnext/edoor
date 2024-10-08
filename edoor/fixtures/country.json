@@ -3206,20 +3206,6 @@
   "time_zones": ""
  },
  {
-  "code": "as",
-  "country_name": "American Samoa",
-  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/as.svg",
-  "custom_lat": -14.275632,
-  "custom_long": -170.702036,
-  "date_format": "dd-mm-yyyy",
-  "docstatus": 0,
-  "doctype": "Country",
-  "modified": "2024-08-03 17:24:49.286717",
-  "name": "American Samoa",
-  "time_format": "HH:mm:ss",
-  "time_zones": ""
- },
- {
   "code": "br",
   "country_name": "Brazil",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/br.svg",
@@ -3330,6 +3316,20 @@
   "name": "Australia",
   "time_format": "HH:mm:ss",
   "time_zones": "Australia/Adelaide\nAustralia/Brisbane\nAustralia/Broken_Hill\nAustralia/Currie\nAustralia/Darwin\nAustralia/Eucla\nAustralia/Hobart\nAustralia/Lindeman\nAustralia/Lord_Howe\nAustralia/Melbourne\nAustralia/Perth\nAustralia/Sydney"
+ },
+ {
+  "code": "as",
+  "country_name": "American Samoa",
+  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/as.svg",
+  "custom_lat": -14.275632,
+  "custom_long": -170.702036,
+  "date_format": "dd-mm-yyyy",
+  "docstatus": 0,
+  "doctype": "Country",
+  "modified": "2024-08-03 17:24:49.286717",
+  "name": "American Samoa",
+  "time_format": "HH:mm:ss",
+  "time_zones": ""
  },
  {
   "code": "eg",

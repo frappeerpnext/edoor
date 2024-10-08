@@ -2370,7 +2370,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
      
     resources = []
     #set first resource = summary by for current property
-    total_room = frappe.db.sql("select count(name) as total_room from `tabRoom` where property=%(property)s",{"property":property}, as_dict=1)
+    total_room = frappe.db.sql("select count(name) as total_room from `tabRoom`  where property=%(property)s and coalesce(disabled,0) = 0",{"property":property}, as_dict=1)
     resources.append({
         "id":"property_summary",
         "title":_(property),
@@ -2407,7 +2407,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
             sort_order,
             alias,
             coalesce(room_type_color,'#FFFFFF') as room_type_color,
-            (select count(name) from `tabRoom` where room_type_id=rt.name) as total_room
+            (select count(name) from `tabRoom` where room_type_id=rt.name and coalesce(disabled,0) = 0) as total_room
             from 
                 `tabRoom Type` rt
             where 
@@ -2455,7 +2455,7 @@ def get_room_inventory_resource(property = ''):
     
     resources = []
 
-    resources = frappe.db.sql("select name as id,room_type as title,alias,(select count(name) from `tabRoom` where room_type_id=t.name) as total_room ,sort_order from `tabRoom Type` t where property=%(property)s order by sort_order",{'property':property},as_dict=1)
+    resources = frappe.db.sql("select name as id,room_type as title,alias,(select count(name) from `tabRoom` where room_type_id=t.name and coalesce(disabled,0) = 0) as total_room ,sort_order from `tabRoom Type` t where property=%(property)s order by sort_order",{'property':property},as_dict=1)
     
     resources.append({
         "id": "vacant_room",

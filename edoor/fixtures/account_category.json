@@ -144,15 +144,6 @@
   "sort_order": 0
  },
  {
-  "account_category": "Service Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-21 12:33:49.875142",
-  "name": "Service Charge",
-  "note": null,
-  "sort_order": 600
- },
- {
   "account_category": "Other Charge Discount",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -169,6 +160,15 @@
   "name": "City Ledger",
   "note": null,
   "sort_order": 2900
+ },
+ {
+  "account_category": "Service Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-21 12:33:49.875142",
+  "name": "Service Charge",
+  "note": null,
+  "sort_order": 600
  },
  {
   "account_category": "Deposit",

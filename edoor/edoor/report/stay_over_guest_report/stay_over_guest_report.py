@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+import copy
 
 
 def execute(filters=None):
@@ -11,9 +12,39 @@ def execute(filters=None):
 	summary = get_report_summary(filters, report_config.report_fields, report_data)
 	columns = get_report_columns(filters, report_config.report_fields)
 
+	if filters.sort_order_field and filters.show_in_group_by:
+		return None
+
+	if filters.sort_order_field:
+		# Apply sort
+		report_data = copy.deepcopy(report_data)
+
+		# Define a helper function to handle None values and mixed types
+		def sort_key(x):
+			value = x.get(filters.sort_order_field, None)
+			if value is None:
+				return ""  # Treat None as an empty string or some default value
+			if isinstance(value, str):
+				return (
+					value.lower()
+				)  # Sort strings lexicographically (case-insensitive)
+			return value  # Sort numbers normally
+
+		# Perform the sorting
+		report_data = sorted(
+			[d for d in report_data if d.get("is_total_row", 0) == 0],
+			key=sort_key,
+			reverse=(filters.sort_type == "DESC"),
+		)
+
+		# Keep total rows at the bottom
+		report_data = report_data + [
+			d for d in report_data if d.get("is_total_row", 0) == 1
+		]
+	else:
+		report_data = report_data
+
 	return  columns, report_data, None, None, summary
-
-
 
 
 def get_report_columns(filters,  report_fields):

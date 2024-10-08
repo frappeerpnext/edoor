@@ -27,6 +27,8 @@ def execute(filters=None):
 	if report_data:
 		report_summary = get_report_summary_by_business_source(report_data)
 		report_data[0]["report_summary"] = report_summary
+		report_data[0]["report_summary_fields"] = report_summary_columns(filters)
+
 	return get_report_columns(filters,report_config.report_fields),report_data,None,chart, summary
 
 def validate(filters):
@@ -64,12 +66,14 @@ def get_report_data(filters, report_fields, data):
 				"indent": 0,
 				"name": formatted_parent,
 				"is_group": 1,
-				"parent":parent
+				"parent":parent,
+				"merge_group_row":1
 			} if filters.row_group == 'reservation' else {
 				"indent": 0,
 				report_fields[0].fieldname: formatted_parent,
 				"is_group": 1,
-				"parent":parent
+				"parent":parent,
+				"merge_group_row":1
 			})
 
 			report_data.extend([d.update({"parent":parent}) or d for d in data if d[filters.row_group] == parent])
@@ -83,9 +87,9 @@ def get_report_data(filters, report_fields, data):
 				"reservation_type":len([d for d in data if d[filters.row_group] == parent])
 			}
 
-			for field in [d for d in report_fields if d.show_in_report and d.show_in_summary]:
+			for field in [d for d in report_fields if d.get("show_in_total_row",0) ==1 and d.get("fieldtype") in ["Int","Float","Currency"]]:
 				total_row[field.fieldname] = sum(d[field.fieldname] for d in data if field.fieldname in d and d[filters.row_group] == parent) or 0
-
+			
 			report_data.append(total_row)
 
 	else:
@@ -103,7 +107,7 @@ def get_report_data(filters, report_fields, data):
 				"is_group":1,
 				"reservation_type":len([d for d in data])
 				}) 
-		for f in [d for d in report_fields if d.show_in_report==1 and d.fieldtype!='Date' and d.fieldtype!='Data' and d.fieldtype!='Link' and d.show_in_summary==1]:
+		for f in [d for d in report_fields if d.get("show_in_total_row",0)==1  and  d.get("fieldtype") in ["Int","Float","Currency"]]:
 			total_row[f.fieldname] = (sum([d[f.fieldname] for d in data]))
 		report_data.append(total_row)
 
@@ -162,11 +166,21 @@ def get_data (filters,report_fields):
 	sql = sql + " order by {} {}".format(order_field, filters.sort_order)
  
 	 
- 
+	# frappe.throw(sql)
+	 
 	data = frappe.db.sql(sql, filters ,as_dict=1)
 	return data
 
 
+def report_summary_columns(filters):
+	return [
+		{"fieldname":"row_group", "label":"Summary by Business Source", "cell_width":25,"merge_cell":2},
+		{"fieldname":"room_count", "label":"Room Count", "fieldtype":"Int", "cell_width":10,"align":"center",},
+		{"fieldname":"room_nights", "label":"Room Nights", "fieldtype":"Int", "cell_width":10,"align":"center"},
+		{"fieldname":"pax", "label":"Pax(A/C)", "fieldtype":"Data", "cell_width":10,"align":"center"},
+		{"fieldname":"debit", "label":"Debit", "fieldtype":"Currency", "cell_width":10,"align":"right"},
+		{"fieldname":"credit", "label":"Credit", "fieldtype":"Currency", "cell_width":10,"align":"right"}
+	]
 
 def get_report_summary(filters,report_fields, data):
 	summary = []
@@ -201,8 +215,12 @@ def get_report_summary(filters,report_fields, data):
 	return summary
 
 def get_report_chart(filters, data, report_fields):
-	if not filters.row_group:
+	# frappe.throw(str([d for d in data if 'is_total_row' in d and d['is_total_row']==1]))
+	if filters.chart_type=="None":
 		return None
+	if filters.chart_type and not filters.row_group:
+		frappe.throw("Choose group by to implement with Chart Type")
+	
 	precision = frappe.db.get_single_value("System Settings", "currency_precision")
 	report_fields = [d for d in report_fields if d.show_in_chart == 1]
 	if filters.show_chart_series:
@@ -341,15 +359,19 @@ def get_report_summary_by_business_source(data):
 			"debit":sum([d.get("total_debit") for d in filter_data]),
 			"credit":sum([d.get("total_credit") for d in filter_data])
 		}
+		row["pax"] = "{}/{}".format(row["adult"], row["child"]
+							  )
 
 		result.append(row)
 	if result:
 		result.append({
 			"row_group":"Total",
+			"is_total_row":1,
 			"room_count":sum([d.get("room_count") for d in result]),
 			"room_nights":sum([d.get("room_nights") for d in result]),
 			"adult":sum([d.get("adult") for d in result]),
 			"child":sum([d.get("child") for d in result]),
+			"pax":"{}/{}".format(sum([d.get("adult") for d in result]),sum([d.get("child") for d in result])),
 			"debit":sum([d.get("debit") for d in result]),
 			"credit":sum([d.get("credit") for d in result])
 		})

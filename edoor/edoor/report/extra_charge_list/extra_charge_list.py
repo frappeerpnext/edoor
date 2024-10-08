@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
  
 
 def execute(filters=None):
@@ -10,6 +11,11 @@ def execute(filters=None):
 	summary = None
 	if filters.show_summary ==1:
 		summary = get_report_summary(data)
+
+	if filters.chart_type =='pie' or filters.chart_type=="donut":
+		if len(filters.chart_series)!=1:
+			frappe.throw(_("Please select only one series for the chart, either a pie or donut chart."))
+
 	chart = get_chart(filters)
 	return get_columns(filters), data, None,chart, summary
 

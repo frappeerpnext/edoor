@@ -16,7 +16,7 @@ def get_report(filters, report_data):
 
 def get_report_columns(filters,min_max_day):
     columns = [
-        {"fieldname": "row_group", "label":"Room Type", "width": 200},
+        {"fieldname": "row_group", "label":"Room Type", "width": 200,"cell_width":20},
     ]
 
     month = get_months(filters)
@@ -33,7 +33,8 @@ def get_report_columns(filters,min_max_day):
                 "fieldname": "col_{}_{}".format(n, col_month),  # Unique fieldname, e.g., 'col_Sep_1'
                 "label": "{} {}".format(col_month, str(n).zfill(2)),  # Label like 'Sep 01', 'Sep 02', etc.
                 "width": 70,
-                "align": "center"
+                "align": "center",
+                "cell_width":10
             })
     columns.append({
         "fieldname":"total","label": "Total", "width":100, "align":"center",
@@ -299,6 +300,8 @@ def get_report_summary(filters, occupay_data, daily_property_data):
 
 
 def get_report_chart(filters,months,data):
+    if filters.chart_type == "None":
+        return None
     min_day = min([d["min_date"].day for d in months])
     max_day = max([d["max_date"].day for d in months])
     precision = frappe.db.get_single_value("System Settings","currency_precision")

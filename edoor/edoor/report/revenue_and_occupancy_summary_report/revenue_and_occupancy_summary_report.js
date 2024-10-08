@@ -189,15 +189,6 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
       frappe.query_report.refresh();
     });
 
-    report.page.add_inner_button("Print Report", function () {
-      frappe.ui.get_print_settings(false, function(print_settings) {
-        frappe.query_report.print_report({
-            format: print_settings.format,
-            orientation: print_settings.orientation,
-            letter_head: print_settings.letter_head
-        });
-      });
-    }).addClass('btn-print-custom').html('<i class="fa fa-print"></i> Print Report');
 
     setLinkField(report);
   },

@@ -11,7 +11,7 @@ frappe.query_reports["Arrival Guest Report"] = {
 			default:frappe.defaults.get_user_default("business_branch") ,
 			"reqd": 1,
 			"on_change": function (query_report) {
-				setLinkField()
+				setLinkField(query_report)
 			},
 		},
 		{
@@ -80,13 +80,30 @@ frappe.query_reports["Arrival Guest Report"] = {
 			"on_change": function (query_report) { },
 			"hide_in_filter": 1,
 		},
+		{
+			fieldname: "sort_order_field",
+			label: __("Sort Order Field"),
+			fieldtype: "Select",
+			options:[{value:"",label:"Sort Order Field"}],
+			on_change: function (query_report) {},
+			hide_in_filter: 1,
+		},
+		{
+			fieldname: "sort_type",
+			label: __("Sort Order Type"),
+			fieldtype: "Select",
+			options:"ASC\nDESC",
+			default:"ASC",
+			on_change: function (query_report) {},
+			hide_in_filter: 1,
+		},
 		
 	],
 	onload: function(report) {
 		report.page.add_inner_button ("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
-		setLinkField()
+		setLinkField(report)
 	},
 	"formatter": function (value, row, column, data, default_formatter) {
 		const origninal_value = value || 0
@@ -124,7 +141,7 @@ frappe.query_reports["Arrival Guest Report"] = {
 	},
 
 };
-function setLinkField() {
+function setLinkField(report=null) {
 	const property = frappe.query_report.get_filter_value("property")
 	if (property) {
 		const room_type_filter = frappe.query_report.get_filter('room_types');
@@ -176,6 +193,30 @@ function setLinkField() {
 			// 		description: x.label
 			// 	}
 			// })
+
+			if(report){
+          
+				const sort_order_field = frappe.query_report.get_filter("sort_order_field");
+				
+				let sort_option = [{value:"",label:"Row Group"}]
+		
+				r.message.report_fields
+				.filter((y) => y.allow_sort_order == 1)
+				.forEach((x) => {
+				  sort_option.push(  {
+					value: x.fieldname,
+					label: x.label,
+				  });
+				});
+				sort_order_field.df.options = sort_option
+				sort_order_field.set_input(r.message.default_sort_field);
+		
+				sort_order_field.refresh();
+		
+				const sort_type =frappe.query_report.get_filter("sort_type");
+				sort_type.set_input(r.message.sort_type)
+				sort_type.refresh();
+			}  
 		},
 		error: function (r) {
 			frappe.throw(_("Please update report configuration"))

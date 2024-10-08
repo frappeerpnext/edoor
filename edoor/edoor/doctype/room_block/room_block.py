@@ -60,6 +60,8 @@ class RoomBlock(Document):
 
 			room_doc = frappe.get_doc("Room", self.room_id)
 			room_doc.housekeeping_status_code = self.unblock_housekeeping_status_code 
+			room_doc.room_status = "Vacant" 
+			
 			
 			room_doc.save()
 			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})

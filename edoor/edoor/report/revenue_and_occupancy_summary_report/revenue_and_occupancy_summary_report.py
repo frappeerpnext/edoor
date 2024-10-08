@@ -11,15 +11,15 @@ from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_gu
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_nationality
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_room_type
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_room
-
 from edoor.api.frontdesk import get_working_day
+
+
 from frappe import _
 from frappe.utils import date_diff,today ,add_months, add_days,getdate,add_to_date
 import frappe
 from epos_restaurant_2023.utils import get_date_range_by_timespan
 import copy
 def execute(filters=None):
-    
 	if not filters.property:
 		filters.property = frappe.defaults.get_user_default("business_branch")
 	if not filters.property: 
@@ -35,6 +35,7 @@ def execute(filters=None):
      
 	
 	if filters.timespan!="Date Range":
+		 
 		date_range = get_date_range_by_timespan(filters.timespan)
 		filters.start_date =date_range["start_date"]
 		filters.end_date = date_range["end_date"]

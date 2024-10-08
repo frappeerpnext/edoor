@@ -14,7 +14,7 @@ def execute(filters=None):
 
 def get_columns(filters):
 	return [
-		{"fieldname":"row_group", "label": "Account", "width":500,"fieldtype":"Data"},
+		{"fieldname":"row_group", "label": "Account", "width":500,"fieldtype":"Data", "merge_cell":4},
 		{"fieldname":"debit", "label": "Debit", "width":125, "fieldtype": "Currency", "align": "right"},
 		{"fieldname":"credit", "label": "Credit", "width":125, "fieldtype": "Currency","align": "right"},
 		{"fieldname":"net_total", "label": "Net Total", "width":125, "fieldtype": "Currency","align": "right"},

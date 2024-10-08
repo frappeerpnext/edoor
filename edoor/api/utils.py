@@ -1283,7 +1283,7 @@ def get_cashier_shift_summary(name,property):
     for d in doc.cash_float:
         if d.payment_type_group =="Cash":
             expected_amount = d.input_amount
-            if d.currency == frappe.db.get_single_value("ePOS Settings","currency"):
+            if d.currency == frappe.get_cached_value("ePOS Settings",None,"currency"):
                 expected_amount =  ((d.input_amount or 0) + (data[0]["cash_credit"] or 0)) - ( data[0]["cash_debit"] or 0)
 
 

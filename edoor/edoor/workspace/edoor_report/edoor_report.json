@@ -607,7 +607,7 @@
    "custom_show_in_app_menu": 0,
    "custom_sort_order": 0,
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Monthly Reservation Pick Up List",
    "link_count": 0,
    "link_to": "Monthly Reservation Pick Up List",
@@ -616,7 +616,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-09-16 11:32:00.577739",
+ "modified": "2024-10-07 16:09:37.818647",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

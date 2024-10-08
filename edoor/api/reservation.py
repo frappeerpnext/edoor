@@ -19,9 +19,11 @@ from frappe import _
 from frappe.utils import (
 	cint
 )
+
 from functools import lru_cache
 from edoor.api.generate_occupy_record import generate_room_occupies
 from edoor.api.generate_room_rate import generate_forecast_revenue, generate_new_room_rate, generate_new_room_rate_by_stay_room_id, get_charge_breakdown_by_account_code_breakdown, get_package_charge_data, get_room_rate_account_code_breakdown, get_room_rate_breakdown, package_base_account_code_charge_breakdown
+
 
 @frappe.whitelist()
 def test():
@@ -263,7 +265,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
         sql = "{} and coalesce(show_in_room_availability,0)  = 1".format(sql)
    
     sql = sql.format(start_date, end_date,sql_except)
- 
+    
     data = frappe.db.sql(sql,{"property":property,"room_type_id":room_type_id},as_dict=1)
     return data
 
@@ -798,9 +800,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note="",arrival_
             
             if is_no_show:
                 generate_forecast_revenue(stay_names=[stay.name],run_commit=False)
-                
 
-
+ 
     if len(checked_in_stays)> 0:
         # create master folio and post master post change to master folio first   
         master_folio = get_master_folio(reservation=reservation,create_if_not_exists=True, reopen_folio_if_closed=True)  

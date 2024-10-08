@@ -32,16 +32,15 @@ def get_columns(filters):
 		{'fieldname':'occupancy','align':'center','label':'Occ(%)',"width":65 ,"show_in_report":1},
 		{'fieldname':'occupy','align':'center','label':'Occ',"width":65 ,"show_in_report":1},
 		{'fieldname':'block','align':'center','label':'OOO',"width":65 ,"show_in_report":1},
-		
 	]
-	date = getdate(filters.start_date)
  
+	date = getdate(filters.start_date)
 	while date<= getdate(filters.end_date):
 		columns.append(
-			{'fieldname':date,'align':'center','label': date.strftime('%d %b'),"width":75 ,"show_in_report":1,"is_date":1},
+			{'fieldname':str(date),'align':'center','label': date.strftime('%d %b'),"width":75 ,"show_in_report":1,"is_date":1,"set_reservation_status_color":1},
 		)
 		date = add_days(date,1)
-  
+
 	return columns
 
 def get_filters(filters):
@@ -158,6 +157,8 @@ def get_report_data(filters,data):
 				room[str(occ["date"])] = "BL" 
 			else:
 				room[str(occ["date"])] = status["alias"]
+				 
+    
 		
   
 	# total row 
@@ -224,20 +225,25 @@ def get_status(reservation_status, name):
 	else:
 		return None
 	
-def get_chart(filters,data):
-	# frappe.throw(str([obj["room_type"] for obj in data if "room_type" in obj]))
+def get_chart(filters,data): 
+	
 	currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
 	if filters.chart_type=="None" or not filters.chart_option:
 		return None
+	
+	if filters.chart_option:
+		frappe.throw("This option is coming soom!")
 
 	dataset = []
 	colors = []
 	dataset_values = []
 
 	group_column = get_field(filters)
+
+	
+
 	if group_column["label"] == "Occupancy by Month":
 		group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['indent'] == 0]))
-	# frappe.throw(str(group_column))
 		for g in group_data: 
 
 			amount = ([d['occupancy'] for d in data if d[group_column["data_field"]] == g])

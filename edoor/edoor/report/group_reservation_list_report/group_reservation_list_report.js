@@ -72,6 +72,7 @@ frappe.query_reports["Group Reservation List Report"] = {
 			"fieldname": "summary_filter",
 			"label": __("Summary By"),
 			"fieldtype": "Autocomplete",
+			"hidden":1,
 			get_data:function(txt) {
 				return [
 					{"value":"arrival_date","description":"Arrival Date","fieldtype":"Date","width":250},
@@ -95,6 +96,7 @@ frappe.query_reports["Group Reservation List Report"] = {
 			"fieldname": "summary_fields",
 			"label": __("Summary Field"),
 			"fieldtype": "MultiSelectList",
+			"hidden":1,
 			get_data: function(txt) {
 				return [
 					{"value":"total_record","description":"Total Room",name:"Total Room",fieldtype:"Int", width:100,align:"center"},
@@ -179,15 +181,7 @@ frappe.query_reports["Group Reservation List Report"] = {
 			frappe.query_report.refresh();
 		});
 		setLinkField();
-		report.page.add_inner_button("Print Report", function () {
-			frappe.ui.get_print_settings(false, function(print_settings) {
-			  frappe.query_report.print_report({
-				  format: print_settings.format,
-				  orientation: print_settings.orientation,
-				  letter_head: print_settings.letter_head
-			  });
-		  });
-		}).addClass('btn-print-custom').html('<i class="fa fa-print"></i> Print Report');
+
 		 
 	},
 	"formatter": function(value, row, column, data, default_formatter) {

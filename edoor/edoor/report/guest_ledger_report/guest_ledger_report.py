@@ -111,8 +111,16 @@ def get_report_data(filters):
 
 	
 	data = frappe.db.sql(sql,filters,as_dict=1)
+	total_row = {
+		"name":"Total",
+  		"is_total_row":1,
+		"credit":sum([d.get("credit",0) for d in data]),
+		"debit":sum([d.get("debit",0) for d in data]),
+		"balance":sum([d.get("balance",0) for d in data])
+	}
+	data.append(total_row)
 	return data
- 
+
 
 
 def get_report_summary(filters):

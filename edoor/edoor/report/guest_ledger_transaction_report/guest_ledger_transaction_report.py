@@ -132,7 +132,19 @@ def get_report_data(folio_transaction_amount,filters):
 				d["debit"] = d["amount"] or 0
 			else:
 				d["credit"] = d["amount"] or 0
-		return  sorted(data, key=lambda k: k[filters.order_by], reverse=True if filters.order_type=='desc' else False)
+		data =  sorted(data, key=lambda k: k[filters.order_by], reverse=True if filters.order_type=='desc' else False)
+		
+		# total row
+		total_row = {
+			"name":"Total",
+			"is_total_row": 1,
+			"debit":sum([d.get("debit",0) for d  in data ]),
+			"credit":sum([d.get("credit",0) for d  in data ])
+		}
+		data.append(total_row)
+
+		return data 
+		
 	return []
 
 def get_report_summary(filio_transaction_amount,filters):

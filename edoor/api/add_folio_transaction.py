@@ -244,7 +244,7 @@ def create_folio_transaction(data):
 
     # get charge breakdown 
     breakdown_data =  get_folio_transaction_breakdown(data)    
-    # frappe.throw(str(breakdown_data))
+
     
     add_folio_transaction_record(data, breakdown_data,working_day, old_doc)
     
@@ -428,13 +428,12 @@ def get_folio_transaction_breakdown(data=None):
     return account_code_breakdown
 
 def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
-
     if "base_account" in breakdown_data:
         base_doc = get_folio_transaction_doc_share_property(data, breakdown_data["base_account"],working_day)
-        
         if "name" in data:
             base_doc.flags.doc_name =data["name"]
             base_doc.flags.old_doc = old_doc
+            
         # frappe.throw(base_doc.name)
         base_doc.is_base_transaction = 1
         base_doc.input_amount = breakdown_data["base_account"]["input_rate"]
@@ -843,4 +842,4 @@ def delete_transaction(parent_transaction_name):
     frappe.db.sql("delete from `tabFolio Transaction Products` where parent='{0}'".format(parent_transaction_name))
     
     # update tab series
-    frappe.db.sql("select * from `tabSeries` where name like '{}-%'".format(parent_transaction_name))
+    frappe.db.sql("update  `tabSeries` set current = 0 where name = '{}-'".format(parent_transaction_name))

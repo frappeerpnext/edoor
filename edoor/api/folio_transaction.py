@@ -162,12 +162,11 @@ def update_reservation_folio(name=None, doc=None,run_commit=True,ignore_validate
     return doc
 
 def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_folio,run_commit = True):
-    
     # get_all stay doc with check in to master
     folio_names = []
     if master_folio:
         folio_names.append(master_folio.name)
-        
+    
     stays_info = get_reservation_stay_list_infor(stay_names =[d["stay_name"] for d in stays])
     
     for s in stays_info:
@@ -283,9 +282,7 @@ def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
         c["folio_transaction_reservation_stay"] = [d for d in stays_infor if d["name"]==c["reservation_stay"]][0]["folio_transaction_reservation_stay"]
     
     folio_transaction_list = []
-    
     folio_transaction_list = get_folio_transaction_name([d for d in charge_list if d["parent_reference"] ==""], charge_list)
-
     for t in folio_transaction_list:
         
         stay = [d for d in stays_infor if d["name"]==t.source_reservation_stay][0]
@@ -324,16 +321,22 @@ def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
 # recursion fution to get doc with doc name
 def get_folio_transaction_name(data,charge_list,parent_doc=None):
     result = []
-     
     for t in data:
-        
         doc = frappe.new_doc("Folio Transaction") 
         if not parent_doc:        
             doc.name = make_autoname(doc.naming_series)
         else:
             doc.name  = make_autoname(parent_doc.name + ".-.##")
             doc.parent_reference = parent_doc.name
+            if parent_doc:
+                
+                if parent_doc.reference_folio_transaction:
+                    doc.reference_folio_transaction = parent_doc.reference_folio_transaction
+                else:
+                    doc.reference_folio_transaction = parent_doc.name
 
+                
+                
         doc.posting_date = t["posting_date"]
         doc.transaction_type = "Reservation Folio"
         doc.stay_room_id = t["stay_room_id"]
