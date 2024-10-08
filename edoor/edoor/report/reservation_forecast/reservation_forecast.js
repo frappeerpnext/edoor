@@ -11,7 +11,7 @@ frappe.query_reports["Reservation Forecast"] = {
 			default: frappe.defaults.get_user_default("business_branch"),
 			"reqd": 1,
 			"on_change": function (query_report) {
-				setLinkField()
+				setLinkField(query_report)
 			},
 		},
 		{

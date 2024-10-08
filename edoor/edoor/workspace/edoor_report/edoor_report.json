@@ -527,7 +527,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reservation Report",
-   "link_count": 7,
+   "link_count": 5,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -590,33 +590,9 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "custom_show_in_app_menu": 0,
-   "custom_sort_order": 0,
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Daily Rreservation Pick Up List",
-   "link_count": 0,
-   "link_to": "Daily Reservation Pick Up List",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "custom_show_in_app_menu": 0,
-   "custom_sort_order": 0,
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Monthly Reservation Pick Up List",
-   "link_count": 0,
-   "link_to": "Monthly Reservation Pick Up List",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2024-10-07 16:09:37.818647",
+ "modified": "2024-10-08 10:08:04.023686",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",
