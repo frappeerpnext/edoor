@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/frappeerpnext/edoor#readme",
   "dependencies": {
-    "@varlet/ui": "^2.22.0"
+    "@varlet/ui": "^2.22.0",
+    "echarts": "^5.5.1",
+    "vue-echarts": "^7.0.3"
   }
 }

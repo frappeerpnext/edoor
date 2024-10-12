@@ -1238,6 +1238,7 @@ def get_total_reservation_by_room_type(property = None ,date =None,room_type=Non
     return   frappe.db.sql("""select 
                             room_type_id,
                             room_type, 
+                            room_type_alias,
                             count(name) as total 
                          from `tabRoom Occupy`
                          where
@@ -2076,39 +2077,66 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
         
         chart_data["datasets"] =[
                 {
-                    "chartType": 'bar',
+                    "stack":"stack_key",
+                    "type": 'bar',
                     "name": _('Room Block'),
-                    "values": block_data,
+                    
+                    "data": block_data,
+                    "itemStyle": {
+                        "color": frappe.get_cached_value("eDoor Setting",None,"room_block_color")
+                    }
                 },
                 {
-                    "chartType": 'bar',
+                    "stack":"stack_key",
+                    "type": 'bar',
                     "name": _('No-Show'),
-                    "values": no_show_data,
+                    "data": no_show_data,
+                    "itemStyle": {
+                        "color": frappe.get_cached_value("Reservation Status","No Show","color")
+                    }
                 },
 
                 {
-                    "chartType": 'bar',
+                    "stack":"stack_key",
+                    "type": 'bar',
                     "name": _('Departure'),
-                    "values": departure_data,
+                    "data": departure_data,
+                     "itemStyle": {
+                        "color": frappe.get_cached_value("Reservation Status","Checked Out","color")
+                    }
                 },
                 {
-                    "chartType": 'bar',
+                    "stack":"stack_key",
+                    "type": 'bar',
                     "name": _('Stay Over'),
-                    "values": stay_over_data,
+                    "data": stay_over_data,
+                     "itemStyle": {
+                        "color": frappe.get_cached_value("Reservation Status","In-house","color")
+                    }
                 },
                 {
-                    "chartType": 'bar',
+                    "stack":"stack_key",
+                    "type": 'bar',
                     "name": _('Arrival'),
-                    "values": arrival_data,
+                    "data": arrival_data,
+                     "itemStyle": {
+                        "color": frappe.get_cached_value("Reservation Status","Reserved","color")
+                    }
                 },
             
 
         ]
     chart_data["datasets"].append({
-                "chartType": "line" if int(show_occupancy_only)==0 else  view_chart_type,
+                "type": "line" if int(show_occupancy_only)==0 else  view_chart_type,
                 "name": _('Occupancy') + ' (%)',
-                "values": occupancy_data,
-                
+                "data": occupancy_data,
+                "label": {
+                    "show": True,          
+                    "position": 'top',     
+                    "color": '#000',        
+                    "fontSize": 14          
+                }
+                            
     })
   
     return chart_data

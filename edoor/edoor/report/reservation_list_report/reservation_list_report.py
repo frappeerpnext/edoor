@@ -48,7 +48,7 @@ def get_report_columns(filters,  report_fields):
 
 	for g in report_fields:
 		columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
-
+	 
 	if filters.row_group:
 		columns = [d for d in columns if d["fieldname"] != filters.row_group]
 
@@ -178,6 +178,7 @@ def report_summary_columns(filters):
 		{"fieldname":"room_count", "label":"Room Count", "fieldtype":"Int", "cell_width":10,"align":"center",},
 		{"fieldname":"room_nights", "label":"Room Nights", "fieldtype":"Int", "cell_width":10,"align":"center"},
 		{"fieldname":"pax", "label":"Pax(A/C)", "fieldtype":"Data", "cell_width":10,"align":"center"},
+		{"fieldname":"total_amount", "label":"Room Charge", "fieldtype":"Currency", "cell_width":10,"align":"right","merge_cell":2},
 		{"fieldname":"debit", "label":"Debit", "fieldtype":"Currency", "cell_width":10,"align":"right"},
 		{"fieldname":"credit", "label":"Credit", "fieldtype":"Currency", "cell_width":10,"align":"right"}
 	]
@@ -356,6 +357,7 @@ def get_report_summary_by_business_source(data):
 			"room_nights":sum([d.get("room_nights") for d in filter_data]),
 			"adult":sum([d.get("adult") for d in filter_data]),
 			"child":sum([d.get("child") for d in filter_data]),
+			"total_amount":sum([d.get("total_amount") for d in filter_data]),
 			"debit":sum([d.get("total_debit") for d in filter_data]),
 			"credit":sum([d.get("total_credit") for d in filter_data])
 		}
@@ -372,6 +374,7 @@ def get_report_summary_by_business_source(data):
 			"adult":sum([d.get("adult") for d in result]),
 			"child":sum([d.get("child") for d in result]),
 			"pax":"{}/{}".format(sum([d.get("adult") for d in result]),sum([d.get("child") for d in result])),
+			"total_amount":sum([d.get("total_amount") for d in result]),
 			"debit":sum([d.get("debit") for d in result]),
 			"credit":sum([d.get("credit") for d in result])
 		})

@@ -169,7 +169,7 @@ if(stay.value.reservation_status == 'In-house' ||  stay.value.reservation_status
     {
       label: $t('Change Room'), icon: 'pi pi-copy',
       command: function () {
-          alert("change room")
+          
 
       }
     }

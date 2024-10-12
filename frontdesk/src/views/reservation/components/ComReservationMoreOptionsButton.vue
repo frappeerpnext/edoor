@@ -157,7 +157,7 @@ const toggle = (event) => {
 }
 
 function onSetting(){
-    console.log(rs.reservation.name)
+   
     dialog.open(ComResservationSetting, {
         data:  {
             reservation:rs.reservation.name,

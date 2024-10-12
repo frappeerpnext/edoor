@@ -153,7 +153,7 @@ function setupActionMenu(frm) {
         ],
         primary_action_label: "Save",
         primary_action(d) {
-          alert("save me")
+           
           
         },
       });

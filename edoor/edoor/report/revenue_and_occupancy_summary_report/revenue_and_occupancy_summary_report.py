@@ -12,14 +12,16 @@ from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_na
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_room_type
 from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_room
 from edoor.api.frontdesk import get_working_day
-
+import requests
 
 from frappe import _
-from frappe.utils import date_diff,today ,add_months, add_days,getdate,add_to_date
+from frappe.utils import date_diff,today ,add_months, add_days,getdate,add_to_date,now
 import frappe
 from epos_restaurant_2023.utils import get_date_range_by_timespan
 import copy
 def execute(filters=None):
+	 
+
 	if not filters.property:
 		filters.property = frappe.defaults.get_user_default("business_branch")
 	if not filters.property: 
@@ -82,4 +84,8 @@ def execute(filters=None):
 
 	return report["columns"], report_data ,message,report["report_chart"], report["report_summary"],True
 
- 
+@frappe.whitelist()
+def test_job():
+	import time
+	time.sleep(60)
+	requests.get("https://api.telegram.org/bot641540167:AAHPVia-qPxnjZeYiVDKcTk69pIlYIalS_c/sendMessage?chat_id=@estctestpublicchannel&text=hello {}".format(now()))

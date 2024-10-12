@@ -45,7 +45,7 @@
 const dialogRef = inject("dialogRef");
 const data = dialogRef.value.data.data
 function onSave() {
-    alert(234)
+   
 }
   </script>
   

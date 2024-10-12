@@ -231,7 +231,7 @@ if (props.room.element) {
 }
 
 watch(elementStyle.value, () => {
-  console.log(elementStyle.value.color)
+ 
   if (element) {
     Object.keys(elementStyle.value).forEach((key) => {
       if (key === "borderWidth" || key === "fontSize") {

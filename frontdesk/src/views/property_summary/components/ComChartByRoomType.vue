@@ -1,38 +1,30 @@
 <template>
-
-    <div id="room_type_chart"></div>
+<ComChart v-if="chartData" height="300px" :chartData="chartData" />
 
 </template>
 <script setup>
-import { onMounted } from "@/plugin"
-import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
-
+import { onMounted,ref } from "@/plugin"
+const chartData = ref()
 const props = defineProps({param: Object})
-
-
+import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
+import ComChart from "@/components/chart/ComChart.vue"
 function renderChart() {
     
-    const data = {
-        labels:  props.param.map(r=>r.room_type),
+    chartData.value = {
+        legend:{
+            show:false
+        },
+        labels:  props.param.map(r=>r.room_type_alias),
         datasets: [
             {
                 name: "Room Type",
-                values: props.param.map(r=>r.total),
+                type:"bar",
+                data: props.param.map(r=>r.total),
                 
             }
-        ],
-       
+        ]
     };
 
-
-    const chartConfig = {
-        data: data,
-        type: "bar",
-        height: 250,
-        valuesOverPoints: 1
-
-    }
-    const chart = new Chart("#room_type_chart", chartConfig)
 
 }
 onMounted(() => {

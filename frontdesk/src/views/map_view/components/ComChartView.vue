@@ -1,29 +1,49 @@
 <template>
-     <div v-if="showChart" class="card" style="background:#fff; margin-bottom: 20px; border-radius: 10px; padding:10px; ">
+
  
-        <div :id="chart_id"></div>
+  
+  <div v-if="showChart" class="card" style="background:#fff; margin-bottom: 20px; border-radius: 10px; padding:10px; ">
+    <ComChart v-if="chartData" :chartData="chartData" /> 
 </div>
+  
+ 
+
 </template>
 <script setup>
 import {onMounted,ref,watch} from "@/plugin"
-import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
+import ComChart from "@/components/chart/ComChart.vue"
 
 const props =defineProps({
     chart:Object
 })
-const chart_id = ref("chart_" + generateRandomString(10))
+
 const showChart = ref(true)
+const chartData = ref({})
 
 watch(() => props.chart, () => {
     renderChart()
 })
-
 function renderChart(){
     if (props.chart.data?.labels?.length>100){
         showChart.value = false
     }else {
         showChart.value = true
-        const chart = new Chart("#" + chart_id.value,  props.chart)
+      
+        chartData.value.labels = props.chart.data?.labels
+       
+        chartData.value.datasets  = props.chart.data.datasets.map(r=>{
+           
+            return {
+                type:"bar",
+                label: {
+                    show: true,
+                    position: 'top'
+                },
+                name:r.name,
+                data: r.values
+            }
+        })
+        
     }
     
 }

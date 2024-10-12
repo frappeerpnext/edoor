@@ -1,38 +1,48 @@
 <template>
-    <div id="reservation_type_chart"></div>
+       <ComChart v-if="chartData" height="300px" :chartData="chartData" />
 </template>
 <script setup>
-import { onMounted } from "@/plugin"
-import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
+import { onMounted,ref } from "@/plugin"
+import ComChart from "@/components/chart/ComChart.vue"
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({param: Object})
-
+const chartData = ref()
 function getStatusColor(status) {
     return window.setting.reservation_status.find(r => r.name == status).color
 }
 function renderChart() {
-    const data = {
-        labels: [$t("FIT"), $t("GIT")],
-        datasets: [
-            {
-                name: "Reservation Type",
-                values: [props.param.total_fit_stay,props.param.total_git_stay],
-                type: "pie"
-            }
-        ],
+    chartData.value = {
+        legend: {  show:false},
+        datasets: [{
+            label: {
+        show: true,
+        position: 'outside', 
+        formatter: '{b}: {c} ({d}%)' 
+      },
+      tooltip: {
+            trigger: 'item',  
+            formatter: '{b}: {c} ({d}%)' 
+            },
+            name: 'Reservation Type',
+                    height:300,
+                    type: 'pie',
+                    radius: '55%',
+                      data:[
+                {
+                    value:props.param.total_fit_stay,
+                    name:$t('FIT')
+                },
+                {
+                    value:props.param.total_git_stay,
+                    name:$t('GIT')
+                }
+            ],
+             type: "pie"
+        }],
       
     };
 
-
-    const chartConfig = {
-        data: data,
-        type: "pie",
-        height: 250,
-        valuesOverPoints: 1
-
-    }
-    const chart = new Chart("#reservation_type_chart", chartConfig)
 
 }
 onMounted(() => {

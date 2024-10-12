@@ -227,9 +227,16 @@
                                 <label for="show_master_folio_only">Show Master Folio Only</label>
                             </div>
                         </div>
+                        
+                    
+                        <div v-if="print_format && print_format?.show_sort_order_option && sortOrderFields && sortOrderFields.length>0" class="flex ml-2">
+                            <ComSelect  v-model="filters.order_by"  placeholder="Sort Order Field"
+                            @onSelected="reloadIframe" :options='sortOrderFields'  optionLabel="label" optionValue="fieldname"    />
 
-                        <div v-if="print_format && print_format?.show_sort_order_option " class="flex ml-2">
-                           <!-- Order By Option -->
+                            <ComSelect class="ml-2" v-model="filters.order_by_type"   placeholder="Sort Order Type"
+                            @onSelected="reloadIframe" :options='["ASC","DESC"]' :clear="false" />
+
+
                         </div>
 
                     </div>
@@ -288,7 +295,7 @@ const moment = inject("$moment")
 const frappe = inject("$frappe")
 const call = frappe.call()
 
-
+ 
 const filters = ref({
     invoice_style: window.setting.folio_transaction_style_credit_debit == 1 ? "Debit/Credit Style" : "Simple Style",
     show_room_number: 1,
@@ -302,7 +309,8 @@ const filters = ref({
     show_summary:0,
     show_package_breakdown:1,
     show_business_source:0,
-    show_rate_type:0
+    show_rate_type:0,
+    order_by_type: "ASC"
 
 })
 const show_toolbar = ref(0)
@@ -320,14 +328,9 @@ const props = defineProps({
     BtnClass: String,
 })
 
-const sortOrderFields = computed(()=>{
-    
-    if(print_format.value?.short_order_field==""){
-        return []
-    }else {
-        return print_format.value?.short_order_field
-    }
-})
+const sortOrderFields = ref([])
+
+ 
 const loading = ref(false)
 
 const html = ref()
@@ -493,6 +496,11 @@ onMounted(() => {
    
     getDoc("Print Format",decodeURIComponent(dialogRef.value.data.report_name)).then((doc)=>{
         print_format.value = doc
+        if(print_format.value?.short_order_field==""){
+            sortOrderFields.value =  []
+        }else {
+            sortOrderFields.value =  JSON.parse( print_format.value?.short_order_field)
+        }
     })
     if (window.isMobile) {
         let elem = document.querySelectorAll(".p-dialog");

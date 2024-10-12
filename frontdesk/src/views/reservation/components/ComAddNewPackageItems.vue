@@ -42,7 +42,7 @@ const rs = dialogRef.value.data.rs
   const data = ref({});
   
   function onSave() {
-    alert(23)
+    // alert(23)
   }
   </script>
   

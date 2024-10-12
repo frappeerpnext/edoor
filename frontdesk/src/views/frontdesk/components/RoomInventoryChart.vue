@@ -1,19 +1,22 @@
 
 <template>
     <div class="card" style="background:#fff; margin-bottom: 20px; border-radius: 10px; padding:10px; ">
- 
-        <div id="room_inventory_occupancy_chart"></div>
-    
+
+        <ComChart v-if="chartData"   :chartData="chartData" />
+
     </div>
 </template>
 
 <script setup>
-import {  inject,watch } from "vue";
-import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
+import {  inject,watch,ref } from "vue";
+
+import ComChart from "@/components/chart/ComChart.vue"
 const props = defineProps({ data: Object })
 const moment = inject("$moment")
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
+const chartData = ref()
+
 watch(() => props.data, (newValue, oldValue) => {
     renderChart();
 })
@@ -21,57 +24,60 @@ watch(() => props.data, (newValue, oldValue) => {
 
 function renderChart(){
  
-    const chartData = {
+     chartData.value = {
         labels: [...new Set(props.data.map(r=>moment(r.start).format("DD/MMM")))],
         datasets: [
             {
-                chartType: 'bar',
+                stack:"stack_key",
+                type: 'bar',
                 name: $t('Departure'),
-                values:  props.data.filter(r=>r.departure>=0).map(r=>parseFloat( r.departure))
+                data:  props.data.filter(r=>r.departure>=0).map(r=>parseFloat( r.departure)),
+                itemStyle: {
+                    color: getStatusColor("Checked Out")
+                }
+
             },
                 {
-                    chartType: 'bar',
+                    stack:"stack_key",
+                    type: 'bar',
                     name: $t('Stay Over'),
                    
-                    values:   props.data.filter(r=>r.stay_over>=0) .map(r=>parseFloat( r.stay_over))
+                    data:   props.data.filter(r=>r.stay_over>=0) .map(r=>parseFloat( r.stay_over)),
+                    itemStyle: {
+                    color: getStatusColor("In-house")
+                }
+                
                 },
             {
-                chartType: 'bar',
+                type: 'bar',
+                stack:"stack_key",
                 name: $t('Arrival'),
-                values:   props.data.filter(r=>r.arrival>=0) .map(r=>parseFloat( r.arrival)),
+                data:   props.data.filter(r=>r.arrival>=0) .map(r=>parseFloat( r.arrival)),
+                itemStyle: {
+                    color: getStatusColor("Reserved")
+                }
                 
             },
             {
-                chartType: 'line',
+                type: 'line',
                 name: $t('Occupancy'),
-                values: props.data.filter(r=>r.occupancy) .map(r=>parseFloat( r.occupancy)),
+                data: props.data.filter(r=>r.occupancy) .map(r=>parseFloat( r.occupancy)),
+                label: {
+                    show: true,          // Show label with value
+                    position: 'top',      // Position the label above the point
+                    color: '#000',        // Set label color (optional)
+                    fontSize: 14          // Adjust font size (optional)
+             }
             },
            
         ]
     }
-
-    const chartConfig = {
-        data: chartData,
-        height: 350,
-        colors: [
-            getStatusColor("Checked Out"), getStatusColor("In-house"), getStatusColor("Reserved"), "light-blue"],
-        axisOptions: {
-            xAxisMode: "tick",
-            xIsSeries: true
-        },
-        barOptions: {
-            stacked: true,
-            spaceRatio: 0.3
-        },
-        
-    }
-    const chart = new Chart("#room_inventory_occupancy_chart",chartConfig)
-
+ 
 
     }
 
     function getStatusColor(status){
-    return window.setting.reservation_status.find(r=>r.name==status).color
+        return window.setting.reservation_status.find(r=>r.name==status).color
     }
 
 

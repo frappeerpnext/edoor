@@ -29,7 +29,8 @@ def get_room_list(filter):
    filter["keyword"] = f"%{filter['keyword'] }%" if "keyword" in filter else f'%%'
    
    working_day = get_working_day(filter["property"])
-
+   order_by = filter.get("order_by")
+   order_by_type = filter.get("order_by_type")
    sql ="""
       select 
          name,
@@ -49,7 +50,6 @@ def get_room_list(filter):
          property = %(property)s  and 
          room_number like %(keyword)s
    """
-
    if 'room_type_id' in filter and  len(filter["room_type_id"])>0:
       sql = sql + " and room_type_id in %(room_type_id)s "
    
@@ -67,7 +67,11 @@ def get_room_list(filter):
    
    if  'housekeeper' in filter and len(filter["housekeeper"])>0:
       sql = sql + " and housekeeper = %(housekeeper)s "
-   
+   if order_by[0]:
+      sql += f" ORDER BY {order_by[0]} {order_by_type[0]}"
+      
+      
+
    data = frappe.db.sql(sql,filter,as_dict=1)
    sql ="""
       select 

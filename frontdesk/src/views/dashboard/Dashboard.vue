@@ -132,6 +132,7 @@
     <div class="my-3">
         <ComPanel :title="$t('Monthly Occupancy') + ' (' + moment(working_day.date_working_day).format('MMM/YYYY') + ')'">
             <OccupancyChart />
+ 
         </ComPanel>
     </div>
     <div class="px-3 py-3 bg-white mt-2 border-round-xl tab-reserv-no">
@@ -139,12 +140,9 @@
             <TabPanel>
                 <template #header>
                     <span class="white-space-nowrap">{{ $t('Arrival Remaining') }}  </span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival_remaining
-                    }}</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival_remaining }}</span>
                 </template>
-                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                        <div v-html="arrival_remaining_html" class="view_table_style min_table_ui_height "></div>
-                </div>
+               <ComDashboardRecentList :filters="{print_format:'eDoor Dashboard Arrival Guest',selected_date:selected_date,action:'view_arrival_remaining'}"/>
             </TabPanel>
             <TabPanel>
                 <template #header>
@@ -152,38 +150,37 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
                     }}</span>
                 </template>
-                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <div v-html="departure_remaining_html" class="view_table_style min_table_ui_height"></div>
-                    
-                </div>
+                <ComDashboardRecentList  v-if="!gv.loading" :filters="{print_format:'eDoor Dashboard Departure Guest',selected_date:selected_date,action:'view_departure_remaining'}"/>
+               
             </TabPanel>
             <TabPanel>
                 <template #header>
                     <span class="white-space-nowrap" > {{ $t('Stay Over') }} </span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.stay_over }}</span>
                 </template>
-                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <div v-html="stay_over_html" class="view_table_style min_table_ui_height"></div>
-                </div>
+
+           
+                <ComDashboardRecentList  v-if="!gv.loading" :filters="{print_format:'eDoor Dashboard Stay Over Guest',selected_date:selected_date}"/>
+
             </TabPanel>
             <TabPanel>
                 <template #header>
                     <span class="white-space-nowrap" > {{ $t('Upcoming note') }} </span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.upcoming_note }}</span>
                 </template>
-                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <div v-html="upcoming_note_html" class="view_table_style min_table_ui_height"></div>
-                        
-                </div>
+         
+                <ComDashboardRecentList  v-if="!gv.loading" :filters="{print_format:'eDoor Up Coming Note',selected_date:selected_date}"/>
+              
+                
             </TabPanel>
             <TabPanel>
                 <template #header>
                     <span class="white-space-nowrap" > {{ $t('Desk Folio') }} </span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.desk_folio }}</span>
                 </template>
-                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <div v-html="desk_folio_html" class="view_table_style min_table_ui_height"></div>
-                </div>
+                <ComDashboardRecentList  v-if="!gv.loading" :filters="{print_format:'eDoor Desk Folio',selected_date:selected_date}"/>
+
+               
             </TabPanel>
         </TabView>
     </div>
@@ -205,6 +202,8 @@ import OccupancyChart from './components/OccupancyChart.vue';
 import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
+import ComDashboardRecentList from '@/views/dashboard/components/ComDashboardRecentList.vue';
+ 
 const isMobile = ref(window.isMobile) 
 const toast = useToast();
 const moment = inject("$moment")
@@ -215,16 +214,13 @@ const api = inject('$frappe')
 const data = ref({})
 const date = ref(null)
 const selected_date = ref(null)
-const arrivalUrl = ref("");
-const departureUrl = ref("");
-const inhouseUrl = ref("");
-const deskFolioUrl = ref("")
-const upCommingNoteUrl = ref("");
+
 const chartOccupancy = ref([])
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
+
 const tomorrow = ref('')
+
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const statusColor = computed(() => {
@@ -237,38 +233,6 @@ const statusColor = computed(() => {
     }
 
 })
-const frappe = inject("$frappe")
-const call = frappe.call()
-const param = ref({})
-const arrival_remaining_html = ref()
-const departure_remaining_html = ref()
-const stay_over_html = ref()
-const upcoming_note_html = ref()
-const desk_folio_html = ref()
-const getframeui = (format, action, html) =>  {
-    param.value.doc = decodeURIComponent("Business Branch")
-    param.value.name = decodeURIComponent(property.name)
-    param.value.format = decodeURIComponent(gv.getCustomPrintFormat(format))
-    param.value._lang = localStorage.getItem("lang") || "en"
-    param.value.letterhead = decodeURIComponent("No Letterhead")
-    param.value.no_letterhead = 1
-    param.value.show_toolbar = 0
-    param.value.can_view_rate = window.can_view_rate
-    param.value.view = "ui"
-    param.value.date = selected_date.value
-    param.value.settings = decodeURIComponent("%7B%7D")
-    param.value.refresh = (Math.random() * 16)
-    if(action)(
-      param.value.action = action  
-    )
-    call.get("epos_restaurant_2023.www.printview.get_html_and_style", param.value).then(result => {
-        html.value = result.message.html
-        gv.loading = loading;    
-        }).catch(err => {
-            
-        })
-        
-}
 
 function onViewData(doctype, report_name, title, extra_params, filter_options) {
     const dialogRef = dialog.open(ComIFrameModal, {
@@ -419,9 +383,9 @@ function onViewVoidReservation() {
 function onShowTodayData() {
     selected_date.value = data.value.working_date
     date.value = moment(data.value.working_date).format("DD-MM-YYYY")
-    onRefreshIframe();
+    
     getData()
-    // this.classList.add("active");
+   
 }
 
 
@@ -431,7 +395,7 @@ function onShowTommorowData() {
     tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
     selected_date.value = tomorrow.value
     date.value = moment(tomorrow.value).format("DD-MM-YYYY")
-    onRefreshIframe()
+ 
     getData()
 }
 
@@ -440,7 +404,7 @@ function onDateSelect(event) {
     tomorrow.value = today.add(1, 'days');
     tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
     selected_date.value = moment(event).format("YYYY-MM-DD")
-    onRefreshIframe();
+    
     getData();
 }
 
@@ -474,7 +438,7 @@ function getData(loading = true) {
                 tomorrow.value = moment(data.value.working_date).add(1, "days").format("YYYY-MM-DD")
                 selected_date.value = data.value.working_date;
             }
-            onRefreshIframe()
+          
             gv.loading = false;
         })
         .catch((error) => {
@@ -484,14 +448,7 @@ function getData(loading = true) {
         });
 }
 
-function onRefreshIframe() {
-    getframeui("eDoor Dashboard Arrival Guest","view_arrival_remaining",arrival_remaining_html)
-    getframeui("eDoor Dashboard Departure Guest","view_departure_remaining",departure_remaining_html)
-    getframeui("eDoor Dashboard Stay Over Guest",false,stay_over_html)
-    getframeui("eDoor Up Coming Note",false,upcoming_note_html)
-    getframeui("eDoor Desk Folio",false,desk_folio_html)
-}
-
+ 
 const viewSummary = (name) => {
     const filters = [
         ['property', '=', property.name]
@@ -614,7 +571,7 @@ const actionRefreshData = async function (e) {
         if(e.data.action=="Dashboard"){
             setTimeout(()=>{
                 getData(false)
-                onRefreshIframe()
+              
             },e.data.delay || 1000*10)
         }
     };

@@ -692,7 +692,7 @@ function onSelectProduct(data,index){
                 let price = r.product_price.find(x=>x.business_branch == window.property_name && x.price_rule == window.setting.pos_profile.price_rule) 
         
                 if (price){ 
-                    console.log(doc.value.items[index].price)
+                 
                     doc.value.items[index].price = price.price
                     
                 }else {
