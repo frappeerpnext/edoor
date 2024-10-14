@@ -166,10 +166,25 @@ function onLoad(show_loading = true) {
     loading.value = show_loading
     loading.value = show_loading
 	
-    let filters = [props.filters]
+
+    let filters =[props.filters]
+    if(props.filters.some(Array.isArray)){
+        filters = props.filters
+    }
+    
+    
     filters.push (["custom_property", '=', window.property_name])
     filters.push (["custom_is_audit_trail", '=', 1])
-    
+    console.log({
+		fields: ["name","creation", "custom_keyword" ,"custom_note_date" ,"custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified_by" ,"modified","comment_type","custom_icon",'custom_is_note'],
+		orderBy: {
+			field: "creation",
+			order:"DESC",
+		},
+		filters: filters, 
+		limit_start: 0,
+		limit: 20,
+	})
     getDocList('Comment', {
 		fields: ["name","creation", "custom_keyword" ,"custom_note_date" ,"custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified_by" ,"modified","comment_type","custom_icon",'custom_is_note'],
 		orderBy: {

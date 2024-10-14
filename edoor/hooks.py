@@ -146,9 +146,6 @@ scheduler_events = {
 			"*/10 * * * *": [
 				"edoor.api.schedule_task.ten_minute_job",
 			],
-			"*/1 * * * *": [
-				"edoor.edoor.report.revenue_and_occupancy_summary_report.revenue_and_occupancy_summary_report.test_job",
-			],
 	
 	},
 	# "all": [

@@ -349,8 +349,18 @@ Package Charge Breakdown
     </div>
 </div>
 </div>
+ 
+  
+ <ComCommentAndNotice v-if="doc && doc.name && !dialogRef.data.selected_room_rates" doctype="Reservation Room Rate"
+                                            :docname="doc.name"
+                                            :filters="[['reference_name','=', doc.name],['reference_doctype','=','Reservation Room Rate']]"
+                                                
+                                            />  
+                                            
+                                          
     </ComDialogContent>
 </template>
+
 <script setup>
 import { ref, inject, computed, onMounted, postApi, getApi } from "@/plugin"
 import Checkbox from 'primevue/checkbox';
@@ -358,6 +368,7 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
+import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 
 import Message from "primevue/message";
 import {i18n} from '@/i18n';

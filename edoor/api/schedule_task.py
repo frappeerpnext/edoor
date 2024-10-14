@@ -546,11 +546,13 @@ def fix_generate_duplicate_room_occupy():
 
 @frappe.whitelist()
 def generate_audit_trail_from_version():
+   
     if not can_run_job("edoor.api.schedule_task.generate_audit_trail_from_version"):
         return
     
 
     audit_trail_documents = frappe.db.get_list("Audit Trail Document", pluck='name',filters={"is_epos_audit_trail":0})
+ 
     version_data = frappe.db.get_list('Version',
                         filters={
                             'ref_doctype': ["in",audit_trail_documents],
@@ -559,7 +561,7 @@ def generate_audit_trail_from_version():
                         fields=['name','ref_doctype', 'docname',"creation"],
                         page_length=100
                     )
- 
+
     if len(version_data)> 0:
         for v in version_data:
             
@@ -570,7 +572,7 @@ def generate_audit_trail_from_version():
         #update is converted
         frappe.db.sql("update `tabVersion` set custom_is_converted_to_audit_trail=1 where name in %(names)s", {"names":set([d.name for d in version_data])})
         frappe.db.commit()
-        return version_data
+        
 
 
 
