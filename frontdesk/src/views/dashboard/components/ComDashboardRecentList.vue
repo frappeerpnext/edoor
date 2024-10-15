@@ -1,4 +1,5 @@
 <template>
+   
     <div class="mt-2 view-table-iframe">
         <ComPrintFormatSortOrderOption :print_format="filters.print_format" @onSelected="onSelectSortOrder" />
         <div v-html="html" class="view_table_style min_table_ui_height "></div>
@@ -8,7 +9,7 @@
 
 
 <script setup>
-import { inject, ref, onMounted, computed, getApi } from '@/plugin'
+import { inject, ref, onMounted, computed, getApi,watch } from '@/plugin'
 import ComPrintFormatSortOrderOption from '@/views/dashboard/components/ComPrintFormatSortOrderOption.vue';
 
 const props = defineProps({
@@ -23,6 +24,11 @@ const moment = inject("$moment")
 const gv = inject("$gv")
 const order_by = ref("")
 const order_by_type = ref("ASC")
+
+watch(() => props.filters, (newValue, oldValue) => {
+    LoadData()
+})
+
 
 function onSelectSortOrder(sort_order_options) {
     order_by.value = sort_order_options.order_by

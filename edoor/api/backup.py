@@ -7,6 +7,8 @@ import shlex, subprocess
 @frappe.whitelist()
 def run_backup_command():   
     site_name = cstr(frappe.local.site)
+    frappe.db.sql("delete from `tabError Log`")
+    frappe.db.commit()
     asyncio.run(run_bench_command("bench --site " + site_name + " backup"))
 
 async def run_bench_command(command, kwargs=None):

@@ -395,7 +395,7 @@ function onShowTommorowData() {
     tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
     selected_date.value = tomorrow.value
     date.value = moment(tomorrow.value).format("DD-MM-YYYY")
- 
+     
     getData()
 }
 
