@@ -3458,20 +3458,6 @@
   "time_zones": "Asia/Tokyo"
  },
  {
-  "code": "af",
-  "country_name": "Afghanistan",
-  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/af.svg",
-  "custom_lat": 33.93911,
-  "custom_long": 67.709953,
-  "date_format": "dd-mm-yyyy",
-  "docstatus": 0,
-  "doctype": "Country",
-  "modified": "2024-08-03 17:24:47.768684",
-  "name": "Afghanistan",
-  "time_format": "HH:mm:ss",
-  "time_zones": "Asia/Kabul"
- },
- {
   "code": "kh",
   "country_name": "Cambodia",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/kh.svg",
@@ -3484,5 +3470,19 @@
   "name": "Cambodia",
   "time_format": "HH:mm:ss",
   "time_zones": "Asia/Phnom_Penh"
+ },
+ {
+  "code": "af",
+  "country_name": "Afghanistan",
+  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/af.svg",
+  "custom_lat": 33.93911,
+  "custom_long": 67.709953,
+  "date_format": "dd-mm-yyyy",
+  "docstatus": 0,
+  "doctype": "Country",
+  "modified": "2024-08-03 17:24:47.768684",
+  "name": "Afghanistan",
+  "time_format": "HH:mm:ss",
+  "time_zones": "Asia/Kabul"
  }
 ]
