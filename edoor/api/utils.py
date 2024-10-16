@@ -177,8 +177,12 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
     if doc.comment_type == "Workflow": return
    
     #if doc have property field then update property, audit_date and is audit trail to true
-    update_files = ["comment_by='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"))]
-    update_files.append("custom_comment_by_photo='{}'".format(frappe.db.get_value("User",doc.owner, "user_image") or ""))
+    update_files = []
+    if not doc.comment_by:
+        update_files = ["comment_by='{}'".format(frappe.get_cached_value("User",doc.owner, "full_name"))]
+        update_files.append("custom_comment_by_photo='{}'".format(frappe.get_cached_value("User",doc.owner, "user_image") or ""))
+        
+     
     updated_data = {}
     if not doc.custom_icon:
         icon_data = frappe.db.sql("select icon from `tabApp Icons` where name='{}'".format(doc.custom_audit_trail_type), as_dict=1)
@@ -341,7 +345,10 @@ def submit_update_audit_trail_from_version(doc):
             "custom_icon":"pi pi-file-edit",
             "reference_doctype":doc.ref_doctype,
             "reference_name":doc.docname,
-            "content":", ".join(data_changed)  
+            "content":", ".join(data_changed) ,
+            "owner":doc.owner,
+            "comment_email":doc.owner,
+            "custom_comment_by_photo":frappe.get_cached_value("User",doc.owner, "user_image") or ""
             })
             # frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
             add_audit_trail(comment_doc, update_creation_date=True)
@@ -1026,11 +1033,13 @@ def add_audit_trail(data,update_creation_date=False):
             d["comment_type"]="Info"
             
         d["custom_is_audit_trail"]=1
-        d["comment_by"]=frappe.get_cached_value("User",frappe.session.user,"full_name")
-
+        d["comment_by"]= d.get("owner") 
+        
+        # frappe.throw(str(d))
         doc = frappe.get_doc(d).insert(ignore_permissions=True,ignore_links=True)
+        
         if update_creation_date:
-            frappe.db.sql("update `tabComment` set creation=%(creation)s where name=%(name)s",{"name":doc.name, "creation":d["creation"]})
+            frappe.db.sql("update `tabComment` set creation=%(creation)s, comment_by=%(owner)s ,owner=%(owner)s,modified_by=%(owner)s where name=%(name)s",{"name":doc.name, "creation":d["creation"],"owner":d.get("owner","")})
             
 
 
