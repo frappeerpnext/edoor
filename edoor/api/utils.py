@@ -799,6 +799,39 @@ def add_package_inclusion_charge_to_folio(folio,rate,is_night_audit_posing=0,not
 
 
 @frappe.whitelist()
+def reset_edoor_naming_series():
+    pass
+    # frappe.db.sql("""DELETE FROM `tabSeries` WHERE name REGEXP '^FT202[3-8]'""")
+    
+    # frappe.db.sql("delete from `tabSeries` where name like 'FT2026%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'RS2023%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'RS2024%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'RS2025%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'RS2026%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'RS2027%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'RS2028%'")
+    
+    frappe.db.sql("delete from `tabSeries` where name like 'ST2023%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'ST2024%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'ST2025%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'ST2026%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'ST2027%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'ST2028%'")
+    
+    frappe.db.sql("delete from `tabSeries` where name like 'FN2023%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'FN2024%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'FN2025%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'FN2026%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'FN2027%'")
+    frappe.db.sql("delete from `tabSeries` where name like 'FN2028%'")
+    
+    
+    
+
+
+
+
+@frappe.whitelist()
 def clear_reservation():
     
     if  frappe.session.user =="Administrator":
@@ -823,6 +856,7 @@ def clear_reservation():
         # frappe.db.sql("delete from `tabDeposit Ledger`")
         # frappe.db.sql("delete from `tabDesk Folio`")
         # frappe.db.sql("delete from `tabCashier Shift Cash Count`")
+        # frappe.db.sql("delete from `tabCashier Shift Cash Float`")
         # frappe.db.sql("delete from `tabDaily Property Data`")
         # frappe.db.sql("delete from `tabAdditional Stay Guest`")
         # frappe.db.sql("delete from `tabReservation Stay Package Items`")
@@ -840,9 +874,6 @@ def clear_reservation():
 
         # frappe.db.sql("update `tabCity Ledger` set total_debit = 0, total_credit=0, balance=0")
         
-        
-
-
 
 
         # room_list = frappe.db.get_all("Room")

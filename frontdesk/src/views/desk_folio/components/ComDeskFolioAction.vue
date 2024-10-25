@@ -2,12 +2,20 @@
     <div class="flex pb-1 md:pb-0 overflow-auto justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
         <div class="flex gap-2">
              
-            <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation"/>
+            <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation.charge_payment_transfer_section"/>
 
             <Button class=" conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
                 <template #end>
+                    <template
+                    v-for="(d, index) in folio_operation.discount_section" :key="index">
+                        <button v-if="!d.sub_account" @click="onAddFolioTransaction(d)"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i :class="d.icon" />
+                            <span class="ml-2 ">{{ $t(d.label) }}</span>
+                        </button>
+                    </template>
                     
                     <button @click="closeFolio" v-if="selectedFolio?.status == 'Open'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
