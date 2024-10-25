@@ -216,7 +216,7 @@ const getColumns = computed(() => {
     }
 })
 
-function onOpenLink(column, data) {
+function onOpenLink(column, data) { 
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
 

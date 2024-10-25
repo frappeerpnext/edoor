@@ -64,8 +64,12 @@
                         <Checkbox  v-model="filters.show_package_breakdown" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="breakdown_account_code" />
                         <label for="breakdown_account_code" class="white-space-nowrap" >Show/Hide Package Breakdown</label>
                     </div>
+                    <div>
+                        <Checkbox  v-model="filters.show_tax_summary_breakdown" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" inputId="tax_summary_breakdown" />
+                        <label for="tax_summary_breakdown" class="white-space-nowrap" >Show/Hide Tax Summary Breakdown</label>
+                    </div>
  
-                    <div    v-if="filters?.selected_folio?.show_room_rate_in_guest_folio_invoice==0" style="background: #ebc174;padding: 8px;border-radius: 10px;margin: 5px 0px;" xx>
+                    <div v-if="filters?.selected_folio?.show_room_rate_in_guest_folio_invoice==0" style="background: #ebc174;padding: 8px;border-radius: 10px;margin: 5px 0px;">
                         <Checkbox  v-tippy="$t('This reservatin is mark as not allow to show rate to the guest.')" :disabled="!canForceToViewRoomRate"  v-model="filters.force_show_room_rate" :binary="true" :trueValue="1" :falseValue="0" @change="refreshReport" 
                         inputId="force_show_room_rate" />
                         <label for="force_show_room_rate" class="white-space-nowrap" >Show Room Rate to Guest</label>
@@ -155,6 +159,7 @@ const refreshReport = () => {
     url.value = url.value + "&show_all_room_rate=" + filters.value.show_all_room_rate || 0
     url.value = url.value + "&show_package_breakdown=" + filters.value.show_package_breakdown || 0
     url.value = url.value + "&force_show_room_rate=" + filters.value.force_show_room_rate || 0
+    url.value = url.value + "&show_tax_summary_breakdown=" + filters.value.show_tax_summary_breakdown || 0
  
     if (filters.value.selected_folio) {
         url.value = url.value + "&folio=" + filters.value.selected_folio.name

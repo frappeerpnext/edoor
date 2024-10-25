@@ -5,6 +5,15 @@ from frappe.utils.data import strip
 import datetime
 import uuid
 def execute(filters=None): 
+    
+	# check business branch if have only 1 then set default
+	if not filters.property:
+		branches = frappe.db.get_list("Business Branch",pluck='name')
+		if len(branches) == 1:
+			filters.property = branches[0]
+     
+    
+    
 	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Reservation List Report"} )
 	# if filters.summary_filter:
 	# 	if not filters.summary_fields:

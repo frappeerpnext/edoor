@@ -21,7 +21,6 @@ def get_columns(filters):
 	]
 
 def get_report_data(filters):
- 
 	report_data = []
 	data =get_folio_transaction_data(filters,2)
 	# all ledger opening balance

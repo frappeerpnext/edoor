@@ -2197,6 +2197,7 @@ def get_edoor_setting(property = None):
         "help_url":edoor_setting_doc.help_url,
         "default_folio_print_format":edoor_setting_doc.default_folio_print_format,
         "room_chart_calendear_slot_duration":edoor_setting_doc.room_chart_calendear_slot_duration,
+        "folio_operation_setting":edoor_setting_doc.folio_operation_setting,
         
         "currency":{
             "name":currency.name,

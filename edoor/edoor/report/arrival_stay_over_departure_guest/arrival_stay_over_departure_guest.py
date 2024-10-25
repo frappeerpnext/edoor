@@ -83,8 +83,12 @@ def get_order_field():
 		{"label":"Reservation Stay","field":"rst.name"},
 		{"label":"Arrival Date","field":"rst.arrival_date"},
 		{"label":"Departure Date","field":"rst.departure_date"},
+		{"label":"Room Night","field":"rst.room_nights"},
 		{"label":"Room Type","field":"rst.room_type_alias"},
+		{"label":"Room Number","field":"rst.rooms"},
 		{"label":"Business Source","field":"rst.business_source"},
+		{"label":"ADR","field":"rst.adr"},
+		{"label":"Total Rate","field":"rst.total_amount"},
 		{"label":"Reservation Status","field":"rst.reservation_status"},
 		{"label":"Last Update On","field":"rst.modified"},
 		]
@@ -163,6 +167,7 @@ def get_report_data(filters,data):
 				"indent":0,
 				"reservation": "Arrival Guest",
 				"is_group":1,
+				"merge_group_row":1
 
 			})	
 		for g in arrival:
@@ -171,6 +176,7 @@ def get_report_data(filters,data):
 				"indent":1,
 				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
+    			"merge_group_row":1
 			})
 			
 			report_data = report_data +  [d.update({"indent":2}) or d for d in data if d["arrival_date"]==g]
@@ -192,6 +198,7 @@ def get_report_data(filters,data):
 				"indent":0,
 				"reservation": "Stay Over Guest",
 				"is_group":1,
+    			"merge_group_row":1
 			})	
 		for g in date:
 			d = g
@@ -199,6 +206,7 @@ def get_report_data(filters,data):
 				"indent":1,
 				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
+    			"merge_group_row":1
 
 			})
 			
@@ -219,7 +227,7 @@ def get_report_data(filters,data):
 				"indent":0,
 				"reservation": "Departure Guest",
 				"is_group":1,
-
+				"merge_group_row":1
 			})	
 		for g in departure:
 			d = g
@@ -227,6 +235,7 @@ def get_report_data(filters,data):
 				"indent":1,
 				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
+    			"merge_group_row":1
 			})
 			
 			report_data = report_data +  [d.update({"indent":2}) or d for d in data if d["departure_date"]==g]

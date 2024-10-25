@@ -1,31 +1,21 @@
 <template>
-    <div class="overflow-x-auto overflow-y-hidden lg:overflow-y-hidden">
-       
-        <div class="flex gap-1 justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2 overflow-x-auto lg:overflow-x-hidden w-max lg:w-full">
+    <div class="overflow-x-auto overflow-y-hidden lg:overflow-y-hidden"> 
+        <div class="flex gap-2 justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2 overflow-x-auto lg:overflow-x-hidden w-max lg:w-full">
             <slot name="button"></slot>
-            <div>
-                <template
-                    v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 1)"
-                    :key="index">
-                    <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
-                        v-if="showAccountGroup(d)">
-             {{ $t('Post ' + d.account_name)  }}
-                    </Button>
-                </template>
-
+            <div class="gap-1 flex">
+                 
+                <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation"/>
+                
                 <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                     @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
                 <Menu ref="folio_menu" id="folio_menu" :popup="true">
-                    <template #end>
+                    <template #end> 
                         <template
-                            v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 0)"
-                            :key="index">
-                            <button
-                            v-if="showAccountGroup(d)"
-                                @click="onAddFolioTransaction(d)"
+                        v-for="(d, index) in folio_operation.guest_folio?.filter(r => r.label == 'Post Discount')" :key="index">
+                            <button v-if="!d.sub_account" @click="onAddFolioTransaction(d)"
                                 class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                                 <i :class="d.icon" />
-                                <span class="ml-2 ">{{ $t('Post ' + d.account_name) }}</span>
+                                <span class="ml-2 ">{{ $t(d.label) }}</span>
                             </button>
                         </template>
                         <button v-if="!selectedFolio.is_master" @click="MarkasMasterFolio"
@@ -130,6 +120,7 @@ import ComFolioTransfer from "@/views/reservation/components/reservation_stay_fo
 import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTaxInvoice.vue";
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComWarningPrintRoomRate from '@/views/reservation/components/ComWarningPrintRoomRate.vue';
+import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue'
 
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
@@ -159,6 +150,11 @@ const gv = inject("$gv")
 const setting =window.setting
 const folio_menu = ref();
 
+const folio_operation = ref(JSON.parse(setting.folio_operation_setting).guest_folio)
+
+ 
+
+// 
 function showAccountGroup(account_code){
     if (selectedFolio.value.allow_post_to_city_ledger==0){
         if((account_code.is_city_ledger_account || 0) == 1){
@@ -172,14 +168,15 @@ function showAccountGroup(account_code){
 watch(() => props.folio, (newValue, oldValue) => {
 
     selectedFolio.value = newValue
- 
+    
 })
 
 const toggle = (event) => {
-    folio_menu.value.toggle(event);
+    folio_menu.value.toggle(event)
 }
 
 const print_menus = ref([])
+const sub_account_menus = ref([])
 
 function viewFolioSummaryReport() {
     const print_format = window.setting.default_folio_print_format?window.setting.default_folio_print_format :"eDoor Reservation Stay Folio Summary Report";
@@ -360,6 +357,7 @@ if (selectedFolio?.value?.tax_invoice_number) {
 
 function onAddFolioTransaction(account_code) {
     if(props.newDoc){
+        
         props.newDoc.account_group =account_code.name
     }
     if (account_code.is_city_ledger_account==1){
@@ -370,6 +368,7 @@ function onAddFolioTransaction(account_code) {
     }
 
     if (selectedFolio.value.status == "Open") {
+  
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
                     new_doc: props.newDoc?props.newDoc:{
@@ -381,15 +380,16 @@ function onAddFolioTransaction(account_code) {
                         account_group: account_code.name,
                         guest:selectedFolio.value.guest,
                         business_source:selectedFolio.value.business_source,
+
                     },
                     balance: selectedFolio.value.balance,
                     business_source: selectedFolio.value.business_source,
-                    account_code_filter:props.accountCodeFilter,
+                    account_code_filter:account_code.filter,
                     show_room:true,
                     show_source_reservation_stay:true
             },
             props: {
-                header: $t('Post ' + account_code.account_name + ' to Folio') + ' ' + props.folio.name,
+                header: $t(account_code.label + ' to Folio') + ' ' + props.folio.name,
                 style: {
                     width: '60vw',
                 },
@@ -774,6 +774,7 @@ function savedisplayView(value) {
 
 
 onMounted(()=>{
+    
     const saveDisplayViewFolioTransaction = localStorage.getItem('displayViewFolioTransaction');
     if (saveDisplayViewFolioTransaction) {
         displayViewFolio.value = saveDisplayViewFolioTransaction;
@@ -832,5 +833,9 @@ getDocList ('Custom Print Format', {
 
      getTaxInvoice()
 })
+
+const toggleMenu = (event) => {
+    post_charge_menu.value.toggle(event);
+}
 </script>
  

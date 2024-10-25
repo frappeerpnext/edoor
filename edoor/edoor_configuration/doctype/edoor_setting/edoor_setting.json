@@ -67,7 +67,9 @@
   "global_search_tables_tab",
   "search_table",
   "cash_count_setting_tab",
-  "cash_count_setting"
+  "cash_count_setting",
+  "other_settings_tab",
+  "folio_operation_setting"
  ],
  "fields": [
   {
@@ -428,12 +430,22 @@
    "fieldtype": "Link",
    "label": "View Room Rate in Guest Folio Invoice",
    "options": "Role"
+  },
+  {
+   "fieldname": "other_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other Settings"
+  },
+  {
+   "fieldname": "folio_operation_setting",
+   "fieldtype": "JSON",
+   "label": "Folio Operation Setting"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-24 08:10:08.322959",
+ "modified": "2024-10-19 13:51:49.230546",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

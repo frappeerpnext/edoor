@@ -25,12 +25,11 @@ def update_housekeeper(rooms, housekeeper):
 
 @frappe.whitelist()
 def get_room_list(filter):
-
    filter["keyword"] = f"%{filter['keyword'] }%" if "keyword" in filter else f'%%'
    
    working_day = get_working_day(filter["property"])
-   order_by = filter.get("order_by")
-   order_by_type = filter.get("order_by_type")
+   order_by = filter.get("order_by") or ''
+   order_by_type = filter.get("order_by_type") or "asc"
    sql ="""
       select 
          name,
@@ -67,7 +66,7 @@ def get_room_list(filter):
    
    if  'housekeeper' in filter and len(filter["housekeeper"])>0:
       sql = sql + " and housekeeper = %(housekeeper)s "
-   if order_by[0]:
+   if order_by and len(order_by) > 0 and order_by[0]:
       sql += f" ORDER BY {order_by[0]} {order_by_type[0]}"
       
       

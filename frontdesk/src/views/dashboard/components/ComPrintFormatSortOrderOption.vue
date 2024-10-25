@@ -36,8 +36,7 @@ function onSelectFilter (){
     emit("onSelected",{order_by:order_by.value, order_by_type:order_by_type.value})
 }
 
-onMounted(() => {
-   
+onMounted(() => {  
     getDoc("Print Format",decodeURIComponent(props.print_format)).then((result)=>{
           
         doc.value = result

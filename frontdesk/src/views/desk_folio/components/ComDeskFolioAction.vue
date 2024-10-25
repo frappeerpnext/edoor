@@ -1,14 +1,8 @@
 <template>
     <div class="flex pb-1 md:pb-0 overflow-auto justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
-        
-        <div class="flex">
-            <template
-                v-for="(d, index) in accountGroups"
-                :key="index">
-                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1 white-space-nowrap">
-                   {{ $t('Post ' + d.account_name) }}
-                </Button>
-            </template>
+        <div class="flex gap-2">
+             
+            <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation"/>
 
             <Button class=" conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
@@ -83,6 +77,7 @@ import ComPrintReservationStay from "@/views/reservation/components/ComPrintRese
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAddDeskFolio from "@/views/desk_folio/components/ComAddDeskFolio.vue";
 import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTaxInvoice.vue";
+import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue';
 import {i18n} from '@/i18n';
 
 const isMobile = ref(window.isMobile)
@@ -101,6 +96,7 @@ const gv = inject("$gv")
 const setting =window.setting
 const folio_menu = ref();
 
+const folio_operation = ref(JSON.parse(setting.folio_operation_setting).desk_folio);
 
 //trach user select new folio and reload folio information
 
@@ -269,10 +265,10 @@ function onAddFolioTransaction(account_code) {
                         guest:selectedFolio.value.guest
                     },
                     balance: selectedFolio.value.balance,
-                    account_code_filter:{is_desk_folio_account:1}
+                    account_code_filter:account_code.filter,
             },
             props: {
-                header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,
+                header: account_code.label + ' to Folio ' + props.folio.name,
                 style: {
                     width: '60vw',
                 },

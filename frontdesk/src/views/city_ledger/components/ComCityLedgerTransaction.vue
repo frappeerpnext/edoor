@@ -1,15 +1,12 @@
 <template>
-
     <div>
         <ComHeader isRefresh @onRefresh="Refresh()">
             <template #end>
-                <div class="overflow-auto w-full flex gap-2">
-                <Button class="conten-btn white-space-nowrap" @click="AddTransaction(d)"
-                    v-for="(d, index) in setting.account_group.filter(r => r.show_in_city_ledger == 1)" :key="index">
-                    {{ $t('Post '+ d.account_name) }}</Button>
-                <Button @click="viewCityLedgerReport" class="conten-btn">
-                    <i class="pi pi-print mr-2"></i> {{ $t('Print') }}  
-                </Button>
+                <div class="overflow-auto w-full flex gap-2">  
+                    <ComFolioActionButton @onClick="AddTransaction" :data="folio_operation"/> 
+                    <Button @click="viewCityLedgerReport" class="conten-btn">
+                        <i class="pi pi-print mr-2"></i> {{ $t('Print') }}  
+                    </Button>
                 </div>
             </template>
         </ComHeader>
@@ -218,6 +215,7 @@ import ComCityLedgerTransactionMoreOption from "../components/ComCityLedgerTrans
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue';
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
+import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const isMobile = ref(window.isMobile)
@@ -241,6 +239,9 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const dialogRef = inject("dialogRef")
+
+const folio_operation = ref(JSON.parse(setting.folio_operation_setting).city_ledger);
+
 const rowClass = (data) => {
     return [{ 'auto-post': data.is_auto_post }];
 
@@ -324,7 +325,7 @@ const getColumns = computed(() => {
     }
 })
 
-function AddTransaction(account_code) {
+function AddTransaction(account_code) { 
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
             new_doc: {
@@ -334,12 +335,10 @@ function AddTransaction(account_code) {
                 account_group: account_code.name
             },
             balance:cityLedgerAmountSummary.value?.balance || 0,
-            account_code_filter:{
-                is_city_ledger_account:1
-            }
+            account_code_filter:account_code.filter
         },
         props: {
-            header: 'Post ' + account_code.account_name + ' to City Ledger ' + props.name,
+            header: account_code.label + ' to City Ledger ' + props.name,
             style: {
                 width: '60vw',
             },
@@ -560,6 +559,7 @@ function loadData() {
     })
         .then((doc) => {
             data.value = doc
+            window.has_city_ledger_transaction = doc
             loading.value = false
         })
         .catch((error) => {

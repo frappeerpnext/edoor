@@ -174,6 +174,8 @@ def get_summary(filters,data):
 			d["adr"] = d["total_revenue"] / d["occupy"]
 			total_adr += d['adr']
 	total_revenue = sum([d["room_charge"] for d in get_room_charge_data(filters)]) + sum([d["room_charge_adjustment"] for d in get_room_charge_data(filters)]) + sum([d["other_room_charge"] for d in get_room_charge_data(filters)]) + sum([d["service_charge"] for d in get_room_charge_data(filters)]) + sum([d["tax"] for d in get_room_charge_data(filters)])
+	 
+	
 	if filters.show_summary:
 		return [
 			{ "label":"Total Room","value":len(data),"indicator":"red"},

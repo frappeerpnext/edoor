@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+        <!-- {{accountCodeFilter}} -->
        <div class="grid">
        <div class="col grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
@@ -460,7 +461,7 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
-const extra_account_code_filter = ref({}) 
+
 const doc = ref({});
 const dialog_data =ref()
 const data = ref()
@@ -487,13 +488,7 @@ function calculateTotalAmounts(index) {
   }, 50);
 
 }
-const accountCodeFilter = computed(()=>{
-    if(extra_account_code_filter.value){
-        return {...{ 'account_group': doc.value.account_group },...extra_account_code_filter.value}
-    }else {
-        return { 'account_group': doc.value.account_group }
-    } 
-})
+const accountCodeFilter =  ref({})
 
 
 const filterTargetTransactionNumberType = computed(()=>{
@@ -876,7 +871,7 @@ onMounted(() => {
       
         doc.value.is_base_transaction = 1
 
-        extra_account_code_filter.value = dialogRef.value.data.account_code_filter
+        accountCodeFilter.value = dialogRef.value.data.account_code_filter
 
         doc.value.posting_date = moment(working_day.date_working_day).toDate();
         folioNumberFilter.value = { 'property': window.property_name, status: 'Open', 'name': ['!=', doc.value.transaction_number] }

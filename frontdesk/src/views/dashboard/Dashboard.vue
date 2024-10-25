@@ -147,8 +147,7 @@
             <TabPanel>
                 <template #header>
                     <span class="white-space-nowrap" >{{ $t('Departure Remaining') }}</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
-                    }}</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining }}</span>
                 </template>
                 <ComDashboardRecentList  v-if="!gv.loading" :filters="{print_format:'eDoor Dashboard Departure Guest',selected_date:selected_date,action:'view_departure_remaining'}"/>
                

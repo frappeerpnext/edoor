@@ -230,10 +230,10 @@
                         
                     
                         <div v-if="print_format && print_format?.show_sort_order_option && sortOrderFields && sortOrderFields.length>0" class="flex ml-2">
-                            <ComSelect  v-model="filters.order_by"  placeholder="Sort Order Field"
-                            @onSelected="reloadIframe" :options='sortOrderFields'  optionLabel="label" optionValue="fieldname"    />
+                            <ComSelect  v-model="filters.order_by" placeholder="Sort Order Field"
+                            @onSelected="reloadIframe" :options='sortOrderFields' optionLabel="label" optionValue="fieldname"    />
 
-                            <ComSelect class="ml-2" v-model="filters.order_by_type"   placeholder="Sort Order Type"
+                            <ComSelect class="ml-2" v-model="filters.order_by_type" placeholder="Sort Order Type"
                             @onSelected="reloadIframe" :options='["ASC","DESC"]' :clear="false" />
 
 

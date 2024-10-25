@@ -53,10 +53,18 @@ frappe.query_reports["Arrival Stay Over Departure Guest"] = {
 			"on_change": function (query_report){}
 		},
 		{
+			"fieldname": "show_summary",
+			"label": __("Show Summary"),
+			"fieldtype": "Check",
+			default:true,
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		{
 			"fieldname": "order_by",
 			"label": __("Order By"),
 			"fieldtype": "Select",
-			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nBusiness Source\nRoom Type\nReservation Status",
+			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nRoom Night\nBusiness Source\nADR\nTotal Rate\nRoom Type\nRoom Number\nReservation Status",
 			default:"Last Update On",
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
@@ -70,14 +78,7 @@ frappe.query_reports["Arrival Stay Over Departure Guest"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
-		{
-			"fieldname": "show_summary",
-			"label": __("Show Summary"),
-			"fieldtype": "Check",
-			default:true,
-			hide_in_filter:1,
-			"on_change": function (query_report) {},
-		},
+		
 		
 	],
 	onload: function(report) {

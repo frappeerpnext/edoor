@@ -1,13 +1,7 @@
 <template>
     <div class="flex pb-1 md:pb-0 overflow-auto justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
-        <div class="flex">
-            <template
-                v-for="(d, index) in accountGroups"
-                :key="index">
-                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1 white-space-nowrap">
-                    Post {{ d.account_name }}
-                </Button>
-            </template>
+        <div class="flex gap-2">  
+            <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation"/>
 
             <Button class="conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
@@ -57,24 +51,24 @@ import { inject, ref, useToast, updateDoc,watch } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
-
-import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
+ 
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAddPayableLedger from "@/views/payable_ledger/components/ComAddPayableLedger.vue";
+import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue';
  
 const props = defineProps({
     folio:Object,
 })
 
-const emit = defineEmits(["onClose"])
-const accountGroups = ref(window.setting.account_group.filter(r=>r.show_in_payable_ledger==1))
+const emit = defineEmits(["onClose"]) 
 const selectedFolio = ref(props.folio)
 const dialog = useDialog();
 const confirm = useConfirm();
 const toast = useToast();
-const gv = inject("$gv")
-const setting =window.setting
+const gv = inject("$gv") 
 const folio_menu = ref();
+
+const folio_operation = ref(JSON.parse(setting.folio_operation_setting).payable_ledger);
 
 
 //trach user select new folio and reload folio information
@@ -183,10 +177,10 @@ function onAddFolioTransaction(account_code) {
                         account_group: account_code.name
                     },
                     balance: selectedFolio.value.balance,
-                    account_code_filter:{is_payable_ledger_account:1}
+                    account_code_filter:account_code.filter
             },
             props: {
-                header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,
+                header: account_code.label + ' to Folio ' + props.folio.name,
                 style: {
                     width: '60vw',
                 },

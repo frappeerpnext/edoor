@@ -1,12 +1,8 @@
 <template>
     <div class="flex pb-1 md:pb-0 overflow-auto  justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
-        <div class="flex">
+        <div class="flex gap-2"> 
 
-            <template v-for="(d, index) in accountGroups" :key="index">
-                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1 white white-space-nowrap">
-                    {{ $t('Post ' + d.account_name) }}
-                </Button>
-            </template>
+            <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation"/>
 
             <Button class="conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
@@ -58,9 +54,9 @@ import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
 
  
-import ComIFrameModal from "@/components/ComIFrameModal.vue";
-import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
+import ComIFrameModal from "@/components/ComIFrameModal.vue"; 
 import ComAddDepositLedger from "@/views/deposit_ledger/components/ComAddDepositLedger.vue";
+import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({
@@ -68,7 +64,6 @@ const props = defineProps({
 })
 const emit = defineEmits(["onClose"])
 
-const accountGroups = ref(window.setting.account_group.filter(r => r.show_in_deposit_ledger == 1))
 const selectedFolio = ref(props.folio)
 
 const dialog = useDialog();
@@ -78,6 +73,8 @@ const gv = inject("$gv")
 const rs = inject("$reservation_stay")
 const setting = window.setting
 const folio_menu = ref();
+
+const folio_operation = ref(JSON.parse(setting.folio_operation_setting).deposit_ledger);
 
 function showAccountGroup(account_code) {
     if (selectedFolio.value.allow_post_to_city_ledger == 0) {
@@ -192,10 +189,10 @@ function onAddFolioTransaction(account_code) {
                     guest:selectedFolio.value.guest
                 },
                 balance: selectedFolio.value.balance,
-                account_code_filter: { is_deposit_ledger_account: 1 }
+                account_code_filter:account_code.filter
             },
             props: {
-                header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,
+                header: account_code.label + ' to Folio ' + props.folio.name,
                 style: {
                     width: '60vw',
                 },

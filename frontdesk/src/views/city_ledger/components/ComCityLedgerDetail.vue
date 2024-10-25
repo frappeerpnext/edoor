@@ -120,12 +120,13 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, getDoc, inject, useDialog, onMounted, deleteDoc, useConfirm, onUnmounted } from '@/plugin'
+import { ref, getDoc, inject, useDialog, onMounted, deleteDoc, useConfirm, onUnmounted, useToast } from '@/plugin'
 import ComAddCityLedgerAccount from '@/views/city_ledger/components/ComAddCityLedgerAccount.vue';
 import ComCityLedgerTransaction from '@/views/city_ledger/components/ComCityLedgerTransaction.vue';
 const dialogRef = inject("dialogRef")
 const gv = inject('$gv');
 const dialog = useDialog()
+const toast = useToast();
 const data = ref()
 const loading = ref(false)
 const confirm = useConfirm()
@@ -156,7 +157,10 @@ function onEditcityLedger() {
         }
     });
 }
-function onDeletecityLedger() {
+function onDeletecityLedger() { 
+    if (window.has_city_ledger_transaction.length > 0) {
+        return toast.add({ severity: 'warn', summary: 'Delete City Ledger', detail: 'This City Ledger contains folio transaction(s)', life: 3000 })
+    }
     confirm.require({
         message: 'Are you sure you want to delete city ledger account?',
         header: 'Confirmation',
