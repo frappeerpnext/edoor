@@ -358,12 +358,14 @@ const hasFilter = ref((f) => {
 
 function onIframeLoaded() {
 
+ 
+    loading.value = false;
+
     if (!dialogRef.value.data.view) {
-
+        alert(1)
         const iframe = document.getElementById(iframe_id);
+        alert(2)
 
-        var contentWidth = iframe.contentWindow.document.body.scrollWidth;
-        var windowWidth = window.innerWidth;
         if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
             iframe.style.overflowX = 'hidden';
         } else {
@@ -371,15 +373,15 @@ function onIframeLoaded() {
         }
         iframe.style.minWidth = "0px"
         iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-        loading.value = true;
+        
         iframe.style.height = '0px';
         iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
 
-        iframe.onload = function () {
-            loading.value = false;
-        }
+        alert(4)
 
     }
+
+ 
 }
 
 const param = ref({
@@ -496,7 +498,8 @@ onMounted(() => {
    
     getDoc("Print Format",decodeURIComponent(dialogRef.value.data.report_name)).then((doc)=>{
         print_format.value = doc
-        if(print_format.value?.short_order_field==""){
+        
+        if(!print_format.value?.short_order_field){
             sortOrderFields.value =  []
         }else {
             sortOrderFields.value =  JSON.parse( print_format.value?.short_order_field)

@@ -20,6 +20,10 @@ from edoor.api.update_reservation import update_reservation_stay
 from edoor.api.backup import run_backup_command
 
 
+def after_login(user):
+    frappe.local.response.set_cookie('your_cookie_name', 'cookie_value', samesite='None', secure=True)
+
+
 @frappe.whitelist()
 def create_role():
     if not frappe.db.exists("Custom DocPerm",{"parent":"Reservation","role":"eDoor Admin Read Only"}):

@@ -39,6 +39,12 @@ def update_fetch_from_fields(self):
 		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"guest_name='{}'".format(self.guest_name)})
 		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"guest_type='{}'".format(self.guest_type)})
 		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"nationality='{}'".format(self.nationality)})
+		
+  		# update room occupy
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"guest='{}'".format(self.guest)})
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"guest_name='{}'".format(self.guest_name)})
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"guest_type='{}'".format(self.guest_type)})
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"nationality='{}'".format(self.nationality)})
 
 
 		

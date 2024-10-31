@@ -9,7 +9,6 @@ frappe.query_reports["Trail Balance Report"] = {
 			fieldtype: "Link",
 			options: "Business Branch",
 			default: frappe.defaults.get_user_default("business_branch"),
-			"reqd": 1,
 			"on_change": function (query_report) {
 				setLinkField()
 			},

@@ -65,6 +65,7 @@ app_license = "MIT"
 
 after_migrate = "edoor.migrate.after_migrate"
 
+ 
 
 # Uninstallation
 # ------------
@@ -222,7 +223,7 @@ scheduler_events = {
 # ]
 
 
-on_login = "edoor.api.utils.successful_login"
+# on_login = "edoor.api.utils.successful_login"
 
   
 

@@ -4,12 +4,20 @@
 import frappe
 
 def execute(filters=None):
+    # check business branch if have only 1 then set default
+	if not filters.property:
+		branches = frappe.db.get_list("Business Branch",pluck='name')
+		if len(branches) == 1:
+			filters.property = branches[0]
+   
 	columns = get_columns(filters)
+ 
 	report_data = []
 	if filters.group_by_ledger_type==1:
 		report_data = get_report_data_group_by_ledger_type(filters)
 	else:
 		report_data = get_report_data(filters)
+  
 	return columns, report_data["report_data"], None, None, report_data["report_summary"]
 
 def get_columns(filters):
@@ -21,6 +29,7 @@ def get_columns(filters):
 	]
 
 def get_report_data(filters):
+    
 	report_data = []
 	data =get_folio_transaction_data(filters,2)
 	# all ledger opening balance

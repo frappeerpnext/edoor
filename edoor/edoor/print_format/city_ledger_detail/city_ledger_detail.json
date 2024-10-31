@@ -1,7 +1,7 @@
 {
  "absolute_value": 0,
  "align_labels_right": 0,
- "creation": "2024-03-25 16:01:45.119287",
+ "creation": "2024-10-14 15:17:28.234723",
  "css": "@media print{@page {size: landscape}}\n\n.print-format{\n    font-size:12px!important;\n    min-width:95%!important;\n}\n.print-format td, .print-format th{\n    padding:4px 2px !important;\n}\n\n.print-format th{\n    color:#000!important;\n    border-bottom: solid 1px #000;\n    background:#ccc;\n}\n.print-format .letter-head{\n    margin:0px !important;\n}\nh2{\n    margin:0px!important;\n}\n\n.nowrap{\n    white-space: nowrap!important;\n}\n.break-all{\n    word-break: break-all!important;\n}",
  "custom_format": 0,
  "default_print_language": "en",
@@ -17,16 +17,16 @@
  "margin_left": 15.0,
  "margin_right": 15.0,
  "margin_top": 15.0,
- "modified": "2024-03-25 16:03:16.317010",
+ "modified": "2024-10-28 17:13:49.016708",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger Detail",
- "owner": "Administrator",
  "page_number": "Hide",
  "print_format_builder": 0,
  "print_format_builder_beta": 0,
  "print_format_type": "Jinja",
  "raw_printing": 0,
  "show_section_headings": 0,
+ "show_sort_order_option": 1,
  "standard": "Yes"
 }
