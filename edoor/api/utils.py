@@ -1574,11 +1574,26 @@ def get_tax_from_sale(data):
     sale_products = frappe.db.sql(sql, as_dict=1)
     return sale_products
 
-def get_tax_data(data):
+@frappe.whitelist()
+def get_tax_data(data=None):
+    if not data:
+    # we use this code is just for testing without sent data
+        data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='FN2024-0876' and transaction_type='Reservation Folio' and parent_account_name!='POS Transfer'",as_dict=1)
+        
+    # real code start from here   
     from itertools import groupby
     raw_data = []
     for d in data:
-        tax_invoice_group_by_key , tax_invoice_description_template,show_in_tax_invoice,sort_order = frappe.db.get_value("Account Code",d["account_code"], ["tax_invoice_group_by_key ", "tax_invoice_description_template","show_in_tax_invoice","sort_order"])
+        account_code = d["account_code"]
+        # check if account code is under group discount
+        # and is is under other transaction charge then we get group by key and descript from it parent account
+        if d.get("account_group_name","") == "Discount" and d.get("transaction_type") in ["Reservation Folio","Desk Folio"]:
+            if d.get("parent_reference"):
+                account_code = frappe.db.get_value("Folio Transaction",d.get("parent_reference"),"account_code")
+                
+        tax_invoice_group_by_key , tax_invoice_description_template,show_in_tax_invoice, sort_order = frappe.db.get_value("Account Code",account_code, ["tax_invoice_group_by_key ", "tax_invoice_description_template","show_in_tax_invoice","sort_order"])
+        
+        
         tax_invoice_group_by_key = (tax_invoice_group_by_key or "").strip()
         tax_invoice_description_template = (tax_invoice_description_template or "").strip()
         
@@ -1601,6 +1616,8 @@ def get_tax_data(data):
             raw_data.append(record)
             
     raw_data.sort(key=lambda x: x["group_by_key"])
+    
+ 
     # Group the data by the group_by_key field
     grouped_data = {key: list(group) for key, group in groupby(raw_data, key=lambda x: x["group_by_key"])}
     
@@ -1619,23 +1636,31 @@ def get_tax_data(data):
         
     return  sorted(return_data, key=lambda x: x['sort_order'])
 
-
-def get_tax_summary(data):
+@frappe.whitelist()
+def get_tax_summary(data=None):
+    if not data:
+    # we use this code is just for testing without sent data
+        data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='FN2024-0876' and transaction_type='Reservation Folio' and parent_account_name!='POS Transfer'",as_dict=1)
+    # real code start from here
+    
+    
+    # clear some data from processing 
     
     raw_data = []
     for d in data:
         tax_invoice_summary_key = frappe.db.get_value("Account Code",d["account_code"],"tax_invoice_summary_key")
         if tax_invoice_summary_key:
             record = {"tax_invoice_summary_key":tax_invoice_summary_key}
-            record["amount"] = (d["amount"] - d["discount"]) * (1 if d["type"] =="Debit" else -1) 
+            record["amount"] = (d["amount"] - d["discount_amount"]) * (1 if d["type"] =="Debit" else -1) 
             
             raw_data.append(record)
-
+ 
     tax_summary_group = frappe.db.sql("select total_label,alias,is_group, parent_tax_invoice_summary_group, name, label,tax_report_fieldname from `tabTax Invoice Summary Group` order by sort_order",as_dict=1)
-    
+   
     # return data
     # loop group
     return_data = []
+
     for g in [d for d in tax_summary_group if d["is_group"]==1]:
         value = sum([d["amount"] for d in raw_data if d["tax_invoice_summary_key"]==g["name"]])
        
@@ -1644,15 +1669,18 @@ def get_tax_summary(data):
                 "label":g["label"],
                 "value":value
             }
-            
+             
             
             # get children
             children=[]
             children_alias=[]
+            
             for c in [d for d in tax_summary_group if d["parent_tax_invoice_summary_group"]==g["name"]]:
                 if c["alias"]:
                     children_alias.append(c["alias"])
+     
                 value = sum([d["amount"] for d in raw_data if d["tax_invoice_summary_key"]==c["name"]])
+              
                 if value>0:
                     children.append({
                         "label":c["label"],
