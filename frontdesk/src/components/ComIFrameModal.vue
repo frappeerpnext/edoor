@@ -362,9 +362,9 @@ function onIframeLoaded() {
     loading.value = false;
 
     if (!dialogRef.value.data.view) {
-        alert(1)
+       
         const iframe = document.getElementById(iframe_id);
-        alert(2)
+       
 
         if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
             iframe.style.overflowX = 'hidden';
@@ -377,7 +377,7 @@ function onIframeLoaded() {
         iframe.style.height = '0px';
         iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
 
-        alert(4)
+       
 
     }
 
