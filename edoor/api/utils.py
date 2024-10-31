@@ -1579,6 +1579,8 @@ def get_tax_data(data):
     raw_data = []
     for d in data:
         tax_invoice_group_by_key , tax_invoice_description_template,show_in_tax_invoice,sort_order = frappe.db.get_value("Account Code",d["account_code"], ["tax_invoice_group_by_key ", "tax_invoice_description_template","show_in_tax_invoice","sort_order"])
+        tax_invoice_group_by_key = (tax_invoice_group_by_key or "").strip()
+        tax_invoice_description_template = (tax_invoice_description_template or "").strip()
         
         if show_in_tax_invoice:
             record = {}
