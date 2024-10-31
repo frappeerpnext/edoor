@@ -221,7 +221,7 @@ function viewfoliotaxinvoicedetail() {
             doctype: "Tax Invoice",
             name: selectedFolio.value.tax_invoice_number,
             report_name: r.default_print_format?gv.getCustomPrintFormat(r.default_print_format) :  gv.getCustomPrintFormat("Invoice"),
-            letterhead: r.default_letterhead || "Tax Letterhead",
+            letterhead: r.default_letter_head || "Tax Invoice Letterhead",
             filter_options:["show_vattin","show_rate_type","show_business_source"]
         },
         props: {
