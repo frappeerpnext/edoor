@@ -8,10 +8,26 @@ import frappe
 def get_report(filters, report_config):
       
     report_data = get_report_data(filters,report_config)
+    # remove record with empty result amount from report row data
+    report_row_data = report_data["report_data"]
+    report_row_data = [d for d in report_row_data if 
+                        d.get("occupy", 0 ) > 0 or    
+                        d.get("complimentary", 0 ) > 0 or    
+                        d.get("house_use", 0 ) > 0 or    
+                        d.get("occupancy", 0 ) > 0 or    
+                        d.get("pax", 0 ) > 0 or    
+                        d.get("room_discount", 0 ) > 0 or    
+                        d.get("room_charge", 0 ) > 0 or    
+                        d.get("other_charge", 0 ) > 0 or    
+                        d.get("adr", 0 ) > 0 or    
+                        d.get("tax", 0 ) > 0 or    
+                        d.get("total_charge", 0 ) > 0   
+                    ]
+    
     
     return {
         "columns":get_report_columns(filters,report_config),
-        "data": report_data["report_data"],
+        "data": report_row_data,
         "report_summary": report_data["report_summary"],
         "report_chart": report_data["report_chart"]
     }
@@ -41,6 +57,7 @@ def get_report_data(filters,report_config):
         parent_row_group_data = get_parent_group_row_from_result_data(data, folio_transaction_data)
     
     report_group_data = get_row_group_from_result_data(data, folio_transaction_data)
+    
     for g in report_group_data:
         g["lat"] = frappe.get_cached_value("Country",g["row_group"],"custom_lat")
         g["long"] = frappe.get_cached_value("Country",g["row_group"],"custom_long")
@@ -165,7 +182,7 @@ def get_report_data(filters,report_config):
   
         # add sub report data to report data
         report_data = report_data + sub_report_data
-
+        
         #total row for sub group data============================================================
         if parent["parent_row_group"] !="":
             if len(sub_report_data):
@@ -287,8 +304,9 @@ def get_occupy_data(filters,report_config):
     #other aggregate field
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Room Occupy' and d.sql_expression]) )
     #filter
-    sql = sql+ " from `tabRoom Occupy` a  where 1=1 "
-    
+    sql = sql+ " from `tabRoom Occupy` a  where a.is_departure = 0 "
+
+
     sql = "{} {}".format(sql,get_occupy_data_filters(filters)) 
     
     #add exclude empty record
@@ -303,7 +321,7 @@ def get_occupy_data(filters,report_config):
     if filters.parent_row_group:
         sql = "{}, {}".format(sql, get_room_occupy_group_by_field(filters)) 
  
-
+ 
     data = frappe.db.sql(sql,filters,as_dict = 1)
    
     return data

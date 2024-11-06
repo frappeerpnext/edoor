@@ -52,6 +52,7 @@
     <img v-else-if="icon == 'icondeparture'" :style="{'height' : height}" :class="class" :src="icondeparture"/>
     <img v-else-if="icon == 'iconstayover'" :style="{'height' : height}" :class="class" :src="iconstayover"/>
     <img v-else-if="icon == 'RoomBlockIcon'" :style="{'height' : height}" :class="class" :src="RoomBlockIcon"/>
+    <img v-else-if="icon == 'youtube'" :style="{'height' : height}" :class="class" :src="youtube"/>
 
 
     
@@ -124,7 +125,7 @@ import iconMoveStay from '@/assets/svg/icon-move_stay.svg'
 import iconWalkIn from '@/assets/svg/walk-in-icon.svg'
 import iconPackage from '@/assets/svg/package-icon.svg'
 import RoomBlockIcon from '@/assets/svg/RoomBlockIcon.svg'
-
+import youtube from '@/assets/svg/youtube_icon.svg'
 
 </script>
  

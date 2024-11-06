@@ -1954,3 +1954,6 @@ flex-direction: column;
 .guest_detail small .text-muted {
     color: #525252;
 }
+.item-youtube-hover:hover{
+background-color: rgb(255, 234, 234);
+}

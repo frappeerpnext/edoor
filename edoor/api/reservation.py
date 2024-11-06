@@ -2802,10 +2802,12 @@ def get_folio_room_charge_summary_from_reservation_room_rate(reservation="", res
         is_master_folio = frappe.get_cached_value("Reservation Folio", folio_number,"is_master")
         if is_master_folio  == 0:
             return []
+    is_master_stay = 0
     if reservation_stay:
-        if frappe.get_cached_value("Reservation Stay", reservation_stay,"is_master") ==0:
-            return []
-        
+        # if frappe.get_cached_value("Reservation Stay", reservation_stay,"is_master") ==0:
+        #     return []
+        is_master_stay = frappe.get_cached_value("Reservation Stay", reservation_stay,"is_master")
+      
         
     use_stay_room_ids = frappe.db.sql("""
                                       select 
@@ -2827,7 +2829,9 @@ def get_folio_room_charge_summary_from_reservation_room_rate(reservation="", res
         # we add this to prevent error when use in operator in sql statment
         
     reservation_stay_to_filters = [reservation_stay]
-    if is_master_folio==1:
+    # if user print invoice on master stay and master folio then get all room charge f rom stay that allow paid by master room
+    
+    if is_master_folio==1 and is_master_stay==1:
         # we check if folio is master folio then we find all room charge from any stay that mark as pay by master room
         stays = frappe.db.get_list('Reservation Stay', 
                                         filters={
@@ -2839,8 +2843,6 @@ def get_folio_room_charge_summary_from_reservation_room_rate(reservation="", res
                                 , pluck='name')
         
         reservation_stay_to_filters = reservation_stay_to_filters + stays
-    
-    
     
     room_rates = []
     sql ="""
@@ -2878,6 +2880,7 @@ def get_folio_room_charge_summary_from_reservation_room_rate(reservation="", res
     )
     
     room_rates = frappe.db.sql(sql,{ "reservation_stays":reservation_stay_to_filters,"stay_room_ids": use_stay_room_ids},as_dict=1)
+    
     return room_rates
 
     

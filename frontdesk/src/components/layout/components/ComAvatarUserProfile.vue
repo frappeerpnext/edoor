@@ -42,6 +42,12 @@
                 <i class="font-bold pi pi-book" />
                 <span class="pl-2 pr-3"> {{$t("Help Document")}}</span>
             </button>
+            
+            <button @click="showHelpVideoDoc"
+                class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                <i class="font-bold pi pi-book" />
+                <span class="pl-2 pr-3"> {{$t("Help Video")}}</span>
+            </button>
             <button @click="onLogout"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="font-bold pi pi-sign-out !text-red-500" />
@@ -55,6 +61,7 @@ import { ref, inject, useDialog,getApi } from '@/plugin'
 import ComIFrameModal from "@/components/ComIFrameModal.vue"
 import {i18n} from '@/i18n';
 import ComChangeLanguage from '@/components/layout/components/ComChangeLanguage.vue';
+import ComHelpVideoDoc from '@/components/layout/components/ComHelpVideoDoc.vue';
 const gv = inject("$gv")
 const auth = inject("$auth")
 const show = ref()
@@ -99,6 +106,25 @@ const dialogRef = dialog.open(ComChangeLanguage, {
         header: 'Change Language',
         style: {
             width: '30vw',
+        },
+        maximizable: true,
+        modal: true,
+        closeOnEscape: false,
+        position: "top",
+        breakpoints:{
+            '960px': '80vw',
+            '640px': '100vw'
+        },
+    }
+});
+}
+function showHelpVideoDoc() {
+
+const dialogRef = dialog.open(ComHelpVideoDoc, {
+    props: {
+        header: 'Help Video Documentation',
+        style: {
+            width: '80vw',
         },
         maximizable: true,
         modal: true,

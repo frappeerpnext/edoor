@@ -396,9 +396,12 @@ def get_uncharge_room_rate_summary_amount_group_by_account_category(
     show_package_breakdown=1,
     folio_transactions = ""
 ):
+    is_master_folio = frappe.get_cached_value("Reservation Folio",transaction_number,"is_master")
+    is_master_stay  = frappe.get_cached_value("Reservation Stay",reservation_stay,"is_master")
+    
     stay_names = [reservation_stay]
     # if  reservation pass to this parameter then get all stay name from this reservation to the array stay_names
-    if reservation:
+    if reservation and is_master_folio==1 and is_master_stay==1:
         data = frappe.db.sql("select name from `tabReservation Stay` where reservation = '{}' and is_active_reservation =1".format(reservation),as_dict=1)
         stay_names = stay_names + [d["name"] for d in data]
         
