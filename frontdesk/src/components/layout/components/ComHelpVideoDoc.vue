@@ -14,7 +14,7 @@
                                 </div>
                            </div>
                         </AccordionTab>
-                        <AccordionTab v-for="d in  filterdata.filter(i => i.is_group == 1)" v-if="filterdata.filter(i => i.parent_help_video_documentation == d.video_name).length > 0"  :key="d.video_name" :header="d.video_name">
+                        <AccordionTab v-for="d in  filterdata.filter(i => i.is_group == 1)"  :key="d.video_name" :header="d.video_name" >
                            <div class="grid p-4">
                                 <div v-for="v in filterdata.filter(i => i.parent_help_video_documentation == d.video_name)" :key="v.video_name" class="col-4 p-2">
                                     
