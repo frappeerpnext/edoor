@@ -1517,7 +1517,8 @@ def change_stay(data):
         frappe.throw("There is no cashier open. Please open your cashier shift")
 
     doc = frappe.get_doc("Reservation Stay",data['parent'])
-    if doc.reservation_status not in ["Reserved",'In-house',"Confirmed"]:
+    
+    if doc.reservation_status not in ['No Show', "Reserved",'In-house',"Confirmed"]:
         frappe.throw( "{} is not allow to change stay".format(doc.reservation_status))
 
     allow_back_date = frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")

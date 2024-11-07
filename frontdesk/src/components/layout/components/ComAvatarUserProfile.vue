@@ -45,7 +45,7 @@
             
             <button @click="showHelpVideoDoc"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="font-bold pi pi-book" />
+                <i class="font-bold pi pi-youtube" />
                 <span class="pl-2 pr-3"> {{$t("Help Video")}}</span>
             </button>
             <button @click="onLogout"
