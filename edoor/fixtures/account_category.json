@@ -144,15 +144,6 @@
   "sort_order": 2000
  },
  {
-  "account_category": "POS Bill to Room",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:05.093149",
-  "name": "POS Bill to Room",
-  "note": null,
-  "sort_order": 2400
- },
- {
   "account_category": "F&B Revenue",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -196,6 +187,15 @@
   "name": "City Ledger",
   "note": null,
   "sort_order": 2900
+ },
+ {
+  "account_category": "POS Bill to Room",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:49:05.093149",
+  "name": "POS Bill to Room",
+  "note": null,
+  "sort_order": 2400
  },
  {
   "account_category": "Service Charge",
