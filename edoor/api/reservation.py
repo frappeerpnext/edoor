@@ -1029,7 +1029,8 @@ def check_out(reservation,reservation_stays=None):
         if len(data)> 0:
             frappe.throw("You cannot check out master room, because there's reservation stay that mark as paid by master room is still remaining.")
     
-    currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+    currency_precision = frappe.get_cached_value("System Settings",None,"currency_precision")
+    
     comment_doc = []
 
     for s in reservation_stays:
@@ -1040,9 +1041,11 @@ def check_out(reservation,reservation_stays=None):
             frappe.throw("Reservation Stay {}, room {} cannot check out because the departure date is in the future.".format(stay.name,stay.rooms))
         #validate folio balance
         data_balance = frappe.db.sql("select max(balance) as balance from `tabReservation Folio` where reservation_stay='{}'".format(stay.name),as_dict = 1)
-        
+
         if data_balance:
             balance = data_balance[0]["balance"] or 0
+      
+
             if abs(balance)> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
                 frappe.throw("Reservation Stay {}, room {} cannot check out because the folio balance of this reservation stay is greater than zero".format(stay.name,stay.rooms))
 

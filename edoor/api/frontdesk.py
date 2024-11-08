@@ -2789,88 +2789,6 @@ def get_room_block_event(start,end,property):
     
     return data
 
-@frappe.whitelist()
-def get_calendar_event_for_room_type_resource(start,end,property):
-    """
-        There are 2 place to get room type resource event and other resource event
-        1. From temp room occupy for current and future date 
-        2. From room type Daily Property Data for past date
-
-    """
-    events = []
-    working_day = get_working_day(property=property)
-    dates = get_date_range( getdate(start),getdate(end),False)
-
-
-
-    future_dates =  [d for d in dates if d >= working_day["date_working_day"]]
-    past_dates =  [d for d in dates if d < working_day["date_working_day"]]
-    
-    #1. get date for future date by from temp room occupy
-    if future_dates:
-        #get all room type with total room
-        sql = "select room_type_id, room_type, count(name) as total_room from `tabRoom` where property='{}' and disabled = 0 group by room_type_id, room_type".format(property)
-        room_type_data = frappe.db.sql(sql,as_dict=1)
-    
-
-         
-        sql = """
-                select 
-                    room_type_id, 
-                    date, 
-                    sum(if(type='Reservation',1,0)) as total_occupy,
-                    sum(if(type='Block',1,0)) as total_block,
-                    sum(if(coalesce(room_id,'')='',1,0)) as total_unassign_room,
-                    sum(pax) as pax
-                from 
-                    `tabTemp Room Occupy` 
-                where 
-                    property='{}' and 
-                    date between '{}' and '{}' 
-                group by 
-                    room_type_id, 
-                    date 
-            """
-        sql = sql.format(
-            property,
-            future_dates[0].strftime('%Y-%m-%d'),
-            future_dates[len(future_dates)-1].strftime('%Y-%m-%d'),
-        )
-         
-        temp_occupy_data = frappe.db.sql(sql,as_dict=1)
-        #get temp room occupy 
-        
-        for d in room_type_data:
-            for x in future_dates:
-                events.append(      
-                {
-                    "resourceId": d["room_type_id"],
-                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title": d["total_room"] - Enumerable(temp_occupy_data).where(lambda r:r.room_type_id==d["room_type_id"] and r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: (r.total_occupy or 0) + (r.total_block or 0)),
-                    "color": "#29CD42",
-                    "type":"available_room"
-                })
-
-                #add event for unssign room
-                events.append(      
-                {
-                    "resourceId": d["room_type_id"],
-                    "start": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T0:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title":  Enumerable(temp_occupy_data).where(lambda r:r.room_type_id==d["room_type_id"] and r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_unassign_room or 0),
-                    "color": "#cccccc",
-                    "type":"unassign_room"
-                })
-
-        #add event for Vacant Room 
-        total_room = Enumerable(room_type_data).sum(lambda r:r.total_room)
-
-      
- 
-
-    return events
- 
  
 @frappe.whitelist(methods="POST")
 def validate_run_night_audit(property,step):
@@ -2927,14 +2845,19 @@ def validate_run_night_audit(property,step):
             frappe.throw("Please close all cashier shift.")
     return False
 
-@frappe.whitelist(methods="POST")
+# @frappe.whitelist(methods="POST")
+@frappe.whitelist()
 def run_night_audit(property, working_day):
     #1. Validate working day is still open
     #2. Validate cashier shift open
     #3. validate arrival to check in 
     #3. validate departure to check out 
     #validate permission
+    # property = "ESTC  & HOTEL's"
+    # working_day  =  'WD2024-0013'
+
     old_working_day_data = get_working_day(property)
+
     validate_role("run_night_audit_role")
     
     doc_property = frappe.get_doc("Business Branch", property)
@@ -3055,10 +2978,12 @@ def update_room_status(working_day=None,working_day_name=None):
                             from `tabRoom Occupy` 
                             where 
                                 is_active = 1 and 
-                                property='{}' and
+                                property=%(property)s and
                                 date = '{}' and 
                                 ifnull(room_id,'') !=''
-                    """.format( working_day.business_branch,working_day.posting_date),as_dict=1)
+                    """.format( working_day.posting_date),
+                    {"property":working_day.business_branch}
+                    ,as_dict=1)
     
     for r in stay_over_room:
         room_doc = frappe.get_doc("Room", r["room_id"])
@@ -3067,10 +2992,11 @@ def update_room_status(working_day=None,working_day_name=None):
         room_doc.save()
 
     #update room status that end block
-    sql = "select room_id from `tabRoom Block` where docstatus=1 and is_unblock=0 and end_date='{}' and property='{}'".format(working_day.posting_date ,working_day.business_branch)
-    data = frappe.db.sql(sql,as_dict=1)
+    sql = "select room_id from `tabRoom Block` where docstatus=1 and is_unblock=0 and end_date='{}' and property=%(property)s".format(working_day.posting_date)
+    data = frappe.db.sql(sql ,{"property":working_day.business_branch},as_dict=1)
 
-
+ 
+    
     for d in data:
         room_doc = frappe.get_doc("Room", d["room_id"])
         room_doc.room_status = "Vacant"
@@ -3079,7 +3005,7 @@ def update_room_status(working_day=None,working_day_name=None):
     
 
     #2 update room status of room block
-    room_block = frappe.db.sql("select room_id from `tabTemp Room Occupy` where type='Block' and property='{}' and date='{}'".format(working_day.business_branch, working_day.posting_date),as_dict=1)
+    room_block = frappe.db.sql("select room_id from `tabTemp Room Occupy` where type='Block' and property=%(property)s and date='{}'".format(working_day.posting_date),{"property":working_day.business_branch},as_dict=1)
    
   
     for r in room_block:
@@ -3091,11 +3017,11 @@ def update_room_status(working_day=None,working_day_name=None):
 @frappe.whitelist()
 def update_daily_property_data(property, working_date):
 
-    sql = "delete from `tabDaily Property Data` where date='{}' and property='{}'".format(working_date,property)
-    frappe.db.sql(sql)
+    sql = "delete from `tabDaily Property Data` where date='{}' and property=%()s".format(working_date)
+    frappe.db.sql(sql,{"property":property})
 
-    sql = "select room_type_id, count(name) as total_rooms from `tabRoom` where disabled=0 and property='{}' group by room_type".format(property)
-    data = frappe.db.sql(sql,as_dict=1)
+    sql = "select room_type_id, count(name) as total_rooms from `tabRoom` where disabled=0 and property=%(property)s group by room_type"
+    data = frappe.db.sql(sql,{"property":property},as_dict=1)
     for d in data:
         frappe.get_doc({
             "property":property,
@@ -3221,8 +3147,8 @@ def post_room_change_to_folio(working_day):
 def update_transaction_balance_after_run_night_audit(working_day):
     #verify if reservation stay and and reservation is update balance
     # post enque job to update update folio balance
-    sql= "select distinct reservation,reservation_stay, transaction_number from `tabFolio Transaction` where transaction_type='Reservation Folio' and posting_date = '{}' and property='{}'".format(working_day.posting_date, working_day.business_branch)
-    data = frappe.db.sql(sql,as_dict=1)
+    sql= "select distinct reservation,reservation_stay, transaction_number from `tabFolio Transaction` where transaction_type='Reservation Folio' and posting_date = '{}' and property=%(property)s".format(working_day.posting_date)
+    data = frappe.db.sql(sql,{"property":working_day.business_branch},as_dict=1)
     
     frappe.enqueue("edoor.api.frontdesk.update_ledger_balance_after_run_night_audit", queue='long', ledger_type='Reservation Folio', names = set([d["transaction_number"] for d in data]))
     frappe.enqueue("edoor.api.frontdesk.update_reservation_stay_credit_debit_balance", queue='long', names = set([d["reservation_stay"] for d in data]))

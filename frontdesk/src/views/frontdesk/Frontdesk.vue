@@ -877,7 +877,7 @@ function showReservationStayDetail(name) {
             closeOnEscape: false,
             position: "top",
             breakpoints: {
-                '960px': '80vw',
+                '960px': '100vw',
                 '640px': '100vw'
             }
         },
