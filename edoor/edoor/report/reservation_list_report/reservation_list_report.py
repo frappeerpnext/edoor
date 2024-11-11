@@ -60,7 +60,7 @@ def get_report_columns(filters,  report_fields):
 	 
 	if filters.row_group:
 		columns = [d for d in columns if d["fieldname"] != filters.row_group]
-
+	 
 	return columns
 
 def get_report_data(filters, report_fields, data):
@@ -187,6 +187,7 @@ def report_summary_columns(filters):
 		{"fieldname":"room_count", "label":"Room Count", "fieldtype":"Int", "cell_width":10,"align":"center",},
 		{"fieldname":"room_nights", "label":"Room Nights", "fieldtype":"Int", "cell_width":10,"align":"center"},
 		{"fieldname":"pax", "label":"Pax(A/C)", "fieldtype":"Data", "cell_width":10,"align":"center"},
+		{"fieldname":"adr", "label":"ADR", "fieldtype":"Currency", "cell_width":10,"align":"right","merge_cell":2},
 		{"fieldname":"total_amount", "label":"Room Charge", "fieldtype":"Currency", "cell_width":10,"align":"right","merge_cell":2},
 		{"fieldname":"debit", "label":"Debit", "fieldtype":"Currency", "cell_width":10,"align":"right"},
 		{"fieldname":"credit", "label":"Credit", "fieldtype":"Currency", "cell_width":10,"align":"right"}
@@ -355,6 +356,7 @@ def get_reservation(filters):
 	return [d["reservation"] for d in data]
 
 def get_report_summary_by_business_source(data):
+ 
 	business_source = set([d["business_source"] for d in data if "business_source" in d])
 	result = []
 	for b in business_source:
@@ -370,12 +372,12 @@ def get_report_summary_by_business_source(data):
 			"debit":sum([d.get("total_debit") for d in filter_data]),
 			"credit":sum([d.get("total_credit") for d in filter_data])
 		}
-		row["pax"] = "{}/{}".format(row["adult"], row["child"]
-							  )
+		row["pax"] = "{}/{}".format(row["adult"], row["child"])
+		row["adr"] = row.get("total_amount") /  row.get("room_nights",1)
 
 		result.append(row)
 	if result:
-		result.append({
+		total_row = {
 			"row_group":"Total",
 			"is_total_row":1,
 			"room_count":sum([d.get("room_count") for d in result]),
@@ -386,7 +388,10 @@ def get_report_summary_by_business_source(data):
 			"total_amount":sum([d.get("total_amount") for d in result]),
 			"debit":sum([d.get("debit") for d in result]),
 			"credit":sum([d.get("credit") for d in result])
-		})
+		}
+		total_row["adr"] = total_row.get("total_amount") /  total_row.get("room_nights",1)
+  
+		result.append(total_row)
 
 
 	return result

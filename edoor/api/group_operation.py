@@ -639,11 +639,17 @@ def group_transfer_stay_to_other_reservation(data):
     update_fields = []
     update_fields.append("reservation='{}'".format(data["target_reservation"]))
     update_fields.append("business_source='{}'".format(target_doc.business_source))
-    sql = "update `tabReservation Folio` set {} where reservation_stay in %(stays)s".format(",".join(update_fields))
+    update_fields.append("reservation_type='{}'".format(target_doc.reservation_type))
+    sql = "update `tabFolio Transaction` set {} where reservation_stay in %(stays)s".format(",".join(update_fields))
     frappe.db.sql(sql,{"stays":data["stays"]})
+    
 
     #update to folio transaction
-
+    update_fields = []
+    update_fields.append("reservation='{}'".format(data["target_reservation"]))
+    update_fields.append("business_source='{}'".format(target_doc.business_source))
+    sql = "update `tabReservation Folio` set {} where reservation_stay in %(stays)s".format(",".join(update_fields))
+    frappe.db.sql(sql,{"stays":data["stays"]})
 
 
     update_reservation(name=data["source_reservation"]) 

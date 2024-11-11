@@ -2,10 +2,10 @@
     <div class="min-h-folio-cus mt-3">
 
         <!-- hide funtion -->
-        <!-- <Button  class="conten-btn mr-1 mb-3" serverity="waring" @click="addnew()">
+        <Button  class="conten-btn mr-1 mb-3" serverity="waring" @click="addnew()">
       <i class="pi pi-plus me-2" style="font-size: 1rem"></i>
       {{$t('Add New Package') }}
-    </Button> -->
+    </Button>
     <ComPlaceholder text="No Data" :loading="loading" :isNotEmpty="data.length > 0">
         <DataTable  :value="data" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">

@@ -127,10 +127,12 @@ def web_logout():
 
 @frappe.whitelist()
 def uploadfile():
+ 
 	ret = None
 
 	try:
 		if frappe.form_dict.get("from_form"):
+		
 			try:
 				ret = frappe.get_doc(
 					{
@@ -165,7 +167,7 @@ def uploadfile():
 
 @frappe.whitelist(allow_guest=True)
 def upload_file():
-
+	
 	user = None
 	if frappe.session.user == "Guest":
 		if frappe.get_system_settings("allow_guests_to_upload_files"):
@@ -177,10 +179,14 @@ def upload_file():
 		ignore_permissions = False
 
 	files = frappe.request.files
+ 
+ 
+	
 	is_private = frappe.form_dict.is_private
 	doctype = frappe.form_dict.doctype
 	docname = frappe.form_dict.docname
 	fieldname = frappe.form_dict.fieldname
+
 	file_url = frappe.form_dict.file_url
 	folder = frappe.form_dict.folder or "Home"
 	method = frappe.form_dict.method
@@ -193,9 +199,11 @@ def upload_file():
 
 	if "file" in files:
 		file = files["file"]
+		
 		content = file.stream.read()
+ 
 		filename = file.filename
-
+	 
 		content_type = guess_type(filename)[0]
 		if optimize and content_type and content_type.startswith("image/"):
 			args = {"content": content, "content_type": content_type}

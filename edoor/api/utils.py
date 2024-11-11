@@ -861,6 +861,7 @@ def clear_reservation():
         # frappe.db.sql("delete from `tabRoom Block`")
         # frappe.db.sql("delete from `tabDeposit Ledger`")
         # frappe.db.sql("delete from `tabDesk Folio`")
+        # frappe.db.sql("delete from `tabPayable Ledger`")
         # frappe.db.sql("delete from `tabCashier Shift Cash Count`")
         # frappe.db.sql("delete from `tabCashier Shift Cash Float`")
         # frappe.db.sql("delete from `tabDaily Property Data`")

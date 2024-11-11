@@ -1,0 +1,129 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2024-11-09 09:58:06.201606",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "location",
+  "posting_date",
+  "working_day",
+  "working_date",
+  "cashier_shift",
+  "status",
+  "note",
+  "photo",
+  "section_break_jyjk",
+  "is_taken",
+  "taken_by",
+  "taken_date",
+  "taken_note"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "LF.YYYY.-.####"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "working_day",
+   "fieldtype": "Link",
+   "label": "Working Day",
+   "options": "Working Day"
+  },
+  {
+   "fieldname": "working_date",
+   "fieldtype": "Date",
+   "label": "Working Date"
+  },
+  {
+   "fieldname": "cashier_shift",
+   "fieldtype": "Link",
+   "label": "Cashier Shift",
+   "options": "Cashier Shift"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nLost\nFound"
+  },
+  {
+   "fieldname": "section_break_jyjk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_taken",
+   "fieldtype": "Check",
+   "label": "Is Taken"
+  },
+  {
+   "fieldname": "taken_by",
+   "fieldtype": "Data",
+   "label": "Taken By"
+  },
+  {
+   "fieldname": "taken_date",
+   "fieldtype": "Date",
+   "label": "Taken Date"
+  },
+  {
+   "fieldname": "taken_note",
+   "fieldtype": "Small Text",
+   "label": "Taken Note"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location",
+   "options": "Property Location"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  },
+  {
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "Photo"
+  }
+ ],
+ "image_field": "photo",
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-09 17:08:32.116835",
+ "modified_by": "Administrator",
+ "module": "Housekeeping",
+ "name": "Lost and Found",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

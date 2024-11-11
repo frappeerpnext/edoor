@@ -3,6 +3,11 @@ import frappe
 
 
 def execute(filters=None):
+	report_config = frappe.get_last_doc(
+		"Report Configuration", 
+		filters={"property":filters.property, "report":"Room Revenue Detail Report"} 
+	)
+
 	report_data =get_report_data(filters)
 	summary = get_summary(filters,report_data)
 	columns = get_report_columns(filters)
