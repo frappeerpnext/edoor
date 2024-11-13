@@ -2,10 +2,10 @@
     <div class="min-h-folio-cus mt-3">
 
         <!-- hide funtion -->
-        <Button  class="conten-btn mr-1 mb-3" serverity="waring" @click="addnew()">
+        <!-- <Button  class="conten-btn mr-1 mb-3" serverity="waring" @click="addnew()">
       <i class="pi pi-plus me-2" style="font-size: 1rem"></i>
-      {{$t('Add New Package') }}
-    </Button>
+      {{$t('Add New Inclusion') }}
+    </Button> -->
     <ComPlaceholder text="No Data" :loading="loading" :isNotEmpty="data.length > 0">
         <DataTable  :value="data" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
@@ -104,7 +104,7 @@ function onEdit(item = null){
         data:item,        
         },
       props: {
-        header: $t('Edit Package & Inclusion'),
+        header: $t('Edit Inclusion'),
         style: {
           width: '40vw',
         },
@@ -125,7 +125,7 @@ function addnew(){
         rs:rs.reservationStay.name,
       },
       props: {
-        header: $t('Add New Package & Inclusion'),
+        header: $t('Add New Inclusion'),
         style: {
           width: '40vw',
         },

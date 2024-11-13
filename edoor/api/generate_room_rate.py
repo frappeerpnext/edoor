@@ -11,8 +11,6 @@ import uuid
 from frappe.model.document import bulk_insert
 from edoor.api.tax_calculation import get_tax_breakdown
  
-  
- 
 def group_change_stay_generate_room_rate(data,run_commit = True): 
     get_room_rate_breakdown.cache_clear()
     get_package_charge_data.cache_clear()

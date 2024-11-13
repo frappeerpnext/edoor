@@ -7,16 +7,18 @@
                            placeholder="Select Account Code"
                            doctype="Account Code"
                            class="auto__Com_Cus w-full" 
+                           :filters="{allow_post_inclusion: 1}"
                            :pageLength="20"
-                           />
+            />
         </div>
         <div class="col-6">
           {{$t('Posting Rule')}}
-          <InputText type="text" class="p-inputtext-sm w-full" v-model="data.posting_rule" :maxlength="100" />
+          <ComSelect  :clear="false" v-model="data.posting_rule" :options="['Everyday','Checked In Date','Checked Out Date']" />
         </div>
         <div class="col-6">
           {{$t('Charge Rule')}}
-          <InputText type="text" class="p-inputtext-sm w-full" v-model="data.charge_rule" :maxlength="100" />
+          <ComSelect  :clear="false"  v-model="data.charge_rule" :options="['Stay','Adult','Child','Pax']" />
+
         </div>
         <div class="col-6">
           {{$t('Rate')}}
@@ -39,7 +41,7 @@
   const dialogRef = inject("dialogRef");
 const rs = dialogRef.value.data.rs
   // Initialize data object
-  const data = ref({});
+  const data = ref({posting_rule:"Everyday",charge_rule:'Stay'});
   
   function onSave() {
     // alert(23)

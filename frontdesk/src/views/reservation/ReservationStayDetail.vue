@@ -105,7 +105,7 @@
                     <TabPanel :header="$t('Room Rate')" v-if="can_view_rate">
                         <ComReservationStayRoomRate />
                     </TabPanel>
-                    <TabPanel :header="$t('Package & Inclusion')" v-if="user.name=='Administrator'" >
+                    <TabPanel :header="$t('Inclusion')" v-if="user.name=='Administrator'" >
                         <ComReservationStayPackageItems/>
                         <!-- This feature is comming soon. -->
                     </TabPanel>

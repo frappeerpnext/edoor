@@ -3444,20 +3444,6 @@
   "time_zones": "Asia/Tokyo"
  },
  {
-  "code": "kh",
-  "country_name": "Cambodia",
-  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/kh.svg",
-  "custom_lat": 12.700356991,
-  "custom_long": 104.859160546,
-  "date_format": "dd-mm-yyyy",
-  "docstatus": 0,
-  "doctype": "Country",
-  "modified": "2024-08-03 17:24:50.671246",
-  "name": "Cambodia",
-  "time_format": "HH:mm:ss",
-  "time_zones": "Asia/Phnom_Penh"
- },
- {
   "code": "be",
   "country_name": "Belgium",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/be.svg",
@@ -3470,6 +3456,20 @@
   "name": "Belgium",
   "time_format": "HH:mm:ss",
   "time_zones": "Europe/Brussels"
+ },
+ {
+  "code": "kh",
+  "country_name": "Cambodia",
+  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/kh.svg",
+  "custom_lat": 12.700356991,
+  "custom_long": 104.859160546,
+  "date_format": "dd-mm-yyyy",
+  "docstatus": 0,
+  "doctype": "Country",
+  "modified": "2024-08-03 17:24:50.671246",
+  "name": "Cambodia",
+  "time_format": "HH:mm:ss",
+  "time_zones": "Asia/Phnom_Penh"
  },
  {
   "code": "af",

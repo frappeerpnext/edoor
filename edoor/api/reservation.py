@@ -405,7 +405,7 @@ def add_new_reservation(doc):
             )
     # check if item is package item then get package item from account code attach to reservation stay
      
-    package_items = get_package_item_for_reservation_stay(reservation.rate_type)
+    # package_items = get_package_item_for_reservation_stay(reservation.rate_type)
     
     for   d in doc["reservation_stay"]:
         room = None
@@ -471,7 +471,7 @@ def add_new_reservation(doc):
                     "is_manual_rate":d["is_manual_rate"]
                 }
             ],
-            "inclusion_items":package_items
+            # "inclusion_items":package_items
         }
         
         stay_doc = frappe.get_doc(stay).insert()
