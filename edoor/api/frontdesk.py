@@ -341,6 +341,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                 room_type_id = if('{0}'='',room_type_id,'{0}') and 
                 property = %(property)s
         ) and 
+        disabled = 0 and
         room_type_id = if('{0}'='',room_type_id,'{0}')                      
         """.format(room_type_id or ''),{"property":property,"date":date},as_dict=1)
     
@@ -1937,7 +1938,7 @@ def get_house_keeping_status(property, working_day):
     hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
     housekeeping_status = []
     for d in hk_data:
-        total  = frappe.db.sql("select count(name) as total from `tabRoom` where property=%(property)s and housekeeping_status='{}'".format(d.name),{"property":property},as_dict=1)[0]["total"] or 0
+        total  = frappe.db.sql("select count(name) as total from `tabRoom` where disabled=0 and  property=%(property)s and housekeeping_status='{}'".format(d.name),{"property":property},as_dict=1)[0]["total"] or 0
         
         total_room_block  = frappe.db.sql("select count(name) as total from `tabRoom Block` where property=%(property)s and end_date >= %(end_date)s and is_unblock = 0 and docstatus = 1",{"property":property,"end_date":working_day},as_dict=1)[0]["total"] or 0
 
@@ -2322,9 +2323,9 @@ def get_room_chart_data(property,group_by,start_date,end_date):
 def get_working_day(property = ''):
     
     working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = %(property)s  order by posting_date desc, creation desc limit 1",{"property":property},as_dict=1)
-
-    cashier_shift = None
     
+    cashier_shift = None
+     
     if len(working_day)>0:
         data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = %(property)s and working_day='{}' and pos_profile='{}' and is_closed =0 and is_edoor_shift =1  ORDER BY posting_date desc, creation desc limit 1".format(working_day[0]["name"],working_day[0]["pos_profile"]),{"property":property},as_dict=1)
     
@@ -3729,5 +3730,58 @@ def save_room_layout_position(floor,data):
     doc.room_position = json.dumps(data)
     doc.save()
     frappe.msgprint("Save room floor plan successfully")
+
+
+@frappe.whitelist()
+def get_room_occupy(property,date,keyword='',business_source = "",room_type="",reservation_status=""):
     
+    sql = """
+    select 
+        name,
+        reservation,
+        reservation_type,
+        reference_number,
+        reservation_date,
+        business_source,
+        guest,
+        guest_name, 
+        business_source, 
+        arrival_date, 
+        departure_date,
+        reservation_status,
+        room_type_alias,
+        status_color,
+        rooms,
+        room_nights,
+        adr,
+        total_room_rate
+    from `tabReservation Stay` 
+    where 
+        property= %(property)s and 
+        
+        name in (
+            select 
+                reservation_stay 
+            from `tabRoom Occupy` 
+            where 
+                property = %(property)s and 
+                type='Reservation' and
+                is_active = 1 and 
+                date = %(date)s
+        ) and 
+        ifnull(keyword,'') like '%{0}%' and 
+        business_source = if(%(business_source)s='', business_source,%(business_source)s) and 
+        room_types = if(%(room_type)s='',room_types,%(room_type)s) and 
+        reservation_status = if(%(reservation_status)s = '', reservation_status, %(reservation_status)s)     
+""".format(keyword)
     
+    data = frappe.db.sql(sql,{
+     
+        "property":property,
+        "date":date,
+        "business_source": business_source,
+        "room_type":room_type,
+        "reservation_status":reservation_status
+    },as_dict = 1)
+
+    return data 

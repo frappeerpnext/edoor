@@ -21,8 +21,7 @@ from edoor.api.backup import run_backup_command
 
 
 def after_login(user):
-    frappe.local.response.set_cookie('your_cookie_name', 'cookie_value', samesite='None', secure=True)
-
+    frappe.local.response["hello"] = 'World'
 
 @frappe.whitelist()
 def create_role():

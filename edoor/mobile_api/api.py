@@ -1,4 +1,7 @@
+from builtins import str
 import frappe
+import base64
+from edoor.api import frontdesk
 @frappe.whitelist(allow_guest=True)
 def check_api_url(property_code):
     sql = "select  * from `tabBusiness Branch` where property_code = '{}'".format(property_code)
@@ -13,3 +16,88 @@ def check_api_url(property_code):
 
     frappe.throw("Property {} does not exist".format(property_code))
 
+
+
+@frappe.whitelist( allow_guest=True )
+def login(property,usr, pwd):
+
+    # from frappe.core.doctype.user.user import generate_keys
+    try:
+        login_manager = frappe.auth.LoginManager()
+        login_manager.authenticate(user=usr, pwd=pwd)
+        login_manager.post_login()
+    except frappe.exceptions.AuthenticationError:
+        frappe.clear_messages()
+        frappe.throw("Usename and password incorrect.")
+        
+
+
+    api_generate = generate_keys(frappe.session.user)
+    user = frappe.get_cached_doc('User', frappe.session.user)
+    # get user position
+    sql = "select position from `tabEmployee` where user_id = '{}' limit 1".format(frappe.session.user)
+    data = frappe.db.sql(sql, as_dict=1)
+    if data:
+         position = data[0].get("position")
+
+
+ 
+    frappe.response["message"] = {
+        "username":user.username,
+        "full_name":user.full_name,
+        "role_profile":user.role_profile_name,
+        "photo":user.user_image,
+        "email":user.email,
+        "position":position,
+        "token": base64.b64encode(str("{}:{}".format(user.api_key,api_generate)).encode("utf-8")).decode('utf-8')    ,
+        "working_day":frontdesk.get_working_day(property)
+    }
+     
+    
+ 
+
+
+def generate_keys(user):
+	"""
+	generate api key and api secret
+ 
+	:param user: str
+	"""
+	# frappe.only_for("System Manager")
+	user_details = frappe.get_doc("User", user)
+	api_secret = frappe.generate_hash(length=15)
+	# if api key is not set generate api key
+	if not user_details.api_key:
+		api_key = frappe.generate_hash(length=15)
+		user_details.api_key = api_key
+	user_details.api_secret = api_secret
+	user_details.save(ignore_permissions=True)
+
+	return api_secret
+
+
+
+@frappe.whitelist(allow_guest=True)
+def check_user_login(property):
+ 
+    if frappe.session.sid == "Guest":
+        frappe.response["message"] =  frappe.session.sid
+    else:
+        user = frappe.get_cached_doc("User", frappe.session.user)
+            # get user position
+        sql = "select position from `tabEmployee` where user_id = '{}' limit 1".format(frappe.session.user)
+        data = frappe.db.sql(sql, as_dict=1)
+        if data:
+            position = data[0].get("position")
+        api_generate = generate_keys(frappe.session.user)
+        frappe.response["message"] = {
+            "username":user.username,
+            "full_name":user.full_name,
+            "role_profile":user.role_profile_name,
+            "photo":user.user_image,
+            "email":user.email,
+            "position":position,
+            "token": base64.b64encode(str("{}:{}".format(user.api_key,api_generate)).encode("utf-8")).decode('utf-8'),
+            "working_day":  frontdesk.get_working_day(property)
+
+        }

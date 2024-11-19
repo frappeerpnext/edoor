@@ -47,7 +47,8 @@ def get_room_list(filter):
       from `tabRoom`
       where
          property = %(property)s  and 
-         room_number like %(keyword)s
+         room_number like %(keyword)s and 
+         disabled = 0
    """
    if 'room_type_id' in filter and  len(filter["room_type_id"])>0:
       sql = sql + " and room_type_id in %(room_type_id)s "
