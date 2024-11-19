@@ -24,11 +24,11 @@
                 <i class="font-bold pi pi-server" />
                 <span class="pl-2 pr-3">{{$t("Open Backend")}}</span>
             </button>
-            <button @click="onShortCutMenu"
+            <!-- <button @click="onShortCutMenu"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="font-bold pi pi-key" />
                 <span class="pl-2 pr-3">{{$t("Shortcut Menu")}}</span>
-            </button>
+            </button> -->
             <button @click="showChangeLanguage"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="pi pi-language" />
