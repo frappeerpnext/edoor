@@ -203,7 +203,6 @@
   {
    "fieldname": "summary_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Summary"
   },
   {
@@ -374,7 +373,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 15:36:22.734596",
+ "modified": "2024-11-19 17:14:49.935325",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

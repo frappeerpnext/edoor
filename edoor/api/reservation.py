@@ -1032,22 +1032,34 @@ def check_out(reservation,reservation_stays=None):
     currency_precision = frappe.get_cached_value("System Settings",None,"currency_precision")
     
     comment_doc = []
+    
+    # validate folio balance
+    folio_balance = check_folio_balance_before_check_out(reservation,reservation_stays)
+    if folio_balance:
+        balance = folio_balance.get("balance",0)
 
+
+        if abs(balance)> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
+            frappe.throw("Reservation Stay {}, room {} cannot check out because the folio balance of this reservation stay is greater than zero".format(folio_balance["reservation_stay"],frappe.get_cached_value("Reservation Stay",folio_balance["reservation_stay"],"rooms")))
+            
+        
     for s in reservation_stays:
         stay = frappe.get_doc("Reservation Stay", s)
         if stay.reservation_status=="Checked Out":
             frappe.throw("Stay # {}. Room {}. This room is already check out.".format(stay.name, stay.rooms))
         if not (stay.departure_date <= working_day["date_working_day"] or stay.departure_date ==add_to_date (working_day["date_working_day"] ,days=1)):
             frappe.throw("Reservation Stay {}, room {} cannot check out because the departure date is in the future.".format(stay.name,stay.rooms))
-        #validate folio balance
-        data_balance = frappe.db.sql("select max(balance) as balance from `tabReservation Folio` where reservation_stay='{}'".format(stay.name),as_dict = 1)
+        
+        # #validate folio balance
+        # data_balance = frappe.db.sql("select max(balance) as balance from `tabReservation Folio` where reservation_stay='{}'".format(stay.name),as_dict = 1)
 
-        if data_balance:
-            balance = data_balance[0]["balance"] or 0
+        # if data_balance:
+        #     balance = data_balance[0]["balance"] or 0
       
 
-            if abs(balance)> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
-                frappe.throw("Reservation Stay {}, room {} cannot check out because the folio balance of this reservation stay is greater than zero".format(stay.name,stay.rooms))
+        #     if abs(balance)> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
+        #         frappe.throw("Reservation Stay {}, room {} cannot check out because the folio balance of this reservation stay is greater than zero".format(stay.name,stay.rooms))
+
 
         stay.checked_out_by = frappe.db.get_value("User", frappe.session.user,"full_name")
         stay.checked_out_date = now()
@@ -1126,6 +1138,43 @@ def check_out(reservation,reservation_stays=None):
     }
 
 
+def check_folio_balance_before_check_out(reservation,reservation_stays):
+    if reservation and not reservation_stays:
+        sql = """
+            select 
+                    reservation_stay,
+                    sum(if(type='Debit',1,1)*amount) as balance
+                from `tabFolio Transaction` 
+                where
+                   reservation = %(reservation)s 
+                group by
+                    reservation_stay
+                having  sum(if(type='Debit',1,1)*amount)> 0
+                limit 1
+        """
+        data = frappe.db.sql(sql,{"reservation":reservation},as_dict =1)
+        if data:
+            return data[0]
+    else:
+        sql = """
+            select 
+                reservation_stay,
+                sum(if(type='Debit',1,1)*amount) as balance
+            from `tabFolio Transaction` 
+            where
+                reservation_stay = %(reservation_stays)s 
+            group by
+                reservation_stay
+            having  sum(if(type='Debit',1,1)*amount)> 0
+            limit 1
+        """
+        data = frappe.db.sql(sql,{"reservation_stays":reservation_stays},as_dict =1)
+        if data:
+            return data[0]     
+        
+    return None
+        
+    
 @frappe.whitelist(methods="POST")
 def undo_check_out(property=None, reservation = None, reservation_stays=None,note=""):
     stay_doc = {}

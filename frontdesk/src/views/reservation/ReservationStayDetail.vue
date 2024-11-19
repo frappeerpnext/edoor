@@ -365,8 +365,10 @@ const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
         if(e.data.action=="ReservationStayDetail"){
             setTimeout(()=>{
+                
                 loadData(false,0)
-            },1000*2)
+               
+            },1000*5)
             
         }
     };
