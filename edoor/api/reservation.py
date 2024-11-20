@@ -1143,32 +1143,36 @@ def check_folio_balance_before_check_out(reservation,reservation_stays):
         sql = """
             select 
                     reservation_stay,
-                    sum(if(type='Debit',1,1)*amount) as balance
+                    sum(if(type='Debit',1,-1)*amount) as balance
                 from `tabFolio Transaction` 
                 where
                    reservation = %(reservation)s 
                 group by
                     reservation_stay
-                having  sum(if(type='Debit',1,1)*amount)> 0
+                having  sum(if(type='Debit',1,-1)*amount)> 0
                 limit 1
         """
         data = frappe.db.sql(sql,{"reservation":reservation},as_dict =1)
         if data:
             return data[0]
     else:
+        folios = frappe.db.sql("select name from `tabReservation Folio` where reservation_stay in %(reservation_stays)s",{"reservation_stays":reservation_stays},as_dict=1)
         sql = """
             select 
                 reservation_stay,
-                sum(if(type='Debit',1,1)*amount) as balance
+                sum(if(type='strbit',1,-1)*amount) as balance
             from `tabFolio Transaction` 
             where
-                reservation_stay = %(reservation_stays)s 
+                transaction_type = 'Reservation Folio' and 
+                transaction_number in %(folios)s 
             group by
                 reservation_stay
-            having  sum(if(type='Debit',1,1)*amount)> 0
+            having  sum(if(type='Debit',1,-1)*amount)> 0
             limit 1
         """
-        data = frappe.db.sql(sql,{"reservation_stays":reservation_stays},as_dict =1)
+        
+        data = frappe.db.sql(sql,{"folios":folios},as_dict =1)
+        
         if data:
             return data[0]     
         
