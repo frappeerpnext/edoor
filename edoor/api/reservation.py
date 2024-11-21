@@ -1164,7 +1164,7 @@ def check_folio_balance_before_check_out(reservation,reservation_stays):
         sql = """
             select 
                 reservation_stay,
-                sum(if(type='strbit',1,-1)*amount) as balance
+                sum(if(type='Debit',1,-1)*amount) as balance
             from `tabFolio Transaction` 
             where
                 transaction_type = 'Reservation Folio' and 

@@ -200,6 +200,7 @@
             window.postMessage({action:"GuestLedger"},"*")
             window.postMessage({action:"GuestLedgerTransaction"},"*")
             window.postMessage({action:"Reports"},"*")
+            window.postMessage({action:"ComUnassignRoom"},"*")
             onClose(r)
         }).catch((err)=>{
             loading.value = false

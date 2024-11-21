@@ -2,11 +2,6 @@
     <ComDialogContent @onOK="onSave" hideButtonClose :titleButtonOK="Save" :hideIcon="false" :loading="loading">
         <div class="grid">
             <div class="col-12">
-                <label for="username">{{ $t('Username')}}</label>
-                <InputText v-model="user.full_name" id="username" type="text"
-                    class="p-inputtext-sm w-full" :placeholder="$t('Username')" :maxlength="50" />
-            </div>
-            <div class="col-12">
                 <label for="password">{{ $t('Password')}}</label>
                 <InputText v-model="data.password" id="password" type="text"
                     class="p-inputtext-sm w-full" :placeholder="$t('Password')" :maxlength="50" />

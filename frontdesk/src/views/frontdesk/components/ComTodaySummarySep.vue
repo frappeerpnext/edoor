@@ -14,6 +14,7 @@ import { computed,inject,useDialog } from "@/plugin"
 import ComReservationStayList from "./ComReservationStayList.vue";
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ProgressBar from 'primevue/progressbar';
+import ComUnassignRoom from '@/views/frontdesk/components/ComUnassignRoom.vue';
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const moment = inject('$moment')
@@ -116,14 +117,7 @@ const filters = [
         )
     } else if(props.dialogKey == "unassign_room"){
 
-        onViewData(
-            'Business%20Branch',
-            // "eDoor%20Unassign%20Room%20Reservation%20List",
-            gv.getCustomPrintFormat("eDoor Unassign Room Reservation List"),
-            'Unassign Room Reservation List',
-            [{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
-            ['keyword','room_type','business_source']
-        )
+        viewUnassignRoom();
     }
     else if(props.dialogKey == "pickup_drop_off"){
         onViewData(
@@ -211,6 +205,29 @@ const filters = [
     }
   
 }
+
+const viewUnassignRoom = ()=>{
+     
+     dialog.open(ComUnassignRoom, {
+         data: {
+             date:working_day.date_working_day
+         },
+         props: {
+             header: $t("View unassign room"),
+             style: {
+                 width: '90vw',
+             },
+             position: "top",
+             modal: true,
+             maximizable: true,
+             closeOnEscape: true,
+             breakpoints:{
+                 '960px': '90vw',
+                 '640px': '100vw'
+             },
+         }
+     });
+ }
 
 
 function onOpenDetailx() {

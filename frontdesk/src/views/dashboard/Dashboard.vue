@@ -98,6 +98,7 @@
                         <ComKPI v-tippy="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' ' + $t('Checked-out') + ' & '+ $t('Total Departure') + ' ' + (data?.departure ||0)   " @onClick="viewSummary('Departure')" :value="!gv.loading ? ( (data.departure - data?.departure_remaining)  +'/'+  data?.departure ||0) : ''" :title="$t('Departure')"
                             class="primary-btn-edoor border-round-lg cursor-pointer">
                         </ComKPI>
+                        
                         <ComKPI @onClick="viewSummary('Daily Reservation')" v-tippy=" $t('Total Reservation') + ' ' + data.daily_reservation + ' & ' + $t('Total Reservation Stay') + ' ' +  data?.daily_reservation_stay" :value="!gv.loading ? data.daily_reservation + '/' + data?.daily_reservation_stay : ''"
                             :title="$t('Daily Reservation')" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
                         
@@ -113,7 +114,7 @@
                             :value="!gv.loading ? (data.git_reservation_arrival + '/' + data.git_stay_arrival) : ''"
                             :title="$t('GIT Arrival')" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
                         <ComKPI v-tippy="$t('Today') + ' ' + (data?.unassign_room || 0) + ' ' + $t('Unassign Room') + ' & ' + $t('Total Unassign Room') + ' ' + (data?.total_unassign_room || 0)"
- @onClick="viewSummary('Unassign Room')" :value="!gv.loading ? ( data.unassign_room + '/' + data.total_unassign_room ) : ''" :title="$t('Unassign Room')"
+ @onClick="viewUnassignRoom" :value="!gv.loading ? ( data.unassign_room + '/' + data.total_unassign_room ) : ''" :title="$t('Unassign Room')"
                             class="bg-og-edoor border-round-lg cursor-pointer"> </ComKPI>
                         <ComKPI @onClick="viewSummary('Pickup and Drop Off')"
                             :value="!gv.loading ? (data.pick_up + '/' + data.drop_off) : ''" :title="$t('Pickup') + '/' + $t('Drop Off')"
@@ -202,6 +203,7 @@ import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComDashboardRecentList from '@/views/dashboard/components/ComDashboardRecentList.vue';
+import ComUnassignRoom from "@/views/frontdesk/components/ComUnassignRoom.vue";
  
 const isMobile = ref(window.isMobile) 
 const toast = useToast();
@@ -552,6 +554,29 @@ const viewSummary = (name) => {
             ['keyword', 'room_type', 'reservation_status', 'business_source']
         )
     }
+}
+
+const viewUnassignRoom = ()=>{
+     
+    dialog.open(ComUnassignRoom, {
+        data: {
+            date:selected_date.value
+        },
+        props: {
+            header: $t("View unassign room"),
+            style: {
+                width: '90vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true,
+            breakpoints:{
+                '960px': '90vw',
+                '640px': '100vw'
+            },
+        }
+    });
 }
 
 function debouncer(fn, delay) {
