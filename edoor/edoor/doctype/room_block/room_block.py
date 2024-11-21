@@ -63,6 +63,7 @@ class RoomBlock(Document):
 			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 		else:
+			
 			#check if date is extend
 			old_doc = frappe.get_doc("Room Block", self.name)
 			if self.end_date != old_doc.end_date or  self.start_date != old_doc.start_date:
@@ -84,9 +85,13 @@ class RoomBlock(Document):
 				if   getdate(self.end_date) <= getdate(working_day["date_working_day"]):
 					room_doc.room_status = "Vacant"
      
+				if   getdate(self.start_date) > getdate(working_day["date_working_day"]):
+					room_doc.room_status = "Vacant"
+					 
+     
+	
 
 				# if user change room block release date back date
-
 				room_doc.save()
 
 

@@ -69,3 +69,27 @@ def merge_assign_values(data):
     
     # Return the list of unique assign values
     return list(merged_assign)
+
+@frappe.whitelist()
+def get_room_list(property):
+    room_type_data = frappe.db.sql("select name, room_type,alias from `tabRoom Type` where property =%(property)s order by sort_order, room_type",{"property":property},as_dict = 1)
+    
+    sql= """
+        select 
+            name,
+            room_number,
+            room_type_id
+        from `tabRoom` 
+        where
+            disabled = 0 and 
+            property = %(property)s
+            
+    """
+    
+    room_data = frappe.db.sql(sql,{"property":property},as_dict = 1)
+    for rt in room_type_data:
+        rt["data"] = [d for d in room_data if d.get("room_type_id") == rt.get("name")]
+        
+    return room_type_data
+
+    

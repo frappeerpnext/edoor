@@ -145,12 +145,12 @@ export function getApi(api, params = Object,base_url="edoor.api."){
         })
     })
 }
-export function postApi(api, params = Object, message,show_message=true){
+export function postApi(api, params = Object, message,show_message=true,base_url="edoor.api."){
  
     const frappe = new FrappeApp()
     const call = frappe.call()
     return new Promise((resolve, reject)=>{
-        call.post(`edoor.api.${api}`, params).then((result) => {
+        call.post(`${base_url}${api}`, params).then((result) => {
             if(show_message == true){
                 if(show_message && !result.hasOwnProperty("_server_messages")){
                     window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')

@@ -122,8 +122,12 @@
                             <CurrencyFormat :value="event.extendedProps?.total_amount" />
                         </td>
                     </tr>
-                    
                 </template>
+                <tr>
+                    <td>Rate Type</td>
+                    <td class="px-2">:</td>
+                    <td>{{ event.extendedProps?.rate_type }}</td>
+                </tr>
                 <tr v-if="event.extendedProps?.note != 'null' && event.extendedProps?.note">
                     <td><span class="mt-2">{{ $t('Note') }}</span></td>
                 </tr>
