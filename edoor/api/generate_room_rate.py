@@ -852,7 +852,7 @@ def get_room_rate_account_code_breakdown(room_rate_data):
     
     # sub account of main account
     base_code["tax_rule"] = room_rate_data["tax_rule"]
-    base_code["rate_include_tax"] = room_rate_data["rate_include_tax"]
+    base_code["rate_include_tax"] = room_rate_data.get("rate_include_tax","Yes")
  
     if room_rate_data["tax_rule"]:
         tax_rule_doc = get_tax_rule_doc(room_rate_data["tax_rule"])

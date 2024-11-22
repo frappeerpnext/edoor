@@ -165,7 +165,7 @@ def get_folio_transaction_calculation(folio_transaction_data=None):
     for acc in account_codes:
         tax_data  =  get_tax_breakdown(
                 tax_rule=acc["tax_rule"],
-                rate_include_tax=acc["rate_include_tax"], 
+                rate_include_tax=acc.get("rate_include_tax","Yes"), 
                 tax_1_rate=acc["tax_1_rate"],
                 tax_2_rate=acc["tax_2_rate"], 
                 tax_3_rate=acc["tax_3_rate"],
@@ -181,7 +181,7 @@ def get_folio_transaction_calculation(folio_transaction_data=None):
         tax_data["tax_1_rate"] = acc["tax_1_rate"]
         tax_data["tax_2_rate"] = acc["tax_2_rate"]
         tax_data["tax_3_rate"] = acc["tax_3_rate"]
-        tax_data["rate_include_tax"] = acc["rate_include_tax"]
+        tax_data["rate_include_tax"] = acc.get("rate_include_tax","Yes")
         tax_data["allow_discount"] = acc["allow_discount"]
         tax_data["discount_amount"] = acc["discount_amount"]
         tax_data["quantity"] = 0 if "quantity" not in acc else  acc["quantity"]
@@ -397,7 +397,7 @@ def get_folio_transaction_breakdown(data=None):
     # I am here 
     rate_breakdown_param = {
             "tax_rule":data["tax_rule"],
-            "rate_include_tax":data["rate_include_tax"],
+            "rate_include_tax":data.get("rate_include_tax","Yes"),
             "tax_1_rate": 0 if not "tax_1_rate" in data else  data["tax_1_rate"],
             "tax_2_rate":0 if not "tax_2_rate" in data else data["tax_2_rate"],
             "tax_3_rate":0 if not "tax_3_rate" in data else data["tax_3_rate"],
