@@ -76,7 +76,26 @@ class Reservation(Document):
 			"content":f"New reservation added. Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.name}'>{self.name}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
 
 		}])
+
+			# udate keyworkd
+		update_keyword(self)
+
 	 
+
+def update_keyword(self):
+	meta = frappe.get_meta("Reservation")
+	search_fields = []
+	fields = "name"
+	if meta.search_fields:
+		for s in  meta.search_fields.split(","):
+			search_fields.append("coalesce({},'')".format(s))
+		
+		fields = fields + ",' ', " + ",' ',".join(search_fields)
+
+	sql = "update `tabReservation` set keyword = concat({}) where name='{}'".format( fields, self.name)                       
+	frappe.db.sql(sql)
+	
+ 
 
    
    
