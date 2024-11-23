@@ -155,18 +155,7 @@ def update_fetch_from_field(doc, method=None, *args, **kwargs):
  
 
  
-def update_keyword(doc, method=None, *args, **kwargs):
-    skip_doctypes = ["Folio Transaction","City Ledger","Vendor","Customer","Reservation Stay","Reservation","Reservation Stay Room","Room","Room Block","Business Source"]
-    if  doc.doctype in skip_doctypes:
-        frappe.get_doc({
-            "doctype":"Queue Job",
-            "document_name":doc.name,
-            "document_type":doc.doctype,
-            "action":"update_keyword"
 
-        }).insert(ignore_permissions=True, ignore_links=True)
-
-        # frappe.enqueue("edoor.api.utils.update_keyword_queue", queue='long', doc=doc)
 
     
     

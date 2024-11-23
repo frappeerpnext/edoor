@@ -35,10 +35,11 @@ def login(property,usr, pwd):
     api_generate = generate_keys(frappe.session.user)
     user = frappe.get_cached_doc('User', frappe.session.user)
     # get user position
-    sql = "select position from `tabEmployee` where user_id = '{}' limit 1".format(frappe.session.user)
+    sql = "select position,name from `tabEmployee` where user_id = '{}' limit 1".format(frappe.session.user)
     data = frappe.db.sql(sql, as_dict=1)
     if data:
          position = data[0].get("position")
+         employee_id = data[0].get("name")
 
 
  
@@ -50,7 +51,8 @@ def login(property,usr, pwd):
         "email":user.email,
         "position":position,
         "token": base64.b64encode(str("{}:{}".format(user.api_key,api_generate)).encode("utf-8")).decode('utf-8')    ,
-        "working_day":frontdesk.get_working_day(property)
+        "working_day":frontdesk.get_working_day(property),
+        "employee_id":employee_id
     }
      
     

@@ -120,12 +120,10 @@ doc_events = {
 	# },
 	# "*": {
 	# 	"on_update": [
-    #         "edoor.api.utils.update_keyword",
     #         "edoor.api.utils.update_fetch_from_field"
 	# 	],
 
 	# 	"on_update_after_submit": [
-    #         "edoor.api.utils.update_keyword",
 	# 	],
 	# 	# "on_cancel": "method",
 	# 	# "on_trash": "method"
@@ -138,7 +136,7 @@ doc_events = {
 scheduler_events = {
     	"cron": {
             "*/1 * * * *": [
-				"edoor.api.schedule_task.generate_audit_trail_from_version",
+				"edoor.api.schedule_task.one_minute_job",
 			],
 			"*/5 * * * *": [
 				"edoor.api.schedule_task.five_minute_job",

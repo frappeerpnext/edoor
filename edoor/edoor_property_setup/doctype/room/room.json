@@ -57,7 +57,8 @@
    "fetch_from": "room_type_id.room_type",
    "fieldname": "room_type",
    "fieldtype": "Data",
-   "label": "Room Type"
+   "label": "Room Type",
+   "search_index": 1
   },
   {
    "fetch_from": "room_type_id.property",
@@ -66,7 +67,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Property",
-   "options": "Business Branch"
+   "options": "Business Branch",
+   "search_index": 1
   },
   {
    "fieldname": "room_number",
@@ -74,7 +76,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Room Number",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "room_type_id",
@@ -113,6 +116,7 @@
    "fetch_from": ".icon",
    "fieldname": "housekeeping_icon",
    "fieldtype": "Code",
+   "hidden": 1,
    "label": "Housekeeping Icon"
   },
   {
@@ -169,6 +173,7 @@
   {
    "fieldname": "current_guest_tab",
    "fieldtype": "Tab Break",
+   "hidden": 1,
    "label": "Current Guest"
   },
   {
@@ -209,15 +214,18 @@
   },
   {
    "fieldname": "keyword",
-   "fieldtype": "Small Text",
-   "label": "keyword"
+   "fieldtype": "Data",
+   "label": "keyword",
+   "length": 500,
+   "search_index": 1
   },
   {
    "default": "Vacant",
    "fieldname": "room_status",
    "fieldtype": "Link",
    "label": "Room Status",
-   "options": "Room Status"
+   "options": "Room Status",
+   "search_index": 1
   },
   {
    "fieldname": "column_break_sagn",
@@ -245,13 +253,15 @@
    "fieldname": "housekeeping_status_code",
    "fieldtype": "Link",
    "label": "Housekeeping Status Code",
-   "options": "Housekeeping Status Code"
+   "options": "Housekeeping Status Code",
+   "search_index": 1
   },
   {
    "fieldname": "housekeeping_status",
    "fieldtype": "Link",
    "label": "Housekeeping Status",
-   "options": "Housekeeping Status"
+   "options": "Housekeeping Status",
+   "search_index": 1
   },
   {
    "fetch_from": "room_type_id.room_type_color",
@@ -262,7 +272,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 10:13:09.828361",
+ "modified": "2024-11-23 08:34:13.518858",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

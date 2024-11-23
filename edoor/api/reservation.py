@@ -8,7 +8,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import    update_rese
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_stay,update_reservation,add_room_charge_to_folio, update_reservation_stay_and_reservation, validate_backdate_permission, validate_role,update_keyword,add_package_inclusion_charge_to_folio,get_breakdown_package_charge_code
+from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_stay,update_reservation,add_room_charge_to_folio, update_reservation_stay_and_reservation, validate_backdate_permission, validate_role,add_package_inclusion_charge_to_folio,get_breakdown_package_charge_code
 import frappe
 import time
 import uuid  
@@ -3498,12 +3498,6 @@ def update_reservation_information(doc, apply_all_active_stay=False,update_to_re
 
 
 
-def update_reservation_keyword(reservation):
-    stays = frappe.db.sql("select name from `tabReservation Stay` where reservation='{}'".format(reservation),as_dict=1)
-    for s in stays:
-        update_keyword(frappe.get_doc("Reservation Stay",s))
-
-    
     
 
 @frappe.whitelist(methods="POST")

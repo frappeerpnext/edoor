@@ -312,6 +312,12 @@ def clear_cache():
              
     
 @frappe.whitelist()
+def one_minute_job():
+    generate_audit_trail_from_version()
+    update_keyword(-1)
+    
+        
+@frappe.whitelist()
 def five_minute_job():
     clear_cache()
     if not can_run_job("edoor.api.schedule_task.five_minute_job"):
@@ -425,35 +431,32 @@ def update_fetch_from_field(data):
             
 
 
-def update_keyword(data):
-    for x in data:
-        if frappe.db.exists(x["document_type"],x["document_name"]):
-            doc = frappe.get_doc(x["document_type"],x["document_name"])
-            meta = frappe.get_meta(doc.doctype)
+@frappe.whitelist()
+def update_keyword(m=-1):
+    doctypes = [
+        "Room",
+        "Reservation Stay",
+        "Business Source",
+        "City Ledger",
+        "Customer",
+        "Vendor",
+        "Reservation",
+        "Room Block",
+        "Folio Transaction"
+        ]
+    date = frappe.utils.now()
+    date = add_to_date( date,minutes=m)
+    for dt in doctypes:
+            meta = frappe.get_meta(dt)
             if meta.has_field("keyword"):
-                fields = []
-                fields.append("b.name")
-                for d in meta.search_fields.split(","):
-                    fields.append("coalesce(b.{},'')".format(d))
-
-                if fields:
-                    sql = "update `tab{0}` as a, `tab{0}` as b set a.keyword = concat({1}) where a.name = b.name and a.name='{2}'"
-                    sql = sql.format(doc.doctype, " , ' ',".join(fields), doc.name )
-                    frappe.db.sql(sql)
-                    # update keyword for searching in room chart
-                    if doc.doctype == 'Reservation Stay':
-                        rs = frappe.get_doc('Reservation Stay', doc.name)
-
-                        data_keyword = "update `tabRoom Occupy` set data_keyword = %(keyword)s where reservation_stay = %(reservation_stay)s"
-
-                        frappe.db.sql(data_keyword,{"keyword":rs.keyword,"reservation_stay":doc.name})
-                        #update to child table reservation stay room
-                        sql = "update `tabReservation Stay Room` set keyword =%(keyword)s where parent=%(reservation_stay)s"
-                        frappe.db.sql(sql,{"keyword":rs.keyword,"reservation_stay":doc.name})
-
-        frappe.db.sql("delete from `tabQueue Job` where document_type='{}' and document_name='{}' and action='{}'".format(x["document_type"],x["document_name"],x["action"]))
-            
-
+                fields = "name"
+                if meta.search_fields:
+                    fields = fields + ",' ', " + ",' ',".join(meta.search_fields.split(",")) 
+                sql = "update tab{} set keyword = concat({}) where modified<=%(date)s".format(dt,fields)                       
+                frappe.db.commit()
+                
+                
+                
 @frappe.whitelist()
 def validate_property_data():
     if not can_run_job("edoor.api.schedule_task.validate_property_data"):
