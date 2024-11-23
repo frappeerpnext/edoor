@@ -322,10 +322,9 @@
   },
   {
    "fieldname": "keyword",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Keyword",
-   "length": 500,
-   "search_index": 1
+   "length": 500
   },
   {
    "fetch_from": "reservation.rate_type",
@@ -1031,7 +1030,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-23 08:48:57.252940",
+ "modified": "2024-11-23 10:11:12.012672",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
