@@ -17,258 +17,256 @@ from edoor.edoor.doctype.reservation_stay.utils import update_fetch_from_fields
 
 class ReservationStay(Document):
 	def  validate(self):
-		# if self.flags.ignore_validate:
-		# 	return
+		if self.flags.ignore_validate:
+			return
 		
 
-		# working_day = get_working_day(self.property)
+		working_day = get_working_day(self.property)
 		
-		# if not self.reservation:
-		# 	frappe.throw("Please select reservation")
+		if not self.reservation:
+			frappe.throw("Please select reservation")
 
-		# if  getdate(self.departure_date)<=getdate(self.arrival_date):
-		# 	frappe.throw("Departure date cannot less than or equal to arrival date")
+		if  getdate(self.departure_date)<=getdate(self.arrival_date):
+			frappe.throw("Departure date cannot less than or equal to arrival date")
 		
 
 		
-		# if not working_day:
-		# 	frappe.throw("There is no working open")
-		# else:
+		if not working_day:
+			frappe.throw("There is no working open")
+		else:
 
-		# 	if not working_day["cashier_shift"]:
-		# 		frappe.throw("There is no cashier open. Please open your cashier shift")
-		# 	if self.is_new():
-		# 		self.working_day = working_day["name"]
-		# 		self.working_date = working_day["date_working_day"]
-		# 		self.cashier_shift = working_day["cashier_shift"]["name"]
+			if not working_day["cashier_shift"]:
+				frappe.throw("There is no cashier open. Please open your cashier shift")
+			if self.is_new():
+				self.working_day = working_day["name"]
+				self.working_date = working_day["date_working_day"]
+				self.cashier_shift = working_day["cashier_shift"]["name"]
  
-		# reservation_status = frappe.get_doc("Reservation Status", self.reservation_status)
-		# #check with old doc
-		# if not self.is_new():
-		# 	old_doc = frappe.get_doc("Reservation Stay", self.name)
-		# 	if frappe.db.get_value("Reservation Status",old_doc.reservation_status, "allow_user_to_edit_information")==0:
-		# 		if not self.flags.is_undo_check_out: 
-		# 			frappe.throw("{} reservation is not allow to change information".format(old_doc.reservation_status) )
+		reservation_status = frappe.get_doc("Reservation Status", self.reservation_status)
+		#check with old doc
+		if not self.is_new():
+			old_doc = frappe.get_doc("Reservation Stay", self.name)
+			if frappe.db.get_value("Reservation Status",old_doc.reservation_status, "allow_user_to_edit_information")==0:
+				if not self.flags.is_undo_check_out: 
+					frappe.throw("{} reservation is not allow to change information".format(old_doc.reservation_status) )
 
-		# 	#check prevent unasign room
+			#check prevent unasign room
 			
-		# 	if not old_doc.reservation_status in ['Reserved', 'Confirmed','No Show'] and len([d for d in self.stays if (d.room_id or '') == ''])>0:
-		# 		frappe.throw("{} reservation is not allow to unasign room".format(self.reservation_status))
+			if not old_doc.reservation_status in ['Reserved', 'Confirmed','No Show'] and len([d for d in self.stays if (d.room_id or '') == ''])>0:
+				frappe.throw("{} reservation is not allow to unasign room".format(self.reservation_status))
 		
 
-		# if not self.reservation_color_code:
-		# 	self.reservation_color = None
+		if not self.reservation_color_code:
+			self.reservation_color = None
 
-		# #validate select uniue guest in additional guest
-		# master_guest = frappe.db.get_value('Reservation', self.reservation, 'guest')	
-		# validate_guests = [x for x in self.additional_guests if x.guest == self.guest or x.guest == master_guest]
-		# unique_list = list(set([x.guest for x in self.additional_guests]))
-		# if len(unique_list) < len(self.additional_guests):
-		# 	validate_guests = True
-		# if validate_guests:
-		# 	frappe.throw("Cannot select duplicate guest.")
+		#validate select uniue guest in additional guest
+		master_guest = frappe.db.get_value('Reservation', self.reservation, 'guest')	
+		validate_guests = [x for x in self.additional_guests if x.guest == self.guest or x.guest == master_guest]
+		unique_list = list(set([x.guest for x in self.additional_guests]))
+		if len(unique_list) < len(self.additional_guests):
+			validate_guests = True
+		if validate_guests:
+			frappe.throw("Cannot select duplicate guest.")
 
 
-		# self.adult = self.adult or 1
-		# self.child = self.child or 0
+		self.adult = self.adult or 1
+		self.child = self.child or 0
 		
 
 
-		# rooms_data = []
-		# self.pax = self.adult + self.child 	
-		# if self.stays:
-		# 	self.rooms = ','.join([(d.room_number or '') for d in self.stays if (d.room_number or '') !='' ])
-		# 	self.room_types = ','.join(set([d.room_type for d in self.stays]))
-		# 	self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
+		rooms_data = []
+		self.pax = self.adult + self.child 	
+		if self.stays:
+			self.rooms = ','.join([(d.room_number or '') for d in self.stays if (d.room_number or '') !='' ])
+			self.room_types = ','.join(set([d.room_type for d in self.stays]))
+			self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
 		
 		
 				
-		# for d in self.stays:
+		for d in self.stays:
 		 
-		# 	d.property = self.property
-		# 	d.reservation_status = self.reservation_status
-		# 	d.is_active_reservation = self.is_active_reservation
-		# 	d.allow_user_to_edit_information = self.allow_user_to_edit_information
+			d.property = self.property
+			d.reservation_status = self.reservation_status
+			d.is_active_reservation = self.is_active_reservation
+			d.allow_user_to_edit_information = self.allow_user_to_edit_information
 
-		# 	d.additional_guest_name= ' / '.join(set([d.guest_name for d in self.additional_guests]))
+			d.additional_guest_name= ' / '.join(set([d.guest_name for d in self.additional_guests]))
 
-		# 	if self.is_reserved_room:
+			if self.is_reserved_room:
 			 
-		# 		d.show_in_room_chart  = self.is_reserved_room
-		# 	else:
+				d.show_in_room_chart  = self.is_reserved_room
+			else:
 				 
-		# 		d.show_in_room_chart = reservation_status.show_in_room_chart
+				d.show_in_room_chart = reservation_status.show_in_room_chart
 			
-		# 	if self.is_reserved_room==1:
-		# 		d.is_active_reservation = 1
+			if self.is_reserved_room==1:
+				d.is_active_reservation = 1
 
-		# 	d.status_color = self.status_color
-		# 	d.reservation_type = self.reservation_type
-		# 	d.group_code = self.group_code
-		# 	d.group_name = self.group_name
-		# 	d.group_color = self.group_color
-		# 	d.reservation_color = self.reservation_color
-		# 	d.reservation_color_code = self.reservation_color_code
-		# 	d.guest = self.guest
-		# 	d.guest_name = self.guest_name
-		# 	d.email = self.guest_email
-		# 	d.phone_number = self.guest_phone_number
-		# 	d.start_date = d.start_date or self.arrival_date
-		# 	d.start_time = d.start_time or self.arrival_time
-		# 	d.end_time = d.end_time or self.departure_time
-		# 	d.end_date = d.end_date or self.departure_date
-		# 	d.adult = self.adult or 1
-		# 	d.child = self.child or 0
-		# 	d.reference_number = self.reference_number
-		# 	d.pax = d.adult  + d.child
-		# 	d.reservation = self.reservation
-		# 	d.rate_type = d.rate_type or  self.rate_type
-		# 	d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
-		# 	d.stay_rooms = self.rooms
-		# 	d.stay_room_types = self.room_types 
-		# 	d.can_change_start_date = 1 if (len(self.stays) == 1 or self.stays.index(d) ==0) and self.reservation_status in ["Reserved","Confirmed"]     else 0
-		# 	d.can_change_end_date = 1 if (len(self.stays) == 1 or self.stays.index(d) == len(self.stays)-1 ) and  self.reservation_status in ["Confirmed","Reserved","In-house"] else 0
-		# 	d.total_amount = self.total_amount
-		# 	#generate room data
-		# 	rooms_data.append({
-		# 			"name": d.name,
-		# 			"room_number": d.room_number or '',
-		# 			"room_type_alias": d.room_type_alias,
-		# 			"room_type": d.room_type
-		# 		})
+			d.status_color = self.status_color
+			d.reservation_type = self.reservation_type
+			d.group_code = self.group_code
+			d.group_name = self.group_name
+			d.group_color = self.group_color
+			d.reservation_color = self.reservation_color
+			d.reservation_color_code = self.reservation_color_code
+			d.guest = self.guest
+			d.guest_name = self.guest_name
+			d.email = self.guest_email
+			d.phone_number = self.guest_phone_number
+			d.start_date = d.start_date or self.arrival_date
+			d.start_time = d.start_time or self.arrival_time
+			d.end_time = d.end_time or self.departure_time
+			d.end_date = d.end_date or self.departure_date
+			d.adult = self.adult or 1
+			d.child = self.child or 0
+			d.reference_number = self.reference_number
+			d.pax = d.adult  + d.child
+			d.reservation = self.reservation
+			d.rate_type = d.rate_type or  self.rate_type
+			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
+			d.stay_rooms = self.rooms
+			d.stay_room_types = self.room_types 
+			d.can_change_start_date = 1 if (len(self.stays) == 1 or self.stays.index(d) ==0) and self.reservation_status in ["Reserved","Confirmed"]     else 0
+			d.can_change_end_date = 1 if (len(self.stays) == 1 or self.stays.index(d) == len(self.stays)-1 ) and  self.reservation_status in ["Confirmed","Reserved","In-house"] else 0
+			d.total_amount = self.total_amount
+			#generate room data
+			rooms_data.append({
+					"name": d.name,
+					"room_number": d.room_number or '',
+					"room_type_alias": d.room_type_alias,
+					"room_type": d.room_type
+				})
 			
 		
-		# for d in self.additional_guests:
-		# 	d.reservation = self.reservation
+		for d in self.additional_guests:
+			d.reservation = self.reservation
 
 
-		# self.rooms_data = json.dumps(rooms_data)
+		self.rooms_data = json.dumps(rooms_data)
 
-		# #update stay summary
-		# self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
+		#update stay summary
+		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
  
 	
  
  
-		# self.arrival_date = Enumerable(self.stays).min(lambda x:getdate(x.start_date))
-		# self.departure_date = Enumerable(self.stays).max(lambda x:getdate(x.end_date))
+		self.arrival_date = Enumerable(self.stays).min(lambda x:getdate(x.start_date))
+		self.departure_date = Enumerable(self.stays).max(lambda x:getdate(x.end_date))
 
-		# self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)
+		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)
 
-		# currency_precision = frappe.get_cached_value("System Settings",None,"currency_precision")
-		# if abs(round(self.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
-		# 	self.balance = 0
+		currency_precision = frappe.get_cached_value("System Settings",None,"currency_precision")
+		if abs(round(self.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
+			self.balance = 0
 
  
-		# #update note & housekeeping note
-		# if self.is_new():
-		# 	#set default check in and check out time
-		# 	self.arrival_time = frappe.get_cached_value("eDoor Setting",None,"default_check_in_time")			
-		# 	self.departure_time = frappe.get_cached_value("eDoor Setting",None,"default_check_out_time")			
+		#update note & housekeeping note
+		if self.is_new():
+			#set default check in and check out time
+			self.arrival_time = frappe.get_cached_value("eDoor Setting",None,"default_check_in_time")			
+			self.departure_time = frappe.get_cached_value("eDoor Setting",None,"default_check_out_time")			
 
-		# 	if self.note:
-		# 		self = update_note(self=self)
-		# 	if self.housekeeping_note:
-		# 		self = update_housekeeping_note(self=self)
-		# else:
-		# 	if self.note:
-		# 		note = frappe.db.get_value('Reservation Stay', self.name,'note')
-		# 		if self.note != note:
-		# 			self = update_note(self=self)
+			if self.note:
+				self = update_note(self=self)
+			if self.housekeeping_note:
+				self = update_housekeeping_note(self=self)
+		else:
+			if self.note:
+				note = frappe.db.get_value('Reservation Stay', self.name,'note')
+				if self.note != note:
+					self = update_note(self=self)
 				
-		# 	if self.housekeeping_note:
-		# 		note = frappe.db.get_value('Reservation Stay', self.name,'housekeeping_note')
-		# 		if self.housekeeping_note != note:
-		# 			self = update_housekeeping_note(self=self)
-		pass
+			if self.housekeeping_note:
+				note = frappe.db.get_value('Reservation Stay', self.name,'housekeeping_note')
+				if self.housekeeping_note != note:
+					self = update_housekeeping_note(self=self)
 
  
 
 	def after_insert(self):
-		# frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
-		# 	"comment_type":"Created",
-		# 	"subject":"Create New Reservation Stay",
-		# 	"reference_doctype":"Reservation Stay",
-		# 	"reference_name":self.name,
-		# 	"custom_audit_trail_type":"Created",
-		# 	"custom_icon":"pi pi-file",
-		# 	"content":f"New reservation stay added. Reservation Stay #: <a target='_blank' href='/frontdesk/stay-detail/{self.name}'>{self.name}</a>,  Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.reservation}'>{self.reservation}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
-		# }])
-		pass
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
+			"comment_type":"Created",
+			"subject":"Create New Reservation Stay",
+			"reference_doctype":"Reservation Stay",
+			"reference_name":self.name,
+			"custom_audit_trail_type":"Created",
+			"custom_icon":"pi pi-file",
+			"content":f"New reservation stay added. Reservation Stay #: <a target='_blank' href='/frontdesk/stay-detail/{self.name}'>{self.name}</a>,  Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.reservation}'>{self.reservation}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
+		}])
 
 	def on_update(self):
 		
-		# if self.creation !=self.modified:
-		# 	update_fetch_from_fields(self)
+		if self.creation !=self.modified:
+			update_fetch_from_fields(self)
 			
   
-		# if self.flags.ignore_on_update:
-		# 	return
+		if self.flags.ignore_on_update:
+			return
 		
-		# if self.creation !=self.modified:
-		# 	if self.is_master:
-		# 		reservation_stays = frappe.get_list("Reservation Stay",filters={
-		# 			'reservation': self.reservation
-		# 		},
-		# 		page_length=1000)
+		if self.creation !=self.modified:
+			if self.is_master:
+				reservation_stays = frappe.get_list("Reservation Stay",filters={
+					'reservation': self.reservation
+				},
+				page_length=1000)
 				
-		# 		frappe.db.sql("""
-        #           	update `tabReservation Stay Room` 
-        #            	set 
-        #            		is_master = 0 
-        #             where 
-        #             	is_master = 1 
-        #              and parent in %(stay_names)s""",
-        #              {"stay_names":[x.name  for x in reservation_stays]}
-        #              )
-		# if self.creation !=self.modified:
-		# 	data_for_udpate = {
-		# 		"rooms":self.rooms,
-		# 		"note":self.note,
-		# 		"total_credit": self.total_credit or 0,
-		# 		"total_debit": self.total_debit or 0,
-		# 		"balance":self.balance or 0,
-		# 		"total_room_rate":self.total_room_rate or 0,
-		# 		"internal_reference_number":self.internal_reference_number or '',
-		# 		"arrival_date":self.arrival_date,
-		# 		"departure_date":self.departure_date,
-		# 		"is_master":self.is_master,
-		# 		"reservation_color":self.reservation_color or '',
-		# 		"group_color":self.group_color or '',
-		# 		"group_code":self.group_code or '',
-		# 		"group_name":self.group_name or '',
-		# 		"reservation_type":self.reservation_type,
-		# 		"paid_by_master_room":self.paid_by_master_room,
-		# 		"reservation_stay_adr":self.adr,
-		# 		"name": self.name
-		# 	}
-		# 	frappe.db.sql("""
-		# 		update `tabReservation Stay Room` 
-		# 		set rooms=%(rooms)s,
-		# 		note=%(note)s,
-		# 		total_credit=%(total_credit)s,
-		# 		total_debit=%(total_debit)s,
-		# 		balance=%(balance)s,
-		# 		total_room_rate=%(total_room_rate)s,
-		# 		internal_reference_number = %(internal_reference_number)s,
-		# 		arrival_date=%(arrival_date)s,
-		# 		departure_date=%(departure_date)s,
-		# 		is_master=%(is_master)s,
-		# 		reservation_color=%(reservation_color)s,
-		# 		group_color=%(group_color)s,
-		# 		group_code=%(group_code)s,
-		# 		group_name=%(group_name)s,
-		# 		reservation_stay_adr=%(reservation_stay_adr)s,
-		# 		reservation_type=%(reservation_type)s,
-		# 		paid_by_master_room=%(paid_by_master_room)s
-		# 	where parent=%(name)s
-		# 	""",data_for_udpate)
+				frappe.db.sql("""
+                  	update `tabReservation Stay Room` 
+                   	set 
+                   		is_master = 0 
+                    where 
+                    	is_master = 1 
+                     and parent in %(stay_names)s""",
+                     {"stay_names":[x.name  for x in reservation_stays]}
+                     )
+		if self.creation !=self.modified:
+			data_for_udpate = {
+				"rooms":self.rooms,
+				"note":self.note,
+				"total_credit": self.total_credit or 0,
+				"total_debit": self.total_debit or 0,
+				"balance":self.balance or 0,
+				"total_room_rate":self.total_room_rate or 0,
+				"internal_reference_number":self.internal_reference_number or '',
+				"arrival_date":self.arrival_date,
+				"departure_date":self.departure_date,
+				"is_master":self.is_master,
+				"reservation_color":self.reservation_color or '',
+				"group_color":self.group_color or '',
+				"group_code":self.group_code or '',
+				"group_name":self.group_name or '',
+				"reservation_type":self.reservation_type,
+				"paid_by_master_room":self.paid_by_master_room,
+				"reservation_stay_adr":self.adr,
+				"name": self.name
+			}
+			frappe.db.sql("""
+				update `tabReservation Stay Room` 
+				set rooms=%(rooms)s,
+				note=%(note)s,
+				total_credit=%(total_credit)s,
+				total_debit=%(total_debit)s,
+				balance=%(balance)s,
+				total_room_rate=%(total_room_rate)s,
+				internal_reference_number = %(internal_reference_number)s,
+				arrival_date=%(arrival_date)s,
+				departure_date=%(departure_date)s,
+				is_master=%(is_master)s,
+				reservation_color=%(reservation_color)s,
+				group_color=%(group_color)s,
+				group_code=%(group_code)s,
+				group_name=%(group_name)s,
+				reservation_stay_adr=%(reservation_stay_adr)s,
+				reservation_type=%(reservation_type)s,
+				paid_by_master_room=%(paid_by_master_room)s
+			where parent=%(name)s
+			""",data_for_udpate)
 		
-		# 	# check old doc if user change adult and child then update adult and chidl to reservation room rate
-		# 	if self.has_value_changed("adult") or self.has_value_changed("child"):
+			# check old doc if user change adult and child then update adult and chidl to reservation room rate
+			if self.has_value_changed("adult") or self.has_value_changed("child"):
 				
-		# 		frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
-		pass
+				frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
+	
 
 
 
