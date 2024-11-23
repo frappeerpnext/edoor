@@ -421,8 +421,10 @@
   },
   {
    "fieldname": "keyword",
-   "fieldtype": "Small Text",
-   "label": "keyword"
+   "fieldtype": "Data",
+   "label": "keyword",
+   "length": 500,
+   "search_index": 1
   },
   {
    "fieldname": "column_break_xhsk",
@@ -553,7 +555,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-07-07 14:19:52.680953",
+ "modified": "2024-11-23 10:44:44.081845",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",
