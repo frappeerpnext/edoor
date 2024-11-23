@@ -54,7 +54,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "City Ledger Name",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "city_ledger_type",
@@ -76,13 +77,15 @@
    "fieldname": "company_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Company Name"
+   "label": "Company Name",
+   "search_index": 1
   },
   {
    "fieldname": "phone_number",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Phone Number"
+   "label": "Phone Number",
+   "search_index": 1
   },
   {
    "fieldname": "address",
@@ -116,14 +119,17 @@
   },
   {
    "fieldname": "keyword",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
    "hidden": 1,
-   "label": "keyword"
+   "label": "keyword",
+   "length": 500,
+   "search_index": 1
   },
   {
    "fieldname": "email_address",
    "fieldtype": "Data",
-   "label": "Email Address"
+   "label": "Email Address",
+   "search_index": 1
   },
   {
    "fieldname": "summary_section",
@@ -227,7 +233,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 10:18:30.831561",
+ "modified": "2024-11-23 08:54:55.426680",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger",

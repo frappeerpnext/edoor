@@ -62,13 +62,15 @@
    "fieldname": "contact_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Contact Name"
+   "label": "Contact Name",
+   "search_index": 1
   },
   {
    "fieldname": "phone_number",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Phone Number"
+   "label": "Phone Number",
+   "search_index": 1
   },
   {
    "fieldname": "email",
@@ -106,9 +108,11 @@
   },
   {
    "fieldname": "keyword",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
    "hidden": 1,
-   "label": "Keyword "
+   "label": "Keyword ",
+   "length": 500,
+   "search_index": 1
   },
   {
    "default": "0",
@@ -161,7 +165,7 @@
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-23 20:26:45.207455",
+ "modified": "2024-11-23 08:53:30.605023",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

@@ -138,7 +138,8 @@
   {
    "fieldname": "reference_number",
    "fieldtype": "Data",
-   "label": "Reference Number"
+   "label": "Reference Number",
+   "search_index": 1
   },
   {
    "fieldname": "reservation_date",
@@ -177,7 +178,8 @@
    "fieldtype": "Link",
    "label": "Guest",
    "options": "Customer",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "adult",
@@ -217,13 +219,15 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Guest Name"
+   "label": "Guest Name",
+   "search_index": 1
   },
   {
    "fieldname": "room_numbers",
    "fieldtype": "Data",
    "label": "Room Numbers",
-   "length": 1000
+   "length": 1000,
+   "search_index": 1
   },
   {
    "fieldname": "reservation_status",
@@ -239,8 +243,10 @@
   },
   {
    "fieldname": "keyword",
-   "fieldtype": "Small Text",
-   "label": "Keyword"
+   "fieldtype": "Data",
+   "label": "Keyword",
+   "length": 500,
+   "search_index": 1
   },
   {
    "fetch_from": "guest.customer_group",
@@ -252,13 +258,15 @@
    "fetch_from": "guest.phone_number",
    "fieldname": "phone_number",
    "fieldtype": "Data",
-   "label": "Phone Number"
+   "label": "Phone Number",
+   "search_index": 1
   },
   {
    "fetch_from": "guest.email_address",
    "fieldname": "email_address",
    "fieldtype": "Data",
-   "label": "Email Address"
+   "label": "Email Address",
+   "search_index": 1
   },
   {
    "fieldname": "property",
@@ -324,7 +332,8 @@
    "fetch_from": "guest.phone_number_2",
    "fieldname": "phone_number_2",
    "fieldtype": "Data",
-   "label": "Phone Number 2"
+   "label": "Phone Number 2",
+   "search_index": 1
   },
   {
    "fieldname": "total_reservation_stay",
@@ -656,12 +665,14 @@
   {
    "fieldname": "group_code",
    "fieldtype": "Data",
-   "label": "Group Code"
+   "label": "Group Code",
+   "search_index": 1
   },
   {
    "fieldname": "group_name",
    "fieldtype": "Data",
-   "label": "Group Name"
+   "label": "Group Name",
+   "search_index": 1
   },
   {
    "fieldname": "group_color",
@@ -779,7 +790,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-24 08:56:13.593660",
+ "modified": "2024-11-23 09:05:36.700088",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

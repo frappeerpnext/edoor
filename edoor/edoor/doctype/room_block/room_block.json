@@ -74,7 +74,8 @@
    "fieldname": "room_number",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Room Number"
+   "label": "Room Number",
+   "search_index": 1
   },
   {
    "fetch_from": "room_id.room_type_id",
@@ -85,18 +86,21 @@
    "options": "Room Type"
   },
   {
-   "fetch_from": "room_type_id.room_type",
+   "fetch_from": "room_type_id.",
    "fieldname": "room_type",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Room Type"
+   "label": "Room Type",
+   "search_index": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "reason",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
    "label": "Reason",
-   "reqd": 1
+   "length": 500,
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "unblock_section",
@@ -158,9 +162,11 @@
   {
    "allow_on_submit": 1,
    "fieldname": "keyword",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
    "hidden": 1,
-   "label": "keyword"
+   "label": "keyword",
+   "length": 500,
+   "search_index": 1
   },
   {
    "allow_on_submit": 1,
@@ -195,7 +201,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-05 11:43:49.661529",
+ "modified": "2024-11-23 09:07:01.633212",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",
