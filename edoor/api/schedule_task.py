@@ -738,5 +738,6 @@ def validate_temp_room_occupy_that_do_not_have_room_number(run_commit =  True):
 
         """
         frappe.db.sql(sql)
-        frappe.db.commit()
+        if run_commit:
+            frappe.db.commit()
     
