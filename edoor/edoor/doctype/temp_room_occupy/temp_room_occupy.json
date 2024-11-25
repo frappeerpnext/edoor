@@ -25,7 +25,8 @@
    "in_list_view": 1,
    "label": "Property",
    "options": "Business Branch",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fetch_from": "room_id.room_type_id",
@@ -64,21 +65,24 @@
    "fieldname": "stay_room_id",
    "fieldtype": "Data",
    "in_standard_filter": 1,
-   "label": "Stay Room ID"
+   "label": "Stay Room ID",
+   "search_index": 1
   },
   {
    "fieldname": "reservation",
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Reservation",
-   "options": "Reservation"
+   "options": "Reservation",
+   "search_index": 1
   },
   {
    "fieldname": "reservation_stay",
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Reservation Stay",
-   "options": "Reservation Stay"
+   "options": "Reservation Stay",
+   "search_index": 1
   },
   {
    "default": "0",
@@ -90,7 +94,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-02 10:40:52.540463",
+ "modified": "2024-11-25 11:53:07.792627",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Temp Room Occupy",

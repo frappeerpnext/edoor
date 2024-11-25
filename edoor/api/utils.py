@@ -1035,10 +1035,11 @@ def get_months(start_date,end_date):
 	months = [{'month_number': dt.month, 'month_name': dt.strftime('%B'),"year": dt.year, "total_day":  calendar.monthrange(dt.year, dt.month)[1]} for dt in rrule(MONTHLY, dtstart=start_date, until=end_date)]
 	return months
 
-def add_audit_trail(data,update_creation_date=False):
+def add_audit_trail(data,update_creation_date=False,doc=None):
     for d in data:
         if not hasattr(d,"custom_property"):
             doc = frappe.get_doc(d["reference_doctype"],d["reference_name"])
+                
             if hasattr(doc,"property"):
                 working_day = get_working_day(doc.property)
                 d["custom_posting_date"]= working_day["date_working_day"]
