@@ -265,7 +265,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
         sql = "{} and coalesce(show_in_room_availability,0)  = 1".format(sql)
    
     sql = sql.format(start_date, end_date,sql_except)
-    
+   
     data = frappe.db.sql(sql,{"property":property,"room_type_id":room_type_id},as_dict=1)
     return data
 

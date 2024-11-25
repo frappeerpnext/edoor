@@ -387,6 +387,8 @@ def get_report_summary(filters, occupay_data, daily_property_data):
 
 
 def get_report_chart(filters,months,data):
+	if filters.chart_type == "None":
+		return None
 	min_day = min([d["min_date"].day for d in months])
 	max_day = max([d["max_date"].day for d in months])
 	precision = frappe.db.get_single_value("System Settings","currency_precision")

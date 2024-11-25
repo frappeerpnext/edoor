@@ -1,6 +1,7 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 from frappe.utils import getdate, add_to_date
+from frappe import _
 import frappe
 from edoor.edoor.report.monthly_property_data_summary import report_summary_by_occupy
 from edoor.edoor.report.utils import get_months
@@ -25,7 +26,7 @@ def execute(filters=None):
 
 def get_report_columns(filters,min_max_day):
 	columns = [
-		{"fieldname": "row_group", "label":filters.row_group, "width": 200},
+		{"fieldname": "row_group", "label":_(filters.row_group), "width": 200},
 	]
 
 	for n in range(min_max_day["min_day"], min_max_day["max_day"]+1):
