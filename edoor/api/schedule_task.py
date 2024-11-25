@@ -319,11 +319,10 @@ def one_minute_job():
         
 @frappe.whitelist()
 def five_minute_job():
-    frappe.throw("five mn")
     clear_cache()
-    if not can_run_job("edoor.api.schedule_task.five_minute_job"):
-        frappe.throw("do me exit")
-        return
+    # if not can_run_job("edoor.api.schedule_task.five_minute_job"):
+    #     frappe.throw("do me exit")
+    #     return
     
     
     #delete void and cancel from temp room occupy
@@ -727,7 +726,7 @@ def validate_reservation_balance():
 
 @frappe.whitelist()
 def validate_temp_room_occupy_that_do_not_have_room_number(run_commit =  True):
-    frappe.throw("do me fail")
+
     if frappe.db.sql("select distinct a.reservation_stay,b.room_id,b.room_number from `tabTemp Room Occupy` a inner join `tabReservation Stay Room` b on b.name = a.stay_room_id where b.reservation_status = 'Reserved' and coalesce(a.room_id,'') = '' limit 1" ):
         sql = """
               UPDATE `tabTemp Room Occupy` AS a
