@@ -1035,9 +1035,10 @@ def check_out(reservation,reservation_stays=None):
     
     # validate folio balance
     folio_balance = check_folio_balance_before_check_out(reservation,reservation_stays)
-    
+ 
     if folio_balance:
         balance = folio_balance.get("balance",0)
+ 
 
 
         if abs(balance)> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
@@ -1151,7 +1152,7 @@ def check_folio_balance_before_check_out(reservation,reservation_stays):
                    reservation = %(reservation)s 
                 group by
                     reservation_stay
-                having  sum(if(type='Debit',1,-1)*amount)> 0
+                having  sum(if(type='Debit',1,-1)*amount)!= 0
                 limit 1
         """
         data = frappe.db.sql(sql,{"reservation":reservation},as_dict =1)
@@ -1171,12 +1172,12 @@ def check_folio_balance_before_check_out(reservation,reservation_stays):
                     transaction_number in %(folios)s 
                 group by
                     reservation_stay
-                having  sum(if(type='Debit',1,-1)*amount)> 0
+                having  sum(if(type='Debit',1,-1)*amount)!= 0
                 limit 1
             """
             
             data = frappe.db.sql(sql,{"folios":[d.get("name") for d in folios]},as_dict =1)
-            
+          
             if data:
                 return data[0]     
         

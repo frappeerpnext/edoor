@@ -1,5 +1,5 @@
 <template>
- 
+    {{ sortOrderFields }}
     <div class="grid w-full">
         <div class="col-12 lg:col" v-if="hasFilter('filter_date_by')"> 
             <label> {{ $t('Filters') }} </label><br/>
@@ -397,34 +397,57 @@
                 :options="['Last Update On', 'Created On', 'Reference Document','Reference Name','Audit Date','Subject','Description','Created By']" 
                 :clear="false"/>
         </div>
+
         <div class="col-12 lg:col-3" v-if="hasFilter('sort_order')">
             <label> {{ $t('Sort Order') }} </label><br/>
             <ComSelect class="auto__Com_Cus w-full" v-model="filter.sort_order" placeholder="Sort"
                 :options="['ASC', 'DESC']" 
                 :clear="false" />
         </div> 
+        
         <div class="col-12 lg:col-3" v-if="hasFilter('row_group')">
             <label>{{ $t('Group By') }}</label><br/>
             <ComSelect class="auto__Com_Cus w-full" v-model="filter.row_group" placeholder="Group By"
                 :options="['Date', 'Month', 'Room Type' , 'Reservation Type','Business Source','Business Source Type','Guest Type','Nationality']" 
                 />
         </div>
+
+
+        <!-- this sort option is get from print format -->
+        <div v-if="print_format && print_format?.show_sort_order_option && sortOrderFields && sortOrderFields.length>0" class="col-12 lg:col-3">
+            <label> {{ $t('Sort Order') }} </label><br/>
+            <ComSelect  v-model="filter.order_by" placeholder="Sort Order Field"
+            @onSelected="reloadIframe" :options='sortOrderFields' optionLabel="label" optionValue="fieldname"    />
+
+    
+
+
+        </div>
+        <div class="col-12 lg:col-3" v-if="print_format && print_format?.show_sort_order_option && sortOrderFields && sortOrderFields.length>0">
+            <label> {{ $t('Sort Order') }} </label><br/>
+            <ComSelect class="auto__Com_Cus w-full" v-model="filter.order_by_type" placeholder="Sort"
+                :options="['ASC', 'DESC']" 
+                :clear="false" />
+        </div> 
+      
         
     </div>
 </template>
 <script setup> 
-import { ref,watch,toRefs,inject  } from "@/plugin"
+import { ref,watch,toRefs,inject ,getDoc } from "@/plugin"
 import {i18n} from '@/i18n';
 import { onMounted } from "vue";
 const { t: $t } = i18n.global;
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-const window = JSON.parse(localStorage.getItem("edoor_working_day"))
+
 const property = setting.property
-const moment = inject("$moment")
+
 const props = defineProps({
     selectedReport: Object,
     filter: Object
 })
+const print_format = ref({})
+const sortOrderFields =ref([])
 
 let report_filter =  localStorage.getItem("report_filter")
 if (report_filter){
@@ -436,15 +459,35 @@ if (report_filter){
 }
 
 
+
 const { selectedReport } = toRefs(props);
 watch(selectedReport, (newVal, oldVal) => {
+    print_format.value = {}
     if (newVal.filter_default_value){
        const filterValue = JSON.parse(newVal.filter_default_value)
        setFilterDefaultValue(filterValue);
+ 
       
    }
+   
+   getSortOrderField()
   
 });
+
+function getSortOrderField(){
+    
+    getDoc("Print Format",decodeURIComponent(selectedReport.value.report_name)).then((doc)=>{
+        
+       print_format.value = doc
+        if(doc.show_sort_order_option==1 && doc.short_order_field){
+            sortOrderFields.value =  JSON.parse( doc.short_order_field)
+        }else {
+            sortOrderFields.value =  []
+        }
+    })
+}
+
+
 function setFilterDefaultValue(filterValue){
     
     Object.keys(filterValue).forEach(key => {
@@ -452,14 +495,19 @@ function setFilterDefaultValue(filterValue){
      });
 }
 onMounted(()=>{
+    selectedReport.value = props.selectedReport
 
     if (props.selectedReport.filter_default_value){
        
         const filterValue = JSON.parse(props.selectedReport.filter_default_value)
         setFilterDefaultValue(filterValue);
        
+      
+       
     }
-    
+
+    getSortOrderField()
+    props.filter.order_by_type = "ASC"
 
 })
  
