@@ -3452,7 +3452,7 @@ def get_day_end_summary_report(property="ESTC Hotel", date='2024-10-28',show_pac
         "adjustment_amount":adjustment_amount,#room room charge adjustment only
         "room_night": room_sold,
         "adr":adr,
-        "revpar":room_revenue/total_room,
+        "revpar": (room_revenue or 0) / total_room,
         "occupancy":occupancy,
         "check_in":occupy_data[0]["arrival"] or 0,
         "check_in_adult":occupy_data[0]["arrival_adult"] or 0,
