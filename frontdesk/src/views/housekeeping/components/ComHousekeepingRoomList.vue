@@ -39,16 +39,21 @@
                 <Column field="reservation_status" :header="$t('Reservation Status') " headerClass="text-center"
                     bodyClass="text-center">
                     <template #body="slotProps">
-
-                        <ComHkReservationStatus :statusName="slotProps.data.reservation_status" />
+                        <ComHkReservationStatus :time="slotProps.data.reservation_status == 'Arrival' ? slotProps.data.arrival_time : slotProps.data.departure_time " :statusName="slotProps.data.reservation_status" />        
                     </template>
                 </Column>
+
                 <Column field="housekeeper" :header="$t('Housekeeper')">
                     <template #body="slotProps">
                         <Button v-if="slotProps.data.housekeeper" @click="onAssignHousekeeper($event, slotProps.data)" link
                             size="small" class="link_line_action1 no-underline">
                             <span v-if="slotProps.data.housekeeper">{{ slotProps.data.housekeeper }}</span>
                         </Button>
+                    </template>
+                </Column>
+                <Column field="housekeeper" :header="$t('Housekeeping Note')">
+                    <template #body="slotProps">
+                        {{ slotProps.data.housekeeping_note }}
                     </template>
                 </Column>
             </DataTable>

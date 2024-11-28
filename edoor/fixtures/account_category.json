@@ -171,15 +171,6 @@
   "sort_order": 1300
  },
  {
-  "account_category": "F&B Revenue",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-02-06 17:41:22.199221",
-  "name": "F&B Revenue",
-  "note": null,
-  "sort_order": 1500
- },
- {
   "account_category": "City Ledger",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -232,6 +223,15 @@
   "name": "Room Tax",
   "note": null,
   "sort_order": 1400
+ },
+ {
+  "account_category": "F&B Revenue",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-02-06 17:41:22.199221",
+  "name": "F&B Revenue",
+  "note": null,
+  "sort_order": 1500
  },
  {
   "account_category": "Other Charge",

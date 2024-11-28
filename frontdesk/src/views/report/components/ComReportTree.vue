@@ -10,7 +10,14 @@
                     v-for="(p, index) in reports?.filter(r => r.is_group == 1 && r.parent_system_report && r.has_child)"
                     :key="index">
                     <Listbox v-model="selectedReport" :options="reports?.filter(r => r.parent_system_report == p.name)"
-                        optionLabel="report_title" optionValue="name" @change="onSelect" class="w-full" />
+                        optionLabel="report_title" optionValue="name" @change="onSelect" class="w-full" >
+                     <template #option="slotProps">
+                        <div class="flex items-center">
+                            
+                            <div>{{ $t(slotProps.option.report_title)}}</div>
+                        </div>
+                    </template>
+                    </Listbox>
                 </AccordionTab>
             </Accordion>
         </div>

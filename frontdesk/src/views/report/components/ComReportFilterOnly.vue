@@ -1,5 +1,4 @@
 <template>
-    {{ sortOrderFields }}
     <div class="grid w-full">
         <div class="col-12 lg:col" v-if="hasFilter('filter_date_by')"> 
             <label> {{ $t('Filters') }} </label><br/>
@@ -415,7 +414,7 @@
 
         <!-- this sort option is get from print format -->
         <div v-if="print_format && print_format?.show_sort_order_option && sortOrderFields && sortOrderFields.length>0" class="col-12 lg:col-3">
-            <label> {{ $t('Sort Order') }} </label><br/>
+            <label> {{ $t('Order by') }} </label><br/>
             <ComSelect  v-model="filter.order_by" placeholder="Sort Order Field"
             @onSelected="reloadIframe" :options='sortOrderFields' optionLabel="label" optionValue="fieldname"    />
 
@@ -424,8 +423,8 @@
 
         </div>
         <div class="col-12 lg:col-3" v-if="print_format && print_format?.show_sort_order_option && sortOrderFields && sortOrderFields.length>0">
-            <label> {{ $t('Sort Order') }} </label><br/>
-            <ComSelect class="auto__Com_Cus w-full" v-model="filter.order_by_type" placeholder="Sort"
+            <label> {{ $t('Order by Type') }} </label><br/>
+            <ComSelect class="auto__Com_Cus w-full" v-model="filter.order_by_type" placeholder="Order by Type"
                 :options="['ASC', 'DESC']" 
                 :clear="false" />
         </div> 
@@ -475,9 +474,8 @@ watch(selectedReport, (newVal, oldVal) => {
 });
 
 function getSortOrderField(){
-    
+    delete props.filter["order_by"]
     getDoc("Print Format",decodeURIComponent(selectedReport.value.report_name)).then((doc)=>{
-        
        print_format.value = doc
         if(doc.show_sort_order_option==1 && doc.short_order_field){
             sortOrderFields.value =  JSON.parse( doc.short_order_field)

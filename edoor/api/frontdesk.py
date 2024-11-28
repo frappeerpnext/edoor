@@ -3264,7 +3264,7 @@ def check_room_config_and_over_booking(property):
     return 0
 
 @frappe.whitelist()
-def get_day_end_summary_report(property="ESTC  & HOTEL's", date=None,show_package_breakdown=0): 
+def get_day_end_summary_report(property="ESTC Hotel", date='2024-10-28',show_package_breakdown=0): 
     amount_field = "total_amount"
     if int(show_package_breakdown)==1:
         amount_field = "transaction_amount"
@@ -3290,7 +3290,33 @@ def get_day_end_summary_report(property="ESTC  & HOTEL's", date=None,show_packag
     room_revenue = 0
     if len(data)>0:
         room_revenue = data[0]["room_revenue"]
+        
+    # get adjustement
+    
+    sql = """select 
+                sum({} * if(type='Debit',1,-1)) as adjustment_amount 
+            from `tabFolio Transaction` 
+            where 
+            {} and 
+            property=%(property)s and posting_date = '{}' and
+            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge','Room Charge Adjustment') and
+            account_name like '%%adj%%' and 
+            is_base_transaction=1
+        """.format(
+            amount_field, 
+            " coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0 else "  1=1  " ,
+            date)
+    
+    
+       
+
+    data = frappe.db.sql(sql,{'property':property},as_dict=1)
+    adjustment_amount = 0
+    if len(data)>0:
+        adjustment_amount = data[0]["adjustment_amount"]
+        
  
+
     #room nitht
     sql = """select 
                 sum(is_active=1 and type='Reservation') as total_room_sold ,
@@ -3415,10 +3441,18 @@ def get_day_end_summary_report(property="ESTC  & HOTEL's", date=None,show_packag
     """.format(date)
     room_sold_by_rate_type = frappe.db.sql(sql,{'property':property},as_dict=1)
 
+    # revepae
+    total_room = frappe.db.sql("select sum(total_room) as total from `tabDaily Property Data` where property = %(property)s and date=%(date)s",{"property":property,"date":date},as_dict=1)
+    
+    total_room =  max([d.get("total") for d in total_room])
+    total_room = max(total_room,1)
+    
     data = {
         "room_revenue": room_revenue,
+        "adjustment_amount":adjustment_amount,#room room charge adjustment only
         "room_night": room_sold,
         "adr":adr,
+        "revpar":room_revenue/total_room,
         "occupancy":occupancy,
         "check_in":occupy_data[0]["arrival"] or 0,
         "check_in_adult":occupy_data[0]["arrival_adult"] or 0,

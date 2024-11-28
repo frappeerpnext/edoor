@@ -41,6 +41,7 @@ import CashierShift from "@/views/cashier_shift/CashierShift.vue";
 import PayableLedger from "@/views/payable_ledger/PayableLedger.vue";
 import Vendor from "@/views/vendor/Vendor.vue";
 import GuestFolio from "@/views/guest_ledger/GuestFolio.vue";
+import LostAndFoundList from "@/views/lost_and_found/LostAndFoundList.vue";
 
 import Test from "@/views/test.vue";
 
@@ -65,6 +66,7 @@ let routes = [
   { path: "/frontdesk/no-permission", name: "NoPermission", component:NoPermission, meta: { layout: 'main_layout', title: 'Access Denied' } },
   { path: "/frontdesk/note", name: "Note", component: Note, meta: { layout: 'main_layout', title: 'Note' } },
   { path: "/frontdesk/room-block", name: "RoomBlock", component: RoomBlock, meta: { layout: 'main_layout', title: 'Room Block' } },
+  { path: "/frontdesk/lost-and-found", name: "LostAndFound", component: LostAndFoundList, meta: { layout: 'main_layout', title: 'Lost And Found' } },
   { path: "/frontdesk/housekeeping/room-block", name: "HousekeepingRoomBlock", component: RoomBlock, meta: { layout: 'main_layout', title: 'Room Block' } },
   { path: "/frontdesk/housekeeping", name: "Housekeeping", component: Housekeeping, meta: { layout: 'main_layout', title: 'Housekeeping' } },
   

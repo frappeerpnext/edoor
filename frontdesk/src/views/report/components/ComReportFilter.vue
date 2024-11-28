@@ -1,5 +1,4 @@
 <template>
- 
     <div v-if="showFilter">
         <div class="">
             <ComReportFilterOnly v-if="!isMobile" :filter="filter" :selectedReport="selectedReport" />
@@ -122,7 +121,7 @@ const onSelectStartDate = (date) => {
 
 function onSearch() {
     let f = {}
-
+    console.log(filter.value);
     const filter_option = props.selectedReport.filter_option + ",_lang,letterhead"
     if (filter_option) {
         filter_option.split(",").forEach(r => {
@@ -140,7 +139,10 @@ function onSearch() {
     if (f.end_date) {
         f.end_date = moment( moment.utc(moment(f.end_date).format("YYYY-MM-DD")).toDate()).format("YYYY-MM-DD")
     }
-    
+    if (filter.value.order_by){
+        f["order_by"] = filter.value.order_by
+        f["order_by_type"] = filter.value.order_by_type || "asc"
+    }
     window.report_filter = filter.value
     localStorage.setItem("report_filter",JSON.stringify(filter.value) )
     emit("onFilter", f)

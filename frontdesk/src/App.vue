@@ -52,6 +52,7 @@ import ComPayableLedgerDetail from "@/views/payable_ledger/components/ComPayable
 import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
 import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
 import NewReservation from "@/views/reservation/NewReservation.vue"
+import ComLostAndFoundDetail from "@/views/lost_and_found/components/ComLostAndFoundDetail.vue"
 const urlParams = new URLSearchParams(window.location.search);
 const route = useRoute();
 import {i18n} from '@/i18n';
@@ -135,6 +136,9 @@ const actionClickHandler = async function (e) {
             }
             else if (data[0] == "view_room_block_detail") {
                 showRoomBlockDetail(data[1])
+            }
+            else if (data[0] == "view_lost_and_found_detail") {
+                viewLostAndFoundDetail(data[1])
             }
             else if (data[0] == "show_alert") {
                 toast.add({ severity: 'warn', summary: data[1], detail: '', life: 3000 })
@@ -603,6 +607,7 @@ function showCashierShiftDetail(name,is_run_night_audit=0) {
        
     });
 }
+
 function showRoomBlockDetail(name) {
     const dialogRef = dialog.open(ComRoomBlockDetail, {
         data: {
@@ -610,6 +615,29 @@ function showRoomBlockDetail(name) {
         },
         props: {
             header:"Room Block Detail - " + name,
+            style: {
+                width: '60vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '60vw',
+                '640px': '100vw'
+            },
+        }
+       
+    });
+}
+
+function viewLostAndFoundDetail(name) {
+    dialog.open(ComLostAndFoundDetail, {
+        data: {
+            name: name,
+        },
+        props: {
+            header:"Lost and Found Detail - " + name,
             style: {
                 width: '60vw',
             },
@@ -777,6 +805,35 @@ function addNewFITReservation(data) {
         }
       });
 }
+function LostAndFoundDetail(data) {
+    dialog.open(ComLostAndFoundDetail, {
+        data: data,
+        props: {
+          header: $t('Lost And FoundDetail'),
+          style: {
+            width: '80vw',
+          },
+          breakpoints: {
+            '960px': '100vw',
+            '640px': '100vw'
+          },
+          modal: true,
+          maximizable: true,
+          closeOnEscape: false,
+          position: 'top',
+
+        },
+        onClose: (options) => {
+           
+          const d = options.data;
+          if (d != undefined) {
+            window.postMessage('view_reservation_detail|' + d.name, '*')
+          }
+        }
+      });
+}
+
+
 
 </script>
 <style>

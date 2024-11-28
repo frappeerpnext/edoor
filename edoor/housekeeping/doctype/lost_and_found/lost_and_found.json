@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
+  "property",
   "location",
   "posting_date",
   "working_day",
@@ -19,7 +20,8 @@
   "is_taken",
   "taken_by",
   "taken_date",
-  "taken_note"
+  "taken_note",
+  "keyword"
  ],
  "fields": [
   {
@@ -32,7 +34,9 @@
   {
    "fieldname": "posting_date",
    "fieldtype": "Date",
-   "label": "Posting Date"
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "search_index": 1
   },
   {
    "fieldname": "working_day",
@@ -54,6 +58,7 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "\nLost\nFound"
   },
@@ -70,12 +75,15 @@
   {
    "fieldname": "taken_by",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Taken By"
   },
   {
    "fieldname": "taken_date",
    "fieldtype": "Date",
-   "label": "Taken Date"
+   "in_list_view": 1,
+   "label": "Taken Date",
+   "search_index": 1
   },
   {
    "fieldname": "taken_note",
@@ -98,12 +106,26 @@
    "fieldname": "photo",
    "fieldtype": "Attach Image",
    "label": "Photo"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Business Branch"
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Data",
+   "label": "Keyword",
+   "length": 500,
+   "search_index": 1
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-09 17:08:32.116835",
+ "modified": "2024-11-27 09:11:28.748102",
  "modified_by": "Administrator",
  "module": "Housekeeping",
  "name": "Lost and Found",

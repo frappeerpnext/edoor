@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "property",
   "location"
  ],
  "fields": [
@@ -14,11 +15,17 @@
    "fieldtype": "Data",
    "label": "Location",
    "unique": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Business Branch"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-09 10:15:24.337571",
+ "modified": "2024-11-27 09:14:41.249024",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Property Location",

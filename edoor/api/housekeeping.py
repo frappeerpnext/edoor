@@ -127,8 +127,6 @@ def get_room_list(filter):
             room["reservation_stay"] = d["reservation_stay"]
             
             room["reservation_status"] =d["reservation_status"]
-         
-
             if d["is_arrival"]==1:
                if working_day["date_working_day"] == d["date"] and d["reservation_status"]=="Reserved":
                   room["reservation_status"] = "Arrival"
@@ -140,9 +138,15 @@ def get_room_list(filter):
 
             #get guest and guest name from stay
             if d["reservation_stay"]:
-               guest, guest_name = frappe.db.get_value('Reservation Stay', d["reservation_stay"] , ['guest', 'guest_name'])
+               guest, guest_name , arrival_time , departure_time , reservation_date , departure_date , housekeeping_note= frappe.db.get_value('Reservation Stay', d["reservation_stay"] , ['guest', 'guest_name','arrival_time','departure_time','reservation_date','departure_date','housekeeping_note'])
                room["guest"] =guest
                room["guest_name"] =guest_name
+               room["arrival_time"] =arrival_time
+               room["departure_time"] =departure_time
+               room["reservation_date"] =reservation_date
+               room["departure_date"] =departure_date
+               room["housekeeping_note"] = housekeeping_note
+
          else:
          #if block
             room["room_block"] = d["stay_room_id"]

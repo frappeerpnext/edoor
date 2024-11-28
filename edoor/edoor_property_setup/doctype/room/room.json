@@ -94,7 +94,8 @@
    "default": "0",
    "fieldname": "sort_order",
    "fieldtype": "Int",
-   "label": "Sort Order"
+   "label": "Sort Order",
+   "search_index": 1
   },
   {
    "fetch_from": ".status_color",
@@ -272,7 +273,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-23 08:34:13.518858",
+ "modified": "2024-11-27 16:16:28.062433",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

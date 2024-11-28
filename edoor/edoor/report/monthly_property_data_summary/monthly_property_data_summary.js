@@ -83,49 +83,7 @@ frappe.query_reports["Monthly Property Data Summary"] = {
 			"on_change": function (query_report) { },
 			hide_in_filter: 1,
 		},
-// 		{
-// 			"fieldname": "show_summary_fields",
-// 			"label": __("Show Summary Field"),
-// 			"fieldtype": "MultiSelectList",
-// 			"on_change": function (query_report) { },
-// 			"hide_in_filter": 1,
-// 			"options":[
-// 				{value:"total_room",description:"Total Room Available"},
-// 				{value:"occupy",description:"Occupy"},
-// 				{value:"ooo",description:"Out of Order"},
-// 				{value:"vacant",description:"Vacant"},
-// 				{value:"occupancy",description:"Occupancy"},
-// 				{value:"arrival",description:"Arrival"},
-// 				{value:"stay_over",description:"Occupy"},
-// 				{value:"departure",description:"Departure"},
-// 				{value:"pax",description:"Pax"},
-// 				{value:"adult",description:"Adult"},
-// 				{value:"child",description:"Child"},
-// 			]
-
-// 		},
-		
-		
-// {
-// 			"fieldname": "show_chart_fields",
-// 			"label": __("Show chart fields"),
-// 			"fieldtype": "MultiSelectList",
-// 			"on_change": function (query_report) { },
-// 			"hide_in_filter": 1,
-// 			"options": [
-// 				{"value":"Vacant Room","description":"Vacant Room"},
-// 				{"value":"Occupy","description":"Occupy"},
-// 				{"value":"Occupancy(%)","description":"Occupancy(%)"},
-// 				{"value":"Out of Order","description":"Out of Order"},
-// 				{"value":"Arrival", "description":"Arrival"},
-// 				{"value":"Stay Over","description":"Stay Over"},
-// 				{"value":"Departure","description":"Departure", },
-// 				{"value":"Adult","description":"Adult"},
-// 				{"value":"Child", "description":"Adult"},
-// 				{"value":"Pax","description":"Pax"},
-// 			]
-
-// 		},
+ 
 	],
 	onload: function (report) {
 		report.page.add_inner_button("Preview Report", function () {
@@ -156,7 +114,7 @@ frappe.query_reports["Monthly Property Data Summary"] = {
 
 
 
-		if ((data && data.is_group == 1) || (data && data.is_total_row == 1)) {
+		if ((data && data.is_group == 1) || (data && data.is_total_row == 1) || (data && data.is_occupancy_row == 1)) {
 
 			value = $(`<span>${value}</span>`);
 
