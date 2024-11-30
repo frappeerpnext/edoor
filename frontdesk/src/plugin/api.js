@@ -45,14 +45,16 @@ export function getCount(doctype, filters){
         });
     })
 }
-export function updateDoc(doctype, name, data, message){
+export function updateDoc(doctype, name, data, message="",show_message=true){
     const frappe = new FrappeApp()
     const db = frappe.db()
     return new Promise((resolve, reject)=>{
         db.updateDoc(doctype, name, data)
         .then((doc) => {
             resolve(doc)
+            if(show_message){
             window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+            }
         })
         .catch((error) => {
             

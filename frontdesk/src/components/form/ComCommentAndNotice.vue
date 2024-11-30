@@ -1,35 +1,58 @@
 <template lang=""> 
     <div> 
         <div class="mb-4">
-            <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.custom_is_note==0? $t('Comment'):$t('Note')}}</label><br/>
-            <div v-if="create.custom_is_note==1">
-            <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
+
+            <label for="text--note" class="text-lg line-height-1 font-bold">{{$t(create?.custom_audit_trail_type || "")}}</label><br/>
+            
+            <div v-if="create.custom_audit_trail_type =='Note'">
+            <label>Note Date</label>
+                    <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
                                  placeholder="Note Date"
                                  v-model="create.custom_note_date"
                                   dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" />
             </div>
-            <div class="-mb-2 mt-3" v-if="create.comment_type=='Notice'">
+
+            <div class="flex gap-2 mt-3">
+                <div v-if="create.custom_audit_trail_type =='Reminder'">
+                    <label>Remind At</label>
+                    <Calendar  showTime  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
+                                        placeholder="Note Date"
+                                        v-model="create.custom_remind_at"
+                                        dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" />
+                
+                                    
+                </div>
+
+                <div class="mb-4" v-if="create.custom_audit_trail_type=='Reminder'">
+                    <label>Team</label>
+                    <ComAutoComplete doctype="Teams" v-model="create.custom_team" />
+                </div>
             </div>
             <div class="h-6rem mb-4">
-                <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" />
+
+                <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" :placeholder="`Enter ${create.custom_audit_trail_type}`" />
             </div>
             <div class="flex gap-2 justify-end items-center mt-1"> 
              <div class="flex gap-3 -mt-2">   
             <div class="flex gap-5 align-items-center">
                 <div>
-                    <RadioButton v-model="create.custom_is_note"  inputId="comment" name="noteType" :value="0" />
+                    <RadioButton v-model="create.custom_audit_trail_type"  inputId="comment" name="noteType" value="Comment" />
                     <label for="comment" class="cursor-pointer ml-1"> {{$t('Comment')}}  </label>
                 </div>
             <div>
-                <RadioButton v-model="create.custom_is_note" inputId="note" name="noteType" :value="1" />
+                <RadioButton v-model="create.custom_audit_trail_type" inputId="note" name="noteType" value="Note" />
                 <label for="note" class="cursor-pointer ml-1"> {{$t('Notice')}} </label>
+            </div>
+            <div>
+                <RadioButton v-model="create.custom_audit_trail_type" inputId="reminder" name="reminder" value="Reminder" />
+                <label for="reminder" class="cursor-pointer ml-1"> {{$t('Reminder')}} </label>
             </div>
         </div>
         <div>
      
             <Button class="dialog_btn_transform conten-btn " :loading="saving" @click="onCreate">
                 <img class="btn-add_comNote__icon me-1" :src="theme == 'estc' ? iconPlusSign : iconPlusSignWhite">
-                {{$t('Add ' + ((!isMobile) ? commentType : ''))}}
+                {{$t('Add ' + ((!isMobile) ? create.custom_audit_trail_type : ''))}}
             </Button>
         </div>
     </div>
@@ -49,7 +72,8 @@
                 <span class="font-italic">{{ $t(i.subject)}}</span> <span class="text-500 font-italic"> {{$t('by')}}: {{(currentUser.name==i.owner? $t("You") + ' ': i.comment_by).split("@")[0]}}    
                     <ComTimeago  :date="i.creation"/> 
                                  </span>
-                                 <div class="inline" v-if="i.custom_is_note == 1">
+                                 <div class="inline" v-if="i.custom_audit_trail_type== 'Note' || i.custom_audit_trail_type== 'Reminder'">
+                                     
                 <span class="font-italic" > | {{$t('Last Modified')}} : </span> <span class="text-500 font-italic" v-if="i.modified_by">{{(currentUser.name==i.modified_by?"You ": i.modified_by).split("@")[0]}}  <ComTimeago  :date="i.modified"/> </span>
                                  </div>
             </div> 
@@ -66,7 +90,8 @@
     </div>
         <!-- <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.comment_by }} </div> -->
         <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-html="i.content"></div>
-        <div class="text-500 font-italic  text-sm" v-if="i.custom_note_date && i.custom_is_note">
+        <div class="text-500 font-italic  text-sm" v-if="i.custom_note_date && i.custom_audit_trail_type== 'Note'">
+             
             {{$t('Note Date')}}: {{moment(i.custom_note_date).format("DD-MM-YYYY")}} 
         </div>
     </div>
@@ -74,7 +99,7 @@
     <OverlayPanel ref="op">
     <ComOverlayPanelContent width="35rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
     <div>
-    <span class="font-semibold text-lg mb-3" for="textnote">{{edit.custom_is_note==0? $t('Comment'):$t("Note")}}</span>
+    <span class="font-semibold text-lg mb-3" for="textnote">{{ $t(edit.custom_audit_trail_type)}}</span>
     <div class="mb-2" v-if="edit.custom_is_note==1">
 
     <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl" panelClass="no-btn-clear" placeholder="Note Date" v-model="edit.custom_note_date" dateFormat="dd-mm-yy" showIcon showButtonBar />
@@ -107,9 +132,6 @@ const onRefresh = debouncer(() => {
     onLoad();
 }, 500);
 
-const commentType = computed(()=>{
-    return (create.value.custom_is_note || 0) ==0? "Comment":"Note"
-})
 
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -134,7 +156,9 @@ const create = ref({
     comment_type: 'Comment',
     content: '',
     custom_note_date: moment(window.current_working_date).toDate(),
-    custom_is_note: 0
+custom_remind_at: moment().toDate(),
+    custom_is_note: 0,
+    custom_audit_trail_type :"Comment"
 })
 const edit = ref({
     content: ''
@@ -239,8 +263,15 @@ function onCreate() {
     op.value = {}
     let note_data = JSON.parse(JSON.stringify(create.value))
     note_data.subject = note_data.custom_is_note==1?"Adding Note":"Adding Comment"
-    note_data.custom_audit_trail_type = note_data.custom_is_note==1?"Note":"Comment"
+ 
     note_data.custom_note_date = moment(note_data.custom_note_date).format("YYYY-MM-DD")
+    
+    if (note_data.custom_audit_trail_type =="Reminder"){
+        
+        note_data.custom_note_date = moment(note_data.custom_remind_at).format("YYYY-MM-DD")
+        note_data.custom_remind_at = moment(note_data.custom_remind_at).format("YYYY-MM-DD HH:mm:ss")
+    }
+    
     
     onSaveNote('Comment', note_data)
 }
@@ -287,6 +318,7 @@ function onSaveNote(doctype, data) {
         }
         edit.value = data.value
         onLoad()
+        create.value.custom_audit_trail_type = "Comment"
         op.value.hide()
     }).catch((err) => {
         saving.value = false

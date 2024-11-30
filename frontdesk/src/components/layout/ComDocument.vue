@@ -17,8 +17,8 @@
 
                 </div>
             </div>
-            <div>
-                <ComPlaceholder text="No Documents" :loading="loading" :isNotEmpty="data.length > 0">
+            <div >
+                <ComPlaceholder v-if="showDoc" text="No Documents" :loading="loading" :isNotEmpty="data.length > 0">
                     <template #default>
 
                         <div class="wrap-file-list">
@@ -142,6 +142,10 @@ const props = defineProps({
         default: true
     },
     showAttach: {
+        type: Boolean,
+        default: true
+    },
+    showDoc: {
         type: Boolean,
         default: true
     }

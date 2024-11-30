@@ -176,7 +176,8 @@ const actionClickHandler = async function (e) {
         }
         else if(e.data.extendedProps.type=="room_type_event" || e.data.extendedProps.type=="room_inventory_room_type_summary" ){
             
-            onViewDailySummary(e.data.date,e.data.resourceIds[0], e.data.extendedProps.room_type)
+            // onViewDailySummary(e.data.date,e.data.resourceIds[0], e.data.extendedProps.room_type)
+            onViewVacantData(e.data.date, e.data.extendedProps.room_type)
         }
         else if(e.data.extendedProps.type=="property_summary"   ){
             onViewDailySummary(e.data.date,null)
@@ -833,6 +834,37 @@ function LostAndFoundDetail(data) {
       });
 }
 
+
+function onViewVacantData(selected_date, room_type) {
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            "doctype": 'Business%20Branch',
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: gv.getCustomPrintFormat("eDoor Vacant Room"),
+            view: "ui",
+            extra_params: [
+                { key: 'date', value: moment(selected_date).format("YYYY-MM-DD") }, 
+                { key: 'room_type', value:room_type}
+            ],
+            filter_options: ['keyword', 'building', 'floor', 'room_type', 'housekeeping_status'],
+            fullheight: true
+        },
+        props: {
+            header: $t('Vacant Data ') + 'on ' + room_type + ' ' + moment(selected_date).format("DD-MM-YYYY"),
+            style: {
+                width: '90vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '90vw',
+                '640px': '100vw'
+            },
+        }
+    });
+}
 
 
 </script>

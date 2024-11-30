@@ -10,24 +10,24 @@
                     <thead>
                         <tr>
                             <th class="text-left pe-2 w-12rem">
-                                <label>Stay Date</label>
+                                <label>{{ $t('Stay Date') }}</label>
                             </th>
 
                             <th class="text-left px-2">
-                                <label>Rate Type</label>
+                                <label>{{ $t('Rate Type') }}</label>
                             </th>
                             <th class="text-left px-2">
-                                <label>Room Type</label>
+                                <label>{{ $t('Room Type') }}</label>
                             </th>
                             <th class="text-left px-2">
-                                <div class="w-13rem lg:w-full"><label>Room Name</label></div>
+                                <div class="w-13rem lg:w-full"><label>{{ $t('Room Name') }}</label></div>
                             </th>
                             <th class="text-center px-2 w-5rem">
-                                <label class="text-center">Nights</label>
+                                <label class="text-center">{{ $t('Nights') }}</label>
                             </th>
                            
                             <th class="text-right px-2">
-                                <label>Rate</label>
+                                <label>{{ $t('Rate') }}</label>
                             </th>
 
                         </tr>
@@ -106,6 +106,9 @@
 
 
     const property = JSON.parse(localStorage.getItem("edoor_property"))
+
+    import {i18n} from '@/i18n';
+    const { t: $t } = i18n.global;
 
     const rs = inject('$reservation_stay')
     const moment = inject('$moment')

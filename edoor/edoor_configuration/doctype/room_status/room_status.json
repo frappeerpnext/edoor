@@ -6,7 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "status"
+  "status",
+  "color"
  ],
  "fields": [
   {
@@ -14,11 +15,16 @@
    "fieldtype": "Data",
    "label": "Status",
    "unique": 1
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Color",
+   "label": "Color"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-05 15:48:22.970122",
+ "modified": "2024-11-29 12:21:16.643189",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Room Status",

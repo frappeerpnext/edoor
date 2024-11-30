@@ -370,6 +370,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         "total_room":total_room or 0,
         "total_room_occupy":total_room_occupy or 0,
         "total_room_vacant": vacant_room,
+        "occupy_color":frappe.get_cached_value("Room Status","Occupy","color"),
+        "vacant_color":frappe.get_cached_value("Room Status","Vacant","color"),
         "arrival":stay[0]["total_arrival"] or 0,
         "arrival_remaining": stay[0]["arrival_remaining"] or 0,
         "departure":stay[0]["total_departure"] or 0,

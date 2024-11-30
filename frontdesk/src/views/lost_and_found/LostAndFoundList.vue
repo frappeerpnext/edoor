@@ -39,7 +39,7 @@
       <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
         <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
           stateStorage="local" scrollable stateKey="table_lost_and_found_list_state" :reorderableColumns="true" :value="data"
-          tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
+          tableStyle="min-width: 50rem" @row-dblclick="onViewDetail" scrollHeight="70vh">
           <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname"
             :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
             :frozen="c.frozen">
@@ -327,7 +327,7 @@ function debouncer(fn, delay) {
 
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
-        if(e.data.action=="RoomBlockList"){
+        if(e.data.action=="LostAndFoundList"){
             setTimeout(()=>{
               loadData(false)
             },1000*3)

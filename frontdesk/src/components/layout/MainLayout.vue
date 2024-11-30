@@ -38,6 +38,10 @@
                                 <Button icon="pi pi-search btn-search-top" text rounded severity="secondary"
                                 v-shortkey="['ctrl', 'k']" @shortkey="onSearch()"   aria-label="Search" class="p-link text-white" @click="onSearch" />
                             </div>
+                            
+                            <ComNotification />
+                            
+
                             <div>
                                 <Button icon="pi pi-cog btn-setting-top" text rounded severity="secondary"
                                     aria-label="Setting" class="p-link text-white" @click="toggle" aria-haspopup="true"
@@ -151,6 +155,7 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 import ComIFrameModal from "../../components/ComIFrameModal.vue";
 import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
 import ComDrawerMenu from './comDrawerMenu.vue'
+import ComNotification from '@/views/notification/ComNotification.vue'
 const moment = inject("$moment")
 
 const eDoorMenu = computed(()=>{ 

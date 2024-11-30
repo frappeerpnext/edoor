@@ -82,10 +82,24 @@ frappe.query_reports["Reservation List Report"] = {
 		{
 			"fieldname": "row_group",
 			"label": __("Group By"),
-			"fieldtype": "Select",
-			"options": "\narrival_date\ndeparture_date\nreservation_date\nreservation\nguest_name\nreservation_type\nroom_types\nbusiness_source\nbusiness_source_type\nnationality\nrate_type\nreservation_status",
+			"fieldtype": "Select", 
+			"options":  [
+				{label:__("Arrival Date"),value:"arrival_date"},
+				{label:__("Departure Date"),value:"departure_date"},
+				{label:__("Reservation Date"),value:"reservation_date"},
+				{label:__("Reservation"),value:"reservation"},
+				{label:__("Guest Name"),value:"guest_name"},
+				{label:__("Reservation Type"),value:"reservation_type"},
+				{label:__("Room Types"),value:"room_types"},
+				{label:__("Business Source"),value:"business_source"},
+				{label:__("Business Source Type"),value:"business_source_type"},
+				{label:__("Nationality"),value:"nationality"},
+				{label:__("Rate Type"),value:"rate_type"},
+				{label:__("Reservation Status"),value:"reservation_status"}
+			],
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
+			
 		},
 
 		// {

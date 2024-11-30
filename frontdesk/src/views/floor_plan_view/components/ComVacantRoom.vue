@@ -3,7 +3,7 @@
 <div class="line-height-1">
   <div class="text-lg  font-medium">{{ room?.room_type_alias }} - {{ room.room_number }}</div>
 <div class="w-full text-overflow-ellipsis">
-  Vacant Room
+  {{$t('Vacant Room')}}
 </div>
 <div>
   <div class="mt-auto">

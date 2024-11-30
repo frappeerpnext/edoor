@@ -39,7 +39,7 @@
                 <ComPanel :title="$t('Occupancy')">
                     <div class="grid">
                         <div class="col-12 md:col-6 flex align-items-center justify-content-center mt-3">
-
+ 
                             <ComChartDoughnut :percentage="data?.occupancy" show-percentage="Occupied"
                                 :showPercentageInteger="false" :is-legend="false" :data="chartOccupancy"
                                 v-if="chartOccupancy.length > 0" />
@@ -430,7 +430,7 @@ function getData(loading = true) {
             chartOccupancy.value = []
             const documentStyle = getComputedStyle(document.body);
 
-
+            
             chartOccupancy.value.push({ label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color') })
             chartOccupancy.value.push({ label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color') })
 

@@ -5,7 +5,7 @@ from frappe.desk import reportview
 @frappe.whitelist()
 def get_dashboard_data(property=None,working_date=None):
     if not property:
-        property = "ESTC  & HOTEL's"
+        property = "ESTC Hotel"
     if not working_date:
         working_date = '2024-10-28'
 

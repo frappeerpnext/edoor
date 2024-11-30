@@ -178,7 +178,7 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
     updated_data = {}
     if not doc.custom_icon:
         icon_data = frappe.db.sql("select icon from `tabApp Icons` where name='{}'".format(doc.custom_audit_trail_type), as_dict=1)
-        icon = 'pi pi-stop'
+        icon = 'pi pi-stopwatch'
         if icon_data:
             icon = icon_data[0]["icon"]
 
@@ -272,7 +272,30 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
     frappe.db.sql("update `tabComment` set {} where name='{}'".format(",".join(update_files), doc.name),updated_data)
  
     frappe.db.commit()
-
+    
+    # if audit trail type == Reminder then audto add data to reminder
+    if doc.custom_audit_trail_type =="Reminder":
+        add_reminder(doc)
+        
+def add_reminder(doc):
+    users = [doc.owner]
+    if doc.custom_team:
+        team = frappe.get_cached_doc("Teams", doc.custom_team)
+        users = users + [d.user for d in team.users]
+        users = set(users)
+     
+    for u in users:
+        reminder = frappe.new_doc("Reminder")
+        reminder.description = doc.content + " for user " + u
+        reminder.remind_at = doc.custom_remind_at
+        reminder.reminder_doctype = doc.reference_doctype
+        reminder.reminder_docname = doc.reference_name
+        reminder.custom_comment = doc.name
+        reminder.custom_for_user = u
+        
+        reminder.insert()
+    frappe.db.sql("update `tabReminder` set owner = custom_for_user,modified_by=custom_for_user,user=custom_for_user where owner!=custom_for_user and coalesce(custom_for_user,'')!=''")
+    
 def update_comment_keyword(doc, method=None, *args, **kwargs):
     if doc.custom_is_audit_trail==1:
         frappe.db.sql("update `tabComment` set custom_keyword=concat(ifnull(subject,''), ' ', ifnull(content,''), ' ', ifnull(reference_name,''),' ',ifnull(custom_item_description,''), ' ', ifnull(custom_note,'')  ) where name='{}'".format(doc.name))
