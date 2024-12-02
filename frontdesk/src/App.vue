@@ -1,6 +1,6 @@
 <template>
     <template v-if="hasProperty">
-        
+        <ComIsTrainingMessage />
         <main-layout v-if="$route.meta.layout!='blank_layout' && ui=='main_layout'" />
         <BlankLayout v-else />
     </template>
@@ -38,6 +38,7 @@ import { useDialog } from 'primevue/usedialog';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import ComFolioDetail from '@/views/reservation/components/folios/ComFolioDetail.vue';
+import ComIsTrainingMessage from '@/components/ComIsTrainingMessage.vue';
 
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComCashierShiftDetail from "./views/cashier_shift/ComCashierShiftDetail.vue";

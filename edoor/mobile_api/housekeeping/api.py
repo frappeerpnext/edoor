@@ -1,9 +1,11 @@
 import frappe
 from edoor.api import frontdesk
 from frappe.desk import reportview
-
+import time
 @frappe.whitelist()
 def get_dashboard_data(property=None,working_date=None):
+    time.sleep(5)
+    
     if not property:
         property = "ESTC Hotel"
     if not working_date:

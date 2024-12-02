@@ -12,7 +12,7 @@
 
     <OverlayPanel ref="op">
         <div class="w-25rem h-30rem overflow-auto" >
-            <div class="flex flex-column">
+            <div class="flex flex-column ">
                 <template v-if="data.length>0">
                         <template v-for="(d, index) in data" :key="index"> 
                             <Button :class="d.read==0?'bg-indigo-100':''" class="p-0 bg-transparent text-black-alpha-90 w-full text-left border-none flex w-full py-2 px-2 hover:bg-indigo-100 my-1 white-space-nowrap" @click="onViewNotificationDetail(d)">
@@ -31,15 +31,25 @@
                             </Button> 
                         </template>
                 </template> 
-                <template>
-                    <strong>No Notification</strong>
+                <template v-else>
+                    <div class="h-30rem align-items-center text-center flex justify-content-center align-content-center h-full">
+                       
+                        <div> 
+                            <div>
+                                 <i class="pi pi-bell text-6xl" />
+                            </div>
+                           
+                            <strong>No Notification</strong>
                     <p>
                         There's no notification for your
-                    </p>  
+                    </p>    
+                        </div>
+                      
+                    </div>
                 </template>
             </div>
         </div>
-        <Button class="d-bg-set btn-inner-set-icon border-none mt-3" @click="onViewAllNotification">View All Notifications</Button>
+        <Button v-if="data.length>0" class="d-bg-set btn-inner-set-icon border-none mt-3" @click="onViewAllNotification">View All Notifications</Button>
     </OverlayPanel>
 
 </template>

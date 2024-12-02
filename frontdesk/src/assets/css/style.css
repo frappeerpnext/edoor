@@ -1957,3 +1957,15 @@ flex-direction: column;
 .item-youtube-hover:hover{
 background-color: rgb(255, 234, 234);
 }
+.training_site{
+    position: absolute;
+    left: 55%;
+    top: 30px;
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 10px;
+    color: white;
+    background: red;
+    z-index: 10000;
+    opacity: 80%;
+}
