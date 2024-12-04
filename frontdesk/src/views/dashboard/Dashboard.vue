@@ -236,6 +236,7 @@ const statusColor = computed(() => {
 })
 
 function onViewData(doctype, report_name, title, extra_params, filter_options) {
+    
     const dialogRef = dialog.open(ComIFrameModal, {
         data: {
             "doctype": doctype,
@@ -269,6 +270,7 @@ const onRefresh = debouncer(() => {
 
 
 function onViewRoomOccupy() {
+    
     onViewData(
         'Business%20Branch',
         // "eDoor%20Room%20Occupy%20List",

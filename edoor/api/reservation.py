@@ -4186,13 +4186,15 @@ def reinstate(data):
         
     working_day = get_working_day(data["property"])
     comment_doc = []
+    
     for s in data["stays"]:
         doc = frappe.get_doc("Reservation Stay", s)
             
-        if doc.rooms:
+        if [d for d in data.get("stay_rooms") if d.get("room_id")]:
             doc.reservation_status = "Reserved"
         else:
             doc.reservation_status = "Confirmed"
+         
         doc.flags.ignore_validate=True
         for x in doc.stays:
             x.show_in_room_chart = 1

@@ -171,7 +171,6 @@ const actionClickHandler = async function (e) {
         }
 
     }else if (e.data.extendedProps)  {
- 
         if(e.data.extendedProps.type=="room_block"){
             showRoomBlockDetail(e.data.publicId)
         }

@@ -20,7 +20,6 @@ def check_api_url(property_code):
 
 @frappe.whitelist( allow_guest=True )
 def login(property,usr, pwd):
-
     # from frappe.core.doctype.user.user import generate_keys
     try:
         login_manager = frappe.auth.LoginManager()
@@ -30,30 +29,9 @@ def login(property,usr, pwd):
         frappe.clear_messages()
         frappe.throw("Usename and password incorrect.")
         
+    frappe.response["message"] = get_response_user_information()
 
-
-    api_generate = generate_keys(frappe.session.user)
-    user = frappe.get_cached_doc('User', frappe.session.user)
-    # get user position
-    sql = "select position,name from `tabEmployee` where user_id = '{}' limit 1".format(frappe.session.user)
-    data = frappe.db.sql(sql, as_dict=1)
-    if data:
-         position = data[0].get("position")
-         employee_id = data[0].get("name")
-
-
- 
-    frappe.response["message"] = {
-        "username":user.username,
-        "full_name":user.full_name,
-        "role_profile":user.role_profile_name,
-        "photo":user.user_image,
-        "email":user.email,
-        "position":position,
-        "token": base64.b64encode(str("{}:{}".format(user.api_key,api_generate)).encode("utf-8")).decode('utf-8')    ,
-        "working_day":frontdesk.get_working_day(property),
-        "employee_id":employee_id
-    }
+    
      
     
  
@@ -85,23 +63,32 @@ def check_user_login(property):
     if frappe.session.sid == "Guest":
         frappe.response["message"] =  frappe.session.sid
     else:
-        user = frappe.get_cached_doc("User", frappe.session.user)
-            # get user position
-        sql = "select position,name from `tabEmployee` where user_id = '{}' limit 1".format(frappe.session.user)
-        data = frappe.db.sql(sql, as_dict=1)
-        if data:
-            position = data[0].get("position")
-            employee_id = data[0].get("name")
-        api_generate = generate_keys(frappe.session.user)
-        frappe.response["message"] = {
+        frappe.response["message"] = get_response_user_information()
+        
+def get_response_user_information():
+    
+    user = frappe.get_doc("User", frappe.session.user)
+    
+    sql = "select position,name,phone_number_1,address from `tabEmployee` where user_id = '{}' limit 1".format(frappe.session.user)
+    data = frappe.db.sql(sql, as_dict=1)
+    if data:
+        position = data[0].get("position")
+        employee_id = data[0].get("name")
+        phone_number = data[0].get("phone_number_1")
+        address = data[0].get("address")
+    api_generate = generate_keys(frappe.session.user)
+    
+    return {
             "username":user.username,
             "full_name":user.full_name,
             "role_profile":user.role_profile_name,
             "photo":user.user_image,
-            "email":user.email,
+            "phone_number":phone_number,
+            "address":address,
+            "name":frappe.session.user,
             "position":position,
             "token": base64.b64encode(str("{}:{}".format(user.api_key,api_generate)).encode("utf-8")).decode('utf-8'),
             "working_day":  frontdesk.get_working_day(property),
             "employee_id":employee_id
 
-        }
+    }

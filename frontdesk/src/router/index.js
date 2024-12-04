@@ -17,6 +17,7 @@ import GuestType from "../views/guest/GuestType.vue";
 import TestPage from "../views/TestPage.vue";
 import TestPage2 from "../views/TestPage2.vue";
 import RoomInventory from "@/views/frontdesk/RoomInventory.vue";
+import RoomBookedInventory from "@/views/frontdesk/RoomBookedInventory.vue";
 import FolioTransaction from "@/views/frontdesk/FolioTransactionList.vue";
 import DeskFolio from "@/views/desk_folio/DeskFolio.vue";
 import Note from "@/views/note/Note.vue";
@@ -58,6 +59,7 @@ let routes = [
   { path: "/frontdesk/map-view", name: "FrontdeskMapView", component:FrontdeskMapView, meta: { layout: 'main_layout', title: 'Front Desk - Map View' } },
   { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
   { path: "/frontdesk/inventory", name: "RoomInventory", component: RoomInventory, meta: { layout: 'main_layout', title: 'Room Inventory' } },
+  { path: "/frontdesk/inventory-room-booked", name: "RoomBookedInventory", component: RoomBookedInventory, meta: { layout: 'main_layout', title: 'Inventory Room Booked' } },
 
   { path: "/frontdesk/folio-transaction", name: "FolioTransaction", component: FolioTransaction, meta: { layout: 'main_layout', title: 'Folio Transaction List' } },
 

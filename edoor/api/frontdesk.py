@@ -2666,6 +2666,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
         "conflig_rooms":get_conflict_room(filter),
         }
 
+
 @frappe.whitelist()
 def get_room_inventory_calendar_event(property, start=None,end=None, keyword=None):
  

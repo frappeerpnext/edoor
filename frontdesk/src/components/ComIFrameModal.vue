@@ -525,6 +525,10 @@ onMounted(() => {
 
     letter_head.value =  dialogRef.value.data.letterhead || ""
 
+    if (dialogRef.value.data.room_type){
+        filters.value.room_type = dialogRef.value.data.room_type
+    }
+
     loadIframe()
 });
 

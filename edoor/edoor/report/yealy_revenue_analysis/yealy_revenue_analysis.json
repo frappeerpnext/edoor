@@ -1,0 +1,48 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-12-02 14:45:14.043956",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Default Letterhead",
+ "letterhead": null,
+ "modified": "2024-12-02 14:45:14.043956",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Yealy Revenue Analysis",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Reservation Stay",
+ "report_name": "Yealy Revenue Analysis",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Reservation Manager"
+  },
+  {
+   "role": "Reservation User"
+  },
+  {
+   "role": "Frontdesk Manager"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Frontdesk Clerk"
+  },
+  {
+   "role": "Night Auditor"
+  },
+  {
+   "role": "eDoor Admin"
+  },
+  {
+   "role": "eDoor Admin Read Only"
+  }
+ ]
+}

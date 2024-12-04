@@ -292,7 +292,8 @@ def add_reminder(doc):
         reminder.reminder_docname = doc.reference_name
         reminder.custom_comment = doc.name
         reminder.custom_for_user = u
-        
+        reminder.custom_property = doc.custom_property
+                
         reminder.insert()
     frappe.db.sql("update `tabReminder` set owner = custom_for_user,modified_by=custom_for_user,user=custom_for_user where owner!=custom_for_user and coalesce(custom_for_user,'')!=''")
     
