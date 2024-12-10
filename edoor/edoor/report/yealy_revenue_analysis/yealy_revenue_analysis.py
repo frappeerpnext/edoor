@@ -6,6 +6,15 @@ from frappe import _
 import calendar
 
 def execute(filters=None):
+	if not filters.property:
+		filters.property = frappe.defaults.get_user_default("business_branch")
+	if not filters.property: 
+		business_branch = frappe.db.get_list("Business Branch",pluck="name")
+		if not filters.property and len(business_branch)>1:
+			frappe.throw(_("Please select property"))
+		else:
+			filters.property = business_branch[0]
+
 	columns = get_columns(filters)
 	report_data = get_report_data(filters)
 	return columns,report_data
@@ -59,6 +68,12 @@ def get_report_data(filters):
 		# get_room_night_sold_record return occupy row and avg per night row
 		report_data = report_data +  get_room_night_sold_record(row_group=b.get("name") , data = occupy_data,months = months,total_rooms=total_rooms)
 
+	# total row
+	report_data = report_data + get_total_rows(
+		occupy_data=occupy_data,
+		months=months
+	)
+	
 				
 	return report_data
 
@@ -85,7 +100,23 @@ def get_occupy_data(filters):
     data = frappe.db.sql(sql, filters , as_dict=  1)
    
     return data
-    
+
+
+def get_room_revenue_data(filters):
+    sql="""
+		select 
+			month(date) as month, 
+      		year(date) as year,
+			business_source_type as row_group,
+			sum(total_amount * if(type = 'Debit',1,-1)) as amount
+		from `tabFolio Transaction` 
+		where
+			property = %(property)s and 
+			posting_date between %(start_date)s and %(end_date)s 
+		group by 
+			
+   
+    """    
 def get_room_night_sold_record( row_group, data=None,months=None,total_rooms=[]):
     data = data or []
     occupy_row = {
@@ -110,17 +141,29 @@ def get_room_night_sold_record( row_group, data=None,months=None,total_rooms=[])
         
         # percentage of night sold
         total_room = sum([d.get("total_room") for d in total_rooms if d.get("month") == m.get("month") and d.get("year") ==m.get("year")])
-        occupancy_row["month_{}_{}".format(m.get("month"),m.get("year"))] = round( occupy / max(total_room,1) * 100,2)
+        occupancy_row["month_{}_{}".format(m.get("month"),m.get("year"))] = round( occupy / sum([d.get("total_occupy") for d in data]) * 100,2)
         
     # total
     occupy_row["total"] = sum([d.get("total_occupy") for d in data if d.get("row_group") == row_group])
     avg_per_night_row["total"] = round( sum([d.get("total_occupy") for d in data if d.get("row_group") == row_group]) / sum([d.get("total_days") for d in months]),2)
-    occupancy_row["total"] =  round( sum([d.get("total_occupy") for d in data if d.get("row_group") == row_group]) / sum([d.get("total_room") for d in total_rooms] * 100),2)
+    occupancy_row["total"] =  round( sum([d.get("total_occupy") for d in data if d.get("row_group") == row_group]) / sum([d.get("total_occupy") for d in data]) * 100,2)
     
     
     return [occupy_row,avg_per_night_row,occupancy_row]
     
+def get_total_rows(occupy_data,months):
+	
+	room_sold_row = {
+			"row_group":_("Total Night(s) Sold"),
+   			"is_total_row":1,
+      "indent":0
 
+		}
+	for  m in months:
+		column_key ="month_{}_{}".format(m.get("month"),m.get("year")) 
+		room_sold_row[column_key] = sum([d.get("total_occupy") for d in occupy_data if d.get("month") ==m.get("month") and d.get("year") == m.get("year")])
+	room_sold_row["total"] = sum([d.get("total_occupy") for d in occupy_data])
+	return [[],room_sold_row]
 def get_business_source_type(filters):
     sql = "select name from `tabBusiness Source Type` order by name"
     return frappe.db.sql(sql,as_dict=1) 

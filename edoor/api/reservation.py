@@ -3568,13 +3568,12 @@ def unreserved_room(property, reservation_stay):
 
     frappe.db.sql("update `tabReservation Stay Room` set show_in_room_chart = 0 where parent='{}'".format(stay.name))
     frappe.db.sql("delete from `tabTemp Room Occupy`  where reservation_stay='{}'".format(stay.name))
-    frappe.db.sql("delete from `tabRoom Occupy`  where reservation_stay='{}'".format(stay.name))
+    frappe.db.sql("update `tabRoom Occupy` set is_active = 0 where reservation_stay='{}'".format(stay.name))
     
 
     frappe.db.commit()
     frappe.msgprint("Unreserved room successfully")
     frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[stay.name])
-
 
 @frappe.whitelist(methods="POST")
 def reserved_room(property, reservation_stay):

@@ -29,7 +29,7 @@ def login(property,usr, pwd):
         frappe.clear_messages()
         frappe.throw("Usename and password incorrect.")
         
-    frappe.response["message"] = get_response_user_information()
+    frappe.response["message"] = get_response_user_information(property)
 
     
      
@@ -63,9 +63,9 @@ def check_user_login(property):
     if frappe.session.sid == "Guest":
         frappe.response["message"] =  frappe.session.sid
     else:
-        frappe.response["message"] = get_response_user_information()
+        frappe.response["message"] = get_response_user_information(property)
         
-def get_response_user_information():
+def get_response_user_information(property):
     
     user = frappe.get_doc("User", frappe.session.user)
     

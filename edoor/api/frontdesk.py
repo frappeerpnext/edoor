@@ -1946,6 +1946,8 @@ def get_house_keeping_status(property, working_day):
 
         housekeeping_status.append({
             "status":d.name,
+            "room_status":d.room_status,
+            "housekeeping_status_code":d.housekeeping_status_code,
             "color":d.status_color,
             "icon":d.icon,
             "total":total,

@@ -8,7 +8,7 @@ def get_report(filters):
     frappe.throw("x")
 
 def get_report(filters, report_config):
-      
+    frappe.throw("This report is under construction")
     report_data = get_report_data(filters,report_config)
     return {
         "columns":get_report_columns(filters,report_config),
@@ -43,6 +43,7 @@ def get_report_data(filters,report_config):
         parent_row_group_data = get_parent_group_row_from_result_data(data, folio_transaction_data)
     
     report_group_data = get_row_group_from_result_data(data, folio_transaction_data)
+ 
     room_available_datas= get_room_available(filters)
 
 
@@ -56,6 +57,7 @@ def get_report_data(filters,report_config):
 	#assign value for data
     report_data = []
     total_occupy_room = sum([d['occupy'] for d in data] )
+    total_revenue = sum([d.get("total_charge") for d in folio_transaction_data])
     if total_occupy_room ==0:
         total_occupy_room = 1
     
@@ -155,6 +157,8 @@ def get_report_data(filters,report_config):
                                 if occupy<=0:
                                     occupy =1
                                 row['adr'] = (row["room_charge"] or 0) /  occupy
+                            elif f.fieldname =='revenue_percent':
+                                row["revenue_percent"] =   folio_transaction_record.get("total_charge") / max(total_revenue,1) * 100
                             else:
                                 row[f.fieldname] =   folio_transaction_record[f.fieldname]
 
@@ -280,7 +284,7 @@ def get_report_data(filters,report_config):
  
 
 def get_occupy_data(filters,report_config):
-    sql = "select room_type_id as row_group,room_type, "
+    sql = "select room_id as row_group,room_number, "
     sql = "{} {} as parent_row_group,".format(sql,get_room_occupy_group_by_field(filters))
 
     #other aggregate field
@@ -296,7 +300,7 @@ def get_occupy_data(filters,report_config):
 
     # group by
     
-    sql = "{} group by room_type_id,room_type".format(sql)
+    sql = "{} group by room_id,room_number".format(sql)
 
     #add parent row group
     if filters.parent_row_group:
@@ -367,7 +371,7 @@ def get_room_block_data(filters):
 
 
 def get_folio_transaction_data(filters, report_config ):
-    sql = "select room_type_id  as row_group, room_type,"
+    sql = "select room_id  as row_group, room_number,"
     sql = "{} {} as parent_row_group,".format(sql,get_folio_transaction_group_by_field(filters))
         
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Folio Transaction' and d.sql_expression]) )
@@ -377,7 +381,7 @@ def get_folio_transaction_data(filters, report_config ):
     sql = "{} {}".format(sql, get_folio_transaction_filters(filters))
 
     # group by
-    sql = "{} group by room_type_id,room_type".format(sql)
+    sql = "{} group by room_id,room_number".format(sql)
     
     #add parent row group
     if filters.parent_row_group:

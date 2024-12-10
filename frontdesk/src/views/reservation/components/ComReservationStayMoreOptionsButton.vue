@@ -103,15 +103,23 @@
                     <span class="ml-2">{{ $t('Reinstate') }}  </span>
 
                 </button>
-                <button @click="onAuditTrail"
+              
+                <button @click="onDuplication"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-history" />
-                    <span class="ml-2">{{ $t('Audit Trail') }}</span>
+                    <i class="pi pi-copy" />
+                    <span class="ml-2">{{ $t('Duplicate Reservation Stay') }}</span>
                 </button>
+                
                 <button @click="onSetting"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-cog" />
                     <span class="ml-2">{{ $t('Setting') }}</span>
+                </button>
+
+                <button @click="onAuditTrail"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-history" />
+                    <span class="ml-2">{{ $t('Audit Trail') }}</span>
                 </button>
             </template>
         </Menu>
@@ -123,6 +131,7 @@ import { inject, ref, useConfirm, useToast, postApi,useDialog,computed,updateDoc
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
 import ComReinstate from "@/views/frontdesk/components/ComReinstate.vue";
 import ComResservationSetting from "@/views/frontdesk/components/ComResservationSetting.vue";
+import NewReservation from "@/views/reservation/NewReservation.vue";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 
@@ -203,6 +212,7 @@ function onReinstate(){
 
     });
 }
+
 function onSetting(){
     dialog.open(ComResservationSetting, {
         data:  {
@@ -234,6 +244,50 @@ function onSetting(){
               
          }
 
+    });
+}
+
+function onDuplication(){
+    alert("This option is under constraction");
+    return
+    
+  dialog.open(NewReservation, {
+        data:{
+            duplicated_data:{
+                reservation:{
+                    reference_number:rs.reservation.reference_number,
+                     business_source: rs.reservation.business_source,
+                     arrival_date: rs.reservation.arrival_date,
+                     departure_date: rs.reservation.departure_date,
+
+                },
+                guest_info:{
+                    name:rs.reservationStay.guest_name,
+                    customer_name_en:rs.reservationStay.guest_name
+                }
+            },
+        },
+        props: {
+            header: $t('New FIT Reservation'),
+            style: {
+                width: '80vw',
+            }, 
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+             
+            const data = options.data;
+            if (data != undefined) {
+                onViewReservationDetail(data.name)
+            }
+        }
     });
 }
 items.value.push({

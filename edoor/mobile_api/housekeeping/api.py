@@ -76,12 +76,19 @@ def merge_assign_values(data):
 def test_get_room():
     return get_room_list(
         property="ESTC Hotel",
-        date='2024-10-28',
+        date='2024-12-04',
         group_by="Room Type"
     )
     
 @frappe.whitelist(methods="POST")
-def get_room_list( property,date, group_by="Floor",room_type=None,room_status=None, housekeeping_status=None, floor=None,building=None):
+def get_room_list(property,
+                  date, 
+                  group_by="Floor"
+                  ,room_type=None
+                  ,room_status=None, 
+                  housekeeping_status_code=None, 
+                  floor=None,
+                  building=None):
     
 
     sql= """

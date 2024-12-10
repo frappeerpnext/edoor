@@ -52,6 +52,7 @@ def get_report_data(filters,report_config):
     report_data = []
 
     total_occupy_room = sum([d['occupy'] for d in data] )
+    total_revenue = sum([d.get("total_charge") for d in folio_transaction_data])
     if total_occupy_room ==0:
         total_occupy_room = 1
     for parent in parent_row_group_data:
@@ -149,6 +150,8 @@ def get_report_data(filters,report_config):
                                 if occupy<=0:
                                     occupy =1
                                 row['adr'] = (row["room_charge"] or 0) /  occupy
+                            elif f.fieldname =='revenue_percent':
+                                row["revenue_percent"] =   folio_transaction_record.get("total_charge") / max(total_revenue,1) * 100
                             else:
                                 row[f.fieldname] =   folio_transaction_record[f.fieldname]
 

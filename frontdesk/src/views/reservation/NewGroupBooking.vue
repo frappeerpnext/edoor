@@ -123,13 +123,13 @@
                                     <label>{{ $t('Business Source Type') }}</label><br />
                                     <ComAutoComplete v-model="doc.reservation.business_source_type" :placeholder="$t('Business Source Type')"
                                         @onSelected="onBusinessSourceTypeChange" doctype="Business Source Type"
-                                        class="auto__Com_Cus w-full" :filters="business_source_type_filter"  />
+                                        class="auto__Com_Cus w-full" :filters="business_source_type_filter"/>
                                 </div>
                                 <div class="pt-2">
                                     <label>{{ $t('Business Source') }}</label><br />
                                     <ComAutoComplete v-model="doc.reservation.business_source" :placeholder="$t('Business Source')"
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
-                                        class="auto__Com_Cus w-full" :filters="business_source_filter" />
+                                        class="auto__Com_Cus w-full" :filters="business_source_filter" isAddNew @onAddNew="onAddNewBusinessSource"/>
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6">
@@ -532,6 +532,7 @@ import ComRoomInventory from  "@/components/ComRoomInventory.vue"
 import ComRoomAvailable from  "@/components/ComRoomAvailable.vue"
 import { useToast } from "primevue/usetoast";
 import ComViewRoomRateBreakdown from '@/views/reservation/components/ComViewRoomRateBreakdown.vue';
+import ComAddBusinessSource from '@/views/business_source/components/ComAddBusinessSource.vue' 
 const meta = ref()
 const dialogRef = inject("dialogRef");
 
@@ -1267,6 +1268,35 @@ const onUseRatePlan = () => {
 function onClose() {
     op.value.hide()
 }
+
+function onAddNewBusinessSource(){
+    dialog.open(ComAddBusinessSource, {
+        data:{
+            // name: name.value,
+            is_city_ledger: true
+        },
+        props: {
+            header: `Add New Businese Source`,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose:(options) => {
+            const data = options.data;
+            if(data){
+				loadData(data.name)
+			}
+        }
+    });  
+}
+
 </script>
 <style>.ch__rate_nres input {
     text-align: right !important;

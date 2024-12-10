@@ -60,6 +60,8 @@ def get_report_data(filters,report_config):
 	#assign value for data
     report_data = []
     total_occupy_room = sum([d['occupy'] for d in data] )
+    total_revenue = sum([d.get("total_charge") for d in folio_transaction_data])
+    
     if total_occupy_room ==0:
         total_occupy_room = 1
     for parent in parent_row_group_data:
@@ -107,7 +109,7 @@ def get_report_data(filters,report_config):
                     #occupy
                     occupy_record = occupy_records[0]
                     # set value occupy dynamic field
-                    for f in report_config.report_fields :
+                    for f in [d for d in report_config.report_fields if d.fieldname not in ["revenue_percent"]] :
                         if f.show_in_report==1 and f.reference_doctype=="Room Occupy":
                             #set static field
                             #room occupy
@@ -121,9 +123,12 @@ def get_report_data(filters,report_config):
                                 row["occupancy"] = row["occupancy"] * 100
                             elif f.fieldname == "night_percent":
                                 row["night_percent"] = (row["occupy"] /total_occupy_room ) * 100
+                                   
                             else:
-                                row[f.fieldname] =   occupy_record[f.fieldname]
-            else:
+                                row[f.fieldname] =   occupy_record.get(f.fieldname)
+                                
+                    
+            else:   
                 if filters.parent_row_group not in ["Date","Month","Year","Room Type"]:
                     row["room_block"] = sum([d["room_block"] for d in room_block_data if str(d["row_group"]) == str(row["row_group"])])
 
@@ -149,17 +154,17 @@ def get_report_data(filters,report_config):
                                 if occupy<=0:
                                     occupy =1
                                 row['adr'] = (row["room_charge"] or 0) /  occupy
+                            elif f.fieldname =='revenue_percent':
+                                row["revenue_percent"] =   folio_transaction_record.get("total_charge") / max(total_revenue,1) * 100
                             else:
                                 row[f.fieldname] =   folio_transaction_record[f.fieldname]
 
-  
+                    # 
         # add sub report data to report data
         report_data = report_data + sub_report_data
-
         #total row for sub group data
         if parent["parent_row_group"] !="":
             if len(sub_report_data):
-                
                 total_record = get_sub_group_total_record(sub_report_data, report_config, calculate_room_occupancy_include_room_block,calculate_adr_include_all_room_occupied)
                 #update total to group record
                 if parent_record:
@@ -175,8 +180,7 @@ def get_report_data(filters,report_config):
         total_record = {
             "is_total_row":1,
             "is_group" : 0, 
-            "row_group": "Grand Total",
-            
+            "row_group": "Grand Total", 
         }
         for f in report_config.report_fields :
             if f.fieldname=="room_available":
@@ -186,7 +190,7 @@ def get_report_data(filters,report_config):
                     total_record["room_block"] =  sum([d["room_block"] for d in data])# data is room occupy data
                 else:
                     total_record["room_block"] =  sum([d["room_block"] for d in room_block_data])
-                    
+           
             else:
                 total_record[f.fieldname] = sum([d[f.fieldname] for d in report_data if d["is_group"]==0 and d["is_total_row"]==0])
         

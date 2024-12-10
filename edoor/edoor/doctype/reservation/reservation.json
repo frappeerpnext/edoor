@@ -201,7 +201,6 @@
    "fetch_from": "business_source.business_source_type",
    "fieldname": "business_source_type",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Business Source Type"
   },
   {
@@ -790,7 +789,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-23 09:05:36.700088",
+ "modified": "2024-12-06 10:58:23.029064",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

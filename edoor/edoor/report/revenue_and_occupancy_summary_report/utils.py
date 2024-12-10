@@ -159,7 +159,7 @@ def get_report_summary( filters, total_record,report_config):
 	
 	for f in report_fields :
 			if f.show_in_summary==1:
-				report_summary.append({"label":_(f.label),"value":frappe.format_value(total_record[f.fieldname],f.fieldtype),"indicator":f.summary_indicator or "blue"})
+				report_summary.append({"label":_(f.label),"value":frappe.format_value(total_record.get(f.fieldname),f.fieldtype),"indicator":f.summary_indicator or "blue"})
 
 	return report_summary
 
@@ -243,4 +243,5 @@ def get_report_chart(filters,report_data,report_config):
 		"axisOptions": {"xIsSeries": 1}
 	}
  
+	# frappe.msgprint(str(chart))
 	return chart

@@ -1,4 +1,4 @@
-<template>  
+<template>   
     <div> 
         <div v-if="total_notification>0" style="padding: 0.6rem 0.65rem;margin-top: 3px;">
             <i  @click="toggle" v-badge="total_notification" class="pi pi-bell cursor-pointer text-white" style="font-size:18px" />
@@ -75,13 +75,9 @@ function getData(){
   
     getDocList("Notification Log",{
         fields:["*"],
-        filters:[["for_user","=",window.user.name]],
-        orderBy: {
-            field: "modified",
-            order: "DESC"
-        },
+        filters:[["for_user","=",window.user.name]]
     }).then(result=>{
-        data.value = result 
+        data.value = result.sort((a, b) => a.read - b.read)
         data.value.forEach(element => {
             avatar_letter.value = element.modified_by.charAt(0).toUpperCase()
         });

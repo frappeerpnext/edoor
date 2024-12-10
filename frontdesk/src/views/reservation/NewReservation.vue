@@ -105,7 +105,7 @@
                                     <label>{{ $t('Business Source') }}</label><br />
                                     <ComAutoComplete v-model="doc.reservation.business_source" :placeholder="$t('Business Source')"
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
-                                        class="auto__Com_Cus w-full" :filters="business_source_filter" />
+                                        class="auto__Com_Cus w-full" :filters="business_source_filter" isAddNew @onAddNew="onAddNewBusinessSource"/>
                                 </div>
 
                             </div>
@@ -479,6 +479,7 @@ import ComViewRoomRateBreakdown from '@/views/reservation/components/ComViewRoom
 import {i18n} from '@/i18n';
 import ComRoomInventory from  "@/components/ComRoomInventory.vue"
 import ComRoomAvailable from  "@/components/ComRoomAvailable.vue"
+import ComAddBusinessSource from '@/views/business_source/components/ComAddBusinessSource.vue' 
 const itemscolorreservation = ref([]);
 const itemscolorreservation_select = ref();
 const { t: $t } = i18n.global;
@@ -1023,7 +1024,6 @@ onMounted(() => {
         minDate.value = window.setting.allow_user_to_add_back_date_transaction == 1 ? moment().add(-50, 'years').toDate() : moment(working_day.value.date_working_day).toDate()
 
         doc.value.reservation.reservation_date = moment(working_day.value.date_working_day).toDate()
-
         if (!dialogRef) {
             doc.value.reservation.arrival_date = moment(working_day.value.date_working_day).toDate()
             doc.value.reservation.departure_date = moment(working_day.value.date_working_day).add(1, 'days').toDate()
@@ -1049,6 +1049,14 @@ onMounted(() => {
 
 
         doc.value.reservation.room_night = moment(doc.value.reservation.departure_date).diff(moment(doc.value.reservation.arrival_date), 'days')
+
+
+        // if duplcate change default value 
+        
+        if (dialogRef.value.data.duplicated_data){
+            doc.value.reservation = {...doc.value.reservation, ...dialogRef.value.data.duplicated_data.reservation}
+            doc.value.guest_info = {...doc.value.guest_info, ...dialogRef.value.data.duplicated_data.guest_info}
+        }
     })
 });
 
@@ -1268,6 +1276,34 @@ function viewRoomRateBreakdown(stay){
 
 function onClose() {
     op.value.hide()
+}
+
+function onAddNewBusinessSource(){
+    dialog.open(ComAddBusinessSource, {
+        data:{
+            // name: name.value,
+            is_city_ledger: true
+        },
+        props: {
+            header: `Add New Businese Source`,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose:(options) => {
+            const data = options.data;
+            if(data){
+				loadData(data.name)
+			}
+        }
+    });  
 }
 
 </script>

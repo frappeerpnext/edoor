@@ -4,6 +4,7 @@ import copy
 from edoor.edoor.report.revenue_and_occupancy_summary_report.utils import get_report_chart,get_report_summary,get_folio_transaction_filters,get_occupy_data_filters,get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data,get_parent_row_group_label,get_report_fields,get_row_group_from_result_data
 from edoor.api.frontdesk import get_working_day
 import frappe
+from frappe import _
 
 def get_report(filters, report_config):
       
@@ -19,7 +20,7 @@ def get_report(filters, report_config):
 def get_report_columns(filters,report_config):
     report_fields =  get_report_fields (filters, report_config)
     columns = [
-        {'key': "Business Source Type","fieldname":"row_group","label":"Business Source Type","width":200},
+        {'key': "Business Source Type","fieldname":"row_group","label":_("Business Source Type"),"width":200},
     ]
 
     for g in report_fields:
@@ -52,6 +53,7 @@ def get_report_data(filters,report_config):
     report_data = []
     
     total_occupy_room = sum([d['occupy'] for d in data] )
+    total_revenue = sum([d.get("total_charge") for d in folio_transaction_data])
     if total_occupy_room ==0:
         total_occupy_room = 1
     for parent in parent_row_group_data:
@@ -149,6 +151,8 @@ def get_report_data(filters,report_config):
                                 if occupy<=0:
                                     occupy =1
                                 row['adr'] = (row["room_charge"] or 0) /  occupy
+                            elif f.fieldname =='revenue_percent':
+                                row["revenue_percent"] =   folio_transaction_record.get("total_charge") / max(total_revenue,1) * 100
                             else:
                                 row[f.fieldname] =   folio_transaction_record[f.fieldname]
 
