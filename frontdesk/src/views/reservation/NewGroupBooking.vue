@@ -1269,10 +1269,10 @@ function onClose() {
     op.value.hide()
 }
 
-function onAddNewBusinessSource(){
+function onAddNewBusinessSource(event){
     dialog.open(ComAddBusinessSource, {
         data:{
-            // name: name.value,
+            business_source: event,
             is_city_ledger: true
         },
         props: {

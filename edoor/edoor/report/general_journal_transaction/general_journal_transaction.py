@@ -21,6 +21,7 @@ def get_columns(filters):
 		{"fieldname":"ledger","label":"Ledger/Date", "width":250},
 		{"fieldname":"name", "label":"Tran #","fieldtype":"Link","options":"Folio Transaction", "width":150,},
 		{"fieldname":"account", "label":"Account", "width":400},
+		{"fieldname":"room_number", "label":"Room#", "width":100},
 		{"fieldname":"quantity", "label":"QTY","align":"center"},
 		{"fieldname":"debit", "label":"Debit","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"credit", "label":"Credit","fieldtype":"Currency", "width":100,"align":"right"},
@@ -54,7 +55,8 @@ def get_data(filters):
 			if(type='Debit',0,{amount_field}) as credit,
 			modified,
 			SUBSTRING_INDEX(modified_by,'@',1) as modified_by,
-			1 as indent
+			1 as indent,
+			room_number
 		from `tabFolio Transaction`
 		where
 			is_base_transaction = {is_base_transaction} and 

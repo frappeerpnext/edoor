@@ -145,6 +145,11 @@ onMounted(() => {
         onLoad()
     } else {
         data.value.property = window.property_name
+        
+    }
+   
+    if (dialogRef.value.data.business_source){
+        data.value.business_source=dialogRef.value.data.business_source
     }
 })
 </script>

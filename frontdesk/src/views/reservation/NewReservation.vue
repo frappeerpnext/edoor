@@ -1278,10 +1278,11 @@ function onClose() {
     op.value.hide()
 }
 
-function onAddNewBusinessSource(){
+function onAddNewBusinessSource(event){
+    
     dialog.open(ComAddBusinessSource, {
         data:{
-            // name: name.value,
+            business_source: event,
             is_city_ledger: true
         },
         props: {
@@ -1300,7 +1301,7 @@ function onAddNewBusinessSource(){
         onClose:(options) => {
             const data = options.data;
             if(data){
-				loadData(data.name)
+               doc.value.reservation.business_source = data
 			}
         }
     });  
