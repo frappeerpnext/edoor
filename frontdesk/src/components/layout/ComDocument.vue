@@ -81,6 +81,7 @@
             <OverlayPanel ref="opEdit">
                 <ComOverlayPanelContent :loading="saving" @onCancel="onEdit($event, {})" @onSave="onSave">
                     <div class="mb-2">
+                        HIII
                         <label>{{ $t('Title') }} </label><br />
                         <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Title')"
                             v-model="selected.custom_title" />
