@@ -176,7 +176,7 @@
         </div>
         <!-- <hr class="mt-2" v-if="rs?.is_page"> -->
         <template #footer-left>
-            <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" />
+            <ComReservationStayMoreOptionsButton @onDupicateReservation="onDupicateReservation" @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" />
             <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
             <Button class="border-none" @click="OnViewReservation">
                 <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> {{ $t('View Reservation') }}  <Badge
@@ -530,6 +530,11 @@ function onAuditTrail() {
 
         },
     });
+
+
+}
+function onDupicateReservation(){
+    dialogRef.value.close()
 }
 </script>
 <style scoped>

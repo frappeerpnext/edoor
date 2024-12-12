@@ -2423,6 +2423,20 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         filters = filters + " AND floor = '{}'".format(floor)
     if room_type_group:
         filters = filters + " AND room_type_group = '{}'".format(room_type_group)
+    
+    if room_type:
+        filters = filters + " AND room_type_id = '{}'".format(room_type)
+    
+    rooms = frappe.db.sql("select name as id,coalesce(room_type_color,'#FFFFFF') as room_type_color, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type,room_type_alias from `tabRoom` where    property=%(property)s and disabled = 0 {filters}   order by room_number".format(filters = filters),{"property":property},as_dict=1)
+    # room amemenity
+    if rooms:
+        sql = "select parent,room_amenity,icon from `tabRoom Amenities` where   show_in_room_chart= 1 and parent in %(room_ids)s"
+        room_amenities = frappe.db.sql(sql,{"room_ids":[d.get("id") for d in rooms]},as_dict = 1)
+        room_has_amenity = [d.get("parent") for d in room_amenities]
+    
+        for r in [d for d in rooms  if d.get("id") in room_has_amenity]:
+            r["amenities"] = [{"amenity":d.get("room_amenity"),"icon":d.get("icon") or ""} for d in room_amenities if d.get("parent") == r.get("id")]
+         
     if view_type == 'room_type':
         filter_room_type = ""
         if room_type:
@@ -2462,9 +2476,10 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         }
         room_types = frappe.db.sql(sql,filter, as_dict=1)
         
-         
+        
+        
         for t in room_types:
-            rooms = frappe.db.sql("select name as id,coalesce(room_type_color,'#FFFFFF') as room_type_color, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type,room_type_alias from `tabRoom` where room_type_id='{0}' and property=%(property)s and disabled = 0 {1}   order by room_number".format(t["name"], filters),{"property":property},as_dict=1)
+            
             resources.append({
                 "id":t["name"],
                 "room_type_color":t["room_type_color"],
@@ -2473,10 +2488,10 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
                 "alias":t["alias"],
                 "type":"room_type",
                 "total_room": t["total_room"],
-                "children": rooms
+                "children": [d for d in rooms if d.get("room_type_id") == t.get("name")]
             })
     else:
-        resources = resources +  frappe.db.sql("select name as id,coalesce(room_type_color,'#FFFFFF') as room_type_color,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type from `tabRoom` where property=%(property)s and  disabled = 0 {0} {1} order by room_number".format(  filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),{"property":property},as_dict=1)
+        resources = resources +  rooms
     
 
 

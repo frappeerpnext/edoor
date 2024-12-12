@@ -100,10 +100,16 @@
     <ComOverlayPanelContent width="35rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
     <div>
     <span class="font-semibold text-lg mb-3" for="textnote">{{ $t(edit.custom_audit_trail_type)}}</span>
-    <div class="mb-2" v-if="edit.custom_is_note==1">
+    <div class="mb-2" v-if="edit.custom_audit_trail_type == 'Note'">
 
     <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl" panelClass="no-btn-clear" placeholder="Note Date" v-model="edit.custom_note_date" dateFormat="dd-mm-yy" showIcon showButtonBar />
     </div>
+    <div class="mb-2" v-if="edit.custom_audit_trail_type == 'Reminder'">
+        <Calendar  showTime  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
+                                        placeholder="Note Date"
+                                        v-model="create.custom_remind_at"
+                                        dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" />
+</div>
     <div>
     <Textarea id="textnote" v-model="edit.content" rows="5" class="w-full" />
     </div>
@@ -156,7 +162,6 @@ const create = ref({
     comment_type: 'Comment',
     content: '',
     custom_note_date: moment(window.current_working_date).toDate(),
-custom_remind_at: moment().toDate(),
     custom_is_note: 0,
     custom_audit_trail_type :"Comment"
 })
@@ -265,11 +270,13 @@ function onCreate() {
     note_data.subject = note_data.custom_is_note==1?"Adding Note":"Adding Comment"
  
     note_data.custom_note_date = moment(note_data.custom_note_date).format("YYYY-MM-DD")
-    
     if (note_data.custom_audit_trail_type =="Reminder"){
-        
+        note_data.subject = "Set Reminder"
+        create.value.custom_remind_at = moment().toDate(),
         note_data.custom_note_date = moment(note_data.custom_remind_at).format("YYYY-MM-DD")
         note_data.custom_remind_at = moment(note_data.custom_remind_at).format("YYYY-MM-DD HH:mm:ss")
+    }else if(note_data.custom_audit_trail_type =="Note"){
+        note_data.subject = "Adding Note"
     }
     
     
@@ -307,7 +314,7 @@ function onSaveNote(doctype, data) {
     data.name = op.value.data?.name || ''
     data.custom_is_audit_trail =1
     data.custom_posting_date = window.current_working_date
-    
+    console.log(data)
     createUpdateDoc(doctype,  data ).then((r) => {
         saving.value = false
         create.value = {

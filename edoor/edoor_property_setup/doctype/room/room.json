@@ -32,6 +32,8 @@
   "housekeeping_status",
   "housekeeper",
   "housekeeping_icon",
+  "room_amenities_tab",
+  "table_skka",
   "current_guest_tab",
   "reservation_stay",
   "reservation_status",
@@ -269,11 +271,21 @@
    "fieldname": "room_type_color",
    "fieldtype": "Data",
    "label": "Room Type Color"
+  },
+  {
+   "fieldname": "room_amenities_tab",
+   "fieldtype": "Tab Break",
+   "label": "Room Amenities"
+  },
+  {
+   "fieldname": "table_skka",
+   "fieldtype": "Table",
+   "options": "Room Amenities"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-27 16:16:28.062433",
+ "modified": "2024-12-11 09:25:40.296232",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

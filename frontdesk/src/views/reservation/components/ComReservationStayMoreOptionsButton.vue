@@ -139,7 +139,7 @@ const dialog = useDialog();
 const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast();
-const emit = defineEmits(['onAuditTrail', "onRefresh"])
+const emit = defineEmits(['onAuditTrail', "onRefresh","onDupicateReservation"])
 const items = ref([])
 const folio_menu = ref();
 const rs = inject("$reservation_stay")
@@ -248,24 +248,55 @@ function onSetting(){
 }
 
 function onDuplication(){
-    alert("This option is under constraction");
-    return
-    
-  dialog.open(NewReservation, {
-        data:{
-            duplicated_data:{
-                reservation:{
-                    reference_number:rs.reservation.reference_number,
-                     business_source: rs.reservation.business_source,
-                     arrival_date: rs.reservation.arrival_date,
-                     departure_date: rs.reservation.departure_date,
+    const stay = rs.reservationStay.stays[0]
+    let arrival_date = moment(rs.reservation.arrival_date).toDate()
+    let departure_date = moment(rs.reservation.departure_date).toDate()
+    if (arrival_date<moment(window.working_day.date_working_day).toDate()){
+        arrival_date = moment(window.working_day.date_working_day).toDate()
+    }
 
+    if (departure_date <= moment(window.working_day.date_working_day).toDate()){
+        departure_date = moment(arrival_date).add(1, "days").toDate();
+    }
+
+let data = {    
+                reservation:{
+                    guest:rs.reservation.guest,
+                    reference_number:rs.reservationStay.reference_number,
+                    internal_reference_number:rs.reservationStay.internal_reference_number,
+                     business_source: rs.reservation.business_source,
+                     business_source_type_group:rs.reservation.business_source_type_group,
+                     business_source_type:rs.reservation.business_source_type,
+                     arrival_date: arrival_date,
+                     departure_date: departure_date,
+                     reservation_color_code:rs.reservationStay.reservation_color_code,
+                     rate_type:rs.reservationStay.rate_type,
+                     allow_post_to_city_ledger:rs.reservationStay.allow_post_to_city_ledger,
+                     paid_by_master_room:rs.reservationStay.paid_by_master_room,
+                     note:rs.reservationStay.note
+                    
                 },
-                guest_info:{
-                    name:rs.reservationStay.guest_name,
-                    customer_name_en:rs.reservationStay.guest_name
+                reservation_stay:[ { 
+                    "adult": stay.adult,
+                    "child": stay.child, 
+                    "is_manual_rate": stay.is_manual_rate,
+                     "is_master": stay.is_master, 
+                     "room_type_id": stay.room_type_id, 
+                     room_id: stay.room_id,
+                     input_rate:stay.input_rate
+                 } ],
+                guest:rs.reservationStay.guest,
+                reservation_color_code:{
+                    name:rs.reservationStay.reservation_color_code,
+                    color:rs.reservationStay.reservation_color,
+
+
                 }
-            },
+            }
+ alert(stay.room_id)
+const dialogRef =  dialog.open(NewReservation, {
+        data:{
+            duplicated_data:data
         },
         props: {
             header: $t('New FIT Reservation'),
@@ -282,14 +313,17 @@ function onDuplication(){
             },
         },
         onClose: (options) => {
-             
+           
             const data = options.data;
             if (data != undefined) {
-                onViewReservationDetail(data.name)
+                window.postMessage('view_reservation_detail|' + data.name, '*')
             }
         }
     });
+
+    emit("onDupicateReservation")
 }
+
 items.value.push({
     label: "Audit Trail",
     icon: 'pi pi-history',

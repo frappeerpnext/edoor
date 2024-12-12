@@ -1,5 +1,5 @@
-<template lang=""  >
-    
+<template lang="">
+
     <div>
        
         <ComHeader>
@@ -76,11 +76,11 @@
             @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)" @onRefresh="onRefresh()" />
     </div>
 </div>
-<div class="pb-5" style="max-width: 100%;" >
+<div class="pb-5" style="max-width: 100%;">
     <div id="fron__desk-fixed-top">
         <div :class=" ( !isMobile && showSummary) ? 'flex gap-2' : ''">
             <div v-if="(!isMobile && showSummary)" class="relative" style="width:280px">
-                <div >
+                <div>
                     <div class="w-full">
                         <ComPanel title="Today Guest" class="mb-3 pb-3">
                             <div>
@@ -117,7 +117,7 @@
                     <hr class="left-0 fixed w-full">
                     <ComNoteGlobal v-if="showNote" />
                 </Sidebar>
-
+                <Button @click="test">hello </Button>
                 <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                     <template v-slot:eventContent="{event}">
                                 <ComCalendarEvent :event="event"/>    
@@ -161,6 +161,7 @@ import ComWalkInReservation from '@/views/reservation/components/ComWalkInReserv
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 import FullCalendar from '@fullcalendar/vue3'
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
+import ComRoomDetail from '@/views/frontdesk/ComRoomDetail.vue';
 import { i18n } from '@/i18n';
 const { t: $t } = i18n.global;
 
@@ -197,6 +198,7 @@ const loading = ref(false)
 const totalNotes = ref(0)
 const conflictRooms = ref()
 const isMobile = ref(window.isMobile)
+let room_status_width = ref(40)
 
 let advanceFilter = ref({
     room_type: "",
@@ -263,6 +265,10 @@ const calendarOptions = reactive({
     slotLabelInterval: {
         "hours": 24
     },
+    resourceClick: function (info) {
+        alert(11)
+    },
+
     slotLabelFormat: function (date) {
         return " "
     },
@@ -527,6 +533,8 @@ const calendarOptions = reactive({
     },
 })
 
+
+
 const getEventDebounce = debouncer(() => {
     getEvent()
 }, 500);
@@ -608,7 +616,7 @@ function onSelectedDate(event) {
         if (room_type_id == "") {
             room_type_id = event.resource._resource.parentId;
         }
-       
+
         const dialogRef = dialog.open(NewReservation, {
             data: {
                 arrival_date: event.start,
@@ -650,11 +658,39 @@ function resourceColumn(view_type) {
         return [
             {
                 labelText: 'xxx',
-                headerContent: 'Room'
+                headerContent: 'Room',
+                cellContent: function (arg) {
+                    
+                    if (arg.resource._resource.parentId != "") {
+                        const el = arg.resource._context.calendarApi.el
+                        const div = document.createElement('span');
+                        div.textContent = arg.resource.title;
+
+                        useTippy(div, {
+                            content: "Click to view room detail"
+                        })
+                        div.style.cursor = 'pointer';
+
+                        // Add an event listener to the resource cell
+                        div.addEventListener('click', () => {
+                            
+                            if (arg.resource.id != "property_summary") {
+                                onViewRoomDetail(arg.resource.id)
+                            }
+
+                        });
+
+                        return { domNodes: [div] };
+                    } else {
+                        
+                        return arg.resource.title;
+                    }
+
+                },
             },
             {
                 field: 'housekeeping_status',
-                width: 40,
+                width: room_status_width.value,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
 
@@ -681,15 +717,38 @@ function resourceColumn(view_type) {
             return [
                 {
                     labelText: 'xxx',
-                    headerContent: $t('Room')
+                    headerContent: $t('Room'),
+
                 },
 
             ]
         } else {
+
             return [
                 {
                     labelText: 'xxx',
-                    headerContent: $t('Room')
+                    headerContent: $t('Room'),
+                    cellContent: function (arg) {
+                        const el = arg.resource._context.calendarApi.el
+                        const div = document.createElement('div');
+                        div.textContent = arg.resource.title;
+
+                        useTippy(div, {
+                            content: "Click to view room detail"
+                        })
+                        div.style.cursor = 'pointer';
+
+                        // Add an event listener to the resource cell
+                        div.addEventListener('click', () => {
+
+                            if (arg.resource.id != "property_summary") {
+                                onViewRoomDetail(arg.resource.id)
+                            }
+
+                        });
+
+                        return { domNodes: [div] };
+                    },
                 },
                 {
                     field: 'room_type_alias',
@@ -720,7 +779,8 @@ function resourceColumn(view_type) {
                         const el = arg.resource._context.calendarApi.el
                         const item = arg.resource.extendedProps
                         if (item.housekeeping_icon) {
-                            el.innerHTML = `<div id='room_status_${arg.resource._resource.id}' class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
+                            el.innerHTML = `<span id='room_status_${arg.resource._resource.id}' class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</span>`;
+                            el.innerHTML += getAmenitiesIcon(arg.resource._resource.extendedProps.amenities)
                         }
                         else {
                             el.innerHTML = ''
@@ -735,6 +795,40 @@ function resourceColumn(view_type) {
     }
 }
 
+
+function getAmenitiesIcon(data) {
+    let html = ""
+    if (data) {
+        data.forEach(r => {
+            html = html + r.amenity
+        })
+    }
+    return html
+}
+
+function onViewRoomDetail(room_id) {
+    dialog.open(ComRoomDetail, {
+        data: {
+            name: room_id
+        },
+        props: {
+            header: $t('Room Detail'),
+            contentClass: 'ex-pedd',
+            style: {
+                width: '80vw',
+            },
+            maximizable: true,
+            modal: true,
+            closeOnEscape: false,
+            position: "top",
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            }
+        }
+
+    });
+}
 
 function onShowSummary() {
     showSummary.value = !showSummary.value
@@ -821,7 +915,7 @@ function generateEventForRoomType(data) {
     } else {
         //when calender view by room 
         //code below is generate event for current propert event display in first row of calendar
-        const theme =window.theme
+        const theme = window.theme
         resources.value.filter(r => r.id == "property_summary").forEach(r => {
             while (current_date <= cal.view.currentEnd) {
                 occupy_data = data.find(c => c.date == moment(current_date).format("YYYY-MM-DD"))
@@ -965,7 +1059,7 @@ function debouncer(fn, delay) {
 }
 
 function getEvent() {
-    
+
     gv.loading = true
     filter.value.date = moment.utc(calendarOptions.visibleRange.start).toDate()
     getApi('frontdesk.get_room_chart_calendar_event', {
@@ -1023,6 +1117,23 @@ function getResourceAndEvent(showLoading = true) {
             floor: advanceFilter.value.floor
         }).then((result) => {
             resources.value = result.message.resources
+            const amenities = resources.value.filter(r => r.amenities)
+
+            if (amenities.length > 0) {
+                room_status_width.value = 25 * (Math.max(...resources.value.filter(r => r.amenities).map(room => room.amenities.length)) + 1);
+
+                // set status column with in calendar
+                let cols = calendarOptions["resourceAreaColumns"];
+                cols[cols.length - 1].width = room_status_width.value
+                const cal = fullCalendar.value.getApi()
+                cal.destroy();
+                cal.render({
+                    resourceAreaColumns: cols,
+                });
+            }
+
+
+
             events.value = result.message.events.events
             removeDOM()
             generateEventForRoomType(result.message.events.occupy_data)
@@ -1127,20 +1238,20 @@ onMounted(() => {
                         let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + currentHightlightResourceId + '"]')
                         let room_type_el = document.querySelector('td[data-resource-id="' + currentHightlightResourceId + '"]').closest("tr")
 
-                        if (filter.value.view_type == "room_type") {   
-                            const resource = resources.value.flatMap(x => x?.children?.filter(y => y.id === currentHightlightResourceId && y.type==='room'));
+                        if (filter.value.view_type == "room_type") {
+                            const resource = resources.value.flatMap(x => x?.children?.filter(y => y.id === currentHightlightResourceId && y.type === 'room'));
                             if (resource) {
                                 el.style.backgroundColor = resource[1].room_type_color;
                                 room_type_el.style.backgroundColor = "";
-                            }  
+                            }
 
-                               
-                       
+
+
 
                         } else {
 
                             const resource = resources.value.find(r => r.id == currentHightlightResourceId && r.type == 'room')
-                           
+
                             if (resource) {
                                 el.style.backgroundColor = resource.room_type_color;
                             } else {
@@ -1184,7 +1295,7 @@ function setRoomTypeColor() {
 
                 let room_type_el = document.querySelector('td[data-resource-id="' + r.id + '"]')?.closest("tr")
                 let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + r.id + '"]')
-         
+
 
                 if (el) {
                     el.style.backgroundColor = r?.room_type_color;
@@ -1281,10 +1392,10 @@ function showConflictRoom(conflig_rooms) {
 
                     } else {
                         room_type_el.parentNode.style.backgroundColor = '';
-                        
-                          el.style.backgroundColor = c.room_type_color;
-                        
-                        
+
+                        el.style.backgroundColor = c.room_type_color;
+
+
                     }
                 })
             }

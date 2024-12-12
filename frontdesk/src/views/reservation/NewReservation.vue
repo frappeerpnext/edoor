@@ -1,7 +1,7 @@
 <template>
 
     <ComDialogContent dialogClass="max-h-screen-newres overflow-auto" @onOK="onSave" :loading="isSaving" hideButtonClose>
-     
+ 
         <div class="ms_message_cs_edoor">
             <Message v-if="hasFutureResertion">
                 {{ checkFutureReservationInfo.message }} <br />
@@ -749,24 +749,9 @@ const getRooms = () => {
 }
 
 function onSelectedCustomer(event) {
-    
+    alert(JSON.stringify(event))
     if (event.value) {
-        const name_guest_en_ev = ref()
-        //check future reservation
-        getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest", value: event.value }).then(r => {
-            getDoc('Customer', event.value)
-            .then((d) => {
-            name_guest_en_ev.value = d?.customer_name_en
-            doc.value.guest_info = d
-            doc.value.guest_info.expired_date = moment(doc.value.guest_info.expired_dat).toDate()
-            hasFutureResertion.value = r.message
-            checkFutureReservationInfo.value = {
-                message: `This guest Name  " ${name_guest_en_ev.value} "  is already exist in the system`,
-                fieldname: "guest",
-                value: event.value,
-            }
-})
-        })
+        getGuestInfo(event.value)
 
     } else {
         doc.value.guest_info = {
@@ -779,6 +764,25 @@ function onSelectedCustomer(event) {
 
 
 
+}
+
+function getGuestInfo(id){
+    const name_guest_en_ev = ref()
+        //check future reservation
+        getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest", value: id }).then(r => {
+            getDoc('Customer', id)
+            .then((d) => {
+            name_guest_en_ev.value = d?.customer_name_en
+            doc.value.guest_info = d
+            doc.value.guest_info.expired_date = moment(doc.value.guest_info.expired_dat).toDate()
+            hasFutureResertion.value = r.message
+            checkFutureReservationInfo.value = {
+                message: `This guest Name  " ${name_guest_en_ev.value} "  is already exist in the system`,
+                fieldname: "guest",
+                value: id,
+            }
+        })
+        })
 }
 
 const onRoomNightChanged = (event) => {
@@ -1054,8 +1058,18 @@ onMounted(() => {
         // if duplcate change default value 
         
         if (dialogRef.value.data.duplicated_data){
+            doc.value.reservation_stay = dialogRef.value.data.duplicated_data.reservation_stay
+           
             doc.value.reservation = {...doc.value.reservation, ...dialogRef.value.data.duplicated_data.reservation}
-            doc.value.guest_info = {...doc.value.guest_info, ...dialogRef.value.data.duplicated_data.guest_info}
+           getGuestInfo(dialogRef.value.data.duplicated_data.guest)
+            itemscolorreservation_select.value =  dialogRef.value.data.duplicated_data.reservation_color_code
+           setTimeout(() => {
+            onRateTypeChange(dialogRef.value.data.duplicated_data.reservation.rate_type)
+           }, 1000);
+            
+
+           
+
         }
     })
 });
@@ -1232,6 +1246,7 @@ function get_room_rate_breakdown(stay){
         is_package:doc.value.is_package,
         package_charge_data:doc.value.package_charge_data || "[]"
     }
+     
     postApi("generate_room_rate.get_room_rate_calculation", { room_rate_data: room_rate_data},"",false)
             .then(result => {
                 

@@ -997,6 +997,7 @@ def package_base_account_code_charge_breakdown(room_rate_data):
 
 @frappe.whitelist()
 def get_room_rate_calculation(room_rate_data=None,rate=100):
+     
     if not room_rate_data:
         room_rate_data = {
             "rate_type": "Daily Rate No-Tax",
@@ -1032,6 +1033,9 @@ def get_room_rate_calculation(room_rate_data=None,rate=100):
             "package_charge_data": "[{\"account_code\": \"10837\", \"posting_rule\": \"Everyday\", \"charge_rule\": \"Adult\", \"rate\": 0.0, \"adult_rate\": 6.0, \"child_rate\": 0.0, \"breakdown_account_code\": \"10119\", \"discount_breakdown_account_code\": \"40103\", \"tax_1_breakdown_account_code\": \"\", \"tax_2_breakdown_account_code\": \"\", \"tax_3_breakdown_account_code\": \"20107\"}, {\"account_code\": \"10838\", \"posting_rule\": \"Everyday\", \"charge_rule\": \"Child\", \"rate\": 0.0, \"adult_rate\": 0.0, \"child_rate\": 3.0, \"breakdown_account_code\": \"10119\", \"discount_breakdown_account_code\": \"40103\", \"tax_1_breakdown_account_code\": \"\", \"tax_2_breakdown_account_code\": \"\", \"tax_3_breakdown_account_code\": \"20107\"}]"
             }
     
+    room_rate_data["input_rate"] = room_rate_data.get("input_rate") or 0
+    room_rate_data["is_package"] = room_rate_data.get("is_package") or 0
+    room_rate_data["tax_rule"] = room_rate_data.get("tax_rule") or ""
     
     if "discount_amount" not in room_rate_data:
         room_rate_data["discount_amount"] = 0

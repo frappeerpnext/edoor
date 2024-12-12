@@ -385,7 +385,9 @@ def add_new_reservation(doc):
     doc["reservation"]["is_complimentary"] = is_complementary
     doc["reservation"]["is_house_use"] = is_house_use
 
-    reservation = frappe.get_doc(doc["reservation"]).insert()
+    reservation = frappe.get_doc(doc["reservation"]) 
+    reservation.insert()
+    
  
  
     #start insert insert reservation stay
@@ -416,6 +418,7 @@ def add_new_reservation(doc):
             if d["room_id"]:
                 check_room_not_available = frappe.db.sql("select name from `tabTemp Room Occupy` where is_departure=0 and room_id='{}' and date between '{}' and '{}'".format(room, reservation.arrival_date, add_to_date(getdate(reservation.departure_date), days=-1)),as_dict=1)
                 if check_room_not_available:
+                   
                     frappe.throw("Room {} is not available".format(frappe.db.get_value("Room",room,"room_number")))
         
         if not room and len(available_rooms)>0:
