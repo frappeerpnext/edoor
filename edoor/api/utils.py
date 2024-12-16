@@ -164,9 +164,11 @@ def update_fetch_from_field(doc, method=None, *args, **kwargs):
 
 
 def update_comment_after_insert(doc, method=None, *args, **kwargs):
-    if doc.comment_type=="Deleted":
-        return
-    if doc.comment_type == "Workflow": return
+    
+
+    ignore_comment_types = ["Deleted","Workflow","Attachment"]
+    if doc.comment_type in ignore_comment_types:
+        return 
    
     #if doc have property field then update property, audit_date and is audit trail to true
     update_files = []
@@ -185,8 +187,8 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
         update_files.append("custom_icon='{}'".format(icon))
     
     if doc.reference_name:
-        ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
         if doc.reference_name and not doc.custom_property:
+            ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
             if hasattr(ref_doc, "property"):
                 working_day = get_working_day(ref_doc.property)
                 update_files.append("custom_property=%(property)s")
@@ -208,6 +210,20 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
                         file_doc = frappe.get_doc("File", file_data[0]["name"])
                         if file_doc.custom_show_in_edoor==0:
                             update_files.append("custom_is_audit_trail=0")
+
+            if hasattr(ref_doc,"reservation"):
+                update_files.append("custom_reservation='{}'".format(ref_doc.reservation or ""))
+            if hasattr(ref_doc,"reservation_stay"):
+                update_files.append("custom_reservation_stay='{}'".format(ref_doc.reservation_stay or ""))
+            
+            if hasattr(ref_doc,"transaction_type"):
+                update_files.append("custom_folio_transaction_type='{}'".format(ref_doc.transaction_type or ""))
+                update_files.append("custom_folio_number='{}'".format(ref_doc.transaction_number or ""))
+        
+            if hasattr(ref_doc,"guest"):
+                update_files.append("custom_guest='{}'".format(ref_doc.guest or ""))
+
+
         else:
             if not doc.custom_cashier_shift:
                 working_day = get_working_day( doc.custom_property)
@@ -216,18 +232,7 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
 
         # get field for relate document for easy get data in report
         
-        if hasattr(ref_doc,"reservation"):
-            update_files.append("custom_reservation='{}'".format(ref_doc.reservation or ""))
-        if hasattr(ref_doc,"reservation_stay"):
-            update_files.append("custom_reservation_stay='{}'".format(ref_doc.reservation_stay or ""))
         
-        if hasattr(ref_doc,"transaction_type"):
-            update_files.append("custom_folio_transaction_type='{}'".format(ref_doc.transaction_type or ""))
-            update_files.append("custom_folio_number='{}'".format(ref_doc.transaction_number or ""))
-    
-        if hasattr(ref_doc,"guest"):
-            update_files.append("custom_guest='{}'".format(ref_doc.guest or ""))
-
     
 
 
@@ -270,7 +275,6 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
     
    
     frappe.db.sql("update `tabComment` set {} where name='{}'".format(",".join(update_files), doc.name),updated_data)
- 
     frappe.db.commit()
     
     # if audit trail type == Reminder then audto add data to reminder
@@ -286,7 +290,7 @@ def add_reminder(doc):
      
     for u in users:
         reminder = frappe.new_doc("Reminder")
-        reminder.description = doc.content + " for user " + u
+        reminder.description = doc.content
         reminder.remind_at = doc.custom_remind_at
         reminder.reminder_doctype = doc.reference_doctype
         reminder.reminder_docname = doc.reference_name
@@ -307,7 +311,7 @@ def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
     
     if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
         submit_update_audit_trail_from_version(doc)
-        # frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
+        
 
 def submit_update_audit_trail_from_version(doc):
     if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
@@ -353,8 +357,9 @@ def submit_update_audit_trail_from_version(doc):
                 return
 
         if len(data_changed)>0:
-            comment_doc = []
-            comment_doc.append({
+             
+           
+            comment_doc={
             "creation":doc.creation,
             "subject": "Change Value",
             "custom_audit_trail_type":"Updated",
@@ -364,8 +369,12 @@ def submit_update_audit_trail_from_version(doc):
             "content":", ".join(data_changed) ,
             "owner":doc.owner,
             "comment_email":doc.owner,
-            "custom_comment_by_photo":frappe.get_cached_value("User",doc.owner, "user_image") or ""
-            })
+            "custom_comment_by_photo":frappe.get_cached_value("User",doc.owner, "user_image") or "",
+            
+            }
+          
+                
+            
             # frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
             add_audit_trail(comment_doc, update_creation_date=True)
 
@@ -1061,9 +1070,8 @@ def get_months(start_date,end_date):
 
 def add_audit_trail(data,update_creation_date=False,doc=None):
     for d in data:
-        if not hasattr(d,"custom_property"):
+        if not d.get("custom_property"):
             doc = frappe.get_doc(d["reference_doctype"],d["reference_name"])
-                
             if hasattr(doc,"property"):
                 working_day = get_working_day(doc.property)
                 d["custom_posting_date"]= working_day["date_working_day"]
@@ -1078,7 +1086,15 @@ def add_audit_trail(data,update_creation_date=False,doc=None):
                 d["custom_property"]= doc.business_branch
                 if working_day["cashier_shift"]:
                     d["custom_cashier_shift"]= working_day["cashier_shift"]["name"]
-
+            if hasattr(doc,"reservation"):
+                d["custom_reservation"]= doc.reservation
+                
+            if hasattr(doc,"reservation_stay"):
+                d["custom_reservation_stay"]= doc.reservation_stay
+            if hasattr(doc,"guest"):
+                d["custom_guest"]= doc.guest
+                
+                
         d["doctype"]="Comment"
         if not hasattr(d,"comment_type"):
             d["comment_type"]="Info"
@@ -1087,10 +1103,10 @@ def add_audit_trail(data,update_creation_date=False,doc=None):
         d["comment_by"]= d.get("owner") 
         
         # frappe.throw(str(d))
-        doc = frappe.get_doc(d).insert(ignore_permissions=True,ignore_links=True)
+        comment_doc = frappe.get_doc(d).insert(ignore_permissions=True,ignore_links=True)
         
         if update_creation_date:
-            frappe.db.sql("update `tabComment` set creation=%(creation)s, comment_by=%(owner)s ,owner=%(owner)s,modified_by=%(owner)s where name=%(name)s",{"name":doc.name, "creation":d["creation"],"owner":d.get("owner","")})
+            frappe.db.sql("update `tabComment` set creation=%(creation)s, comment_by=%(owner)s ,owner=%(owner)s,modified_by=%(owner)s where name=%(name)s",{"name":comment_doc.name, "creation":d["creation"],"owner":d.get("owner","")})
             
 
 

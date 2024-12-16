@@ -2349,17 +2349,7 @@ def get_working_day(property = ''):
 
 @frappe.whitelist()
 def get_room_chart_resource_and_event(property, start=None,end=None, keyword=None,view_type=None,business_source="",room_type="",room_type_group=None,room_number=None,floor=None,building=None):
-    return {
-        "resources": get_room_chart_resource(
-            property=property,
-            room_type_group = room_type_group,
-            room_type = room_type,
-            room_number = room_number,
-            floor=floor,
-            building=building,
-            view_type=view_type
-        ),
-        "events":get_room_chart_calendar_event(
+    events = get_room_chart_calendar_event(
                 property=property, 
                 start=start,
                 end=end, 
@@ -2371,7 +2361,21 @@ def get_room_chart_resource_and_event(property, start=None,end=None, keyword=Non
                 room_number=room_number,
                 floor=floor,
                 building=building
-            ),
+            )
+    resources = get_room_chart_resource(
+            property=property,
+            room_type_group = room_type_group,
+            room_type = room_type,
+            room_number = room_number,
+            floor=floor,
+            building=building,
+            view_type=view_type
+    )
+    
+    return {
+        "resources": resources,
+        "events":events,
+        "total_amentity":resources[0].get("total_amentity")
         
     }
 
@@ -2429,11 +2433,13 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
     
     rooms = frappe.db.sql("select name as id,coalesce(room_type_color,'#FFFFFF') as room_type_color, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type,room_type_alias from `tabRoom` where    property=%(property)s and disabled = 0 {filters}   order by room_number".format(filters = filters),{"property":property},as_dict=1)
     # room amemenity
+    total_amentity = 0
     if rooms:
-        sql = "select parent,room_amenity,icon from `tabRoom Amenities` where   show_in_room_chart= 1 and parent in %(room_ids)s"
+        sql = "select distinct parent,room_amenity,icon from `tabRoom Amenities` where   show_in_room_chart= 1 and parent in %(room_ids)s order by idx"
         room_amenities = frappe.db.sql(sql,{"room_ids":[d.get("id") for d in rooms]},as_dict = 1)
         room_has_amenity = [d.get("parent") for d in room_amenities]
-    
+        if room_amenities:
+            total_amentity = len(set(d.get("room_amenity") for d in room_amenities))
         for r in [d for d in rooms  if d.get("id") in room_has_amenity]:
             r["amenities"] = [{"amenity":d.get("room_amenity"),"icon":d.get("icon") or ""} for d in room_amenities if d.get("parent") == r.get("id")]
          
@@ -2494,7 +2500,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         resources = resources +  rooms
     
 
-
+    resources[0]["total_amentity"] = total_amentity
     return resources
  
 

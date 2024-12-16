@@ -21,7 +21,7 @@
   {
    "fetch_from": "room_amenity.icon",
    "fieldname": "icon",
-   "fieldtype": "Code",
+   "fieldtype": "Attach",
    "label": "Icon"
   },
   {
@@ -35,7 +35,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-11 09:25:05.638798",
+ "modified": "2024-12-14 09:48:37.066467",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Amenities",

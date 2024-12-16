@@ -117,7 +117,7 @@
                     <hr class="left-0 fixed w-full">
                     <ComNoteGlobal v-if="showNote" />
                 </Sidebar>
-                <Button @click="test">hello </Button>
+                
                 <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                     <template v-slot:eventContent="{event}">
                                 <ComCalendarEvent :event="event"/>    
@@ -231,6 +231,7 @@ let roomChartResourceFilter = reactive({
     view_type: filter.value.view_type // room_type = true or room = false
 })
 
+const resourceAreaWidth = window.isMobile ? 100 : 250
 
 
 const calendarOptions = reactive({
@@ -257,7 +258,7 @@ const calendarOptions = reactive({
     selectable: true,
     editable: true,
     eventResizableFromStart: true,
-    resourceAreaWidth: window.isMobile ? "100px" : "250px",
+    resourceAreaWidth: resourceAreaWidth + "px",
     height: 'auto',
     slotDuration: {
         "hours": (parseInt(setting.room_chart_calendear_slot_duration) || 24)
@@ -690,14 +691,15 @@ function resourceColumn(view_type) {
             },
             {
                 field: 'housekeeping_status',
-                width: room_status_width.value,
+                width: 40,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
 
                     const item = arg.resource.extendedProps
 
                     if (item.housekeeping_icon) {
-                        el.innerHTML = `<div id='room_status_${arg.resource._resource.id}' class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
+                        el.innerHTML = `<span id='room_status_${arg.resource._resource.id}' class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</span>`;
+                        el.innerHTML += getAmenitiesIcon(arg.resource._resource.extendedProps.amenities)
 
 
                     }
@@ -800,7 +802,7 @@ function getAmenitiesIcon(data) {
     let html = ""
     if (data) {
         data.forEach(r => {
-            html = html + r.amenity
+            html = html + `<img src="${r.icon}" style="width:25px" />`
         })
     }
     return html
@@ -1117,18 +1119,21 @@ function getResourceAndEvent(showLoading = true) {
             floor: advanceFilter.value.floor
         }).then((result) => {
             resources.value = result.message.resources
-            const amenities = resources.value.filter(r => r.amenities)
-
-            if (amenities.length > 0) {
-                room_status_width.value = 25 * (Math.max(...resources.value.filter(r => r.amenities).map(room => room.amenities.length)) + 1);
-
+            
+             
+            if ( result.message.total_amentity> 0) {
+               
+                room_status_width.value = 32 * (result.message.total_amentity + 1);
                 // set status column with in calendar
                 let cols = calendarOptions["resourceAreaColumns"];
+                
+                calendarOptions.resourceAreaWidth= resourceAreaWidth + (room_status_width.value  - 32) + "px"
                 cols[cols.length - 1].width = room_status_width.value
                 const cal = fullCalendar.value.getApi()
                 cal.destroy();
                 cal.render({
                     resourceAreaColumns: cols,
+                    
                 });
             }
 
@@ -1241,7 +1246,7 @@ onMounted(() => {
                         if (filter.value.view_type == "room_type") {
                             const resource = resources.value.flatMap(x => x?.children?.filter(y => y.id === currentHightlightResourceId && y.type === 'room'));
                             if (resource) {
-                                el.style.backgroundColor = resource[1].room_type_color;
+                                el.style.backgroundColor = resource[1]?.room_type_color;
                                 room_type_el.style.backgroundColor = "";
                             }
 
@@ -1466,4 +1471,5 @@ div.front_desk_sicky_bar {
 .fc-timeline-lane .fc-resource {
     background: red !important;
 }
+
 </style>

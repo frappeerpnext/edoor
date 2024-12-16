@@ -18,13 +18,13 @@
   },
   {
    "fieldname": "icon",
-   "fieldtype": "Code",
+   "fieldtype": "Attach Image",
    "label": "Icon"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-11 09:21:26.743684",
+ "modified": "2024-12-14 09:48:31.368810",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Amenity",

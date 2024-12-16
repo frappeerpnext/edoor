@@ -1196,14 +1196,48 @@ function viewRoomRateBreakdown(room_type){
 }
 
 
+function getGuestInfo(id){
+    const name_guest_en_ev = ref()
+        //check future reservation
+        getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest", value: id }).then(r => {
+            getDoc('Customer', id)
+            .then((d) => {
+            name_guest_en_ev.value = d?.customer_name_en
+            doc.value.guest_info = d
+            doc.value.guest_info.expired_date = moment(doc.value.guest_info.expired_dat).toDate()
+            hasFutureResertion.value = r.message
+            checkFutureReservationInfo.value = {
+                message: `This guest Name  " ${name_guest_en_ev.value} "  is already exist in the system`,
+                fieldname: "guest",
+                value: id,
+            }
+        })
+        })
+}
+
+
+
+
 const onBusinessSourceChange = (source) => {
+ 
     getDoc('Business Source' , source.value).then((d) => {
         doc.value.reservation.show_room_rate_in_guest_folio_invoice = d.show_room_rate_in_guest_folio
+        if(d.link_guest && !doc.value.guest_info.customer_name_en){
+            getGuestInfo(d.link_guest);
+            doc.value.reservation.guest = d.link_guest;
+            doc.value.is_link_guest_selected = true;
+        }
     })
-if (source) {
+if (source.value) {
     doc.value.reservation.business_source = source.value
 } else {
     doc.value.reservation.business_source = null
+   
+    if (doc.value.is_link_guest_selected){
+            doc.value.is_link_guest_selected = false
+            doc.value.reservation.guest = "";
+            onSelectedCustomer({});
+        }
 }
 
 //check if stay have not manully rate update

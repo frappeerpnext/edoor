@@ -74,6 +74,16 @@ class FolioTransaction(Document):
 					"subject":"Post " + self.account_group_name,
 					"reference_doctype":"Folio Transaction",
 					"reference_name":self.name,
+					"custom_property":self.property,
+					"custom_posting_date":self.posting_date,
+					"custom_cashier_shift":self.cashier_shift,
+					"custom_reservation":self.reservation,
+					"custom_reservation_stay":self.reservation_stay,
+					"custom_folio_transaction_type":self.transaction_type,
+					"custom_folio_number":self.transaction_number,
+					"custom_folio_transaction":self.name,
+					"custom_guest":self.guest,
+     
 					"content":content
 				}])
 		

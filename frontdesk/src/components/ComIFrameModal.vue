@@ -398,6 +398,16 @@ const loadIframe = () => {
     param.value.show_toolbar = 0
     param.value.view = "ui"
     param.value.settings = decodeURIComponent("%7B%7D")
+    
+    // clear keyword for get new value
+    param.value.keyword = ""
+    param.value.business_source = ""
+    param.value.room_type = ""
+    param.value.reservation_status = ""
+    param.value.floor = ""
+    param.value.building = ""
+    param.value.housekeeping_status = ""
+    param.value.room_type_group= ""
 
     if (view.value) {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + encodeURIComponent(decodeURI( dialogRef.value.data.name)) + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
@@ -414,10 +424,11 @@ const loadIframe = () => {
 
     let start_date = moment().add(-50, "years").format("YYYY-MM-DD")
     let end_date = moment().add(50, "years").format("YYYY-MM-DD")
-
+   
     if (Object.keys(filters.value)) {
         Object.keys(filters.value).forEach(p => {
             if (filters.value[p]) {
+                
                 if (p == "start_date") {
                     start_date = moment(filters.value[p]).format("YYYY-MM-DD")
                 } else if (p == "end_date") {
@@ -444,6 +455,7 @@ const loadIframe = () => {
         param.value.date = window.current_working_date
     }
 
+    
     if (view.value) {
         call.get("epos_restaurant_2023.www.printview.get_html_and_style", param.value).then(result => {
             html.value = result.message.html
@@ -468,7 +480,7 @@ function onPrint() {
 }
 const reloadIframe = debouncer(() => {
     loadIframe()
-}, 500);
+}, 1000);
 
 function debouncer(fn, delay) {
     var timeoutID = null;

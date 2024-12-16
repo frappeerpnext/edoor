@@ -1960,12 +1960,19 @@ background-color: rgb(255, 234, 234);
 .training_site{
     position: absolute;
     left: 45%;
-    top: 30px;
-    padding: 10px;
+    top: 5px;
+    padding: 5px;
     font-size: 20px;
     border-radius: 10px;
     color: white;
     background: red;
     z-index: 10000;
     opacity: 80%;
+}
+.fc-datagrid-cell-main{
+    display: flex !important;
+    gap: 5px !important;
+}
+.fc-datagrid-cell-cushion.fc-scrollgrid-sync-inner{
+    display: flex !important;
 }

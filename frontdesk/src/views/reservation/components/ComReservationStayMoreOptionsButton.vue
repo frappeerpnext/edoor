@@ -293,7 +293,7 @@ let data = {
 
                 }
             }
- alert(stay.room_id)
+ 
 const dialogRef =  dialog.open(NewReservation, {
         data:{
             duplicated_data:data

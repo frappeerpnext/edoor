@@ -749,7 +749,7 @@ const getRooms = () => {
 }
 
 function onSelectedCustomer(event) {
-    alert(JSON.stringify(event))
+    
     if (event.value) {
         getGuestInfo(event.value)
 
@@ -1131,8 +1131,11 @@ const updateRate = (stay=null) => {
 }
 
 const onBusinessSourceChange = (source) => {
+   
     getDoc('Business Source' , source.value).then((d) => {
         doc.value.reservation.show_room_rate_in_guest_folio_invoice = d.show_room_rate_in_guest_folio
+        
+        
     })
     
     
@@ -1141,6 +1144,7 @@ const onBusinessSourceChange = (source) => {
         doc.value.reservation.business_source = source.value
     } else {
         doc.value.reservation.business_source = null
+       
     }
 
     //check if stay have not manully rate update

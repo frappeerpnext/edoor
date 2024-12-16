@@ -81,6 +81,19 @@
                     </template>
                 </ComReservationStayPanel>
             </div>
+            <div class="col-12" >
+                <ComReservationStayPanel title="Guest">
+                    <template #content>
+                        <div class="grid">
+                            <div class="col-12">
+                                <label> {{ $t('Guest ( Optional ) ') }} </label>
+                                <ComAutoComplete isIconSearch v-model="data.link_guest" class="w-full"
+                                    :placeholder="$t('Guest')" doctype="Customer"  />
+                            </div>
+                        </div>
+                    </template>
+                </ComReservationStayPanel>
+            </div>
         </div>
     </ComDialogContent>
 </template>

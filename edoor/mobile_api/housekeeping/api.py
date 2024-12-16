@@ -76,7 +76,7 @@ def merge_assign_values(data):
 def test_get_room():
     return get_room_list(
         property="ESTC Hotel",
-        date='2024-12-04',
+        date='2024-12-05',
         group_by="Room Type"
     )
     
@@ -96,6 +96,7 @@ def get_room_list(property,
             name,
             room_number,
             room_type_id,
+            room_type,
             floor,
             building,
             room_status,
@@ -103,7 +104,6 @@ def get_room_list(property,
             housekeeping_icon,
             status_color
         from `tabRoom` r 
-        
         where
             disabled = 0 and 
             property = %(property)s 
@@ -166,21 +166,21 @@ def get_room_list(property,
             r["child"] = stay.get("child")
             
 
-    group_data = [] 
-    if group_by =="Room Type":
+    # group_data = [] 
+    # if group_by =="Room Type":
 
-        group_data   = frappe.db.sql("select name, concat(alias,'-',room_type) as  label from `tabRoom Type` where property =%(property)s and name in %(room_type)s order by sort_order, room_type",{"property":property,"room_type":set([d.get("room_type_id") for d in room_data])},as_dict = 1)
+    #     group_data   = frappe.db.sql("select name, concat(alias,'-',room_type) as  label from `tabRoom Type` where property =%(property)s and name in %(room_type)s order by sort_order, room_type",{"property":property,"room_type":set([d.get("room_type_id") for d in room_data])},as_dict = 1)
        
         
-        for rt in group_data:
-            rt["data"] = [d for d in room_data if d.get("room_type_id") == rt.get("name")]
+    #     for rt in group_data:
+    #         rt["data"] = [d for d in room_data if d.get("room_type_id") == rt.get("name")]
             
-    elif group_by == "Floor":
-        group_data = frappe.db.sql("select name, floor as  label from `tabFloor` where    name in %(floor)s order by sort_order,floor",{ "floor":set([d.get("floor") for d in room_data])},as_dict = 1)
-        for f in group_data:
-            f["data"] = [d for d in room_data if d.get("floor") == f.get("name")]
+    # elif group_by == "Floor":
+    #     group_data = frappe.db.sql("select name, floor as  label from `tabFloor` where    name in %(floor)s order by sort_order,floor",{ "floor":set([d.get("floor") for d in room_data])},as_dict = 1)
+    #     for f in group_data:
+    #         f["data"] = [d for d in room_data if d.get("floor") == f.get("name")]
         
-    return group_data
+    return room_data
 
 def get_occupy_data(room_ids,date):
     sql = """

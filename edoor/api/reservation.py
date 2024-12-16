@@ -734,6 +734,9 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note="",arrival_
                 "reference_name":stay.name,
                 "custom_audit_trail_type":"Check In",
                 "custom_icon":"pi pi-sign-in",
+                "custom_guest":stay.guest,
+                "custom_reservation":stay.reservation,
+                "custom_posting_date": working_day.get("date_working_day"),
                 "content": f"Reservation stay #: {stay.name}, Ref. #: {stay.reference_number}, Room #: {stay.rooms}, Guest: {stay.guest}-{stay.guest_name}"}
             if note:
                 comment["content"] = comment["content"] + f"<br/> Note: {note}"
@@ -1585,14 +1588,19 @@ def change_stay(data):
     if doc.reservation_status not in ['No Show', "Reserved",'In-house',"Confirmed"]:
         frappe.throw( "{} is not allow to change stay".format(doc.reservation_status))
 
-    allow_back_date = frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")
+    allow_back_date = frappe.get_cached_value("eDoor Setting",None,"allow_user_to_add_back_date_transaction")
 
     room_id = ""
+    
     
     if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
     if getdate(data["start_date"]) == getdate(data["end_date"]):
         frappe.throw("Arrival date cannot equal to departure date")
+    
+    # check if room_type_id is "" then set room type from room
+    if data.get("room_type_id","") =="":
+        data["room_type_id"] = frappe.get_cached_value("Room",room_id, "room_type_id") 
         
     # when we change stay date from drap and drop in room chart calendar we allow to overlap
 

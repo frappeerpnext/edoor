@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent hideButtonOK hideButtonClose :hideIcon="false" :loading="loading">
+       
             <div class="flex justify-content-between">
                 <div class="col flex gap-2"  >
                     <div>
@@ -16,9 +17,17 @@
                             doctype="Room Type" :filters="[['property', '=', property_name]]"></ComSelect>
                     </div>
 
+
+
                     <div    class="flex ml-2">
-                        <ComSelect  :clear="false" v-model="pageState.order_by" placeholder="Sort Order Field"
-                        @onSelected="onRefresh()" :options='columns' optionLabel="label" optionValue="fieldname"    />
+                        <tippy content="Arrival Date">
+                        <Calendar   :selectOtherMonths="true" placeholder="Arrival Date" class="w-full" v-model="filter.arrival_date" @clear-click="onRefresh" @date-select="onRefresh" dateFormat="dd-mm-yy" showButtonBar showIcon/>
+                    </tippy>
+                    </div>
+
+                    <div    class="flex ml-2">
+                        <ComSelect tooltip="Order By"  :clear="false" v-model="pageState.order_by" placeholder="Sort Order Field"
+                        @onSelected="onRefresh()" :options='columns'   optionLabel="label" optionValue="fieldname"    />
 
                         <ComSelect class="ml-2" v-model="pageState.order_type" placeholder="Sort Order Type"
                         @onSelected="onRefresh()"  :options='["asc","desc"]' :clear="false" />
@@ -264,8 +273,17 @@ function loadData(show_loading = true) {
         ["Reservation Stay", "property", '=', window.property_name],
         ["Reservation Stay", "rooms", 'is', "not set"],
         ["Reservation Stay", "is_active_reservation", '=', 1],
-        ["Reservation Stay", "arrival_date", '>=', dateRange.start],
+       
     ]
+   
+    if(filter.value?.arrival_date){
+        filters.push(
+        ["Reservation Stay", "arrival_date", '=', moment(filter.value?.arrival_date).format("YYYY-MM-DD")]
+    )
+    }else {
+        filters.push(["Reservation Stay", "arrival_date", '>=', dateRange.start])
+    }
+
 
     if (filter.value?.keyword) {
         filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])

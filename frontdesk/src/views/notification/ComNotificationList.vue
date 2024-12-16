@@ -42,7 +42,7 @@ const dialogRef = inject('dialogRef');
 const data = ref([])
 const isMobile = ref(window.isMobile) 
 const loading = ref(false)
-const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 5, totalRecords: 0, activePage: 0 })
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 function onViewDetail(d){
     window.postMessage(`view_${d.document_type.toLowerCase().replaceAll(" ","_")}_detail|${d.document_name}`,"*")
 }

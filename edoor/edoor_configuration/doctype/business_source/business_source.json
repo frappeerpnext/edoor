@@ -18,6 +18,7 @@
   "city_ledger_type",
   "is_walk_in_business_source",
   "show_room_rate_in_guest_folio",
+  "link_guest",
   "column_break_nyis",
   "contact_name",
   "phone_number",
@@ -160,12 +161,18 @@
    "fieldname": "show_room_rate_in_guest_folio",
    "fieldtype": "Check",
    "label": "Show Room Rate in Guest Folio"
+  },
+  {
+   "fieldname": "link_guest",
+   "fieldtype": "Link",
+   "label": "Link Guest",
+   "options": "Customer"
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-23 08:53:30.605023",
+ "modified": "2024-12-14 09:10:32.392906",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",
