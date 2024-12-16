@@ -149,7 +149,7 @@
   "doctype": "Audit Trail Document",
   "doctype_name": "Reservation Stay",
   "is_epos_audit_trail": 0,
-  "modified": "2023-12-06 11:13:35.138823",
+  "modified": "2024-12-12 16:49:49.799956",
   "name": "Reservation Stay",
   "tracking_field": [
    {
@@ -445,6 +445,15 @@
     "field_type": "Check",
     "hide_old_value": 0,
     "label": "Paid by Master Room",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "internal_reference_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Internal Reference",
     "parent": "Reservation Stay",
     "parentfield": "tracking_field",
     "parenttype": "Audit Trail Document"

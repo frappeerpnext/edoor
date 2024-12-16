@@ -187,8 +187,8 @@
             gv.toast('warn','Please select  room number.')
             return
         }
-        loading.value = true
- 
+        loading.value = true    
+        selectedStay.value.property = window.property_name,
          postApi("reservation.assign_room",{data: selectedStay.value})
         .then((r)=>{
             loading.value = false

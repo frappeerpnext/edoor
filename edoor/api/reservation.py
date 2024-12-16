@@ -267,10 +267,19 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
     sql = sql.format(start_date, end_date,sql_except)
    
     data = frappe.db.sql(sql,{"property":property,"room_type_id":room_type_id},as_dict=1)
+    
+    # get room amentity
+    for d in data:
+        room_doc = frappe.get_cached_doc("Room",d["name"])
+        if room_doc.amenities:
+            d["amenities"] = [{"amenity":x.room_amenity,"icon":x.icon}  for x in room_doc.amenities if x.show_in_room_chart ==1]
+            
+    
     return data
 
 @frappe.whitelist()
 def check_room_type_availability(property,start_date=None,end_date=None,rate_type=None, business_source=None, room_type_id=None,exclude_stay_room_id=None):
+    
     end_date = add_to_date(end_date,days=-1)
     #check if start date < current working date then set start date to crrent working date because we check date only for future date
     working_day = get_working_day(property=property)
@@ -3352,16 +3361,37 @@ def unassign_room(reservation_stay, room_stay):
 
 @frappe.whitelist(methods="POST")
 def assign_room(data):
-    doc = frappe.get_doc('Reservation Stay', data['reservation_stay'])
-    old_status = doc.reservation_status
-    doc.reservation_status = 'Reserved'
-
     if 'room_id' in data:
         if not data['room_id']:
             frappe.throw(_("Please select a room to assign."))
     else:
         frappe.throw(_("Please select a room to assign."))
- 
+        
+    # validate room available
+    if frappe.get_cached_value("eDoor Setting",None,"enable_over_booking") == 0:
+        
+        if data.get("room_type_id") != data.get("old_room_type_id"):
+            
+            room_type_availability = check_room_type_availability(
+                property=data.get("property"),
+                room_type_id=data.get("room_type_id"),
+                start_date=data.get("start_date"),
+                end_date=data.get("end_date")
+            )
+            if room_type_availability:
+                if room_type_availability[0].get("total_vacant_room")<=0:
+                    frappe.throw("Room type {} does not have enough room for room assigment from {} to {}".format(
+                        data.get("room_type"),
+                        frappe.format(data.get("start_date"),{"fieldtype":"Date"}),
+                        frappe.format(data.get("end_date"),{"fieldtype":"Date"})
+                    ))
+        #end check room availability
+        
+    
+    doc = frappe.get_doc('Reservation Stay', data['reservation_stay'])
+    old_status = doc.reservation_status
+    doc.reservation_status = 'Reserved'
+
     for s in doc.stays:
           
         if s.name == data['stay_room']:

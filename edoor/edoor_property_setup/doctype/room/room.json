@@ -33,7 +33,7 @@
   "housekeeper",
   "housekeeping_icon",
   "room_amenities_tab",
-  "table_skka",
+  "amenities",
   "current_guest_tab",
   "reservation_stay",
   "reservation_status",
@@ -278,14 +278,14 @@
    "label": "Room Amenities"
   },
   {
-   "fieldname": "table_skka",
+   "fieldname": "amenities",
    "fieldtype": "Table",
    "options": "Room Amenities"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-11 09:25:40.296232",
+ "modified": "2024-12-16 15:38:02.617373",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

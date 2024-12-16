@@ -360,10 +360,24 @@
                                 </Dropdown>
                             </td>
                             <td class="p-2 min-w-5rem">
-                                <Dropdown v-model="d.room_id"
+<div class="flex gap-2">
+   <Dropdown v-model="d.room_id"
                                     :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0) || (r.room_type_id == d.room_type_id && r.name == d.room_id))"
                                     optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
                                     :placeholder="$t('Select Room')" showClear filter class="w-full" />
+                                    <div v-if="d.room_id" class="flex gap-2 space-around">
+                                        <template  v-for="(am, icon_index) in room_amenities(d.room_id)?.amenities" :key="icon_index">
+                                            <span class="box-input-detail flex " style="width: auto !important;" > 
+                                            <tippy :content="am.amenity">
+                                            <img   :src="am.icon" style="min-width:20px;max-width:20px" />
+                                        </tippy>
+                                    </span>
+                                        </template>
+
+                                    </div>
+</div>
+                             
+                                    
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-15rem text-right">
                                 <div v-tippy="!doc.allow_user_to_edit_rate ? $t('This Rate Type Not Allow to Change Rate') : ''"
@@ -674,6 +688,13 @@ const totalTax3Amount = computed(() => {
 const total_pax = computed(() => {
     return doc.value.reservation.adult + doc.value.reservation.child;
 })
+
+const room_amenities = (room_id) => {
+    
+    const room = rooms.value?.find(r=>r.name == room_id)
+    return room
+
+}
 
 const departureMinDate = computed(() => {
     return moment(doc.value.reservation.arrival_date).add(1, "days").toDate();
