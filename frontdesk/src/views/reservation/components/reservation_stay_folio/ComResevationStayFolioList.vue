@@ -1,6 +1,7 @@
 <template>
+   
     <div class="col-fixed relative pl-0 pr-0 py-0" :style="`width: ${panelWidth ? panelWidth : '250px'}`">
- 
+        
         <div class="flex flex-column justify-content-between h-full res-stay-folio-btn-site-bg">
             <div :style="rs.is_page == true ? 'margin-bottom: 1px;' : 'margin-bottom: 60px;'">
                 <div class="flex justify-content-between align-items-center p-2">

@@ -9,12 +9,16 @@
   "naming_series",
   "property",
   "posting_date",
+  "workorder_date",
   "description",
   "work_order_type",
   "work_order_status",
   "location",
+  "room",
   "priority",
-  "photo"
+  "photo",
+  "assign_employee_tab",
+  "assign_employee"
  ],
  "fields": [
   {
@@ -72,12 +76,38 @@
    "fieldtype": "Link",
    "label": "Property",
    "options": "Business Branch"
+  },
+  {
+   "fetch_from": "location.room",
+   "fieldname": "room",
+   "fieldtype": "Link",
+   "label": "Room",
+   "options": "Room",
+   "search_index": 1
+  },
+  {
+   "fieldname": "workorder_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Workorder Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "assign_employee_tab",
+   "fieldtype": "Tab Break",
+   "label": "Assign Employee"
+  },
+  {
+   "fieldname": "assign_employee",
+   "fieldtype": "Table",
+   "label": "Assign Employee",
+   "options": "Work Order Employee"
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-14 18:18:17.092982",
+ "modified": "2024-12-20 15:11:34.025380",
  "modified_by": "Administrator",
  "module": "Housekeeping",
  "name": "Work Order",

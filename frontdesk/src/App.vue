@@ -1,7 +1,7 @@
 <template>
     <template v-if="hasProperty">
         <ComIsTrainingMessage />
-        <main-layout v-if="$route.meta.layout!='blank_layout' && ui=='main_layout'" />
+        <main-layout v-if="$route.meta.layout!='blank_layout'" :nested_layout="$route.meta.nested_layout" />
         <BlankLayout v-else />
     </template>
     <Property v-else />

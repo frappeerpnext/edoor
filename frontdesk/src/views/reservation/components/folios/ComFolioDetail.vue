@@ -7,7 +7,8 @@
                     <ComFolioAction @onRefresh="onRefresh" :folio="doc"
                         :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio == 1)"
                         :accountCodeFilter="{ is_guest_folio_account: 1 }" />
-                    <div class="grid">
+                     
+                        <div class="grid">
                         <div class="col">
                             <table class="mb-4">
                                 <tr>

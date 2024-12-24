@@ -10,6 +10,7 @@
     "copy-html-entry": "cp ../edoor/public/frontdesk/index.html ../edoor/www/frontdesk.html"
   },
   "dependencies": {
+    "18": "^0.0.0",
     "@fullcalendar/core": "^5.11.5",
     "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/resource": "^6.1.8",

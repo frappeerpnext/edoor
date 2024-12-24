@@ -1,22 +1,24 @@
 <template lang="">
     <div class="flex">
-        <template v-if="route.name != 'RoomInventory'">
-            <Button class="border-y-none border-left-none border-noround-right"  v-tippy = " v-tippy == 'room_type' ? $t('Room List View') : $t('Room Type View')" @click="onView()">
-                <img v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
-                <img v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
-            </Button>
-            <div class="mr-2 relative h-full">
-                <Button type="button" class="h-full border-none border-noround-left btn-set__h" icon="pi pi-angle-down"  @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
-                <Menu ref="menu" id="peroid_menu" :popup="true" :model="items">
-                    <template #item="data">
-                        <button
-                            :class="active == data.item.key ? 'bg-gray-300' : 'bg-white'"
-                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                            <div class="flex items-center gap-2"> <ComIcon :icon="data.item.icon" style="height: 16px;" />  {{$t(data.item.label)}} </div>
-                        </button>
-                    </template>
-                </Menu>
-            </div>
+        <template v-if="(route.name != 'RoomInventory')">
+            <template v-if="viewRTAndDateLength">
+                <Button class="border-y-none border-left-none border-noround-right"  v-tippy = " v-tippy == 'room_type' ? $t('Room List View') : $t('Room Type View')" @click="onView()">
+                    <img v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
+                    <img v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
+                </Button>
+                <div class="mr-2 relative h-full">
+                    <Button type="button" class="h-full border-none border-noround-left btn-set__h" icon="pi pi-angle-down"  @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
+                    <Menu ref="menu" id="peroid_menu" :popup="true" :model="items">
+                        <template #item="data">
+                            <button
+                                :class="active == data.item.key ? 'bg-gray-300' : 'bg-white'"
+                                class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                                <div class="flex items-center gap-2"> <ComIcon :icon="data.item.icon" style="height: 16px;" />  {{$t(data.item.label)}} </div>
+                            </button>
+                        </template>
+                    </Menu>
+                </div>
+            </template>
         </template>
         <template v-else>
             <Button class="border-y-none border-left-none border-noround-right white-space-nowrap">
@@ -40,8 +42,10 @@
         <Button @click="onToday('today')"  v-tippy ="$t('View Today')"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
         <Button @click="onPrevNext('next')"  v-tippy ="$t('View Next Day')" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
 
-        <div class="border-left-1 border-primary-100 m-2"></div>
-        <Button v-if="!hideRefresh" @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b adjBtnRefresh"></Button>
+        <template v-if="!hideRefresh">
+            <div class="border-left-1 border-primary-100 m-2"></div>
+            <Button  @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b adjBtnRefresh"></Button>
+        </template>
 
     </div>
 </template> 
@@ -63,6 +67,10 @@ const props = defineProps({
     viewType: {
         type: String,
         default: '<room_type>'
+    },
+    viewRTAndDateLength: {
+        type: Boolean,
+        default: true
     },
     hideRefresh: Boolean
 })

@@ -1,4 +1,4 @@
-<template>
+<template> 
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
@@ -307,6 +307,7 @@ const dialog = useDialog();
 
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
+    // console.log(data[column.fieldname])
 }
 
 

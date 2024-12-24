@@ -404,14 +404,20 @@
                 :clear="false" />
         </div> 
         
-        <div class="col-12 lg:col-3" v-if="hasFilter('row_group')">
+        <div class="col-12 lg:col-3 " v-if="hasFilter('row_group')">
+          
             <label>{{ $t('Group By') }}</label><br/>
             <ComSelect class="auto__Com_Cus w-full" v-model="filter.row_group" placeholder="Group By"
                 :options="['Date', 'Month', 'Room Type' , 'Reservation Type','Business Source','Business Source Type','Guest Type','Nationality']" 
                 />
         </div>
-
-
+         <!-- this group by is get from print format -->
+        <div class="col-12 lg:col-3 "  v-if="print_format && groupByFields && groupByFields.length>0">
+            <label>{{ $t('Group By') }}</label><br/>
+            <ComSelect class="auto__Com_Cus w-full" v-model="filter.group_by" placeholder="Group By" optionLabel="label" optionValue="fieldname" 
+                :options="groupByFields" 
+                />
+        </div>
         <!-- this sort option is get from print format -->
         <div v-if="print_format && print_format?.show_sort_order_option && sortOrderFields && sortOrderFields.length>0" class="col-12 lg:col-3">
             <label> {{ $t('Order by') }} </label><br/>
@@ -428,6 +434,19 @@
                 :options="['ASC', 'DESC']" 
                 :clear="false" />
         </div> 
+        <div class="col-12 lg:col-3 mt-4"  v-if="hasFilter('show_note')">
+            <div class="h-full" >
+                <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                <div>
+                    <label for="filter_is_active" class="font-medium cursor-pointer">Hide/Show show Note</label>
+                </div>
+                <div>
+                    <Checkbox class="mx-3" v-model="filter.show_note" :binary="true" trueValue="1"
+                            falseValue="0" /> 
+                </div>
+                </div>
+            </div>   
+        </div>
       
         
     </div>
@@ -447,6 +466,8 @@ const props = defineProps({
 })
 const print_format = ref({})
 const sortOrderFields =ref([])
+const groupByFields =ref([])
+
 
 let report_filter =  localStorage.getItem("report_filter")
 if (report_filter){
@@ -475,12 +496,25 @@ watch(selectedReport, (newVal, oldVal) => {
 
 function getSortOrderField(){
     delete props.filter["order_by"]
+    delete props.filter["group_by"]
     getDoc("Print Format",decodeURIComponent(selectedReport.value.report_name)).then((doc)=>{
        print_format.value = doc
         if(doc.show_sort_order_option==1 && doc.short_order_field){
             sortOrderFields.value =  JSON.parse( doc.short_order_field)
         }else {
             sortOrderFields.value =  []
+        }
+        if(doc.group_by_field == ""){
+            groupByFields.value = []
+        }else{
+            groupByFields.value = JSON.parse( doc.group_by_field)
+        
+            for (let item of groupByFields.value) {
+  if (item.default === 1) {
+    props.filter.group_by = item.fieldname;
+    break;
+  }
+}
         }
     })
 }

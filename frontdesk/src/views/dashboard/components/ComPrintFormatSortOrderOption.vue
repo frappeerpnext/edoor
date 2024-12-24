@@ -10,6 +10,10 @@
   <ComSelect class="ml-2" v-model="order_by_type"   placeholder="Sort Order Type"
                             @onSelected="onSelectFilter" :options='["ASC","DESC"]' :clear="false" />               
             </div>
+            <div class="col-fix">
+ <ComSelect class="ml-2"  v-model="group_by"  placeholder="Group By Field"
+                            @onSelected="onSelectFilter" :options='groupByFields'  optionLabel="label" optionValue="fieldname"    />
+            </div>
         </div>
           
 
@@ -27,13 +31,15 @@ import { ref, onMounted,  getDoc } from "@/plugin"
     })
 const doc = ref({})
 const sortOrderFields = ref([])
+const groupByFields = ref([])
 const order_by = ref("")
+const group_by = ref("")
 const order_by_type = ref("ASC")
 
 const emit = defineEmits(['onSelected'])
 
 function onSelectFilter (){
-    emit("onSelected",{order_by:order_by.value, order_by_type:order_by_type.value})
+    emit("onSelected",{order_by:order_by.value, order_by_type:order_by_type.value,group_by:group_by.value})
 }
 
 onMounted(() => {  
@@ -45,6 +51,11 @@ onMounted(() => {
             sortOrderFields.value =  []
         }else {
             sortOrderFields.value =  JSON.parse( doc.value?.short_order_field)
+        }
+        if(doc.value?.group_by_field == ""){
+            groupByFields.value = []
+        }else{
+            groupByFields.value = JSON.parse( doc.value?.group_by_field)
         }
     })
 })

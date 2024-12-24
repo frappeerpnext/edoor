@@ -1,9 +1,12 @@
 # Copyright (c) 2024, Tes Pheakdey and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 
 
 class WorkOrder(Document):
-	pass
+	def validate(self):
+		self.workorder_date = self.workorder_date or self.posting_date
+  
+			

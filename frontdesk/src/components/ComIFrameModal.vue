@@ -94,8 +94,8 @@
                                 placeholder="Room Type Group" doctype="Room Type Group"></ComSelect>
                         </div>
                         <div v-if="hasFilter('room_type')">
-                            <ComSelect v-model="filters.room_type" extraFields="room_type" optionLabel="room_type"
-                                optionValue="room_type" @onSelected="reloadIframe" placeholder="Room Type"
+                            <ComSelect v-model="filters.room_type_id" extraFields="room_type" optionLabel="room_type"
+                                optionValue="name" @onSelectedValue="onSelectRoomType" placeholder="Room Type"
                                 doctype="Room Type" :filters="[['property', '=', property_name]]"></ComSelect>
                         </div>
                         <div v-if="hasFilter('reservation_status')">
@@ -234,11 +234,12 @@
                             @onSelected="reloadIframe" :options='sortOrderFields' optionLabel="label" optionValue="fieldname"    />
 
                             <ComSelect class="ml-2" v-model="filters.order_by_type" placeholder="Sort Order Type"
-                            @onSelected="reloadIframe" :options='["ASC","DESC"]' :clear="false" />
+                            @onSelected="reloadIframe"  :options='["ASC","DESC"]' :clear="false" />
 
 
                         </div>
-
+                        <ComSelect v-if="groupByFields && groupByFields.length>0"  v-model="filters.group_by" placeholder="Group By Field"
+                            @onSelected="reloadIframe"  :options='groupByFields' optionLabel="label" optionValue="fieldname"  />
                     </div>
                  
                        
@@ -294,7 +295,6 @@ const iframe_id = "iframe_" + Math.random().toString().replace(".", "_")
 const moment = inject("$moment")
 const frappe = inject("$frappe")
 const call = frappe.call()
-
  
 const filters = ref({
     invoice_style: window.setting.folio_transaction_style_credit_debit == 1 ? "Debit/Credit Style" : "Simple Style",
@@ -329,6 +329,7 @@ const props = defineProps({
 })
 
 const sortOrderFields = ref([])
+const groupByFields = ref([])
 
  
 const loading = ref(false)
@@ -358,7 +359,7 @@ const hasFilter = ref((f) => {
 
 function onIframeLoaded() {
 
- 
+  
     loading.value = false;
 
     if (!dialogRef.value.data.view) {
@@ -387,8 +388,9 @@ function onIframeLoaded() {
 const param = ref({
 
 })
-const loadIframe = () => {
 
+const loadIframe = () => {
+    param.value.group_by = ''
     loading.value = true;
     param.value.doc = decodeURIComponent(dialogRef.value.data.doctype)
     param.value.name = decodeURIComponent(dialogRef.value.data.name)
@@ -408,6 +410,8 @@ const loadIframe = () => {
     param.value.building = ""
     param.value.housekeeping_status = ""
     param.value.room_type_group= ""
+    param.value.room_type= ""
+    param.value.room_type_id= ""
 
     if (view.value) {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + encodeURIComponent(decodeURI( dialogRef.value.data.name)) + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
@@ -479,6 +483,8 @@ function onPrint() {
     document.getElementById(iframe_id).contentWindow.print()
 }
 const reloadIframe = debouncer(() => {
+ 
+  
     loadIframe()
 }, 1000);
 
@@ -494,6 +500,15 @@ function debouncer(fn, delay) {
     };
 }
 
+
+function onSelectRoomType(data){
+    
+    filters.value.room_type= data?.room_type || ""
+    filters.value.room_type_id= data?.name || ""
+
+    reloadIframe()
+
+}
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
         if (e.data.action == "ComIframeModal") {
@@ -511,10 +526,12 @@ onMounted(() => {
     getDoc("Print Format",decodeURIComponent(dialogRef.value.data.report_name)).then((doc)=>{
         print_format.value = doc
         
-        if(!print_format.value?.short_order_field){
+        if(!print_format.value?.short_order_field || !print_format.value?.group_by_field){
             sortOrderFields.value =  []
+            groupByFields.value = []
         }else {
             sortOrderFields.value =  JSON.parse( print_format.value?.short_order_field)
+            groupByFields.value =  JSON.parse( print_format.value?.group_by_field)
         }
     })
     if (window.isMobile) {

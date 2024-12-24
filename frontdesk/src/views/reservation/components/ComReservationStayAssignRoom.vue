@@ -48,10 +48,9 @@
                             <Dropdown v-model="selectedStay.room_type_id" :options="room_types" optionValue="name"
                                 @change="onSelectRoomType" optionLabel="room_type" placeholder="Select Room Type"
                                 class="w-full"  >
-
                                 <template #option="slotProps">
                                     <div class="flex align-items-center">
-                                 <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
+                                 <div>{{slotProps.option.room_type_alias}} - {{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
                                   </div>
                                 </template>
                             </Dropdown>
@@ -59,11 +58,23 @@
                                 
                             </td>
                             <td class="px-2 select-room-number-style">
-                                <div class="w-13rem lg:w-full">
+                                <div class=" lg:w-full flex">
                                     <Dropdown v-model="selectedStay.room_id"
                                         :options="rooms.filter(r=>r.room_type_id==selectedStay.room_type_id)"
                                         optionValue="name"   optionLabel="room_number"
-                                        placeholder="Select Room" showClear filter class="w-full"/>
+                                        placeholder="Select Room" showClear filter  class="w-full" 
+                                        
+                                        />
+                                        <div v-if="selectedStay?.room_id" class="flex gap-2 space-around ms-2">
+                                        <template  v-for="(am, icon_index) in room_amenities(selectedStay?.room_id)?.amenities" :key="icon_index">
+                                            <span class="box-input-detail flex " style="width: auto !important;" > 
+                                            <tippy :content="am.amenity">
+                                            <img   :src="am.icon" style="min-width:20px;max-width:20px" />
+                                        </tippy>
+                                    </span>
+                                        </template>
+
+                                    </div>
                                 </div>
                             </td>
                             <td class="text-center px-2">
@@ -120,7 +131,11 @@
     const rooms = ref([])
     const room_types = ref([])
     const dialog = useDialog();
- 
+    const room_amenities = (room_id) => {
+    const room = rooms.value?.find(r=>r.name == room_id)
+    return room
+
+}
     const onClose = (r) =>{ 
         dialogRef.value.close(r);
     }
@@ -156,7 +171,7 @@
             })
         }
 
-
+    
     const onSelectRoomType = (room_type) => {
 
         const rt = room_types.value.find(r=>r.name == room_type.value)
@@ -188,7 +203,7 @@
             return
         }
         loading.value = true    
-        selectedStay.value.property = window.property_name,
+        selectedStay.value.property = window.property_name
          postApi("reservation.assign_room",{data: selectedStay.value})
         .then((r)=>{
             loading.value = false

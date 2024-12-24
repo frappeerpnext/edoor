@@ -53,6 +53,10 @@
     <img v-else-if="icon == 'iconstayover'" :style="{'height' : height}" :class="class" :src="iconstayover"/>
     <img v-else-if="icon == 'RoomBlockIcon'" :style="{'height' : height}" :class="class" :src="RoomBlockIcon"/>
     <img v-else-if="icon == 'youtube'" :style="{'height' : height}" :class="class" :src="youtube"/>
+    <img v-else-if="icon == 'moonIcon'" :style="{'height' : height}" :class="class" :src="moonIcon"/>
+    <img v-else-if="icon == 'adultIcon'" :style="{'height' : height}" :class="class" :src="adultIcon"/>
+    <img v-else-if="icon == 'childIcon'" :style="{'height' : height}" :class="class" :src="childIcon"/>
+    <img v-else-if="icon == 'broomIcon'" :style="{'height' : height}" :class="class" :src="broomIcon"/>
 
 
     
@@ -126,6 +130,10 @@ import iconWalkIn from '@/assets/svg/walk-in-icon.svg'
 import iconPackage from '@/assets/svg/package-icon.svg'
 import RoomBlockIcon from '@/assets/svg/RoomBlockIcon.svg'
 import youtube from '@/assets/svg/youtube_icon.svg'
+import moonIcon from '@/assets/svg/icon-moon.svg'
+import adultIcon from '@/assets/svg/icon-adult.svg'
+import childIcon from '@/assets/svg/icon-kid.svg'
+import broomIcon from '@/assets/svg/icon-broom.svg'
 
 </script>
  

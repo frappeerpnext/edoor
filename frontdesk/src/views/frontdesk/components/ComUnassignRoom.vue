@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent hideButtonOK hideButtonClose :hideIcon="false" :loading="loading">
-       
+      
             <div class="flex justify-content-between">
                 <div class="col flex gap-2"  >
                     <div>
@@ -49,8 +49,9 @@
         
         <!-- end filter -->
         <div class="overflow-auto h-full mt-4">
+          
             <ComPlaceholder text="No Data" height="70vh" :is-not-empty="data?.length > 0">
-                <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
+                <DataTable  class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
                     stateStorage="local" stateKey="table_reservation_stay_unassign_room_list_state" scrollable
                     :reorderableColumns="true" :value="data" :tableStyle="`min-width: ${width}%`"
                     @row-dblclick="onViewReservationStayDetail">
@@ -102,6 +103,7 @@
                             </span>
                         </template>
                     </Column>
+                    
                 </DataTable>
             </ComPlaceholder>
         </div>

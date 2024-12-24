@@ -65,6 +65,7 @@ import Gv from './providers/gv';
 import Housekeeping from './providers/housekeeping';
 import Reservation from './providers/reservation';
 import ReservationStay from './providers/reservation_stay';
+import OperationDashboard from './providers/operation_dashboard';
 
 // directive
 import BadgeDirective from 'primevue/badgedirective';
@@ -307,6 +308,7 @@ const housekeeping = reactive(new Housekeeping());
 const desk_folio = reactive(new DeskFolio());
 const reservation = reactive(new Reservation());
 const reservation_stay = reactive(new ReservationStay());
+const operation_dashboard = reactive(new OperationDashboard());
  
 app.provide("$moment", moment)
 app.provide("$gv", gv)
@@ -314,6 +316,7 @@ app.provide("$housekeeping", housekeeping)
 app.provide("$desk_folio", desk_folio)
 app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
+app.provide("$operation_dashboard", operation_dashboard)
 
 
 //global property
@@ -349,7 +352,9 @@ if (setting) {
 	//attach permission
 	window.can_view_rate = setting.user.can_view_rate
 	 
-	let whitelist_route = ["OwnerDashboard","NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder","AccountCategorySortOrder","RoomSortOrder"]
+	let whitelist_route = ["OwnerDashboard","NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder","AccountCategorySortOrder","RoomSortOrder",
+		"AllReservation","ArrivalGuest","StayOverGuest","DepartureGuest"
+	]
 	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]
 	const router = getRoutes(whitelist_route, setting.edoor_setting.edoor_menu)
 

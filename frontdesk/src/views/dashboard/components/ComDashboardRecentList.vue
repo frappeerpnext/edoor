@@ -23,6 +23,7 @@ const param = ref({})
 const moment = inject("$moment")
 const gv = inject("$gv")
 const order_by = ref("")
+const group_by = ref("")
 const order_by_type = ref("ASC")
 
 watch(() => props.filters, (newValue, oldValue) => {
@@ -33,6 +34,7 @@ watch(() => props.filters, (newValue, oldValue) => {
 function onSelectSortOrder(sort_order_options) {
     order_by.value = sort_order_options.order_by
     order_by_type.value = sort_order_options.order_by_type
+    group_by.value = sort_order_options.group_by
     LoadData()
 }
 function LoadData() {
@@ -50,6 +52,7 @@ function LoadData() {
     param.value.refresh = (Math.random() * 16)
     param.value.order_by = order_by.value
     param.value.order_by_type = order_by_type.value
+    param.value.group_by = group_by.value
     if (props.filters.action) (
         param.value.action = props.filters.action
     )

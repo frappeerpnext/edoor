@@ -11,6 +11,7 @@
   "property",
   "building",
   "floor",
+  "alias",
   "sort_order",
   "room_position",
   "photo"
@@ -51,12 +52,20 @@
    "fieldname": "photo",
    "fieldtype": "Attach Image",
    "label": "Photo"
+  },
+  {
+   "fieldname": "alias",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Alias",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 10:15:41.851925",
+ "modified": "2024-12-20 13:51:02.692383",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Floor",

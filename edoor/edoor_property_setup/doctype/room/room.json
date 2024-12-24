@@ -139,7 +139,8 @@
    "fieldtype": "Link",
    "label": "Floor",
    "options": "Floor",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fetch_from": "room_type_id.room_type_group",
@@ -285,7 +286,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-16 15:38:02.617373",
+ "modified": "2024-12-20 13:51:23.222500",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

@@ -76,37 +76,37 @@ def merge_assign_values(data):
 def test_get_room():
     return get_room_list(
         property="ESTC Hotel",
-        date='2024-12-05',
-        group_by="Room Type"
+        date='2024-12-05'
     )
-    
+
+   
 @frappe.whitelist(methods="POST")
 def get_room_list(property,
-                  date, 
-                  group_by="Floor"
-                  ,room_type=None
+                  date,room_type=None
                   ,room_status=None, 
-                  housekeeping_status_code=None, 
                   floor=None,
                   building=None):
     
+  
 
     sql= """
         select 
-            name,
-            room_number,
-            room_type_id,
-            room_type,
-            floor,
-            building,
-            room_status,
-            housekeeping_status_code,
-            housekeeping_icon,
-            status_color
+            r.name,
+            r.room_number,
+            r.room_type_id,
+            r.room_type,
+            r.floor,
+            f.alias as floor_alias,
+            r.building,
+            r.room_status,
+            r.housekeeping_status_code,
+            r.housekeeping_icon,
+            r.status_color
         from `tabRoom` r 
+        inner join `tabFloor` as f on f.name = r.floor
         where
-            disabled = 0 and 
-            property = %(property)s 
+            r.disabled = 0 and 
+            r.property = %(property)s 
             
             
     """
@@ -134,19 +134,38 @@ def get_room_list(property,
             sql = sql + " and room_status = %(room_status)s"
             
     # house keeper
-            
-    
+
     
     sql = sql  + " order by r.sort_order,r.room_number"
     
-
     
     room_data = frappe.db.sql(sql,{"property":property},as_dict = 1)
 
     # get occupy and update to room
     occopy_data = get_occupy_data([d.get("name") for d in room_data],date)
+
+    work_order_employee = get_room_assign_user(property=property,date = date)
+   
+    room_has_work_order = get_room_has_work_order(property,date)
+    room_block_data =[]
+    
+    
+    if [d.get("name") for d in room_data if d.get("room_status") == "Room Block"]:
+        room_block_data = get_room_block_date(property=property,rooms= set([d.get("name") for d in room_data if d.get("room_status") == "Room Block"]))
     for r in room_data:
+        # has work order 
+        r["has_work_order"] = len([d for d in room_has_work_order if d.get("room") == r.get("name")])>0
+        # employee 
+        r["employee"] = [d for d in work_order_employee if d.get("room") == r.get("name")]
         stays =  [d for d in occopy_data if d.get("room_id") == r["name"]]
+        
+        # update block start date and end_date
+        if room_block_data:
+            room_block = [d for d in room_block_data if d.get("room_id") == r.get("name")]
+            if room_block:
+                room_block = room_block[0]
+                r["block_start_date"] = room_block.get("start_date")
+                r["block_end_date"] = room_block.get("end_date")
         
         r["is_arrival"] = len([d for d in stays if d.get("is_arrival")==1])>0
         r["is_stay_over"] = len([d for d in stays if d.get("is_stay_over")==1])>0
@@ -164,23 +183,25 @@ def get_room_list(property,
             r["group_color"] = stay.get("group_color")
             r["adult"] = stay.get("adult")
             r["child"] = stay.get("child")
+            r["guest_name"] = stay.get("guest_name")
             
-
-    # group_data = [] 
-    # if group_by =="Room Type":
-
-    #     group_data   = frappe.db.sql("select name, concat(alias,'-',room_type) as  label from `tabRoom Type` where property =%(property)s and name in %(room_type)s order by sort_order, room_type",{"property":property,"room_type":set([d.get("room_type_id") for d in room_data])},as_dict = 1)
-       
-        
-    #     for rt in group_data:
-    #         rt["data"] = [d for d in room_data if d.get("room_type_id") == rt.get("name")]
-            
-    # elif group_by == "Floor":
-    #     group_data = frappe.db.sql("select name, floor as  label from `tabFloor` where    name in %(floor)s order by sort_order,floor",{ "floor":set([d.get("floor") for d in room_data])},as_dict = 1)
-    #     for f in group_data:
-    #         f["data"] = [d for d in room_data if d.get("floor") == f.get("name")]
-        
+ 
     return room_data
+
+def get_room_block_date(property,rooms):
+    sql = """
+        select 
+            room_id,
+            start_date,
+            end_date
+        from `tabRoom Block` 
+        where
+            property = %(property)s and 
+            room_id in %(rooms)s and 
+            is_unblock = 0
+            
+    """
+    return frappe.db.sql(sql,{"property":property,"rooms":rooms},as_dict = 1)
 
 def get_occupy_data(room_ids,date):
     sql = """
@@ -195,7 +216,8 @@ def get_occupy_data(room_ids,date):
             st.reservation_color_code,
             st.reservation_color,
             st.status_color as reservation_status_color,
-            st.group_color
+            st.group_color,
+            a.guest_name
         from `tabRoom Occupy` a
         inner join `tabReservation Stay`  st on st.name = a.reservation_stay
         where
@@ -209,3 +231,34 @@ def get_occupy_data(room_ids,date):
     data = frappe.db.sql(sql,{"room_ids":room_ids,"date":date},as_dict = 1)
 
     return data
+
+
+
+def get_room_has_work_order(property,date):
+    sql = "select distinct room from `tabWork Order` where property=%(property)s and workorder_date=%(date)s and coalesce(room,'')!='' and work_order_status not in ('Closed','Cancelled')" 
+    return frappe.db.sql(sql,{"property":property,"date":date},as_dict =1)
+
+def get_room_assign_user(property,date):
+  
+    sql = """
+        select 
+            b.room,
+            a.employee, 
+            a.employee_name
+        from `tabWork Order Employee` a 
+            inner join `tabWork Order` b on b.name = a.parent
+        where 
+            b.property=%(property)s and 
+            b.workorder_date=%(date)s and 
+            b.work_order_status not in ('Closed','Cancelled') and 
+            coalesce(b.room,'') !=''
+    """
+    work_order_data = frappe.db.sql(sql,{
+        "property":property,
+        "date":date
+    },as_dict = 1)
+    
+    return work_order_data
+
+    
+    

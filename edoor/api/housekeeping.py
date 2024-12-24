@@ -51,7 +51,18 @@ def get_room_list(filter):
          disabled = 0
    """
    if 'room_type_id' in filter and  len(filter["room_type_id"])>0:
-      sql = sql + " and room_type_id in %(room_type_id)s "
+      if isinstance(filter.get("room_type_id"), str):
+      
+         sql = sql + " and room_type_id = %(room_type_id)s "
+      else:
+         sql = sql + " and room_type_id in %(room_type_id)s "
+      
+
+
+   if 'room_type' in filter and filter.get("room_type"):
+      
+      filter["room_type"]  = "%{}%".format(filter.get("room_type"))
+      sql = sql + " and room_type like %(room_type)s "
    
    if  'housekeeping_status' in filter and  len(filter["housekeeping_status"])>0:
       sql = sql + " and housekeeping_status in %(housekeeping_status)s "
@@ -73,6 +84,7 @@ def get_room_list(filter):
       
 
    data = frappe.db.sql(sql,filter,as_dict=1)
+   
    sql ="""
       select 
             date,
@@ -92,7 +104,10 @@ def get_room_list(filter):
          property = %(property)s 
    """
    if  'room_type_id' in filter and  len(filter["room_type_id"])>0:
-      sql = sql + " and room_type_id in %(room_type_id)s "
+      if isinstance(filter.get("room_type_id"), str):
+         sql = sql + " and room_type_id = %(room_type_id)s "
+      else:
+         sql = sql + " and room_type_id in %(room_type_id)s "
    
    if 'building' in filter and len(filter["building"])>0:
       sql = sql + " and building = %(building)s "

@@ -143,6 +143,9 @@ function onSearch() {
         f["order_by"] = filter.value.order_by
         f["order_by_type"] = filter.value.order_by_type || "asc"
     }
+    if (filter.value.group_by){
+        f["group_by"] = filter.value.group_by
+    }
     window.report_filter = filter.value
     localStorage.setItem("report_filter",JSON.stringify(filter.value) )
     emit("onFilter", f)

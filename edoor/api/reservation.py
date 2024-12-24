@@ -287,9 +287,9 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
         start_date = working_day["date_working_day"]
 
     #get all room type and total room 
-    sql_room_type = "select a.room_type_id as name, a.room_type, count(a.name) as total_room, 0 as occupy from `tabRoom` a inner join `tabRoom Type` rt on rt.name = a.room_type_id where a.disabled = 0 and a.property=%(property)s  group by a.room_type_id,a.room_type order by rt.sort_order"
+    sql_room_type = "select a.room_type_id as name, a.room_type, count(a.name) as total_room, 0 as occupy, a.room_type_alias from `tabRoom` a inner join `tabRoom Type` rt on rt.name = a.room_type_id where a.disabled = 0 and a.property=%(property)s  group by a.room_type_id,a.room_type order by rt.sort_order"
     if room_type_id:
-        sql_room_type = "select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property=%(property)s and room_type_id = %(room_type_id)s  group by room_type_id,room_type order by sort_order"
+        sql_room_type = "select room_type_id as name, room_type, count(name) as total_room, 0 as occupy, room_type_alias from `tabRoom` where disabled = 0 and property=%(property)s and room_type_id = %(room_type_id)s  group by room_type_id,room_type order by sort_order"
     
     room_type = frappe.db.sql(sql_room_type,{"property":property,"room_type_id":room_type_id},as_dict=1)
     

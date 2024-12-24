@@ -110,9 +110,23 @@ doc_events = {
 		],
         "after_insert":[
             "edoor.api.utils.update_comment_after_insert"
-		]
+		],
+        
         
 	},
+    
+    "ToDo":{
+        "after_insert":[
+            "edoor.mobile_api.ToDo.update_assigner_to_work_order_after_insert"
+		],
+        "on_update":[
+            "edoor.mobile_api.ToDo.update_assigner_to_work_order_on_update"
+		],
+        
+        
+        
+	},
+    
     # "Version":{
     #     "after_insert":[
     #         "edoor.api.utils.update_audit_trail_from_version"

@@ -812,6 +812,7 @@
    "fetch_if_empty": 1,
    "fieldname": "reservation_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Reservation Date"
   },
@@ -1032,7 +1033,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-06 10:56:28.254604",
+ "modified": "2024-12-21 14:19:59.862664",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

@@ -44,6 +44,12 @@ import Vendor from "@/views/vendor/Vendor.vue";
 import GuestFolio from "@/views/guest_ledger/GuestFolio.vue";
 import LostAndFoundList from "@/views/lost_and_found/LostAndFoundList.vue";
 
+import OperationDashboard from "@/views/operation_dashboard/OperationDashboard.vue";
+import AllReservation from "@/views/operation_dashboard/AllReservation.vue";
+import ArrivalGuest from "@/views/operation_dashboard/ArrivalGuest.vue";
+import StayOverGuest from "@/views/operation_dashboard/StayOverGuest.vue";
+import DepartureGuest from "@/views/operation_dashboard/DepartureGuest.vue";
+
 import Test from "@/views/test.vue";
 
 import authRoutes from './auth';
@@ -98,6 +104,12 @@ let routes = [
   { path: "/frontdesk/payable-ledger", name: "PayableLedger", component:PayableLedger, meta: { layout: 'payable_ledger',title:"Payable Ledger" } },
   { path: "/frontdesk/vendor", name: "Vendor", component:Vendor, meta: { layout: 'vendor',title:"Vendor" } },
   { path: "/frontdesk/guest-folio", name: "GuestFolio", component:GuestFolio, meta: { layout: 'guest_folio',title:"Guest Folio" } },
+  
+  { path: "/frontdesk/operation-dashboard", name: "OperationDashboard", component:OperationDashboard, meta: { layout: 'main_layout',title:"Operation Dashboard", nested_layout:"OperationDasboardLayout" } },
+  { path: "/frontdesk/operation-dashboard/all-reservation", name: "AllReservation", component:AllReservation, meta: { layout: 'main_layout',title:"All Reservation", nested_layout:"OperationDasboardLayout" } },
+  { path: "/frontdesk/operation-dashboard/arrival-guest", name: "ArrivalGuest", component:ArrivalGuest, meta: { layout: 'main_layout',title:"Arrival Guest", nested_layout:"OperationDasboardLayout" } },
+  { path: "/frontdesk/operation-dashboard/stay-over-guest", name: "StayOverGuest", component:StayOverGuest, meta: { layout: 'main_layout',title:"Stay Over Guest", nested_layout:"OperationDasboardLayout" } },
+  { path: "/frontdesk/operation-dashboard/departure-guest", name: "DepartureGuest", component:DepartureGuest, meta: { layout: 'main_layout',title:"Departure Guest", nested_layout:"OperationDasboardLayout" } },
   
   { path: "/frontdesk/test", name: "Test", component:Test, meta: { layout: 'main_layout',title:"Test" } },
  

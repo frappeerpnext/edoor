@@ -32,7 +32,7 @@
     })
     const {onClick} = inject('on_header_menu')
     const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-    const current_page = computed(() => useRoute().name)
+    const current_page = computed(() => useRoute()?.name)
     
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;

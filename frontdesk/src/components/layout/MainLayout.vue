@@ -102,8 +102,15 @@
         <ComCheckRoomConfligAndOverBooking/>  
         <div>
             <div class="wrap-page-content -mb-2 px-2">
+               <template v-if="nested_layout=='OperationDasboardLayout'">
+                <ComOperationDashboard >
+                    <router-view />
+                </ComOperationDashboard>
+            </template>
+            <template v-else>
                 
                 <router-view />
+            </template>
             </div>
             <div v-if="route.name != 'Frontdesk'" class="mt-3" style="height: 22px;"></div>
             <ComFooter />
@@ -132,10 +139,13 @@ import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
+import ComOperationDashboard from '@/components/layout/components/ComOperationDashboard.vue'
 
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
-
+const props = defineProps({
+    nested_layout:""
+})
 const isMobile = ref(window.isMobile)
 const theme =window.theme
 

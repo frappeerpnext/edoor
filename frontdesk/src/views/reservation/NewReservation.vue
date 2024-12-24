@@ -353,7 +353,7 @@
                                     <template #option="slotProps">
                                         <div class="flex align-items-center">
 
-                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room ||
+                                            <div>{{ slotProps.option.room_type_alias }} - {{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room ||
                                                 0 }})</div>
                                         </div>
                                     </template>
