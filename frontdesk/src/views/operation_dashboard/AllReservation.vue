@@ -1,7 +1,6 @@
 <template>
     <ComFilterOption />
         <div class="card">
-            
             <DataTable 
                  
                 :value="op.all_reservation_data?.data" 

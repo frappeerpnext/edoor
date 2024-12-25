@@ -355,5 +355,20 @@ def update_room_type_info_reservation():
     frappe.db.sql(sql)
     frappe.db.commit()
     
-    
-    
+@frappe.whitelist(allow_guest=True)
+def get_token():
+    import jwt
+
+    api_key ="MEe3NHcYjecXHTzmeNiZNTfo6dC8NvzckJMdoKswdQN"
+
+    payload = {
+    'user_email': 'pheakdey.micronet@gmail.com',
+    'integration_email': 'keosophal0985@gmail.com',
+    'external_id': 'TestForm123aaaworld',
+    'name': 'Testing foraaam 3',
+    'document_urls': ['https://www.kati.net/file/down.do?path=/upload/&fileName=13.+151012_Sale+Contract+%28Sample%29_Vietnam.pdf.pdf']
+    }
+
+    token = jwt.encode(payload, api_key, algorithm='HS256') # Encode the payload into a JWT
+    return token
+

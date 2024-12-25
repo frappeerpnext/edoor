@@ -1401,7 +1401,7 @@
  },
  {
   "code": "kp",
-  "country_name": "Korea, Democratic Peoples Republic of",
+  "country_name": "North Korea",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/kp.svg",
   "custom_lat": 126.904494,
   "custom_long": 39.790892,
@@ -1409,13 +1409,13 @@
   "docstatus": 0,
   "doctype": "Country",
   "modified": "2024-08-03 17:24:53.214069",
-  "name": "Korea, Democratic Peoples Republic of",
+  "name": "North Korea",
   "time_format": "HH:mm:ss",
   "time_zones": ""
  },
  {
   "code": "kr",
-  "country_name": "Korea, Republic of",
+  "country_name": "South Korea",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/kr.svg",
   "custom_lat": 127.862698,
   "custom_long": 36.732448,
@@ -1423,7 +1423,7 @@
   "docstatus": 0,
   "doctype": "Country",
   "modified": "2024-08-03 17:24:53.246816",
-  "name": "Korea, Republic of",
+  "name": "South Korea",
   "time_format": "HH:mm:ss",
   "time_zones": ""
  },
