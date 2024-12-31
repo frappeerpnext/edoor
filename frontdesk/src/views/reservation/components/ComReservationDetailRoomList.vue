@@ -5,14 +5,16 @@
                 <div class="flex justify-end sm:overflow-hidden">
                     <div>
                         <div class="card flex justify-content-center">
-                            <div class="filtr-rmm-list">
+                            <div class="filtr-rmm-list flex gap-2">
                                 <ComSelect :maxSelectedLabels="10" mClass="max-w-35rem" maxWidth="35rem" placeholder="Filter by Status" v-model="rs.filterStatusRooms" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus">
                                 </ComSelect>
+                                <Button v-if="canUnassignRoom" @click="onUnassignRoom">Group Unassign Room</Button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
+               
                     <DataTable :rowClass="rowClass" class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column  field="is_package"  bodyClass="text-center p-0" headerClass="text-center p-0">
@@ -149,13 +151,17 @@
     </ComReservationStayPanel> 
 </template>
 <script setup>
-import { inject, ref, useDialog } from '@/plugin'
+import { inject, ref, useDialog,postApi } from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
 import ComReservationStayListStatusBadge from '@/views/reservation/components/ComReservationStayListStatusBadge.vue'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
+import { useConfirm } from "primevue/useconfirm";
+
+const confirm = useConfirm();
 import {i18n} from '@/i18n';
+import { computed } from 'vue';
 const { t: $t } = i18n.global; 
 const rs = inject("$reservation")
 const gv = inject("$gv")
@@ -166,6 +172,13 @@ const can_view_rate = ref(window.can_view_rate)
 function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
 }
+
+const canUnassignRoom = computed(()=>{
+    if(rs.selecteds.length==0){
+        return false
+    }
+    return rs.selecteds.filter(r=>r.rooms !='').length> 0
+})
 
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
 status.value.push(
@@ -218,6 +231,40 @@ function showReservationStayDetail(selected) {
 function onAssignRoom(room_name, reservation_stay) {
     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')
 }
+function onUnassignRoom() {
+    if ( rs.selecteds.length>0){
+        confirm.require({
+        message: 'Do you want to unassign room of these selected stays?',
+        header: 'Group Unassign Room',
+        icon: 'pi pi-info-circle',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Unassing Room',
+        rejectClass: 'p-button-secondary p-button-outlined',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+            
+    rs.loading = true
+    postApi("reservation.group_unassign_room",{
+        reservation:rs.reservation.name,
+        reservation_stays: rs.selecteds.map(r=>r.name),
+        property: window.property_name
+    }).then(r=>{
+        
+        rs.LoadReservation(rs.reservation.name,false)
+    }).catch(err=>{
+        rs.loading = false
+    })
+        },
+        
+    });
+
+     
+} else {
+    alert("no selected")
+}
+}
+
+
 </script>
 <style scoped>
 .p-datatable>.p-datatable-wrapper {

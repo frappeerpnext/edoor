@@ -76,6 +76,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
+                                         
                                         <ComReservationRoomStayList />
                                     </div>
                                     <div class="col-12"> 

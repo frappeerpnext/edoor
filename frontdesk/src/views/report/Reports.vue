@@ -83,7 +83,7 @@ function onSelectReport(p) {
     }, 100)
 }
 function onFilter(f) {
-    console.log(f);
+   
     if (selectedReport.value) {
         filters.value = f 
 

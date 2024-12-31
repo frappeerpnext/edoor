@@ -44,7 +44,7 @@ const props = defineProps({
 });
 function onViewDetail(doctype,name){
    window.postMessage(`view_${doctype.toLowerCase().replaceAll(" ","_")}_detail|${name}`,"*")
-   console.log(`view_${doctype.toLowerCase().replaceAll(" ","_")}_detail|${name}`)
+ 
 }
 
 const fetchData = async () => {
@@ -62,10 +62,10 @@ watch(
   () => props.doc,
   (newDoc) => {
     if (newDoc && newDoc.document_type && newDoc.document_name) {
-      console.log('props.doc is ready, fetching data...');
+      
       fetchData();
     } else {
-      console.warn('props.doc is missing required properties.');
+      
     }
   },
   { immediate: true }

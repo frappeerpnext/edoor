@@ -365,6 +365,7 @@
                                     :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0) || (r.room_type_id == d.room_type_id && r.name == d.room_id))"
                                     optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
                                     :placeholder="$t('Select Room')" showClear filter class="w-full" />
+                                    
                                     <div v-if="d.room_id" class="flex gap-2 space-around">
                                         <template  v-for="(am, icon_index) in room_amenities(d.room_id)?.amenities" :key="icon_index">
                                             <span class="box-input-detail flex " style="width: auto !important;" > 

@@ -3,9 +3,11 @@
     <ComReservationStayPanel title="Group Assign Room">
         <template #content> 
     <div v-if="data?.length == 0"> {{ $t('No Reservation Stay to Assign Room') }} </div>
+
     <div v-else class="w-full overflow-auto">
     <table class="w-full" >
         <tr class="font-medium">
+            <td> {{ $t('Stay #') }} </td>
             <td> {{ $t('Stay Date') }} </td>
             <td> {{ $t('Guest') }} </td>
             <td>{{ $t('Rate Type')}} </td>
@@ -16,6 +18,7 @@
         </tr>
         <template  v-for="(d, index) in data" :key="index">
             <tr>
+                <td>{{ d.reservation_stay }}</td>
             <td>
                 <div class="box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt" >
                 <span  v-tippy="'Arrival date'"> {{ moment(d.start_date).format("DD-MM-YYYY") }}</span> &#8594;
@@ -47,8 +50,16 @@
            
             </td>
             <td class="p-2 select-room-number-style">
-                <Dropdown class="w-full" v-model="d.room_id" :options="get_rooms(d)" optionValue="name" 
-                    optionLabel="room_number" placeholder="Select Room" showClear filter />
+                <Dropdown class="w-full" v-model="d.new_room_id" :options="get_rooms(d)" optionValue="name" 
+                    optionLabel="room_number" placeholder="Select Room" showClear filter
+                       @change="onSelectRoom(d)"
+                    >
+                    <template #option="slotProps">
+                        <div class="flex align-items-center">
+                            <div>{{ slotProps.option.room_number }} -  {{ slotProps.option.room_type_alias }}</div>
+                        </div>
+                    </template>
+                </Dropdown>
 
             </td>
 
@@ -132,16 +143,13 @@ function get_room_types(d) {
 }
 
 const get_rooms = ref((d) => {
-
     if (room_data.value) {
         let rooms = []
         const roomNumbersToExclude = data.value.filter(r => r.room_id).map(r => r.room_id)
         rooms = room_data.value.find(r => r.start_date == d.start_date && r.end_date == d.end_date).rooms
-        rooms = rooms.filter(r => (r.room_type_id == d.new_room_type_id && !roomNumbersToExclude.includes(r.name)) || (r.name == d.room_id && r.room_type_id == d.new_room_type_id))
-
-
+        // rooms =  rooms.filter(r => (r.room_type_id == d.new_room_type_id && !roomNumbersToExclude.includes(r.name)) || (r.name == d.room_id && r.room_type_id == d.new_room_type_id))
+        rooms =  rooms.filter(r =>   !roomNumbersToExclude.includes(r.name) || r.name == d.room_id)
         return rooms
-
     } else {
         return []
     }
@@ -164,6 +172,27 @@ const onSelectRoomType = (d) => {
 
     onUpdateRate(d)
 }
+
+
+const onSelectRoom = (d) => {
+    let rooms = []
+    
+    rooms = room_data.value.find(r => r.start_date == d.start_date && r.end_date == d.end_date).rooms
+    const new_room = rooms.find(r=>r.name == d.new_room_id)
+    d.room_id = d.new_room_id
+    
+    const  room_types = get_room_types(d)
+    
+    if (room_types){
+        const rt = room_types.find(r=>r.name==new_room.room_type_id)
+        if (new_room && d.room_type_id != new_room.room_type_id && rt){
+            d.new_room_type_id = new_room.room_type_id
+            onUpdateRate(rt)
+      }
+    }
+ 
+   }
+
 
 
 

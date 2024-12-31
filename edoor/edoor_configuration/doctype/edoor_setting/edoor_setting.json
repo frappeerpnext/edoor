@@ -36,6 +36,12 @@
   "powered_by_text",
   "column_break_jeaq",
   "help_url",
+  "server_report_section",
+  "server_report_url",
+  "report_service_url",
+  "sever_report_folder",
+  "column_break_jloe",
+  "server_report_token",
   "housekeeping_status_tab",
   "housekeeping_status_after_check_in",
   "housekeeping_status_after_check_out",
@@ -440,12 +446,43 @@
    "fieldname": "folio_operation_setting",
    "fieldtype": "JSON",
    "label": "Folio Operation Setting"
+  },
+  {
+   "fieldname": "server_report_section",
+   "fieldtype": "Section Break",
+   "label": "Server Report"
+  },
+  {
+   "fieldname": "server_report_url",
+   "fieldtype": "Data",
+   "label": "Server Report URL",
+   "length": 250
+  },
+  {
+   "fieldname": "sever_report_folder",
+   "fieldtype": "Data",
+   "label": "Sever Report Folder"
+  },
+  {
+   "fieldname": "column_break_jloe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "server_report_token",
+   "fieldtype": "Small Text",
+   "label": "Server Report Token"
+  },
+  {
+   "fieldname": "report_service_url",
+   "fieldtype": "Data",
+   "label": "Report Service URL",
+   "length": 250
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-10-19 13:51:49.230546",
+ "modified": "2024-12-27 14:41:20.998705",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

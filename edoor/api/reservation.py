@@ -243,6 +243,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
             distinct
             room_type_id,
             room_type,
+            room_type_alias,
             name,
             room_number
         from `tabRoom` 
@@ -3358,20 +3359,103 @@ def unassign_room(reservation_stay, room_stay):
     frappe.msgprint(frappe._("Unassign room successfully"))
     return doc
 
+@frappe.whitelist(methods="POST")
+def group_unassign_room(reservation_stays,reservation,property):
+    sql  = "select name from `tabReservation Stay` where name in %(stays)s and reservation_status in ('Reserved','No Show')"
+    stays = frappe.db.sql(sql,{"stays":reservation_stays},as_dict = 1)
+    if not stays:
+        frappe.throw("There is no reservation stay that can unassign room.")
+    working_day = get_working_day(property)
+    
+    for stay in stays:
+        doc = frappe.get_doc('Reservation Stay', stay)
+        if doc.reservation_status == 'No Show' and  getdate(working_day["date_working_day"])>= getdate(doc.departure_date):
+            frappe.throw("This no show reservation is in the past date. You cannot change Information".format(doc.reservation_status))
 
+        for s in doc.stays:
+            s.room_id = None
+            s.room_number = None
+
+        if not doc.reservation_status=="No Show":
+            if len([d for d in doc.stays if d.room_id])>0:
+                doc.reservation_status ="Reserved"
+            else:
+                doc.reservation_status ="Confirmed"
+
+        doc.save()
+        
+        
+       
+
+    #clear room id and room number from  temp room occupy and room occupy 
+    frappe.db.sql("update `tabTemp Room Occupy` set room_id=null, room_number=null where reservation_stay in %(stays)s",
+                {"stays":[d.get("name") for d in stays]}
+    )
+    
+    frappe.db.sql("update `tabRoom Occupy` set room_id=null, room_number=null where reservation_stay in %(stays)s",
+                {"stays":[d.get("name") for d in stays]}
+    )
+    
+    
+    #clear room id and room number from reservation room rate
+    frappe.db.sql("update `tabReservation Room Rate` set room_id=null, room_number=null where reservation_stay  in %(stays)s",
+                {"stays":[d.get("name") for d in stays]}
+                )
+        
+    # update room id room number to forecase revenue
+    
+    sql = """
+        update `tabRevenue Forecast Breakdown` a
+        join `tabReservation Room Rate` b on b.name = a.room_rate_id
+        SET
+            a.room_id ='',
+            a.room_number = ''
+        where
+            a.reservation_stay  in  %(stays)s
+    """
+    frappe.db.sql(sql, 
+                {"stays":[d.get("name") for d in stays]}  
+    )
+    
+    # folio transaction
+    sql = """
+            update `tabFolio Transaction` ft 
+            SET
+                ft.room_id = '',
+                ft.room_number = '',
+                ft.room_type_id = '',
+                ft.room_type_alias = '',
+                ft.room_type = ''
+            where
+                source_reservation_stay in  %(stays)s 
+    """
+    
+    frappe.db.sql(sql,  {"stays":[d.get("name") for d in stays]}  )
+    
+    
+    if doc:
+        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation, reservation_stay=[d.get("name") for d in stays])
+        
+    
+
+    
+    
+    frappe.db.commit()
+
+    frappe.msgprint(frappe._("Unassign room successfully"))
+    
 @frappe.whitelist(methods="POST")
 def assign_room(data):
-    if 'room_id' in data:
-        if not data['room_id']:
-            frappe.throw(_("Please select a room to assign."))
-    else:
-        frappe.throw(_("Please select a room to assign."))
+    # if 'room_id' in data:
+    #     if not data['room_id']:
+    #         frappe.throw(_("Please select a room to assign."))
+    # else:
+    #     frappe.throw(_("Please select a room to assign."))
         
     # validate room available
     if frappe.get_cached_value("eDoor Setting",None,"enable_over_booking") == 0:
         
         if data.get("room_type_id") != data.get("old_room_type_id"):
-            
             room_type_availability = check_room_type_availability(
                 property=data.get("property"),
                 room_type_id=data.get("room_type_id"),
@@ -3395,13 +3479,16 @@ def assign_room(data):
     for s in doc.stays:
           
         if s.name == data['stay_room']:
-            s.room_id = data['room_id'] or None
+            s.room_id = data.get("room_id","")
             s.room_type_id = data['room_type_id']
             #update room number to room room occupy and temp room occupy
-            room_number = frappe.db.get_value("Room", data["room_id"],"room_number")
+            room_number = ""
+            if data.get("room_id"):
+                room_number = frappe.db.get_value("Room", data["room_id"],"room_number")
+            
             frappe.db.sql("update `tabTemp Room Occupy`  set room_type_id=%(room_type_id)s, room_type=%(room_type)s , room_id = %(room_id)s,room_number=%(room_number)s where stay_room_id=%(stay_room_id)s", 
                           {
-                              "room_id":data["room_id"],
+                              "room_id": data.get("room_id",""),
                               "room_number":room_number,
                               "room_type_id":data["room_type_id"],
                               "room_type":data["room_type"],
@@ -3421,7 +3508,7 @@ def assign_room(data):
                         where 
                             stay_room_id=%(stay_room_id)s""", 
                     {
-                        "room_id":data["room_id"],
+                        "room_id":data.get("room_id",""),
                         "room_number":room_number,
                         "room_type_id":data["room_type_id"],
                         "room_type":data["room_type"],
@@ -3434,7 +3521,8 @@ def assign_room(data):
             if   'is_override_rate' in data and  data['is_override_rate'] and  data['rate'] != data["old_rate"]:
               
                 s.input_rate = data['rate']
-                update_reservation_stay_room_rate(data = {"rate": data["rate"], "stay_room_id":  s.name,"room_type":data["room_type"],"room_type_id":data["room_type_id"], "room_id":data["room_id"],"room_number":room_number  })
+                update_reservation_stay_room_rate(data = {"rate": data["rate"], "stay_room_id":  s.name,"room_type":data["room_type"],"room_type_id":data["room_type_id"], "room_id":data.get("room_id",""),"room_number":room_number  })
+                
             else:
                 #update room type and room number to room rate only
                
@@ -3444,7 +3532,7 @@ def assign_room(data):
                                 "room_type":data["room_type"],
                                 "room_type_id":data["room_type_id"],
                                 "room_type_alias":frappe.db.get_value("Room Type", data["room_type_id"],"alias"),
-                                "room_id":data["room_id"],
+                                "room_id":data.get("room_id",""),
                                 "room_number":room_number
                             })
                 
@@ -3473,7 +3561,7 @@ def assign_room(data):
     
     frappe.db.sql(sql,{
         "reservation_stay":doc.name, 
-        "room_id":doc.stays[0].room_id,
+        "room_id": doc.stays[0].room_id,
         "room_number":doc.stays[0].room_number,
         "room_type_id":doc.stays[0].room_type_id,
         "room_type_alias":doc.stays[0].room_type_alias,
@@ -3482,7 +3570,7 @@ def assign_room(data):
     
     
     frappe.db.commit()
-    frappe.msgprint(_("Assign room successfully"))
+    frappe.msgprint(_("Update successfully"))
     if old_status=='No Show':
         frappe.msgprint(_("Reservation has been change from No Show to Reserved"))
     return doc

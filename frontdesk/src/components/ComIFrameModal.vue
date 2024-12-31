@@ -1,7 +1,13 @@
 <template>
- 
     <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
-     
+      
+        <template v-if="print_format?.use_report_server==1">
+            <ComServerReportViewer :report_name="print_format.server_report_name" :params ="server_report_params" />
+        </template>
+        <template v-else>
+
+       
+        
         <div class="p-3" :class="(view || '') != 'ui' ? 'grid': ''">
             <div :class="(view || '') != 'ui' ? 'col-4 lg:col-3' : ''">
                 <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
@@ -280,11 +286,13 @@
                 </div>
             </div>
         </div>
+    </template>
     </div>
 </template>
 <script setup>
 import { ref, onMounted, inject, onUnmounted,getDoc } from "@/plugin"
 import { computed } from "vue";
+import ComServerReportViewer from "@/components/ComServerReportViewer.vue";
 const dialogRef = inject("dialogRef");
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 
@@ -295,7 +303,7 @@ const iframe_id = "iframe_" + Math.random().toString().replace(".", "_")
 const moment = inject("$moment")
 const frappe = inject("$frappe")
 const call = frappe.call()
- 
+const server_report_params = ref([])
 const filters = ref({
     invoice_style: window.setting.folio_transaction_style_credit_debit == 1 ? "Debit/Credit Style" : "Simple Style",
     show_room_number: 1,
@@ -522,7 +530,8 @@ const actionRefreshData = async function (e) {
 
 onMounted(() => {
     
-   
+    server_report_params.value = dialogRef.value.data?.server_report_params ||[]
+
     getDoc("Print Format",decodeURIComponent(dialogRef.value.data.report_name)).then((doc)=>{
         print_format.value = doc
         
@@ -533,7 +542,7 @@ onMounted(() => {
             sortOrderFields.value =  JSON.parse( print_format.value?.short_order_field)
             groupByFields.value =  JSON.parse( print_format.value?.group_by_field)
         }
-    })
+  
     if (window.isMobile) {
         let elem = document.querySelectorAll(".p-dialog");
         if (elem) {
@@ -559,6 +568,9 @@ onMounted(() => {
     }
 
     loadIframe()
+    
+})
+
 });
 
 onUnmounted(() => {

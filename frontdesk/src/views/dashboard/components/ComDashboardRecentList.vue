@@ -9,7 +9,7 @@
 
 
 <script setup>
-import { inject, ref, onMounted, computed, getApi,watch } from '@/plugin'
+import { inject, ref, onMounted, onUnmounted,computed, getApi,watch } from '@/plugin'
 import ComPrintFormatSortOrderOption from '@/views/dashboard/components/ComPrintFormatSortOrderOption.vue';
 
 const props = defineProps({
@@ -66,10 +66,33 @@ function LoadData() {
 
     })
 }
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComDashboardDataRecentList"){
+        
+                LoadData()
+              
+           
+        }
+    };
+}
+ 
+
 onMounted(() => {
 
     LoadData()
+
+    window.addEventListener('message', actionRefreshData, false); 
 })
+
+
+
+onUnmounted(() => {
+    window.removeEventListener('message', actionRefreshData, false);
+    
+})
+
+
 
 
 

@@ -172,6 +172,7 @@ function onUnassignRoom(data){
                 window.postMessage({action:"GuestLedger"},"*")
                 window.postMessage({action:"GuestLedgerTransaction"},"*")
                 window.postMessage({action:"Reports"},"*")
+                window.postMessage({action:"ComDashboardDataRecentList"},"*")
 
             }).catch(()=>{
                 loading.value = false

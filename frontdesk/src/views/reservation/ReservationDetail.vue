@@ -74,6 +74,7 @@
                         </div>
                     </div>
                     <div class="pt-2">
+                        
                         <ComReservationDetailRoomList />
                     </div>
                     <div class="pt-3">

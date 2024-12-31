@@ -40,7 +40,7 @@ export default class Auth {
 	}
 
 	async resetPassword(email) {
-		console.log('resetting password');
+	 
 		// Implement if you want
 	}
 }

@@ -2,8 +2,10 @@ from builtins import str
 import frappe
 import base64
 from edoor.api import frontdesk
+
 @frappe.whitelist(allow_guest=True)
 def check_api_url(property_code):
+   
     sql = "select  * from `tabBusiness Branch` where property_code = '{}'".format(property_code)
     data = frappe.db.sql(sql,as_dict =1)
     if data:

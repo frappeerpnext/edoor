@@ -121,7 +121,7 @@ const onSelectStartDate = (date) => {
 
 function onSearch() {
     let f = {}
-    console.log(filter.value);
+ 
     const filter_option = props.selectedReport.filter_option + ",_lang,letterhead"
     if (filter_option) {
         filter_option.split(",").forEach(r => {

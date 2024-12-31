@@ -1,8 +1,9 @@
 
 window.theme = "estc"
-
+ 
 import './index.css';
 
+ 
 
 //core
 import "primevue/resources/themes/lara-dark-teal/theme.css";
@@ -18,14 +19,13 @@ import  './assets/css/theme.css'
 import "./assets/css/style.css"
 //style Vue3DraggableResizable
 import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css'
-// micro lab theme
-// import  './assets/css/micro_lab_theme.css'
-// import "./assets/css/micro_lab_style.css"
+
  
 
 import { createApp, reactive } from "vue";
 
 import App from "./App.vue";
+ 
 
 import Error from "./components/Error.vue";
 import Vue3DraggableResizable from 'vue3-draggable-resizable'

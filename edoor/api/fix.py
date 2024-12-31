@@ -364,11 +364,25 @@ def get_token():
     payload = {
     'user_email': 'pheakdey.micronet@gmail.com',
     'integration_email': 'keosophal0985@gmail.com',
-    'external_id': 'TestForm123aaaworld',
-    'name': 'Testing foraaam 3',
-    'document_urls': ['https://www.kati.net/file/down.do?path=/upload/&fileName=13.+151012_Sale+Contract+%28Sample%29_Vietnam.pdf.pdf']
+    'external_id': 'my_sale_contract',
+    'name': 'This is my sqale contract 2030',
+    'document_urls': ['https://foundationtitle.com/wp-content/uploads/2016/06/Contract-for-Sale-of-Real-Estate.pdf']
     }
 
     token = jwt.encode(payload, api_key, algorithm='HS256') # Encode the payload into a JWT
     return token
 
+
+@frappe.whitelist(allow_guest=True)
+def convert():
+   
+    # Input PDF and Output DOCX paths
+    pdf_file = "/home/erpuser/frappe_2024/convert/a.pdf"
+    docx_file = "/home/erpuser/frappe_2024/convert/bxxxxxxxx.docx"
+
+    from pdf2docx import Converter
+
+    # convert pdf to docx
+    cv = Converter(pdf_file,pages="1-3")
+    cv.convert(docx_file)      # all pages by default
+    cv.close()

@@ -2203,7 +2203,10 @@ def get_edoor_setting(property = None):
         "default_folio_print_format":edoor_setting_doc.default_folio_print_format,
         "room_chart_calendear_slot_duration":edoor_setting_doc.room_chart_calendear_slot_duration,
         "folio_operation_setting":edoor_setting_doc.folio_operation_setting,
-        
+        "server_report_url":edoor_setting_doc.server_report_url,
+        "sever_report_folder":edoor_setting_doc.sever_report_folder,
+        "report_service_url":edoor_setting_doc.report_service_url,
+        "embed_code":edoor_setting_doc.server_report_token,
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -2485,7 +2488,6 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         
         
         for t in room_types:
-            
             resources.append({
                 "id":t["name"],
                 "room_type_color":t["room_type_color"],
@@ -2499,8 +2501,13 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
     else:
         resources = resources +  rooms
     
-
     resources[0]["total_amentity"] = total_amentity
+    
+    resources.append({
+        "id": "dummy",
+        "title": " ",
+        "sort_order":99999999
+    })
     return resources
  
 

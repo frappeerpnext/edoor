@@ -2,6 +2,7 @@
     <ComReservationStayPanel title="Room Stay">
         <template #content> 
             <div id="room_stay" class="room-stay-list text-center"> 
+               
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column class="w-15rem" field="start_date" :header="$t('Stay Date')" >
                         <template #body="{ data }">
@@ -25,7 +26,7 @@
                             </span>
                             <span @click="onAssignRoom(data)" class="link_line_action w-auto" v-else>
                                 <i class="pi pi-pencil"></i>
-                                {{$t('Assign Room')}}
+                                {{$t('Assign Room')}} 
                                 
                             </span>
                         </div>
@@ -146,7 +147,7 @@ function onAssignRoom(data){
             stay_room: getData
         },
         props: {
-            header: `Assign Room`,
+            header: `Assign Room / Change Room Type`,
             style: {
                 width: '80vw',
             },

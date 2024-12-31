@@ -592,6 +592,7 @@ function debouncer(fn, delay) {
         }, delay);
     };
 } 
+
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
         if(e.data.action=="Dashboard"){

@@ -60,11 +60,17 @@
                             <td class="px-2 select-room-number-style">
                                 <div class=" lg:w-full flex">
                                     <Dropdown v-model="selectedStay.room_id"
-                                        :options="rooms.filter(r=>r.room_type_id==selectedStay.room_type_id)"
+                                        :options="rooms"
                                         optionValue="name"   optionLabel="room_number"
                                         placeholder="Select Room" showClear filter  class="w-full" 
-                                        
-                                        />
+                                         @change="onSelectRoom"
+                                        >
+                                        <template #option="slotProps">
+                                            <div class="flex align-items-center">
+                                                <div>{{ slotProps.option.room_number }} -  {{ slotProps.option.room_type_alias }}</div>
+                                            </div>
+                                    </template>
+                                    </Dropdown>
                                         <div v-if="selectedStay?.room_id" class="flex gap-2 space-around ms-2">
                                         <template  v-for="(am, icon_index) in room_amenities(selectedStay?.room_id)?.amenities" :key="icon_index">
                                             <span class="box-input-detail flex " style="width: auto !important;" > 
@@ -173,7 +179,7 @@
 
     
     const onSelectRoomType = (room_type) => {
-
+       
         const rt = room_types.value.find(r=>r.name == room_type.value)
  
         selectedStay.value.room_id = null
@@ -197,11 +203,42 @@
 
     }
     
+    const onSelectRoom = (room_id) => {
+       
+        const room = rooms.value.find(r=>r.name == room_id.value)
+      if (room && selectedStay.value.room_type_id != room.room_type_id){
+        selectedStay.value.room_type_id = room.room_type_id
+       
+        // update rate
+        const rt = room_types.value.find(r=>r.name == room.room_type_id)
+ 
+        selectedStay.value.room_type = rt.room_type
+
+        if(selectedStay.value.is_override_rate){
+            if (selectedStay.value.room_type_id!=selectedStay.value.old_room_type_id) {
+                const rt = room_types.value.find(r=>r.name ==selectedStay.value.room_type_id)
+                
+                selectedStay.value.rate = rt.rate .rate
+
+            }else {
+                selectedStay.value.rate = selectedStay.value.old_rate
+            }
+        }else {
+            selectedStay.value.rate = selectedStay.value.old_rate
+        } 
+
+      
+      
+      }
+
+
+    }
+    
     function onSave(){ 
-        if(!selectedStay.value.room_id){
-            gv.toast('warn','Please select  room number.')
-            return
-        }
+        //if(!selectedStay.value.room_id){
+       //     gv.toast('warn','Please select  room number.')
+       //     return
+       // }
         loading.value = true    
         selectedStay.value.property = window.property_name
          postApi("reservation.assign_room",{data: selectedStay.value})
@@ -219,6 +256,9 @@
             window.postMessage({action:"GuestLedgerTransaction"},"*")
             window.postMessage({action:"Reports"},"*")
             window.postMessage({action:"ComUnassignRoom"},"*")
+            window.postMessage({action:"ComDashboardDataRecentList"},"*")
+            
+
             onClose(r)
         }).catch((err)=>{
             loading.value = false

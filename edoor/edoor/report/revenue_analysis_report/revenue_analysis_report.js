@@ -98,7 +98,7 @@ frappe.query_reports["Revenue Analysis Report"] = {
 
 		value = value.toString().replace("style='text-align: right'", "style='text-align: " + column.align + "'");
 
-		console.log(column.fieldtype);
+	 
 		if (
 			(column.fieldtype || "") == "Int" ||
 			((column.fieldtype || "") == "Percent") ||

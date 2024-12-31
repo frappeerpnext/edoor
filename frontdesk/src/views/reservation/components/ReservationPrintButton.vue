@@ -7,6 +7,7 @@ import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import { ref, inject, useDialog, onMounted,getDocList,useToast,getApi } from "@/plugin";
 import {i18n} from '@/i18n';
+import { renderSlot } from "vue";
 const { t: $t } = i18n.global;
 const toast = useToast()
 const dialog = useDialog();
@@ -28,6 +29,13 @@ const items = ref([
                     name: props.reservation ?? "",
                     report_name: gv.getCustomPrintFormat("eDoor Group Registration Card"),
                     filter_options: ["show_rate"],
+
+                    server_report_params:[
+                        { 
+                            name: 'reservation', values: [props.reservation] 
+                        }
+
+                    ]
                 }
             )
         },
@@ -214,7 +222,7 @@ function openReport(title, data) {
             modal: true,
             maximizable: true,
             breakpoints:{
-                '960px': '80vw',
+                '960px': '100vw',
                 '640px': '100vw'
             },
         },

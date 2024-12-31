@@ -6,7 +6,6 @@
     <hr class="my-2"> 
     <div class="grid p-2 overflow-auto" :style="isMobile ? { height: '50vh' } : {}" :class="unassignReservations.filter(r => r.guest_name.toLowerCase().includes(keywordforsearch.toLowerCase())).length > 0 ? '' : 'justify-content-center'">
       <ComPlaceholder :text=" $t('No Guest')  + '  `  ' + keyword + '  `  '  +  $t('Name')" :loading="loading" :is-not-empty="unassignReservations.filter(r => r.guest_name.toLowerCase().includes(keywordforsearch.toLowerCase())).length > 0">
-       
       <div  class="col-12 lg:col-3 p-1" v-for="(s, index) in  unassignReservations.filter(r => r.guest_name.toLowerCase().includes(keywordforsearch.toLowerCase()))" :key="index">
 
         <div @click="onSelect(s)" :class="s.selected ? 'border-green-400' : ''" class="border-2 w-full h-full bg-gray-100 border-round-lg p-2 cursor-pointer">

@@ -468,10 +468,10 @@ def update_reservation_stay_room_rate(data):
 	for d in docs:
 		doc = frappe.get_doc("Reservation Room Rate", d["name"])
 		doc.input_rate = data['rate']
-		doc.room_id = data["room_id"]
+		doc.room_id = data.get("room_id","")
 		doc.room_type_id =  data["room_type_id"]
 		doc.room_type=  data["room_type"]
-		doc.room_number=  data["room_number"]
+		doc.room_number=  data.get("room_number","")
 		doc.save()
 	
 

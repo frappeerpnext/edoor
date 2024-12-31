@@ -307,7 +307,7 @@ const dialog = useDialog();
 
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
-    // console.log(data[column.fieldname])
+ 
 }
 
 
