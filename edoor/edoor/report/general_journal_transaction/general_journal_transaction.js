@@ -32,6 +32,16 @@ frappe.query_reports["General Journal Transaction"] = {
 					};
 				};
 
+				//room number
+				const room_number_filter =frappe.query_report.get_filter('room_number');
+				room_number_filter.df.get_query = function() {
+					return {
+						filters: {
+							"property": property
+						}
+					};
+				};
+
 				//set fitler city ledger
 				const city_ledger =frappe.query_report.get_filter('city_ledger');
 				city_ledger.df.get_query = function() {
@@ -88,6 +98,14 @@ frappe.query_reports["General Journal Transaction"] = {
 			"label": __("Room Type"),
 			"fieldtype": "Link",
 			"options":"Room Type",
+			"on_change": function (query_report) {},
+			
+		},
+		{
+			"fieldname": "room_number",
+			"label": __("Room Number"),
+			"fieldtype": "Link",
+			"options":"Room",
 			"on_change": function (query_report) {},
 			
 		},

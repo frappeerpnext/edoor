@@ -6,7 +6,12 @@ from edoor.api.frontdesk import get_working_day
 import frappe
 from frappe import _
 
+working_day = None
+
 def get_report(filters, report_config):
+    global working_day 
+    working_day = get_working_day(property=filters.property)
+    
     report_data = get_report_data(filters,report_config)
     return {
         "columns":get_report_columns(filters,report_config),
@@ -48,6 +53,9 @@ def get_report_data(filters,report_config):
     
     
     report_group_data = get_row_group_report_data(filters)
+    
+    
+    
     room_available_datas= get_room_available(filters)
 
     #check if parent row is something else rather than date, month, year and room type 
@@ -61,6 +69,24 @@ def get_report_data(filters,report_config):
     report_data = []
     total_occupy_room = sum([d['occupy'] for d in data] )
     total_revenue = sum([d.get("total_charge") for d in folio_transaction_data])
+    
+    
+    # get revenue forecast to show with revenue
+    revenue_forcast_data = get_forecast_revenue(filters)
+    
+    for rf in revenue_forcast_data:
+        existing_transaction = [d  for d in  folio_transaction_data if d.get("row_group") == rf.get("row_group")]
+        if existing_transaction:
+            existing_transaction[0]["room_charge"] = rf.get("room_charge")
+            existing_transaction[0]["total_charge"] = existing_transaction[0]["total_charge"] + rf.get("room_charge")
+        else:
+            rf["total_charge"] = rf["room_charge"]
+            rf["parent_row_group"] = ""
+            folio_transaction_data.append(rf)
+    
+    
+    
+    
     
     if total_occupy_room ==0:
         total_occupy_room = 1
@@ -157,7 +183,7 @@ def get_report_data(filters,report_config):
                             elif f.fieldname =='revenue_percent':
                                 row["revenue_percent"] =   folio_transaction_record.get("total_charge") / max(total_revenue,1) * 100
                             else:
-                                row[f.fieldname] =   folio_transaction_record[f.fieldname]
+                                row[f.fieldname] =   folio_transaction_record.get(f.fieldname,0)
 
                     # 
         # add sub report data to report data
@@ -346,3 +372,46 @@ def get_folio_transaction_data(filters, report_config ):
     
     return data
 
+
+
+
+def get_forecast_revenue(filters):
+    sql = """
+        select 
+         date_format(date,'%%d-%%m-%%Y') as row_group,
+         sum(total_amount) as room_charge
+        from `tabRevenue Forecast Breakdown` 
+        where 
+            is_base_transaction = 1 and 
+            property = %(property)s and
+            date between %(start_date)s and %(end_date)s and 
+            date >= %(working_date)s
+        
+
+    """
+    if filters.room_type:
+        sql = sql + " and room_type_id = %(room_type)s "
+        
+    if filters.reservation_type:
+        sql = sql + " and reservation_type = %(reservation_type)s "
+        
+    if filters.business_source_type:
+        sql = sql + " and business_source_type = %(business_source_type)s "
+        
+    if filters.business_source:
+        sql = sql + " and business_source = %(business_source)s "
+        
+    if filters.guest_type:
+        sql = sql + " and guest_type = %(guest_type)s "
+    
+    if filters.nationality:
+        sql = sql + " and nationality = %(nationality)s "
+    
+    sql = sql + " group by date_format(date,'%%d-%%m-%%Y')"
+        
+    filters["working_date"] = working_day.get("date_working_day")
+    
+    data = frappe.db.sql(sql,filters,as_dict = 1)
+    
+    
+    return data 

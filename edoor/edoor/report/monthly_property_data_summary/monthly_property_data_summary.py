@@ -27,7 +27,7 @@ def execute(filters=None):
 
 def get_report_columns(filters,min_max_day):
 	columns = [
-		{"fieldname": "row_group", "label":_(filters.row_group), "width": 200},
+		{"fieldname": "row_group", "label":_(filters.row_group), "width": 150},
 	]
 
 	for n in range(min_max_day["min_day"], min_max_day["max_day"]+1):
@@ -36,11 +36,11 @@ def get_report_columns(filters,min_max_day):
 	})
   
 	columns.append({
-		"fieldname":"occupancy","label": "Occ", "width":100, "align":"center","fieldtype":"Percent"
+		"fieldname":"occupancy","label": "Occ", "width":70, "align":"center","fieldtype":"Int"
 	})
  
 	columns.append({
-		"fieldname":"total","label": "Total", "width":100, "align":"center","has_total":True
+		"fieldname":"total","label": "Total", "width":70, "align":"center","has_total":True
 	})
 	
 		

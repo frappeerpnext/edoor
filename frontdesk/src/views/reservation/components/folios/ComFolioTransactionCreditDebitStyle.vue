@@ -326,7 +326,7 @@ const totalBalance = computed(() => {
 const windowActionHandler = async function (e) {
     if (e.isTrusted) {
         if (e.data.action == "load_folio_transaction") {
-            alert("xxxxxxxxxxxxx")
+           
             LoadFolioTransaction()
 
 

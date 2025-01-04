@@ -76,6 +76,9 @@ def get_data(filters):
 	if filters.room_type:
 		sql = sql + " and room_type_id = %(room_type)s "
 
+	if filters.room_number:
+		sql = sql + " and room_id = %(room_number)s "
+
 	if filters.business_source:
 		sql = sql + " and business_source = %(business_source)s "
 	

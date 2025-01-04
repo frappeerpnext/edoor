@@ -23,6 +23,13 @@ frappe.query_reports["No Show Cancel and Void Reservation Report"] = {
 			"on_change": function (query_report) {},
 		} ,
 		{
+			"fieldname": "status_by",
+			"label": __("Status by"),
+			"fieldtype": "Select",
+			"options":"\nCancelled\nNo Show\nVoid",
+			"on_change": function (query_report) {},
+		} ,
+		{
 			"fieldname":"start_date",
 			"label": __("Start Date"),
 			"fieldtype": "Date",

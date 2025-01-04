@@ -70,7 +70,7 @@ const gv = inject("$gv")
  
 const toast = useToast();
 const selectedShift = ref({})
-const setting = window.setting
+const setting = window.setting 
 
 const payment_types = setting?.payment_type.filter(r => r.allow_cash_float == 1)
 const loading = ref(false)

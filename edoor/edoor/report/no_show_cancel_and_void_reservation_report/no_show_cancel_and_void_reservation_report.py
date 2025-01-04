@@ -119,40 +119,54 @@ def get_data(filters):
 	return data
 
 def get_filters(filters):
-	sql = " and property=%(property)s and reservation_status in ('No Show','Void','Cancelled') "
-	if filters.business_source:
-		sql = sql + " and rst.business_source = %(business_source)s "
-	
-	if filters.reservation_type:
-		sql = sql + " and rst.reservation_type = %(reservation_type)s"
-	 
-	if filters.filter_date_by =='Cancelled Date':
-		sql = sql + " and rst.cancelled_date between %(start_date)s and %(end_date)s " 
-	elif filters.filter_date_by =='Arrival Date':
-		sql = sql + " and rst.arrival_date between %(start_date)s and %(end_date)s "  
-	elif filters.filter_date_by =='Departure Date':
-		sql = sql + " and rst.depareture_date between %(start_date)s and %(end_date)s " 
-	else:
-		stay_name_sql = "select  distinct reservation_stay from `tabReservation Room Rate` where is_active_reservation = 0 and date between %(start_date)s and %(end_date)s and property=%(property)s "
-		if filters.reservation_type:
-			stay_name_sql = stay_name_sql + " and reservation_type = %(reservation_type)s"
-	
-		if filters.business_source:
-			stay_name_sql = stay_name_sql + " and business_source = %(reservation_type)s"
-	
-		stay_names = frappe.db.sql(stay_name_sql,filters,as_dict=1)
-		
-		filters.stay_names = set([d["reservation_stay"] for d in stay_names])
-		
-		sql = sql + " and rst.name in %(stay_names)s"
-  
-	sql = sql + " order by {} {}".format(
-		[d for d in  get_order_field() if d["label"] == filters.order_by][0]["field"],
-		filters.sort_order
-	)
-	
-	return sql
- 
+    sql = " and property=%(property)s and reservation_status in ('No Show','Void','Cancelled') "
+    
+    if filters.business_source:
+        sql += " and rst.business_source = %(business_source)s "
+    
+    if filters.reservation_type:
+        sql += " and rst.reservation_type = %(reservation_type)s"
+
+    if filters.status_by:
+        sql += " and rst.reservation_status = %(status_by)s"
+    
+    if filters.filter_date_by == 'Cancelled Date':
+        sql += " and rst.cancelled_date between %(start_date)s and %(end_date)s " 
+    elif filters.filter_date_by == 'Arrival Date':
+        sql += " and rst.arrival_date between %(start_date)s and %(end_date)s "  
+    elif filters.filter_date_by == 'Departure Date':
+        sql += " and rst.departure_date between %(start_date)s and %(end_date)s " 
+    else:
+        stay_name_sql = """
+            SELECT DISTINCT reservation_stay 
+            FROM `tabReservation Room Rate` 
+            WHERE is_active_reservation = 0 
+            AND date BETWEEN %(start_date)s AND %(end_date)s 
+            AND property = %(property)s
+        """
+        
+        if filters.reservation_type:
+            stay_name_sql += " AND reservation_type = %(reservation_type)s"
+        
+        if filters.business_source:
+            stay_name_sql += " AND business_source = %(business_source)s"
+        
+        stay_names = frappe.db.sql(stay_name_sql, filters, as_dict=1)
+        filters.stay_names = tuple(d["reservation_stay"] for d in stay_names)  # Convert to tuple
+
+        # Handle empty stay_names
+        if not filters.stay_names:
+            filters.stay_names = ('',)  # Add a dummy value to avoid SQL syntax error
+        
+        sql += " and rst.name in %(stay_names)s"
+    
+    sql += " ORDER BY {} {}".format(
+        [d["field"] for d in get_order_field() if d["label"] == filters.order_by][0],
+        filters.sort_order
+    )
+    
+    return sql
+
 def get_report_data(data):
  
 	report_data = []

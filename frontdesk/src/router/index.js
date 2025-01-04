@@ -30,6 +30,7 @@ import CityLedgerAccount from "@/views/city_ledger/CityLedgerAccount.vue";
 import CityLedgerType from "@/views/city_ledger/CityLedgerType.vue";
 import CityLedgerTransaction from "@/views/city_ledger/CityLedgerTransaction.vue";
 import Reports from "@/views/report/Reports.vue";
+import ServerReports from "@/views/report/ServerReports.vue";
 import BusinessSource from "@/views/business_source/BusinessSource.vue";
 import BusinessSourceType from "@/views/business_source/BusinessSourceType.vue";
 import NotFound from "@/components/NotFound.vue";
@@ -89,6 +90,7 @@ let routes = [
   { path: "/frontdesk/city-ledger-account", name: "CityLedgerAccount", component:CityLedgerAccount, meta: { layout: 'main_layout', title:"City Ledger Account" } },
   { path: "/frontdesk/reports", name: "Reports", component:Reports, meta: { layout: 'main_layout', title:"Reports" } },
   { path: "/frontdesk/reports", name: "Reports", component:Reports, meta: { layout: 'main_layout', title:"Reports" } },
+  { path: "/frontdesk/server-reports", name: "ServerReports", component:ServerReports, meta: { layout: 'main_layout', title:"Reports" } },
   { path: "/frontdesk/guest-ledger-transaction", name: "GuestLedgerTransaction", component:GuestLedgerTransaction, meta: { layout: 'main_layout', title:"Guest Ledger Transaction" } },
   { path: "/frontdesk/business-source", name: "BusinessSource", component:BusinessSource, meta: { layout: 'main_layout', title:"Business Source" } },
   { path: "/frontdesk/business-source-type", name: "BusinessSourceType", component:BusinessSourceType, meta: { layout: 'main_layout', title:"Business Source Type" } },

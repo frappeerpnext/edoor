@@ -25,6 +25,7 @@ def get_report_data(filters,columns):
     room_occupy = get_room_occupy(filters)
 
     row_group = get_row_group(filters)
+    
     for m in months:
         # frappe.throw(str(m))
         month_record = {
@@ -65,7 +66,7 @@ def get_report_data(filters,columns):
             "is_occupancy_row":1
         }
         report_data.append(occupancy_row)
-
+    
     for r in room_occupy:
         record = [d for d in report_data if d["row_group"] == r["row_group"] and int(d["month"])==int(r["month"])]
         if record:
@@ -97,14 +98,15 @@ def get_report_data(filters,columns):
             total_room = r["total_days"]
             
         elif filters.row_group=="Room Type":
-           
+            
             total_room = sum([d["total_room"] for d in total_rooms if d["month"] == r["month"] and d["year"] ==r["year"] and r["row_group"]== d["room_type"]] )
+ 
         else:
             total_room = sum([d["total_room"] for d in total_rooms if d["month"] == r["month"] and d["year"] ==r["year"]])
         
         if calculate_room_occupancy_include_room_block==0:
             total_room = total_room  - (0 if not "total_block" in r else r["total_block"])
-        r["occupancy"] = 100 *( r["total"] /  (1 if  (total_room or 0)==0 else total_room) )
+        r["occupancy"] = round( 100 *( r["total"] /  (1 if  (total_room or 0)==0 else total_room) ),0)
     
     
     # update total row to the blank total row
@@ -119,12 +121,13 @@ def get_report_data(filters,columns):
                 sum([d["total_room"] for d in total_rooms if "month" in d  and d["month"]==r["month"]])
             )
         elif r.get("is_occupancy_row",0) == 1:
+        
             r = get_total_occupancy_row(
                  [d for d in report_data if  d.get("is_occupy_row",0) ==1 and "month" in d and "year" in d and d["month"]==r["month"] and d["year"]==r["year"]],
                 r,
                 columns,
                 filters,
-                [d["total_room"] for d in total_room_by_date if getdate(d.get("date")).month == r["month"] and getdate(d.get("date")).year == r["year"] ]
+                [d for d in total_room_by_date if getdate(d.get("date")).month == r["month"] and getdate(d.get("date")).year == r["year"] ]
                 
             )
     
@@ -156,7 +159,7 @@ def get_summary_data(filters,report_data):
     
     if filters.show_summary:
         occupy = sum(d["total"] for d in report_data if 'total' in d and "is_total_row" in d)
-        occupancy =100* occupy / max(sum([d.get("total_rooms") for d in report_data]),1)
+        occupancy =round(100* occupy / max(sum([d.get("total_rooms") for d in report_data]),1))
         return [
             {"label": "Total Occupy","value": occupy, "indicator":"red","datatype":"Int"},
             {"label": "Total Occ(%)","value": occupancy, "indicator":"green","datatype":"Percent"},
@@ -184,7 +187,7 @@ def get_row_group(filters):
          sql="select distinct coalesce(nationality,'Not Set') as row_group,1 as indent  from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s order by nationality"
      
     elif filters.row_group=="Room Type":
-         sql="select distinct room_type as row_group,1 as indent  from `tabRoom Type` where property=%(property)s  order by room_type"
+         sql="select distinct alias as row_group,1 as indent  from `tabRoom Type` where property=%(property)s  order by room_type"
      
     
     data = frappe.db.sql(sql,filters,as_dict=1)
@@ -193,6 +196,7 @@ def get_row_group(filters):
 
 
 def get_room_occupy(filters):
+ 
     sql = """select 
 				day(date) as day,
                 month(date) as month, 

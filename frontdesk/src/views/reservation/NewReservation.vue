@@ -1254,7 +1254,7 @@ function get_room_rate_breakdown(stay){
         return 
     }
 
-//     xxxxxxxxxxxxx
+ 
     stay.loading = true
 
     const room_rate_data = {
