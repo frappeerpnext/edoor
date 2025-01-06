@@ -22,19 +22,19 @@
                 </div>
                 <div class="flex gap-2">
                     <div class="flex justify-center items-center overflow-hidden rounded-lg h-full">
-                        <button type="button" @click="hk.view_type = 'table'"
-                            :class="(hk.view_type == 'table') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
-                            <i :class="(hk.view_type == 'table') ? 'text-white' : ''" class="pi pi-list md:me-2" />
+                        <button type="button" @click="hk.onChangeGroupBy('floor')"
+                            :class="(hk.group_by_field == 'floor') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
+                            <i :class="(hk.group_by_field == 'floor') ? 'text-white' : ''" class="pi pi-list md:me-2" />
                             <template v-if="!isMobile">
-                             {{ $t('Table') }}   
+                             {{ $t('Floor') }}   
                             </template>
                             
                         </button>
-                        <button @click="hk.view_type = 'kanban'"
-                            :class="(hk.view_type == 'kanban') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
-                            <i :class="(hk.view_type == 'kanban') ? 'text-white' : ''" class="pi pi-th-large md:me-2" />
+                        <button @click="hk.onChangeGroupBy('room_type')"
+                            :class="(hk.group_by_field == 'room_type') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
+                            <i :class="(hk.group_by_field == 'room_type') ? 'text-white' : ''" class="pi pi-th-large md:me-2" />
                             <template v-if="!isMobile">
-                              {{ $t('Kanban') }}  
+                              {{ $t('Room Type') }}  
                             </template>
                         </button>
                     </div>

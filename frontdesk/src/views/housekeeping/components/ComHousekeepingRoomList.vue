@@ -1,13 +1,23 @@
 <template>
     <div class="hsk-wrapper h-full">
         <ComPlaceholder text="No Data" :loading="hk.loading" :is-not-empty="data.length > 0">
-            <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer max-w-screen" dataKey="name"
-                :value="data" stateStorage="local" stateKey="table_house_keeping_room_state" @row-click="onRowSelect"
-                tableStyle="min-width: 50rem" showGridlines paginator :rows="20"
+         
+            <DataTable v-model:selection="hk.selectedRooms" 
+                class="cursor-pointer max-w-screen" dataKey="name"
+                removableSort 
+                :value="data"
+                 stateStorage="local"
+                  stateKey="table_house_keeping_room_state"
+                   @row-click="onRowSelect"
+                    tableStyle="min-width: 50rem" showGridlines paginator 
+                    :rows="20"
                 scrollable
+                rowGroupMode="subheader"
+                :groupRowsBy="hk.group_by_field" 
+
                 :rowsPerPageOptions="[20, 30, 40, 50, 100, 500]" :page="page">
                 <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                <Column class="text-center" field="room_number" :header="$t('Room') + '#'"></Column>
+                <Column sortable class="text-center" field="room_number" :header="$t('Room') + '#'"></Column>
                 <Column :header="$t('Status')" headerClass="text-center" bodyClass="text-center">
                     <template #body="{ data }">
                         <span v-if="data?.housekeeping_status"
@@ -18,6 +28,7 @@
                     </template>
                 </Column>
                 <Column field="room_type" :header="$t('Room Type') "></Column>
+                <Column field="floor" :header="$t('Floor') "></Column>
                 <Column field="reservation_stay" :header="$t('Reservation Stay')" headerClass="text-center"
                     bodyClass="text-center">
                     <template #body="slotProps">
@@ -56,6 +67,13 @@
                         {{ slotProps.data.housekeeping_note }}
                     </template>
                 </Column>
+                    <template #groupheader="slotProps">
+                    <div class="flex align-items-center gap-2">
+                        <h2 style="margin: 5px; font-size: 16px;font-weight: bold;">
+                            {{  slotProps.data[hk.group_by_field] }}
+                        </h2>
+                    </div>
+                    </template>
             </DataTable>
         </ComPlaceholder>
 

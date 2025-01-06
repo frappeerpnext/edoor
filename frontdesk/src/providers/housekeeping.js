@@ -15,6 +15,7 @@ constructor() {
 	this.moment = moment
 	this.filter = {}
 	this.room_block = undefined
+	this.group_by_field="room_type"
 	this.pageState = {
 		order_by: "modified", 
 		order_type: "desc", 
@@ -44,10 +45,12 @@ loadData(show_loading=true) {
 				'room_type_group':filters.selected_room_type_group || '',
 				'housekeeper':filters.selected_housekeeper || '',
 				'keyword':filters.keyword || '',
+				order_by:this.group_by_field
 			}
 		},"",false)
 			.then((result) => {
-                this.room_list = result.message
+				this.room_list = result.message
+
 				this.pageState.totalRecords = result.message.length
                 this.loading = false
                 resolve(result)
@@ -70,5 +73,14 @@ updateRoomStatus(room_name, status_name){
 	})
 	.catch((error) => console.error(error));
 }
+
+
+onChangeGroupBy(group_by_field){
+	  
+	this.group_by_field = group_by_field;
+	this.loadData()
+
+}
+
 }
 

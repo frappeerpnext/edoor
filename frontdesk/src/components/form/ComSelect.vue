@@ -51,6 +51,7 @@ const props = defineProps({
         type: [String, Array],
         default: []
     },
+    orderByField:String,
     width: {
         type: String,
         default: '100%'
@@ -136,7 +137,7 @@ if (typeof customs == 'string') {
 }
 if (props.doctype) {
 
-    if (props.optionLabel == '' && props.optionValue == '' && props.groupFilterField == '' && customs.length == 0) {
+    if (props.optionLabel == '' && props.optionValue == '' && props.groupFilterField == '' && customs.length == 0 && !props.orderByField ) {
         onSearchLink()
     }
     else {
@@ -155,6 +156,7 @@ function onSearchLink() {
     if (props.filters) {
         apiParams.filters = JSON.parse(JSON.stringify(props.filters))
     }
+   
     call.get('frappe.desk.search.search_link', apiParams).then((result) => {
         data.value = result.message
         dataOptions.value = data.value
@@ -185,7 +187,18 @@ function onDocList() {
     if (props.groupFilterField) {
         fields.push(props.groupFilterField)
     }
-    getDocList(props.doctype, { filters: props.filters, fields: fields, limit: 1000 }).then((r) => {
+
+    let params = { filters: props.filters, fields: fields, limit: 1000 }
+    if (props.orderByField){
+        params.orderBy = {
+            field: props.orderByField,
+            order: 'asc',
+        }
+    }
+
+    
+    
+    getDocList(props.doctype, params).then((r) => {
         data.value = r
         dataOptions.value = data.value
         if (props.default && data.value && data.value.length > 0) {

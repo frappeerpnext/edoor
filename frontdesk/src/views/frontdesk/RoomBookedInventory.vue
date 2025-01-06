@@ -382,13 +382,15 @@ function onFilterToday() {
 }
 
 function onChangePeriod(period) {
+  
     if (gv.loading) {
         return
     }
     const cal = fullCalendar.value.getApi()
     filter.value.period = period
     calendarOptions.visibleRange = { start: cal.view.currentStart, end: getEndDate(cal.view.currentStart, filter.value.period) }
-    getEvents()
+    
+    getEvents(     calendarOptions.visibleRange )
 }
 
 function onFilterDate(event) {
@@ -731,6 +733,7 @@ onMounted(() => {
     calendarOptions.visibleRange = { start: filter.value.date, end: getEndDate(filter.value.date, filter.value.period) }
 
     getResources()
+    
 
     document.body.addEventListener('scroll', handleScroll);
 

@@ -10,8 +10,8 @@
                 <InputText class="w-full" v-model="hk.filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
             </div>
         </div>
-        <div class="w-30rem">
-            <ComSelect maxWidth="30rem" width="30rem" :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" 
+        <div class="w-20rem">
+            <ComSelect maxWidth="30rem" width="20rem" :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" 
                 isFilter 
                 v-model="hk.filter.selected_housekeeping_status"
                 placeholder="Housekeeping Status" 
@@ -20,6 +20,21 @@
                 :maxSelectLabel="10"
                 />
         </div>
+        
+        <div class="w-20rem">
+            <ComSelect 
+                v-model="hk.filter.selected_floor"
+                 @onSelected="onSearch" 
+                 optionLabel="name"
+                 optionValue="name"
+                 placeholder="Floor" 
+                 doctype="Floor" 
+                 :filters="[['property', '=', hk.property.name]]" 
+                 orderByField="sort_order"
+                 />
+           
+        </div>
+
     </template>
         <div class="">
             <div class="flex gap-2">
@@ -57,9 +72,7 @@
             <div class="col-6 md:col-4">
                 <ComSelect  :filters="[['property', '=', hk.property.name]]" v-model="hk.filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
             </div>
-            <div class="col-6 md:col-4">
-                <ComSelect v-model="hk.filter.selected_floor" @onSelected="onSearch" placeholder="Floor" doctype="Floor" :filters="[['property', '=', hk.property.name]]" />
-            </div>
+            
             <div class="col-6 md:col-4">
                 <ComSelect  :filters="[['property', '=', hk.property.name]]" v-model="hk.filter.selected_room_type_group" @onSelected="onSearch" placeholder="Room Type Group" doctype="Room Type Group" />
             </div>
@@ -98,6 +111,14 @@ const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const onSearch = debouncer(() => {
+    let state =  localStorage.getItem("table_house_keeping_room_state")
+    if(state){
+        state = JSON.parse(state);
+        state.first = 0 ;
+        localStorage.setItem("table_house_keeping_room_state", JSON.stringify(state));
+        
+
+    }
     hk.loadData();
 }, 500);
 const isFilter = computed(() => {

@@ -32,55 +32,61 @@ def get_room_list(filter):
    order_by_type = filter.get("order_by_type") or "asc"
    sql ="""
       select 
-         name,
-         room_number,
-         housekeeping_status,
-         housekeeping_status_code,
-         room_status,
-         building,
+         r.name,
+         r.room_number,
+         r.housekeeping_status,
+         r.housekeeping_status_code,
+         r.room_status,
+         r.building,
          '' as reservation_status,
-         status_color,
-         housekeeper,
-         room_type,
-         floor,
-         '' as room_block
-      from `tabRoom`
+         r.status_color,
+         r.housekeeper,
+         r.room_type,
+         r.floor,
+         '' as room_block,
+         f.sort_order as floor_sort_order,
+         rt.sort_order as room_type_sort_order
+      from `tabRoom`r
+      inner join `tabFloor` f on f.name = r.floor
+      inner join `tabRoom Type` rt on rt.name = r.room_type_id
       where
-         property = %(property)s  and 
-         room_number like %(keyword)s and 
-         disabled = 0
+         r.property = %(property)s  and 
+         r.room_number like %(keyword)s and 
+         r.disabled = 0
    """
    if 'room_type_id' in filter and  len(filter["room_type_id"])>0:
       if isinstance(filter.get("room_type_id"), str):
-      
-         sql = sql + " and room_type_id = %(room_type_id)s "
+         sql = sql + " and r.room_type_id = %(room_type_id)s "
       else:
-         sql = sql + " and room_type_id in %(room_type_id)s "
+         sql = sql + " and r.room_type_id in %(room_type_id)s "
       
 
 
    if 'room_type' in filter and filter.get("room_type"):
       
       filter["room_type"]  = "%{}%".format(filter.get("room_type"))
-      sql = sql + " and room_type like %(room_type)s "
+      sql = sql + " and r.room_type like %(room_type)s "
    
    if  'housekeeping_status' in filter and  len(filter["housekeeping_status"])>0:
-      sql = sql + " and housekeeping_status in %(housekeeping_status)s "
+      sql = sql + " and r.housekeeping_status in %(housekeeping_status)s "
    
    if  'building' in filter and len(filter["building"])>0:
-      sql = sql + " and building = %(building)s "
+      sql = sql + " and r.building = %(building)s "
    
    if   'floor' in filter and len(filter["floor"])>0:
-      sql = sql + " and floor = %(floor)s "
+      sql = sql + " and r.floor = %(floor)s "
    
    if  'room_type_group' in filter and len(filter["room_type_group"])>0:
-      sql = sql + " and room_type_group = %(room_type_group)s "
+      sql = sql + " and r.room_type_group = %(room_type_group)s "
    
    if  'housekeeper' in filter and len(filter["housekeeper"])>0:
-      sql = sql + " and housekeeper = %(housekeeper)s "
-   if order_by and len(order_by) > 0 and order_by[0]:
-      sql += f" ORDER BY {order_by[0]} {order_by_type[0]}"
-      
+      sql = sql + " and r.housekeeper = %(housekeeper)s "
+   if order_by:
+      if order_by=="floor":
+         sql += " ORDER BY f.sort_order "
+      elif order_by == "room_type":
+         sql += " ORDER BY rt.sort_order "
+   
       
 
    data = frappe.db.sql(sql,filter,as_dict=1)
@@ -165,8 +171,8 @@ def get_room_list(filter):
          else:
          #if block
             room["room_block"] = d["stay_room_id"]
-            room["housekeeping_status"] = frappe.db.get_single_value("eDoor Setting","room_block_status")
-            room["status_color"] = frappe.db.get_single_value("eDoor Setting","room_block_color")
+            room["housekeeping_status"] = frappe.get_cached_value("eDoor Setting",None,"room_block_status")
+            room["status_color"] = frappe.get_cached_value("eDoor Setting",None,"room_block_color")
 
    return data
 
