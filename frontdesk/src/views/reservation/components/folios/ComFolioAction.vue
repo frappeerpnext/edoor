@@ -247,6 +247,7 @@ function viewFolioSummaryReport() {
 }
 
 function viewfoliotaxinvoicedetail() {
+   
     getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
         if(setting.server_report_url){
             // get tax invoice data first before show report
@@ -339,12 +340,14 @@ print_menus.value.push({
     icon: 'pi pi-print',
     command: () => {
         if(setting.server_report_url){
-      
+ 
       dialog.open(ComReportServerModal, {
           data: {
               report_path: "/Front Desk/rptReservationStayFolioDetail",
               params:[
-                      {name: 'reservation_folio', values: [selectedFolio.value.name] }
+                      {name: 'reservation_folio', values: [selectedFolio.value.name] },
+                      {name: 'reservation_stay', values: [selectedFolio.value.reservation_stay] },
+                      {name: 'reservation', values: [selectedFolio.value.reservation] }
               ]
               
               

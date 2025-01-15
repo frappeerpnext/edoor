@@ -2,6 +2,7 @@
     <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true" :loading="loading">
         <TabView>
             <TabPanel header="Cashier Shift Information">
+              
                 <Message v-if="!doc.is_edoor_shift">
                     {{$t('This shift is an ePOS shift. Please ask ePOS user to close their shift.')}}
                     </Message>
@@ -311,7 +312,7 @@
 
         <template v-if="doc.is_edoor_shift" #footer-left>
 
-            <SplitButton @click="onPrintFolioTransactionSummary('eDoor Cashier Shift Transaction Summary Report')"
+            <SplitButton @click="onViewCashierShiftSummaryReport"
                  label="Print" icon="pi pi-print" :model="print_menus" />
             <Button class="border-none" @click="onAuditTrail" :label=" $t('Audit Trail') " icon="pi pi-history" />
         </template>
@@ -330,6 +331,7 @@ import ComReservationStayPanel from '@/views/reservation/components/ComReservati
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComCloseShift from '@/views/cashier_shift/ComCloseShift.vue';
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const toast = useToast()
@@ -356,19 +358,34 @@ print_menus.value.push({
     label: "Cashier Shift Transaction Summary",
     icon: 'pi pi-print',
     command: () => {
-        onPrintFolioTransactionSummary("eDoor Cashier Shift Transaction Summary Report")
+        onViewCashierShiftSummaryReport();
+        
 
     }
 })
 
+
+function onViewCashierShiftSummaryReport(){
+
+    if(setting.server_report_url){
+            OpenServerReport("/Night Audit/rptCashierShiftTransactionSummary","Cashier Shift Transaction Summary")
+        }
+        else {
+            onPrintFolioTransactionSummary("eDoor Cashier Shift Transaction Summary Report")
+        }
+}
 
 
 print_menus.value.push({
     label: "Cashier Shift Transaction Detail",
     icon: 'pi pi-print',
     command: () => {
+        if(setting.server_report_url){
+            OpenServerReport("/Night Audit/rptCashierShiftTransactionDetail","Cashier Shift Transaction Detail")
+        }
+        else {
         onPrintFolioTransactionSummary("eDoor Cashier Shift Transaction Detail Report", "Cashier Shift Transaction Detail - " + doc.value.name)
-
+        }
     }
 })
 
@@ -567,5 +584,40 @@ function onAuditTrail() {
         },
     });
 }
+
+
+
+function OpenServerReport(report_path, title, parameters = undefined) {
+    let params = parameters;
+    if (!parameters) {
+        params = [
+
+            { name: 'start_date', values: [doc.value.posting_date] },
+            { name: 'cashier_shift', values: [doc.value.name] }
+            
+        ]
+    }
+    dialog.open(ComReportServerModal, {
+        data: {
+            report_path: report_path,
+            params: params
+        },
+        props: {
+            header: $t(title),
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+}
+
 
 </script>
