@@ -13,6 +13,7 @@
                 <div v-else class="surface-ground rounded-lg p-2 max-h-list-scroll">
                     <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.datasets?.length > 0">
                         <table class="w-full border-bottom-1 relative">
+                            <tbody>
                             <tr class="border-bottom-1 surface-ground" style="position: sticky;top: 0;">
                                 <th class="text-center ">{{ $t('Payment Type') }} </th>
                                 <th class="text-right  border-left-1">{{ $t('Amount') }} </th>
@@ -34,6 +35,7 @@
                                     <CurrencyFormat :value="totalValues" />
                                 </th>
                             </tr>
+                        </tbody>
                         </table>
                     </ComPlaceholder>
                 </div>

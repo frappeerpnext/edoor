@@ -19,10 +19,31 @@
                             <CurrencyFormat :value="rs?.reservation?.balance"></CurrencyFormat></div>
                         </div>
                 </div>
-               
-                <div v-for="d in rs.reservationSummary" :key="items" class="flex gap-2 mt-2">
-                    <ComBoxStayInformation isCurrency v-if="d.amount != 0" :title="d?.account_category" :value="d?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
-                </div>
+                
+                <template v-if="rs.reservationSummary.length>3 && !showChargeSummaryMore">
+                    <div v-for="(d, index) in rs.reservationSummary.slice(0,3)" :key="index" class="flex gap-2 mt-2">
+                        <ComBoxStayInformation isCurrency v-if="d.amount != 0" :title="d?.account_category" :value="d?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
+                    </div>
+                    <div class="w-full flex justify-content-end mt-3">
+                    <Button class="conten-btn" @click="showChargeSummaryMore=!showChargeSummaryMore" >
+            
+            Show {{rs.reservationSummary.length - 3}} more(s)
+           
+          </Button>
+        </div>
+                 </template>
+                 <template v-else>
+                    <div v-for="(d, index) in rs.reservationSummary" :key="index" class="flex gap-2 mt-2">
+                        <ComBoxStayInformation isCurrency v-if="d.amount != 0" :title="d?.account_category" :value="d?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
+                    </div>
+                    <div v-if="rs.reservationSummary.length>3" class="w-full flex justify-content-end mt-3">
+                    <Button  class="conten-btn" @click="showChargeSummaryMore=!showChargeSummaryMore">
+            
+            Show Less
+           
+          </Button>
+        </div>
+                 </template>
             </template>
         </ComReservationStayPanel>
             </div>
@@ -75,7 +96,7 @@ import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const emit = defineEmits('onViewReservation')
 const rs = inject('$reservation');
-
+const showChargeSummaryMore =ref(false)
 const taxData = ref()
 const opTax = ref();
 const toggleTAX = (event) => {

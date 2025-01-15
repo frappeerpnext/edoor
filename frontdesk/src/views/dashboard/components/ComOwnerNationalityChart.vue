@@ -10,6 +10,7 @@
             <Skeleton v-if="loading"  class="mb-2"  width="100%" height="20rem"></Skeleton>
             <div v-else class="surface-ground rounded-lg p-2 h-full max-h-list-scroll">
                 <table class="w-full border-bottom-1">
+                    <tbody>
                 <tr class="border-bottom-1">
                     <th class="text-start ">{{ $t('Nationalitys') }} </th>
                     <th class="text-end border-left-1">{{ $t('Amount') }} </th>
@@ -25,6 +26,7 @@
             <th class="text-left border-1 pe-2">{{ $t('Total') }} </th>
             <th class="border-1 text-end"><CurrencyFormat :value="totaldActualValues" /></th>       
         </tr>
+    </tbody>
                 </table>
             </div>
         </div>

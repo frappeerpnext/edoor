@@ -623,6 +623,7 @@ def update_desk_folio(name=None, doc=None,run_commit=True,ignore_validation = Fa
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+    doc.balance= (doc.total_debit or 0) - (doc.total_credit or 0)
     doc.flags.ignore_validate = ignore_validation
     doc.flags.ignore_on_update = ignore_on_update
     doc.save(ignore_permissions=True)
@@ -654,6 +655,7 @@ def update_payable_ledger(name=None, doc=None,run_commit=True,ignore_validate = 
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+    doc.balance= (doc.total_debit or 0) - (doc.total_credit or 0)
     doc.flags.ignore_validate = ignore_validate
     doc.flags.ignore_on_update = ignore_on_update
     doc.save(ignore_permissions=True)
@@ -1505,7 +1507,7 @@ def update_room_status_by_reservation_stay(name):
 
 
 @frappe.whitelist()
-def get_tax_invoice_data(folio_number,document_type,date = None):
+def get_tax_invoice_data(folio_number,document_type,date = None,generate_temp_tax_data = False):
     total_vat = 0
     data=frappe.db.sql("select * from `tabFolio Transaction` where transaction_number='{}' and transaction_type='{}' and parent_account_name!='POS Transfer'".format(folio_number,document_type),as_dict=1)
     sale=frappe.db.sql("select * from `tabSale` where name='{}'".format(folio_number),as_dict=1)
@@ -1556,8 +1558,138 @@ def get_tax_invoice_data(folio_number,document_type,date = None):
         "grand_total_second_currency":grand_total*exchange_rate 
     }
     
+    if generate_temp_tax_data:
+        add_tax_invoice_data_to_temp_table(document_name=folio_number, document_type=document_type,data=return_data)
+    
     return return_data
 
+
+def add_tax_invoice_data_to_temp_table(document_name,document_type,data):
+    frappe.db.sql("delete from `tabTax Invoice Data` where document_name=%(document_name)s and document_type=%(document_type)s",{"document_name":document_name,"document_type":document_type}) 
+    for t in data.get("data"):
+        doc = frappe.get_doc({
+            'doctype': 'Tax Invoice Data',
+            "document_type":document_type,
+            "document_name": document_name,
+            "description":t.get("description"),
+            'type': 'Line Item',
+            "quantity":t.get("quantity"),
+            "price":t.get("price"),
+            "amount":t.get("amount"),
+            "sort_order":t.get("sort_order")
+        })
+        doc.insert(ignore_permissions=True)
+    # loop create summary recore
+    sort_order = 0
+    for index , s in enumerate(data.get("summary", [])):
+        sort_order = (index + 1) * 1000
+        
+        doc = frappe.get_doc({
+            'doctype': 'Tax Invoice Data',
+            "document_type":document_type,
+            "document_name": document_name,
+            "description": s.get("label"),
+            "price":  s.get("value") if s.get("children") else 0,
+            "amount":  s.get("value") if not s.get("children") else 0,
+            'type': 'summary',
+            "sort_order": sort_order
+        })
+        doc.insert(ignore_permissions=True)
+        # loop add sub child
+        for index  , c in enumerate(s.get("children", [])):
+            sort_order = sort_order + (index + 1)
+            doc = frappe.get_doc({
+                'doctype': 'Tax Invoice Data',
+                "document_type":document_type,
+                "document_name": document_name,
+                "description": "     " +  c.get("label"),
+                "price": c.get("value"),
+                'type': 'summary',
+                "sort_order": sort_order
+                })
+            doc.insert(ignore_permissions=True)
+        # show total for each tax group
+        if s.get("total"):
+            sort_order = sort_order + (index + 1)
+            frappe.get_doc({
+                'doctype': 'Tax Invoice Data',
+                "document_type":document_type,
+                "document_name": document_name,
+                "description": s.get("total").get("label"),
+                "amount": s.get("total").get("value"),
+                'type': 'summary',
+                "sort_order": sort_order
+                }).insert(ignore_permissions=True)
+        
+    # add row taxable amount
+    sort_order  = sort_order + 1
+    frappe.get_doc({
+                'doctype': 'Tax Invoice Data',
+                "document_type":document_type,
+                "document_name": document_name,
+                "description": "សរុប / Total",
+                "amount": data.get("taxable_amount"),
+                'type': 'summary',
+                "sort_order": sort_order,
+                "show_border_top":1
+    }).insert(ignore_permissions=True)
+    # VAT Row
+    sort_order  = sort_order + 1
+    frappe.get_doc({
+                'doctype': 'Tax Invoice Data',
+                "document_type":document_type,
+                "document_name": document_name,
+                "description": data.get("vat").get("description"),
+                "amount":  data.get("vat").get("value"),
+                'type': 'summary',
+                "sort_order": sort_order
+    }).insert(ignore_permissions=True)
+
+    # grand total
+    sort_order  = sort_order + 1
+    frappe.get_doc({
+                'doctype': 'Tax Invoice Data',
+                "document_type":document_type,
+                "document_name": document_name,
+                "description": "សរុបរួម / Grand Total",
+                "amount":  data.get("grand_total"),
+                'type': 'summary',
+                "sort_order": sort_order,
+                "is_bold":1,
+                "show_border_top":1
+    }).insert(ignore_permissions=True)
+    
+    # exchange rate
+    sort_order  = sort_order + 1
+    frappe.get_doc({
+                'doctype': 'Tax Invoice Data',
+                "document_type":document_type,
+                "document_name": document_name,
+                "description": "អត្រាប្តូរប្រាក់ / Exchange Rate",
+                "amount": data.get("exchange_rate"),
+                'type': 'summary_exchange',
+                "sort_order": sort_order,
+                "show_border_top":1
+    }).insert(ignore_permissions=True)
+    
+    sort_order  = sort_order + 1
+    frappe.get_doc({
+                'doctype': 'Tax Invoice Data',
+                "document_type":document_type,
+                "document_name": document_name,
+                "description": "សរុបរួមជាប្រាក់រៀល / Grand Total With Riel",
+                "amount": data.get("grand_total_second_currency"),
+                'type': 'summary_exchange',
+                "sort_order": sort_order,
+                "show_border_top":1,
+                "is_bold":1
+    }).insert(ignore_permissions=True)
+    
+    
+    
+    frappe.db.commit()
+    
+      
 @frappe.whitelist(allow_guest=True)
 def get_exchange_rate(property,date=None):
     if not date:

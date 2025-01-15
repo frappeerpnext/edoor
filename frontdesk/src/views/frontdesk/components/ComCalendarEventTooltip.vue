@@ -32,11 +32,13 @@
                 <tr class="table-rs-de" v-if="event.extendedProps.reservation_color">
                     <td>{{ $t('Res Special Color') }}</td>
                     <td class="px-2">:</td>
+                    <td>
                     <div class="flex mt-1 align-items-center">
                         <div style="height:14px !important;" class="px-4 inline-block border-1 border-white me-2"
                             :style="{ background: event.extendedProps.reservation_color }"></div> <span>
                             {{ event.extendedProps.reservation_color_code }} </span>
                     </div>
+                </td>
                 </tr>
                 <tr class="table-rs-de">
                     <td>{{ $t('Res Stay Status') }}</td>

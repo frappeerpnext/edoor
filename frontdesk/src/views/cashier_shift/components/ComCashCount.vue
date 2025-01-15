@@ -50,7 +50,7 @@
                 </div>
             </div>
             <table class="w-full mt-4">
-
+                <tbody>
                 <tr>
                     <td class="w-auto border-1 p-2 font-semibold">{{ $t('Note Type') }} </td>
                     <td class="w-auto border-1 p-2 font-semibold">{{ $t('Total Note') }} </td>
@@ -92,7 +92,7 @@
                         </td>
                     </tr>
                 </template>
-
+            </tbody>
             </table>
         </div>
     </ComDialogContent>

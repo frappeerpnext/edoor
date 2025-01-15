@@ -90,6 +90,7 @@
         </div>
         <h1 class="my-2 font-semibold">{{ $t('Other Payment Type') }} </h1>
         <table class="w-full">
+            <thead>
             <tr style='background: rgb(243, 243, 243);'>
                 <td class="w-auto border-1 p-2 font-semibold">{{ $t('Type') }} </td>
                 <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('Total Debit') }} </td>
@@ -98,6 +99,8 @@
                 <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('Actual Close Amount') }} </td>
                 <td class="w-auto border-1 p-2 font-semibold text-right">{{ $t('Difference Amount') }} </td>
             </tr>
+        </thead>
+        <tbody>
             <tr v-for="(s, index) in otherPayments" :key="index">
                 <td class="w-auto border-1 p-2" style='background: rgb(243, 243, 243);'>{{ s.payment_type }}</td>
                 <td class="w-auto border-1 p-2 text-right">
@@ -135,6 +138,7 @@
                         :value="otherPayments?.reduce((n, d) => n + ((d.actual_close_amount || 0) - (d.total || 0)), 0)" />
                 </td>
             </tr>
+        </tbody>
         </table>
         <hr>
         <div class="w-full mt-3">

@@ -154,6 +154,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True,ignore_validate
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+    doc.balance= (doc.total_debit or 0) - (doc.total_credit or 0)
     doc.flags.ignore_validate = ignore_validate
     doc.save(  ignore_permissions=True)
     if run_commit:

@@ -26,6 +26,7 @@
                                     
                                 </div>
                                 <table>
+                                    <tbody>
                                     <ComStayInfoNoBox label="Cashier Shift #" v-if="doc.name" :value="doc.name" />
                                     <ComStayInfoNoBox label="Posting Date" v-if="doc.name"
                                         :value="moment(doc.posting_date).format('DD-MM-YYYY')" />
@@ -37,6 +38,7 @@
                                         </div>
                                       
                                     </ComStayInfoNoBox>
+                                </tbody>
                                 </table>
                                 <div class="w-full h-10rem mb-4 mt-2">
                                     <label> {{ $t('Opening Note') }} </label>
@@ -52,6 +54,7 @@
                                         {{ $t('Closing Shift') }}  
                                     </div>
                                     <table>
+                                        <tbody>
                                         <ComStayInfoNoBox label="Closing Date"
                                             :value="moment(doc.closed_date).format('DD-MM-YYYY')" />
                                             <ComStayInfoNoBox label="Closed By"  >
@@ -61,6 +64,7 @@
                                         </div>
                                       
                                     </ComStayInfoNoBox>
+                                </tbody>
                                         </table>
                                     <div class="w-full h-10rem mb-4 mt-2">
                                         <label> {{ $t('Closing Note') }} </label>
@@ -123,6 +127,7 @@
                                     {{ $t('Payment Transaction Summary') }} 
                                 </div>
                                 <table class="w-full border-1 bg-white">
+                                    <tbody>
                                     <ComPlaceholder text="No Payment Transaction"  :is-not-empty="summary?.payment_transaction_summary.length > 0">
                                     <tr class="bg-white">
                                         <td class="w-auto border-1 p-2"> {{ $t('Account Code') }}  </td>
@@ -163,6 +168,7 @@
 
                                     </tr>
                                 </ComPlaceholder>
+                            </tbody>
                                 </table>
 
                                 <div v-if="doc.is_closed">
@@ -172,6 +178,7 @@
                                 </div>
                                 <div class="w-full overflow-auto">
                                 <table class="w-full" >
+                                    <tbody>
                                     <tr class="bg-white">
                                         <td class="w-auto border-1 p-2 white-space-nowrap"> {{ $t('Payment Type') }}  </td>
                                         <td class="w-auto border-1 p-2 text-right"> {{ $t('Opening') }} </td>
@@ -213,7 +220,7 @@
                                         </td>
                                         
                                     </tr>
-
+                                </tbody>
                                 </table>
                                 </div>
                             </div>
@@ -225,6 +232,7 @@
 
 
                                 <table class="w-full">
+                                    <tbody>
  <tr class="border-1 p-1 bg-white" >
                                             <td class="w-auto  p-2"> {{ $t('Note Type') }}  </td>
                                             <td class="w-auto  p-2 text-center"> {{ $t('Total Note') }}  </td>
@@ -270,6 +278,7 @@
                                             <CurrencyFormat :value="doc?.cash_count?.reduce((n, d) => n + (d.total_base_currency_amount || 0), 0)" />
                                         </td>
                                     </tr>
+                                </tbody>
                                 </table>
                             </template>
 

@@ -4354,11 +4354,36 @@ def reinstate(data):
 def get_guest_folio_list(reservation="", reservation_stay=""):
     data = frappe.db.sql("""
                          select 
-                            name, status, is_master, rooms, note, room_types, guest, guest_name, phone_number, email, photo, status, balance, owner,creation,reservation,reservation_stay,reservation_status,business_source,total_credit,total_debit,tax_invoice_number,folio_type,folio_type_color
-                         from `tabReservation Folio` 
+                            rf.name, 
+                            rf.status, 
+                            rf.is_master, 
+                            rf.rooms, 
+                            rf.note, 
+                            rf.room_types, 
+                            rf.guest, 
+                            rf.guest_name, 
+                            rf.phone_number, 
+                            rf.email, 
+                            rf.photo, 
+                            rf.status, 
+                            rf.balance, 
+                            rf.owner,
+                            rf.creation,
+                            rf.reservation,
+                            rf.reservation_stay,
+                            rf.reservation_status,
+                            rf.business_source,
+                            rf.total_credit,
+                            rf.total_debit,
+                            rf.tax_invoice_number,
+                            rf.folio_type,
+                            rf.folio_type_color,
+                            st.is_master as is_master_stay
+                         from `tabReservation Folio` rf 
+                            inner join `tabReservation Stay` st on st.name = rf.reservation_stay
                          where
-                            reservation=if('{reservation}'='',reservation,'{reservation}') and 
-                            reservation_stay=if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') 
+                            rf.reservation=if('{reservation}'='',rf.reservation,'{reservation}') and 
+                            rf.reservation_stay=if('{reservation_stay}'='',rf.reservation_stay,'{reservation_stay}') 
                             
                          """.format(reservation=reservation,reservation_stay=reservation_stay),as_dict=1)
  

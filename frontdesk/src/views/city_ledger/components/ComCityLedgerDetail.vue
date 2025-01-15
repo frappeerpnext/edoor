@@ -3,6 +3,7 @@
         <TabView>
             <TabPanel :header=" $t('Account Information')">
                 <table class="w-full mt-3">
+                    <tbody>
                     <tr>
                         <td colspan="2" class="p-0">
                             <div class="flex w-full gap-2">
@@ -31,9 +32,11 @@
                             </div>
                         </td>
                     </tr>
+                </tbody>
                 </table>
                 <div class="mt-3">
                     <table>
+                        <tbody>
                         <tr>
                             <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">{{ $t('City Ledger Information') }} </td>
                         </tr>
@@ -44,10 +47,12 @@
                         <ComStayInfoNoBox label="Phone Number" :value="data?.phone_number" />
                         <ComStayInfoNoBox label="Email" :value="data?.email_address" />
                         <ComStayInfoNoBox label="Address" :value="data?.address" />
+                    </tbody>
                     </table>
                     <div class="grid">
                         <div class="col-12 md:col-6">
                             <table class="mt-3">
+                                <tbody>
                                 <tr>
                                     <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">
                                         {{ $t('Bank Information') }} </td>
@@ -55,16 +60,19 @@
                                 <ComStayInfoNoBox label="Bank Name" :value="data?.bank_name" />
                                 <ComStayInfoNoBox label="Bank Account Number" :value="data?.bank_account_number" />
                                 <ComStayInfoNoBox label="Bank Account Name" :value="data?.bank_account_name" />
+                            </tbody>
                             </table>
                         </div>
                         <div class="col-12 md:col-6">
                             <table class="mt-3">
+                                <tbody>
                                 <tr>
                                     <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">
                                         {{ $t('Contact Person Information') }} </td>
                                 </tr>
                                 <ComStayInfoNoBox label="Contact Name" :value="data?.contact_name" />
                                 <ComStayInfoNoBox label="Contact Phone Number" :value="data?.contact_phone_number" />
+                            </tbody>
                             </table>
                         </div>
                     </div>

@@ -22,6 +22,7 @@
                         <label for="ref">{{ $t('Ref. No') }}</label>
                         <InputText id="ref" class="w-full" type="text" v-model="doc.reference_number" />
                     </div>
+                    
                     <div class="col-6">
                         <label for="posting_date">{{ $t('Posting Date') }}</label>
 

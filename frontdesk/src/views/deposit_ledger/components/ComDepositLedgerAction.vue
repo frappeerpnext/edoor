@@ -1,11 +1,12 @@
 <template>
-    <div class="flex pb-1 md:pb-0 overflow-auto  justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
-        <div class="flex gap-2"> 
+    <div
+        class="flex pb-1 md:pb-0 overflow-auto  justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
+        <div class="flex gap-2">
 
-            <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation"/>
+            <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation" />
 
-            <Button class="conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
-                @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
+            <Button class="conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button"
+                label="Folio Options" @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
                 <template #end>
 
@@ -48,16 +49,18 @@
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc, watch,onMounted,getDocList } from '@/plugin';
+import { inject, ref, useToast, updateDoc, watch, onMounted, getDocList } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
 
- 
-import ComIFrameModal from "@/components/ComIFrameModal.vue"; 
+import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAddDepositLedger from "@/views/deposit_ledger/components/ComAddDepositLedger.vue";
 import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue';
-import {i18n} from '@/i18n';
+import ComReportServerModal from "@/components/ComReportServerModal.vue";
+
+
+import { i18n } from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({
     folio: Object,
@@ -99,30 +102,35 @@ const toggle = (event) => {
 const print_menus = ref([])
 
 function viewFolioSummaryReport() {
+    if (window.setting.server_report_url) {
 
-    dialog.open(ComIFrameModal, {
-        data: {
-            doctype: "Deposit%20Ledger",
-            name: selectedFolio.value.name,
-            report_name: gv.getCustomPrintFormat("eDoor Deposit Ledger Invoice Summary"),
-            show_letter_head: true,
-            filter_options:['invoice_style']
-        },
-        props: {
-            header: "Deposit Ledger Invoice Summary",
-            style: {
-                width: '80vw',
-            },
-            position: "top",
-            modal: true,
-            maximizable: true,
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
-        },
-    });
+        OpenServerReport("/Front Desk/rptDepositLedgerFolioSummary", "Deposit Voucher Summary")
 
+    }
+    else {
+        dialog.open(ComIFrameModal, {
+            data: {
+                doctype: "Deposit%20Ledger",
+                name: selectedFolio.value.name,
+                report_name: gv.getCustomPrintFormat("eDoor Deposit Ledger Invoice Summary"),
+                show_letter_head: true,
+                filter_options: ['invoice_style']
+            },
+            props: {
+                header: "Deposit Ledger Invoice Summary",
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                breakpoints: {
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
+            },
+        });
+    }
 
 }
 
@@ -142,13 +150,19 @@ print_menus.value.push({
     label: "Deposit Ledger Detail Report",
     icon: 'pi pi-print',
     command: () => {
+        if (window.setting.server_report_url) {
+                    
+                    OpenServerReport("/Front Desk/rptDepositLedgerFolioDetail", "Deposit Voucher Detail")
+
+                }
+                else {
         dialog.open(ComIFrameModal, {
             data: {
                 doctype: "Deposit%20Ledger",
                 name: selectedFolio.value.name,
                 report_name: gv.getCustomPrintFormat("eDoor Deposit Ledger Invoice Detail"),
                 show_letter_head: true,
-                filter_options:["show_summary",'invoice_style']
+                filter_options: ["show_summary", 'invoice_style']
             },
             props: {
                 header: "Deposit Ledger Invoice Summary",
@@ -158,13 +172,14 @@ print_menus.value.push({
                 position: "top",
                 modal: true,
                 maximizable: true,
-                breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+                breakpoints: {
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
             },
         });
     }
+}
 })
 
 function onAddFolioTransaction(account_code) {
@@ -186,10 +201,10 @@ function onAddFolioTransaction(account_code) {
                     transaction_number: selectedFolio.value.name,
                     property: window.property_name,
                     account_group: account_code.name,
-                    guest:selectedFolio.value.guest
+                    guest: selectedFolio.value.guest
                 },
                 balance: selectedFolio.value.balance,
-                account_code_filter:account_code.filter
+                account_code_filter: account_code.filter
             },
             props: {
                 header: account_code.label + ' to Folio ' + props.folio.name,
@@ -200,10 +215,10 @@ function onAddFolioTransaction(account_code) {
                 modal: true,
                 position: "top",
                 closeOnEscape: false,
-                breakpoints:{
-                '960px': '750px',
-                '640px': '100vw'
-            },
+                breakpoints: {
+                    '960px': '750px',
+                    '640px': '100vw'
+                },
             },
             onClose: (options) => {
                 const data = options.data;
@@ -224,15 +239,15 @@ function onAddFolioTransaction(account_code) {
 }
 
 function reloadData() {
-    window.postMessage({action:"DepositLedger"},"*")
-    window.postMessage({action:"ComDepositLedgerDetai"},"*")
+    window.postMessage({ action: "DepositLedger" }, "*")
+    window.postMessage({ action: "ComDepositLedgerDetai" }, "*")
 
 
 
 }
 
-const onRefresh = debouncer(() => { 
-    window.postMessage({action:"ComDepositLedgerDetai"},"*")
+const onRefresh = debouncer(() => {
+    window.postMessage({ action: "ComDepositLedgerDetai" }, "*")
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -263,7 +278,7 @@ function showPrintPreview(data) {
 
             modal: true,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '80vw',
                 '640px': '100vw'
             },
@@ -286,7 +301,7 @@ function EditFolio() {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
@@ -294,8 +309,8 @@ function EditFolio() {
         onClose: (options) => {
             let data = options.data;
             if (data != undefined) {
-                window.postMessage({action:"ComDepositLedgerDetail"},"*")
-                window.postMessage({action:"DepositLedger"},"*")
+                window.postMessage({ action: "ComDepositLedgerDetail" }, "*")
+                window.postMessage({ action: "DepositLedger" }, "*")
             }
         }
     })
@@ -317,8 +332,8 @@ function openFolio() {
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                    window.postMessage({action:"ComDepositLedgerDetail"},"*")
-                    window.postMessage({action:"DepositLedger"},"*")
+                    window.postMessage({ action: "ComDepositLedgerDetail" }, "*")
+                    window.postMessage({ action: "DepositLedger" }, "*")
                 })
         },
 
@@ -342,8 +357,8 @@ function closeFolio() {
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                    window.postMessage({action:"ComDepositLedgerDetail"},"*")
-                    window.postMessage({action:"DepositLedger"},"*")  
+                    window.postMessage({ action: "ComDepositLedgerDetail" }, "*")
+                    window.postMessage({ action: "DepositLedger" }, "*")
                 })
         },
 
@@ -373,15 +388,15 @@ function onDeleteFolio() {
             maximizable: false,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
             const data = options.data;
-            if (data) { 
-                window.postMessage({action:"DepositLedger"},"*")
+            if (data) {
+                window.postMessage({ action: "DepositLedger" }, "*")
                 emit("onClose")
 
             }
@@ -393,14 +408,46 @@ function onDeleteFolio() {
 
 }
 
- 
 
 
-onMounted(()=>{
-    if(window.isMobile){
+function OpenServerReport(report_path, title, parameters = undefined) {
+
+    let params = parameters;
+    if (!parameters) {
+
+        params = [
+            { name: 'deposit_ledger', values: [selectedFolio.value.name] },
+
+        ]
+    }
+    dialog.open(ComReportServerModal, {
+        data: {
+            report_path: report_path,
+            params: params
+        },
+        props: {
+            header: $t(title),
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+}
+
+
+onMounted(() => {
+    if (window.isMobile) {
         let elem = document.querySelectorAll(".p-dialog");
-        if (elem){
-            elem = elem[elem.length-1]
+        if (elem) {
+            elem = elem[elem.length - 1]
             elem?.classList.add("p-dialog-maximized"); // adds the maximized class
         }
     }
@@ -420,7 +467,7 @@ onMounted(()=>{
                     name: d.print_format,
                     icon: d.icon ? d.icon : "pi pi-print",
                     command: (r) => {
-                      
+
                         dialog.open(ComIFrameModal, {
                             data: {
                                 doctype: d.attach_to_doctype,
@@ -436,7 +483,7 @@ onMounted(()=>{
                                 position: "top",
                                 modal: true,
                                 maximizable: true,
-                                breakpoints:{
+                                breakpoints: {
                                     '960px': '80vw',
                                     '640px': '100vw'
                                 },
@@ -449,4 +496,3 @@ onMounted(()=>{
 })
 
 </script>
- 

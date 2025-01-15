@@ -1,5 +1,6 @@
 <template lang="">
-  <div class="col-12">
+ 
+<div class="col-12">
       <ComReservationStayPanel title="Charge Summary">
         <template #content>
           <div class="flex mb-2 mt-2 gap-2 text-right">
@@ -17,10 +18,30 @@
                   <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="( rs?.reservationStay?.total_debit - rs?.reservationStay?.total_credit )"></CurrencyFormat></div>
               </div>
           </div>
-          
-            <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">
+           
+            <template v-if="rs.stay_summary.length>3 && !showChargeSummaryMore">
+              <div  v-for="items in rs.stay_summary.slice(0,3)" :key="items" class="flex gap-2 mt-2">
+                <ComBoxStayInformation isCurrency v-if="items.amount != 0" :title="items?.account_category" :value="items?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
+               
+            </div>
+            <div class="w-full flex justify-content-end mt-3">
+            <Button class="conten-btn" @click="onShowMoreCharge">
+            
+              Show {{rs.stay_summary.length - 3}} more(s)
+             
+            </Button>
+          </div>
+            </template>
+            <template v-else>
+  <div  v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">
+                
                 <ComBoxStayInformation isCurrency v-if="items.amount != 0" :title="items?.account_category" :value="items?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
             </div>
+            <div class="w-full flex justify-content-end mt-3">
+            <Button class="conten-btn" v-if="rs.stay_summary.length>3" @click="onShowMoreCharge">Show Less</Button>
+            </div>
+            </template>
+            
         </template>
       </ComReservationStayPanel>
      
@@ -76,6 +97,8 @@ const emit = defineEmits('onViewReservation')
 const rs = inject('$reservation_stay');
 const taxData = ref()
 const opTax = ref();
+const showChargeSummaryMore = ref(false)
+
 const toggleTAX = (event) => {
     opTax.value.toggle(event);
 
@@ -83,7 +106,10 @@ const toggleTAX = (event) => {
 function onClick(){
     emit('onViewReservation')
 }
-
+function onShowMoreCharge(){
+  
+  showChargeSummaryMore.value =!showChargeSummaryMore.value
+}
 onMounted(() => {
     setTimeout(() => {
       getApi("reservation.get_room_tax_summary", {reservation_stay:rs.reservationStay.name})

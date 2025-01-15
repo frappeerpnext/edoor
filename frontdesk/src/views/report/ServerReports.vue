@@ -1,5 +1,5 @@
 <template>
-    
+     
         <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
             <SplitterPanel :size="25" class="pa-4 left-side-panel overflow-y-auto">
                 <ComReportTree   @onSelectReport="onSelectReport" />
@@ -8,10 +8,10 @@
             <SplitterPanel :size="75" class="pa-4">
              
                 <div id="main_server_report_viewer"></div>
-
             </SplitterPanel>
         </Splitter>
- 
+      
+
 </template>
 <script setup>
 import { ref, onMounted, inject,onUnmounted } from "@/plugin"
@@ -49,6 +49,9 @@ function onSelectReport(p) {
         serviceAuthorizationToken: "bearer " + window.setting.embed_code,
         parameters: report_params,
         zoomFactor: 1.25,
+        toolbarSettings: {
+                        items: ej.ReportViewer.ToolbarItems.All
+        },
         reportLoaded: function(event) {
             setTimeout(() => {
                 let property  = document.querySelector("#main_server_report_viewer_Param_101")

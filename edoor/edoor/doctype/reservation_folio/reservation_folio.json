@@ -106,7 +106,8 @@
    "in_list_view": 1,
    "label": "Reservation Stay",
    "options": "Reservation Stay",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "default": "Open",
@@ -373,7 +374,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-19 17:14:49.935325",
+ "modified": "2025-01-07 01:29:07.316929",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

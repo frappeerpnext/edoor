@@ -1,0 +1,56 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Ledger Type",
+  "label": "Guest Ledger",
+  "ledger_type": "Reservation Folio",
+  "modified": "2025-01-15 10:33:58.168631",
+  "name": "Reservation Folio",
+  "sort_order": 1
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Ledger Type",
+  "label": "Deposit Ledger",
+  "ledger_type": "Deposit Ledger",
+  "modified": "2025-01-15 10:34:13.860265",
+  "name": "Deposit Ledger",
+  "sort_order": 2
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Ledger Type",
+  "label": "Desk Folio",
+  "ledger_type": "Desk Folio",
+  "modified": "2025-01-15 10:34:28.357596",
+  "name": "Desk Folio",
+  "sort_order": 3
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Ledger Type",
+  "label": "City Ledger",
+  "ledger_type": "City Ledger",
+  "modified": "2025-01-15 10:35:25.348407",
+  "name": "City Ledger",
+  "sort_order": 4
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Ledger Type",
+  "label": "Payable Ledger",
+  "ledger_type": "Payable Ledger",
+  "modified": "2025-01-15 10:34:51.307973",
+  "name": "Payable Ledger",
+  "sort_order": 5
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Ledger Type",
+  "label": "Food and Beverage",
+  "ledger_type": "Cashier Shift",
+  "modified": "2025-01-15 10:35:07.923890",
+  "name": "Cashier Shift",
+  "sort_order": 6
+ }
+]

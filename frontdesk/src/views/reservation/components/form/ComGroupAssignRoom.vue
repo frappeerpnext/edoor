@@ -6,6 +6,7 @@
 
     <div v-else class="w-full overflow-auto">
     <table class="w-full" >
+        <thead>
         <tr class="font-medium">
             <td> {{ $t('Stay #') }} </td>
             <td> {{ $t('Stay Date') }} </td>
@@ -16,6 +17,10 @@
             <td class="text-center"> {{ $t('Nights') }} </td>
             <td class="text-right"> {{ $t('Rate') }} </td>
         </tr>
+        </thead>
+        <tbody>
+
+    
         <template  v-for="(d, index) in data" :key="index">
             <tr>
                 <td>{{ d.reservation_stay }}</td>
@@ -90,7 +95,7 @@
            
                 
         </template>
-      
+    </tbody>
     </table>
 </div>
 </template>

@@ -8,10 +8,12 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "reference_number",
   "guest",
   "guest_name",
   "phone_number",
   "email",
+  "business_source",
   "column_break_yqkr",
   "posting_date",
   "naming_series",
@@ -185,11 +187,22 @@
   {
    "fieldname": "column_break_yqkr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "business_source",
+   "fieldtype": "Link",
+   "label": "Business Source",
+   "options": "Business Source"
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-06 09:36:28.767996",
+ "modified": "2025-01-14 16:17:42.388301",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Deposit Ledger",

@@ -10,6 +10,7 @@
             <Skeleton v-if="loading"  class="mb-2"  width="100%" height="20rem"></Skeleton>
             <div v-else class="surface-ground rounded-lg p-2 h-full">
                 <table class="w-full border-bottom-1">
+                    <tbody>
                 <tr class="border-bottom-1">
                     <th class="text-start ">{{ $t('Business Source') }} </th>
                     <th class="text-end border-left-1">{{ $t('Actual') }} </th>
@@ -28,6 +29,7 @@
             <th class="border-1 text-end"><CurrencyFormat :value="totaldActualValues" /></th>
             <th class="border-1 text-end"><CurrencyFormat :value="totalExpectedValues" /></th>        
         </tr>
+                </tbody>
                 </table>
             </div>
         </div>

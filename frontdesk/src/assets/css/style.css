@@ -41,6 +41,16 @@
     --green-100: #E9F6DE;
 
 }
+@font-face {
+    font-family: 'Kh Muol';
+    src: url('../fonts/Moul-Regular.woff2') format('woff2'),
+        url('../fonts/Moul-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
 html {
     margin: 0;
     padding: 0;

@@ -282,7 +282,7 @@ def validate_add_folio_transaction(data,working_day):
  
     
     # check if user select account code
-    if not data["account_code"]:
+    if not data.get("account_code"):
         frappe.throw(_("Please select account code"))
     account_code_doc = frappe.get_cached_doc("Account Code",data["account_code"])
     

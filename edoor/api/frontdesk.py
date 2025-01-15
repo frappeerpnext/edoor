@@ -124,7 +124,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         date = working_date 
 
     # get total_room
-    sql = "select count(name) as total from `tabRoom` where property=%(property)s and room_type_id=if('{0}'='',room_type_id,'{0}')".format(room_type_id or '')
+    sql = "select count(name) as total from `tabRoom` where disabled = 0 and  property=%(property)s and room_type_id=if('{0}'='',room_type_id,'{0}')".format(room_type_id or '')
     data = frappe.db.sql(sql,{"property":property}, as_dict=1)
     total_room = 0
     if data:
@@ -3052,7 +3052,7 @@ def update_room_status(working_day=None,working_day_name=None):
 @frappe.whitelist()
 def update_daily_property_data(property, working_date):
 
-    sql = "delete from `tabDaily Property Data` where date='{}' and property=%()s".format(working_date)
+    sql = "delete from `tabDaily Property Data` where date='{}' and property=%(property)s".format(working_date)
     frappe.db.sql(sql,{"property":property})
 
     sql = "select room_type_id, count(name) as total_rooms from `tabRoom` where disabled=0 and property=%(property)s group by room_type"

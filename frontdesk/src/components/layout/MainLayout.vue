@@ -140,7 +140,7 @@ import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.sv
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
 import ComOperationDashboard from '@/components/layout/components/ComOperationDashboard.vue'
-
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({
@@ -260,6 +260,34 @@ function onRoute(route) {
 }
 
 function onBlankGuestRegistration() {
+
+    if(window.setting.server_report_url){
+      
+      dialog.open(ComReportServerModal, {
+          data: {
+              report_path: "/Front Desk/rptBlankGuestRegistrationCard",
+              params:[]
+              
+          },
+          props: {
+              header: $t("Blank Guest Registration Card"),
+              style: {
+                  width: '80vw',
+              },
+              position: "top",
+              modal: true,
+              maximizable: true,
+              closeOnEscape: false,
+              breakpoints:{
+                  '960px': '80vw',
+                  '640px': '100vw'
+              },
+
+          },
+      });
+   }
+  else {
+
     const dialogRef = dialog.open(ComIFrameModal, {
         data: {
             "doctype": "Business%20Branch",
@@ -282,6 +310,7 @@ function onBlankGuestRegistration() {
             },
         },
     });
+}
 }
 
 function onSearch() {

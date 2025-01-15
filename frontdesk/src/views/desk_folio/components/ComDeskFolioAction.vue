@@ -1,22 +1,23 @@
 <template>
-    <div class="flex pb-1 md:pb-0 overflow-auto justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
+    <div
+        class="flex pb-1 md:pb-0 overflow-auto justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
         <div class="flex gap-2">
-             
-            <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation.charge_payment_transfer_section"/>
 
-            <Button class=" conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
-                @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
+            <ComFolioActionButton @onClick="onAddFolioTransaction"
+                :data="folio_operation.charge_payment_transfer_section" />
+
+            <Button class=" conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button"
+                label="Folio Options" @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
                 <template #end>
-                    <template
-                    v-for="(d, index) in folio_operation.discount_section" :key="index">
+                    <template v-for="(d, index) in folio_operation.discount_section" :key="index">
                         <button v-if="!d.sub_account" @click="onAddFolioTransaction(d)"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i :class="d.icon" />
                             <span class="ml-2 ">{{ $t(d.label) }}</span>
                         </button>
                     </template>
-                    
+
                     <button @click="closeFolio" v-if="selectedFolio?.status == 'Open'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-ban" />
@@ -25,7 +26,7 @@
                     <button @click="EditFolio(true)"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-file-edit" />
-                        <span class="ml-2">{{ $t('Edit Folio') }}  </span>
+                        <span class="ml-2">{{ $t('Edit Folio') }} </span>
                     </button>
 
                     <button @click="openFolio" v-if="selectedFolio?.status == 'Closed'"
@@ -33,11 +34,12 @@
                         <i class="pi pi-check-circle" />
                         <span class="ml-2">{{ $t('Open Folio') }} </span>
                     </button>
-                    <button v-if="!selectedFolio?.tax_invoice_number" @click="generateTaxInvoice(`${isMobile ? 'top' : 'center'}`)" 
-                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                            <i class="pi pi-file" />
-                            <span class="ml-2">{{$t('Generate Tax Invoice')}}</span>
-                        </button>
+                    <button v-if="!selectedFolio?.tax_invoice_number"
+                        @click="generateTaxInvoice(`${isMobile ? 'top' : 'center'}`)"
+                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                        <i class="pi pi-file" />
+                        <span class="ml-2">{{ $t('Generate Tax Invoice') }}</span>
+                    </button>
                     <button @click="onDeleteFolio"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-times-circle" />
@@ -50,58 +52,58 @@
         <div class="flex ms-2 md:ms-0">
             <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" :label="$t('Print')" icon="pi pi-print"
                 :model="print_menus" />
-                <Button   @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b btn-size2 ml-2"></Button>    
+            <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b btn-size2 ml-2"></Button>
         </div>
 
     </div>
     <!-- show tax invoice info -->
-    
-        <Message  v-if="selectedFolio?.tax_invoice_number"  severity="info">
-                    <div class="flex justify-content-between align-items-center w-full">
-                        <div>
-                             This Folio has Generate {{selectedFolio.tax_invoice_type}} - {{ selectedFolio?.tax_invoice_number }}
-                        </div>
-                        <div class="ms-5">
-                            <Button class="conten-btn" style="background: transparent;" @click="viewfoliotaxinvoicedetail">
-<i class="pi pi-print me-2" />
-                            Print Tax Invoice
-                            </Button>   
-                        </div>
-                    </div>
-                  
-                </Message>
+
+    <Message v-if="selectedFolio?.tax_invoice_number" severity="info">
+        <div class="flex justify-content-between align-items-center w-full">
+            <div>
+                This Folio has Generate {{ selectedFolio.tax_invoice_type }} - {{ selectedFolio?.tax_invoice_number }}
+            </div>
+            <div class="ms-5">
+                <Button class="conten-btn" style="background: transparent;" @click="viewfoliotaxinvoicedetail">
+                    <i class="pi pi-print me-2" />
+                    Print Tax Invoice
+                </Button>
+            </div>
+        </div>
+
+    </Message>
 </template>
 <script setup>
 
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc,watch,onMounted,getDoc  } from '@/plugin';
+import { inject, ref, useToast, updateDoc, watch, onMounted, getDoc,getApi } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
 
-import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAddDeskFolio from "@/views/desk_folio/components/ComAddDeskFolio.vue";
 import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTaxInvoice.vue";
 import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue';
-import {i18n} from '@/i18n';
+import ComReportServerModal from "@/components/ComReportServerModal.vue";
+import { i18n } from '@/i18n';
 
 const isMobile = ref(window.isMobile)
-const { t: $t } = i18n.global; 
+const { t: $t } = i18n.global;
 const props = defineProps({
-    folio:Object,
+    folio: Object,
 })
 
 const emit = defineEmits(["onClose"])
-const accountGroups = ref(window.setting.account_group.filter(r=>r.show_in_desk_folio==1))
+const accountGroups = ref(window.setting.account_group.filter(r => r.show_in_desk_folio == 1))
 const selectedFolio = ref(props.folio)
 const dialog = useDialog();
 const confirm = useConfirm();
 const toast = useToast();
 const gv = inject("$gv")
-const setting =window.setting
+const setting = window.setting
 const folio_menu = ref();
 
 const folio_operation = ref(JSON.parse(setting.folio_operation_setting).desk_folio);
@@ -109,9 +111,9 @@ const folio_operation = ref(JSON.parse(setting.folio_operation_setting).desk_fol
 //trach user select new folio and reload folio information
 
 watch(() => props.folio, (newValue, oldValue) => {
-   
+
     selectedFolio.value = newValue
- 
+
 })
 
 const toggle = (event) => {
@@ -122,76 +124,82 @@ const toggle = (event) => {
 const print_menus = ref([])
 
 function viewFolioSummaryReport() {
+    if (window.setting.server_report_url) {
 
-    dialog.open(ComIFrameModal, {
-        data: {
-            doctype: "Desk%20Folio",
-            name: selectedFolio.value.name,
-            report_name: gv.getCustomPrintFormat("eDoor Desk Folio Invoice Summary"),
-            show_letter_head: true,
-            filter_options:['invoice_style']
-        },
-        props: {
-            header: "Desk Folio Invoice Summary",
-            style: {
-                width: '80vw',
+        OpenServerReport("/Front Desk/rptDeskFolioSummary", "Desk Folio Summary Invoice")
+
+    }
+    else {
+        dialog.open(ComIFrameModal, {
+            data: {
+                doctype: "Desk%20Folio",
+                name: selectedFolio.value.name,
+                report_name: gv.getCustomPrintFormat("eDoor Desk Folio Invoice Summary"),
+                show_letter_head: true,
+                filter_options: ['invoice_style']
             },
-            position: "top",
-            modal: true,
-            maximizable: true,
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
+            props: {
+                header: "Desk Folio Invoice Summary",
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                breakpoints: {
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
             },
-        },
-    });
+        });
+    }
 
 
 }
 
 
-function getTaxInvoice(){
-    if(selectedFolio.value.tax_invoice_number){
-        getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
+function getTaxInvoice() {
+    if (selectedFolio.value.tax_invoice_number) {
+        getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r => {
             selectedFolio.value.tax_invoice_type = r.tax_invoice_type
         })
     }
-    
+
 }
 
 function generateTaxInvoice() {
- 
- const dialogRef = dialog.open(ComGenerateTaxInvoice, {
 
-     data: {
-         property: window.property_name,
-         name:selectedFolio.value.name,
-         document_type:"Desk Folio"
-     },
-     props: {
-         header: "Generate Tax Invoice",
-         style: {
-             width: '30vw',
-         },
-         modal: true,
-         closeOnEscape: false,
-         position: 'top',
-         breakpoints:{
-             '960px': '50vw',
-             '640px': '100vw'
-         },
-     },
-     onClose: (options) => {
-         let data = options.data;
-         if (data != undefined) {
-       
-             selectedFolio.value.tax_invoice_number = data.message.name
-             selectedFolio.value.tax_invoice_type = data.message.tax_invoice_type
+    const dialogRef = dialog.open(ComGenerateTaxInvoice, {
+
+        data: {
+            property: window.property_name,
+            name: selectedFolio.value.name,
+            document_type: "Desk Folio"
+        },
+        props: {
+            header: "Generate Tax Invoice",
+            style: {
+                width: '30vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top',
+            breakpoints: {
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+            let data = options.data;
+            if (data != undefined) {
+
+                selectedFolio.value.tax_invoice_number = data.message.name
+                selectedFolio.value.tax_invoice_type = data.message.tax_invoice_type
 
 
-         }
-     }
- })
+            }
+        }
+    })
 }
 
 
@@ -211,13 +219,19 @@ print_menus.value.push({
     label: "Desk Folio Detail Report",
     icon: 'pi pi-print',
     command: () => {
+        if (window.setting.server_report_url) {
+                    
+                    OpenServerReport("/Front Desk/rptDeskFolioDetail", "Desk Folio Detail Invoice")
+
+                }
+                else {
         dialog.open(ComIFrameModal, {
             data: {
                 doctype: "Desk%20Folio",
                 name: selectedFolio.value.name,
                 report_name: gv.getCustomPrintFormat("eDoor Desk Folio Invoice Detail"),
                 show_letter_head: true,
-                filter_options:["show_summary",'invoice_style']
+                filter_options: ["show_summary", 'invoice_style']
             },
             props: {
                 header: "Desk Folio Invoice Detail",
@@ -227,53 +241,66 @@ print_menus.value.push({
                 position: "top",
                 modal: true,
                 maximizable: true,
-                breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+                breakpoints: {
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
             },
         });
+    }
     }
 })
 
 if (selectedFolio?.value?.tax_invoice_number) {
     print_menus.value.push({
-    label: $t("Print Tax Invoice"),
-    icon: 'pi pi-print',
-    command: () => {
-        viewfoliotaxinvoicedetail()
-    }
-})  
+        label: $t("Print Tax Invoice"),
+        icon: 'pi pi-print',
+        command: () => {
+            viewfoliotaxinvoicedetail()
+        }
+    })
 }
 
 
-function onAddFolioTransaction(account_code) {
-    if(props.newDoc){
-        props.newDoc.account_group =account_code.name
+
+//General Journal
+print_menus.value.push({
+    label: "General Journal",
+    icon: 'pi pi-print',
+    command: () => {
+        OpenServerReport("/Front Desk/rptGeneralJournalTransactionForDeskFolio","General Journal by Desk Folio")
     }
-    if (account_code.is_city_ledger_account==1){
-        if(selectedFolio.value.allow_post_to_city_ledger==0){
+})
+
+
+
+function onAddFolioTransaction(account_code) {
+    if (props.newDoc) {
+        props.newDoc.account_group = account_code.name
+    }
+    if (account_code.is_city_ledger_account == 1) {
+        if (selectedFolio.value.allow_post_to_city_ledger == 0) {
             toast.add({ severity: 'warn', summary: "", detail: "This reservation is not allow to post charge to city ledger.", life: 5000 })
             return
         }
     }
-   
- 
-     
+
+
+
     if (selectedFolio.value.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
-                    new_doc: {
-                        transaction_type: "Desk Folio",
-                        transaction_number: selectedFolio.value.name,
-                        property: window.property_name,
-                        account_group: account_code.name,
-                        room_id:selectedFolio.value.room_id,
-                        business_source:selectedFolio.value.business_source,
-                        guest:selectedFolio.value.guest
-                    },
-                    balance: selectedFolio.value.balance,
-                    account_code_filter:account_code.filter,
+                new_doc: {
+                    transaction_type: "Desk Folio",
+                    transaction_number: selectedFolio.value.name,
+                    property: window.property_name,
+                    account_group: account_code.name,
+                    room_id: selectedFolio.value.room_id,
+                    business_source: selectedFolio.value.business_source,
+                    guest: selectedFolio.value.guest
+                },
+                balance: selectedFolio.value.balance,
+                account_code_filter: account_code.filter,
             },
             props: {
                 header: account_code.label + ' to Folio ' + props.folio.name,
@@ -284,15 +311,15 @@ function onAddFolioTransaction(account_code) {
                 modal: true,
                 position: "top",
                 closeOnEscape: false,
-                breakpoints:{
-                '960px': '750px',
-                '640px': '100vw'
-            },
+                breakpoints: {
+                    '960px': '750px',
+                    '640px': '100vw'
+                },
             },
             onClose: (options) => {
                 const data = options.data;
-  
-     
+
+
                 if (data) {
                     reloadData()
                     if ((data.show_print_preview || 0) == 1) {
@@ -311,13 +338,13 @@ function onAddFolioTransaction(account_code) {
 
 }
 
-function reloadData(){ 
-    window.postMessage({action:"ComDeskFolioDetail"},"*")
-    window.postMessage({action:"DeskFolio"},"*")
+function reloadData() {
+    window.postMessage({ action: "ComDeskFolioDetail" }, "*")
+    window.postMessage({ action: "DeskFolio" }, "*")
 }
- 
+
 const onRefresh = debouncer(() => {
-    window.postMessage({action:"ComDeskFolioDetail"},"*")
+    window.postMessage({ action: "ComDeskFolioDetail" }, "*")
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -348,7 +375,7 @@ function showPrintPreview(data) {
 
             modal: true,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '80vw',
                 '640px': '100vw'
             },
@@ -357,42 +384,73 @@ function showPrintPreview(data) {
 }
 
 function viewfoliotaxinvoicedetail() {
-    getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
+    getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r => {
+        if(setting.server_report_url){
+            // get tax invoice data first before show report
+            getApi("utils.get_tax_invoice_data",{folio_number:selectedFolio.value.name, document_type:"Desk Folio",generate_temp_tax_data:1}).then(result=>{
+                dialog.open(ComReportServerModal, {
+                data: {
+                    report_path: "/Front Desk/rptDeskFolioTaxInvoice",
+                    params:[
+                              {name: 'desk_folio', values: [selectedFolio.value.name] },
+                    ]
+                },
+                props: {
+                    header: $t("Desk Folio Tax Invoice"),
+                    style: {
+                        width: '80vw',
+                    },
+                    position: "top",
+                    modal: true,
+                    maximizable: true,
+                    closeOnEscape: false,
+                    breakpoints:{
+                        '960px': '80vw',
+                        '640px': '100vw'
+                    },
+
+                },
+            });
+   
+            })
+        }
+        else { 
         dialog.open(ComIFrameModal, {
-        data: {
-            doctype: "Tax Invoice",
-            name: selectedFolio.value.tax_invoice_number,
-            report_name: r.default_print_format?gv.getCustomPrintFormat(r.default_print_format) :  gv.getCustomPrintFormat("Invoice"),
-            letterhead: r.default_letterhead || "Tax Letterhead",
-            filter_options:["show_vattin","show_rate_type","show_business_source"]
-        },
-        props: {
-            header: $t("Print Tax Invoice"),
-            style: {
-                width: '80vw',
+            data: {
+                doctype: "Tax Invoice",
+                name: selectedFolio.value.tax_invoice_number,
+                report_name: r.default_print_format ? gv.getCustomPrintFormat(r.default_print_format) : gv.getCustomPrintFormat("Invoice"),
+                letterhead: r.default_letterhead || "Tax Letterhead",
+                filter_options: ["show_vattin", "show_rate_type", "show_business_source"]
             },
-            position: "top",
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
+            props: {
+                header: $t("Print Tax Invoice"),
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                breakpoints: {
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
             },
-        },
-    });
+        });
+        }
     })
-    
+
 
 }
 
 
 function EditFolio() {
- 
+
     const dialogRef = dialog.open(ComAddDeskFolio, {
 
         data: {
-            name:selectedFolio.value.name,
+            name: selectedFolio.value.name,
         },
         props: {
             header: 'Edit Desk Folio' + selectedFolio.value.name,
@@ -402,24 +460,24 @@ function EditFolio() {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
             let data = options.data;
-            if (data != undefined) { 
-                window.postMessage({action:"ComDeskFolioDetail"},"*")
-                window.postMessage({action:"DeskFolio"},"*")
+            if (data != undefined) {
+                window.postMessage({ action: "ComDeskFolioDetail" }, "*")
+                window.postMessage({ action: "DeskFolio" }, "*")
             }
         }
     })
 }
 
 function openFolio() {
-    
-        confirm.require({
+
+    confirm.require({
         header: 'Open Desk Folio ' + selectedFolio.value.name,
         message: 'Are you sure you want to open this desk folio ' + selectedFolio.value.name + '?',
         icon: 'pi pi-info-circle',
@@ -432,14 +490,14 @@ function openFolio() {
                 status: 'Open',
             })
                 .then((doc) => {
-                    selectedFolio.value.status = doc.status; 
-                    window.postMessage({action:"ComDeskFolioDetail"},"*")
-                    window.postMessage({action:"DesFkolio"},"*")
+                    selectedFolio.value.status = doc.status;
+                    window.postMessage({ action: "ComDeskFolioDetail" }, "*")
+                    window.postMessage({ action: "DesFkolio" }, "*")
                 })
         },
 
     })
-    
+
 }
 
 
@@ -457,9 +515,9 @@ function closeFolio() {
                 status: 'Closed',
             })
                 .then((doc) => {
-                    selectedFolio.value.status = doc.status; 
-                    window.postMessage({action:"ComDeskFolioDetail"},"*")
-                    window.postMessage({action:"DeskFolio"},"*")
+                    selectedFolio.value.status = doc.status;
+                    window.postMessage({ action: "ComDeskFolioDetail" }, "*")
+                    window.postMessage({ action: "DeskFolio" }, "*")
                 })
         },
 
@@ -489,28 +547,59 @@ function onDeleteFolio() {
             maximizable: false,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
             const data = options.data;
-            if (data) { 
-                window.postMessage({action:"DeskFolio"},"*") 
-                emit("onClose") 
+            if (data) {
+                window.postMessage({ action: "DeskFolio" }, "*")
+                emit("onClose")
             }
         }
     });
 
 
-
-
 }
 
-onMounted(()=>{
+function OpenServerReport(report_path, title, parameters = undefined) {
+
+    let params = parameters;
+    if (!parameters) {
+
+        params = [
+            { name: 'desk_folio', values: [selectedFolio.value.name] },
+
+        ]
+    }
+    dialog.open(ComReportServerModal, {
+        data: {
+            report_path: report_path,
+            params: params
+        },
+        props: {
+            header: $t(title),
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+}
+
+
+
+onMounted(() => {
     getTaxInvoice()
 })
 
 </script>
- 

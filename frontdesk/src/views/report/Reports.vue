@@ -31,7 +31,7 @@
         </div>
     </template>
     <template v-else>
-        <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
+        <Splitter style="height:87vh;" state-key="report_spliter_state" state-storage="local">
             <SplitterPanel :size="25" class="pa-4 left-side-panel overflow-y-auto">
                 <ComReportTree @onTabClick="onTabClick" @onSelectReport="onSelectReport" />
             </SplitterPanel>

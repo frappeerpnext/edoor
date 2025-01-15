@@ -35,6 +35,7 @@ def get_data_for_folio_transaction_detail(
         folio_transactions=folio_transactions,
         force_show_room_rate = cint(force_show_room_rate)
     )
+    
     # check if reservation is mark as hide rate 
     show_room_rate_in_guest_folio = 1 
     if cint(force_show_room_rate)==0:
@@ -68,6 +69,7 @@ def get_data_for_folio_transaction_detail(
         amount = d["amount"]
         balance = balance + (amount * (1 if d["type"]=="Debit" else -1))        
         folio_transactions.append({ 
+            "reference_number": d.get("reference_number"),
             "reservation":d["reservation"],
             "name":"" if d["is_package_charge"]==1 else d["name"],
             "room_number":d["room_number"],
@@ -140,6 +142,7 @@ def get_data_from_folio_transaction(
         
     sql = """
         select 
+            reference_number,
             reservation,
             name,
             room_number,

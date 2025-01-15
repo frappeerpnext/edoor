@@ -2,26 +2,40 @@
     <ComDialogContent :hideButtonOK="true" @onClose="onClose" style="min-height:70vh;" :hideIcon="false" :loading="loading">
         <TabView>
             <TabPanel header="Deposit Ledger Information">
+           
                 <div v-if="doc" class="mt-2">
                     <ComDepositLedgerAction :folio="doc" :newDoc="newDoc" @onClose="onClose" />
 
                     <div class="grid">
                         <div class="col-12 md:col">
                             <table class="mb-4">
+                                <tbody>
                                 <tr>
                                     <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
                                         {{ $t('Deposit Ledger') }}
                                     </th>
                                 </tr>
+                                <ComStayInfoNoBox label="Reference Number">
+                                    {{ doc.reference_number  }}
+                                </ComStayInfoNoBox>
                                 <ComStayInfoNoBox label="Posting Date">
                                     {{ moment(doc.posting_date).format("DD-MM-YYYY") }}
                                 </ComStayInfoNoBox>
+                               
                                 <ComStayInfoNoBox label="Guest">
                                     <span @click="onViewCustomerDetail(doc.guest)"
                                         class="-ml-2 text-right link_line_action1">
                                         {{ doc.guest }} - {{ doc.guest_name }}
                                     </span>
                                 </ComStayInfoNoBox>
+                                
+                                <ComStayInfoNoBox label="Business Source">
+                                    <span 
+                                        class="-ml-2 text-right">
+                                        {{ doc.business_source }} 
+                                    </span>
+                                </ComStayInfoNoBox>
+
                                 <ComStayInfoNoBox label="Room">
                                     <span class="font-semibold text-right">
                                         {{ doc.room_number }} <span v-if="doc.room_number">({{ doc.room_type }})</span>
@@ -32,6 +46,7 @@
                                         {{ doc.note }}
                                     </span>
                                 </ComStayInfoNoBox>
+                            </tbody>
                             </table>
                         </div>
                         <div class="col-12 md:col">

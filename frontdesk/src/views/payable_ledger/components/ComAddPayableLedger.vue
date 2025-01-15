@@ -1,7 +1,12 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
     <div class="grid">
-
+        <div class="col-12">
+            <label> {{ $t('Reference Number') }}</label>
+            <div>
+                <InputText   class="w-full" type="text" v-model="data.reference_number" />
+            </div>
+        </div> 
         <div class="col-6">
             <label> {{ $t('Posting Date') }} </label>
             <div>
@@ -55,7 +60,8 @@ function onOK() {
         room_id: data.value.room_id,
         note: data.value.note,
         property: property.name,
-        vendor:data?.value.vendor
+        vendor:data?.value.vendor,
+        reference_number:data.value.reference_number
     }
     createUpdateDoc('Payable Ledger', savedData).then((r)=>{
         dialogRef.value.close(r)

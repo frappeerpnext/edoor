@@ -178,7 +178,7 @@
         <!-- <hr class="mt-2" v-if="rs?.is_page"> -->
         <template #footer-left>
             <ComReservationStayMoreOptionsButton @onDupicateReservation="onDupicateReservation" @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" />
-            <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
+            <ComReservationStayPrintButton :reservation="rs.reservationStay.reservation"  :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
             <Button class="border-none" @click="OnViewReservation">
                 <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> {{ $t('View Reservation') }}  <Badge
                     style="font-weight: 600 !important;" class="badge-rs" :value="rs?.reservationStayNames.length"

@@ -156,6 +156,7 @@ import DeskFolio from './providers/desk_folio';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
+import ComReportServerModal from '@/components/ComReportServerModal.vue';
 import VueSortable from "vue3-sortablejs";
 import vInteract from './directives/v-interact';
 import DraggableResizableVue from 'draggable-resizable-vue3'
@@ -242,6 +243,7 @@ app.component('ComTimeago', ComTimeago)
 app.component('ComAttachWebcam', ComAttachWebcam)
 app.component('ComOpenStatus', ComOpenStatus)
 app.component('ComIFrameModal', ComIFrameModal)
+app.component('ComReportServerModal', ComReportServerModal )
  
 app.use(DraggableResizableVue)
 

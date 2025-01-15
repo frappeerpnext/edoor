@@ -29,6 +29,7 @@
         </template>
         <div class="w-full overflow-auto px-2 py-4">
       <table class="w-full" >
+        <tbody>
           <tr class="border-1 p-2 w-full">
         
             <th>{{ $t('Revenue') }}</th>
@@ -40,6 +41,7 @@
                 <CurrencyFormat :value="value" />
               </td>
           </tr>
+        </tbody>
         </table>
       </div>
     </TabPanel>

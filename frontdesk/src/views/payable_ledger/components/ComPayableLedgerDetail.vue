@@ -7,11 +7,16 @@
                     <div class="grid">
                         <div class="col-12 md:col">
                             <table class="mb-4">
+                                <tbody>
                                 <tr>
                                     <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
                                         Payable Ledger
                                     </th>
                                 </tr>
+                                <ComStayInfoNoBox label="Reference Number">
+                                    {{doc.reference_number}}
+                                    
+                                </ComStayInfoNoBox>
                                 <ComStayInfoNoBox label="Posting Date">
                                     {{ moment(doc.posting_date).format("DD-MM-YYYY") }}
                                 </ComStayInfoNoBox>
@@ -31,6 +36,7 @@
                                         {{ doc.note }}
                                     </span>
                                 </ComStayInfoNoBox>
+                            </tbody>
                             </table>
                         </div>
                         <div class="col-12 md:col">

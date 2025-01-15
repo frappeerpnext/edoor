@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "reference_number",
   "vendor",
   "vendor_name",
   "phone_number",
@@ -167,11 +168,16 @@
   {
    "fieldname": "item_summary",
    "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 15:39:26.882822",
+ "modified": "2025-01-14 17:21:44.476385",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Payable Ledger",

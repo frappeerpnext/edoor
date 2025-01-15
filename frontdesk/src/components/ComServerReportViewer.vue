@@ -26,7 +26,11 @@ onMounted(() => {
         reportServiceUrl: window.setting.report_service_url,
         reportPath: props.report_name,
         serviceAuthorizationToken: "bearer " + window.setting.embed_code,
-        parameters: report_params
+        parameters: report_params,
+        zoomFactor: 1.25,
+        toolbarSettings: {
+                        items: ej.ReportViewer.ToolbarItems.All
+        }
     });
 });
 </script>

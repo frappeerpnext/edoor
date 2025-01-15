@@ -5,7 +5,9 @@
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import { ref, inject, useDialog, onMounted,getDocList,useToast,getApi } from "@/plugin";
+ 
 import {i18n} from '@/i18n';
 import { renderSlot } from "vue";
 const { t: $t } = i18n.global;
@@ -22,7 +24,11 @@ const items = ref([
         icon: 'pi pi-check-circle',
 
         command: () => {
+            if (window.setting.server_report_url) {
+            OpenServerReport("/Front Desk/rptGroupGuestRegistrationCard", "Group Guest Registration Card")
 
+        }
+        else {
             openReport("eDoor Group Registration Card",
                 {
                     "doctype": "Reservation",
@@ -38,6 +44,7 @@ const items = ref([
                     ]
                 }
             )
+        }
         },
     },
     {
@@ -45,7 +52,10 @@ const items = ref([
         icon: 'pi pi-check-circle',
 
         command: () => {
-
+            if (window.setting.server_report_url) {
+            OpenServerReport("/Front Desk/rptReservationConfirmationVoucher", "Group Confirmation Voucher")
+        }
+        else {
             openReport("Confirmmation Voucher",
                 {
                     "doctype": "Reservation",
@@ -53,6 +63,7 @@ const items = ref([
                     report_name: gv.getCustomPrintFormat("eDoor Reservation Confirmation Voucher"),
                 }
             )
+        }
         },
     },
     {
@@ -66,6 +77,15 @@ const items = ref([
             if (result.message.length == 0) {
                 toast.add({ severity: 'warn', summary: 'Folio Summary Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
             } else {
+                if (window.setting.server_report_url) {
+                    const params = [
+                        { name: 'reservation', values: [props.reservation] },
+                        { name: 'reservation_folio', values: [result.message[0].name] }
+                    ]
+                    OpenServerReport("/Front Desk/rptReservationStayFolioSummary", "Folio Summary", params)
+
+                }
+                else {
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
@@ -91,6 +111,7 @@ const items = ref([
                     },
                 });
             }
+            }
         })
 
     }
@@ -107,6 +128,15 @@ const items = ref([
             if (result.message.length == 0) {
                 toast.add({ severity: 'warn', summary: 'Folio Detail Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
             } else {
+                if (window.setting.server_report_url) {
+                    const params = [
+                    { name: 'reservation', values: [props.reservation] },
+                        { name: 'reservation_folio', values: [result.message[0].name] }
+                    ]
+                    OpenServerReport("/Front Desk/rptReservationStayFolioDetail", "Folio Detail", params)
+
+                }
+                else {
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
@@ -132,6 +162,7 @@ const items = ref([
                     },
                 });
             }
+            }
         })
 
     }
@@ -140,6 +171,12 @@ const items = ref([
         label: $t("Folio Summary by Reservation"),
         icon: 'pi pi-print',
         command: () => {
+            if (window.setting.server_report_url) {
+                    
+                    OpenServerReport("/Front Desk/rptFolioSummaryByReservation", "Folio Summary by Reservation")
+
+                }
+                else {
             openReport("Folio Summary by Reservation",
                 {
                     doctype: "Reservation",
@@ -148,13 +185,19 @@ const items = ref([
                     show_letter_head: true,
                     filter_options: ["invoice_style", "show_room_number", "show_summary", "show_account_code"],
                 })
+                }
         },
     },
     {
         label: $t("Folio Detail by Reservation"),
         icon: 'pi pi-print',
         command: () => {
+            if (window.setting.server_report_url) {
+                    
+                    OpenServerReport("/Front Desk/rptFolioDetailByReservation", "Folio Detail by Reservation")
 
+                }
+                else {
             openReport("Folio Detail by Reservation",
                 {
                     doctype: "Reservation",
@@ -163,13 +206,19 @@ const items = ref([
                     show_letter_head: true,
                     filter_options: ["invoice_style", "show_room_number", "show_summary", "show_account_code"],
                 })
+            }
         },
     },
     {
         label: $t("Folio List by Reservation"),
         icon: 'pi pi-print',
         command: () => {
+            if (window.setting.server_report_url) {
+                    
+                    OpenServerReport("/Front Desk/rptFolioListByReservation", "Folio List by Reservation")
 
+                }
+                else {
             openReport("Folio List by Reservation",
                 {
                     doctype: "Reservation",
@@ -177,38 +226,68 @@ const items = ref([
                     report_name: "eDoor Folio List by Reservation",
                     show_letter_head: true
                 })
+            }
         },
     },
-    {
-        label: $t("Group Invoice By Reservation Stay"),
-        icon: 'pi pi-dollar',
-        command: () => {
-
-            openReport("Group Invoice By Reservation Stay",
-                {
-                    doctype: "Reservation",
-                    name: props.reservation,
-                    report_name: "eDoor Group Invoice By Reservation Stay",
-                    show_letter_head: true,
-                    filter_options: ["show_summary"],
-                })
-        },
-    },
+   
     
     {
 
         label: $t("Reservation Detail"),
         icon: 'pi pi-check-circle',
         command: () => {
+            if (window.setting.server_report_url) {
+                    
+                    OpenServerReport("/Front Desk/rptReservationDetail", "Reservation Detail")
 
+                }
+                else {
             openReport("Reservation Detail", {
                 "doctype": "Reservation",
                 name: props.reservation ?? "",
                 report_name: ("Reservation Detail"),
             },)
+        }
         },
     },
 ])
+
+
+// Generaal transaction
+
+items.value.push({
+    label: $t("General Journal Transaction"),
+    icon: 'pi pi-check-circle',
+    command: () => {
+
+        dialog.open(ComReportServerModal, {
+            data: {
+                report_path: "/Front Desk/rptGeneralJournalTransactionForReservation",
+                params:[
+                        {name: 'reservation', values: [props.reservation] }
+                ]
+            },
+            props: {
+                header: $t("General Journal Transaction"),
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                breakpoints:{
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
+            },
+        });
+
+         
+    }
+})
+
+
 
 function openReport(title, data) {
     dialog.open(ComIFrameModal, {
@@ -228,6 +307,41 @@ function openReport(title, data) {
         },
     });
 }
+
+
+
+function OpenServerReport(report_path, title, parameters = undefined) {
+   
+    let params = parameters;
+    if (!parameters) {
+        
+        params = [
+            { name: 'reservation', values: [props.reservation] },
+            { name: 'reservation_stay', values: [""] }
+        ]
+    }
+    dialog.open(ComReportServerModal, {
+        data: {
+            report_path: report_path,
+            params: params
+        },
+        props: {
+            header: $t(title),
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+}
+
 
 
 onMounted(() => {

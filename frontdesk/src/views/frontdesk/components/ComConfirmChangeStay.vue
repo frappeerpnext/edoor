@@ -20,6 +20,7 @@
         <div class="grid">
             <div class="col-6">
                 <table>
+                    <tbody>
                     <tr>
                         <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">
                             {{ $t('Reservation Stay Detail') }}
@@ -44,7 +45,7 @@
                         </div>
                     </ComStayInfoNoBox>
                   
-
+                </tbody>
                 </table>
             </div>
             <div class="col-6">
@@ -83,6 +84,7 @@
             </div>
             <div class="col-12 lg:col-6">
                 <table>
+                    <tbody>
                     <tr>
                         <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">
                             {{ $t('Old Stay Detail') }}
@@ -111,10 +113,12 @@
                         </div>
                     </ComStayInfoNoBox>
                     <ComStayInfoNoBox label="Nights" :value="moment(oldEvent?.end).diff(oldEvent?.start, 'days')" />
+                </tbody>
                 </table>
             </div>
             <div class="col-12 lg:col-6">
                 <table>
+                    <tbody>
                     <tr>
                         <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center"> {{ $t('New Stay Detail') }} </th>
                     </tr>
@@ -166,6 +170,7 @@
                                 class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">{{$t('New')}}</span>
                         </div>
                     </ComStayInfoNoBox>
+                </tbody>
                 </table>
             </div>
 

@@ -3,9 +3,7 @@
         <div class="flex gap-2 justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2 overflow-x-auto lg:overflow-x-hidden w-max lg:w-full">
             <slot name="button"></slot>
             <div class="gap-1 flex">
-                 
                 <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation.charge_payment_transfer_section"/>
-                
                 <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                     @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
                 <Menu ref="folio_menu" id="folio_menu" :popup="true">
@@ -108,7 +106,7 @@
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc,watch,onMounted,getDocList,getDoc } from '@/plugin';
+import { inject, ref, useToast, updateDoc,watch,onMounted,getDocList,getDoc,getApi } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
@@ -116,12 +114,13 @@ import Menu from 'primevue/menu';
 import ComNewReservationStayFolio from '@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue';
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
 import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTaxInvoice.vue";
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComWarningPrintRoomRate from '@/views/reservation/components/ComWarningPrintRoomRate.vue';
 import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue'
-
+ 
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const displayViewFolio = ref('');
@@ -179,6 +178,39 @@ const print_menus = ref([])
 const sub_account_menus = ref([])
 
 function viewFolioSummaryReport() {
+     if(setting.server_report_url){
+        dialog.open(ComReportServerModal, {
+            data: {
+                report_path: "/Front Desk/rptReservationStayFolioSummary",
+                params:[
+                        {name: 'reservation', values: [selectedFolio.value.reservation] },
+                        {name: 'reservation_stay', values: [selectedFolio.value.reservation_stay] },
+                        {name: 'reservation_folio', values: [selectedFolio.value.name] },
+                        
+                ]
+                
+                
+            },
+            props: {
+                header: $t("Folio Summary Report"),
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                breakpoints:{
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
+
+            },
+        });
+     }
+    else {
+
+    
     const print_format = window.setting.default_folio_print_format?window.setting.default_folio_print_format :"eDoor Reservation Stay Folio Summary Report";
     let filter =  [ ["reservation_stay", "=", props.folio.reservation_stay]]
     
@@ -211,11 +243,43 @@ function viewFolioSummaryReport() {
 
             },
         });
-
+    }
 }
 
 function viewfoliotaxinvoicedetail() {
     getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r=>{
+        if(setting.server_report_url){
+            // get tax invoice data first before show report
+            getApi("utils.get_tax_invoice_data",{folio_number:selectedFolio.value.name, document_type:"Reservation Folio",generate_temp_tax_data:1}).then(result=>{
+                dialog.open(ComReportServerModal, {
+                data: {
+                    report_path: "/Front Desk/rptTaxInvoice",
+                    params:[
+                              {name: 'reservation_folio', values: [selectedFolio.value.name] },
+                    ]
+                },
+                props: {
+                    header: $t("Folio Summary Report"),
+                    style: {
+                        width: '80vw',
+                    },
+                    position: "top",
+                    modal: true,
+                    maximizable: true,
+                    closeOnEscape: false,
+                    breakpoints:{
+                        '960px': '80vw',
+                        '640px': '100vw'
+                    },
+
+                },
+            });
+   
+            })
+        }
+            
+  else {
+
         dialog.open(ComIFrameModal, {
         data: {
             doctype: "Tax Invoice",
@@ -238,7 +302,9 @@ function viewfoliotaxinvoicedetail() {
                 '640px': '100vw'
             },
         },
-    });
+        });
+    }
+
     })
     
 
@@ -272,7 +338,35 @@ print_menus.value.push({
     label: $t("Folio Detail Report"),
     icon: 'pi pi-print',
     command: () => {
+        if(setting.server_report_url){
+      
+      dialog.open(ComReportServerModal, {
+          data: {
+              report_path: "/Front Desk/rptReservationStayFolioDetail",
+              params:[
+                      {name: 'reservation_folio', values: [selectedFolio.value.name] }
+              ]
+              
+              
+          },
+          props: {
+              header: $t("Folio Summary Report"),
+              style: {
+                  width: '80vw',
+              },
+              position: "top",
+              modal: true,
+              maximizable: true,
+              closeOnEscape: false,
+              breakpoints:{
+                  '960px': '80vw',
+                  '640px': '100vw'
+              },
 
+          },
+      });
+   }
+  else {
         dialog.open(ComPrintReservationStay, {
             data: {
                 doctype: "Reservation%20Stay",
@@ -297,6 +391,7 @@ print_menus.value.push({
 
             },
         });
+    }
   
     }
 
@@ -315,6 +410,35 @@ print_menus.value.push({
             toast.add({ severity: 'warn', summary: "", detail: "Please select folio transaction", life: 5000 })
             return
         }
+       
+        if(setting.server_report_url){
+      
+      dialog.open(ComReportServerModal, {
+          data: {
+              report_path: "/Front Desk/rptReservationStayFolioWithSelectedTransaction",
+              params:[
+                      {name: 'reservation_folio', values: [selectedFolio.value.name]},
+                      {name: 'folio_transactions', values: selectedFolioTransactions.map(d => d["name"])},
+              ]
+          },
+          props: {
+              header: $t("Folio Detail with Selected Transaction"),
+              style: {
+                  width: '80vw',
+              },
+              position: "top",
+              modal: true,
+              maximizable: true,
+              closeOnEscape: false,
+              breakpoints:{
+                  '960px': '80vw',
+                  '640px': '100vw'
+              },
+
+          },
+      });
+   }
+  else {
         dialog.open(ComPrintReservationStay, {
             data: {
                 doctype: "Reservation%20Stay",
@@ -342,6 +466,7 @@ print_menus.value.push({
             },
         });
     }
+}
 })  
 
 
@@ -354,6 +479,38 @@ if (selectedFolio?.value?.tax_invoice_number) {
     }
 })  
 }
+print_menus.value.push({
+    label: $t("Print General Journal"),
+    icon: 'pi pi-print',
+    command: () => {
+        
+        dialog.open(ComReportServerModal, {
+            data: {
+                report_path: "/Front Desk/rptGeneralJournalTransactionForReservation",
+                params:[
+                        {name: 'transaction_number', values: [selectedFolio.value.name] },
+                        {name: 'reservation_stay', values: [selectedFolio.value.reservation_stay] },
+                        {name: 'reservation', values: [selectedFolio.value.reservation] }
+                ]
+            },
+            props: {
+                header: $t("General Journal"),
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                breakpoints:{
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
+            },
+        });
+    }
+    })  
+
 
 function onAddFolioTransaction(account_code) {
     if(props.newDoc){
@@ -726,9 +883,6 @@ function onTransferFolioItem() {
 }
 
 
-
-const arr = ref()
-
 function onAuditTrail() {
     
     const dialogRef = dialog.open(ComAuditTrail, {
@@ -837,5 +991,6 @@ getDocList ('Custom Print Format', {
 const toggleMenu = (event) => {
     post_charge_menu.value.toggle(event);
 }
+
 </script>
  

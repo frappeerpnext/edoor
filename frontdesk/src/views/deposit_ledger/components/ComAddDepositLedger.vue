@@ -2,6 +2,12 @@
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
     
     <div class="grid">
+        <div class="col-12">
+            <label> {{ $t('Reference Number') }}</label>
+            <div>
+                <InputText   class="w-full" type="text" v-model="data.reference_number" />
+            </div>
+        </div> 
         <div class="col-6">
             <label> {{ $t('Posting Date') }}</label>
             <div>
@@ -14,8 +20,15 @@
                 <ComAutoComplete placeholder="Select Room"  v-model="data.room_id" class="pb-2 w-full"  doctype="Room" :filters="['property','=',property.name]" :disabled="doc?.docstatus==1" />
             </div>
         </div>
-        
-        <div class="col-12">
+
+        <div class="col-6">
+            <label for="room"> {{ $t('Business Source') }}</label>
+            <ComAutoComplete v-model="data.business_source"  placeholder="Select Business Source" doctype="Business Source"
+                class="auto__Com_Cus w-full"
+            />
+        </div>
+
+        <div class="col-6">
             <label for="room"> {{ $t('Guest') }} <span class="text-red-500">*</span></label>
             <ComAutoComplete v-model="data.guest" :suggestions="data.selected_customer" placeholder="Select Guest" doctype="Customer"
             :isAddNew="true"
@@ -85,7 +98,9 @@ function onOK() {
         room_id: data.value.room_id,
         note: data.value.note,
         property: property.name,
-        guest:data.value.guest
+        guest:data.value.guest,
+        business_source:data.value.business_source,
+        reference_number:data.value.reference_number
     }
     createUpdateDoc('Deposit Ledger', savedData).then((r)=>{
         dialogRef.value.close(r)

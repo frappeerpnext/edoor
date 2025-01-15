@@ -55,7 +55,9 @@ import Menu from 'primevue/menu';
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAddPayableLedger from "@/views/payable_ledger/components/ComAddPayableLedger.vue";
 import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue';
- 
+import ComReportServerModal from "@/components/ComReportServerModal.vue";
+
+
 const props = defineProps({
     folio:Object,
 })
@@ -67,7 +69,8 @@ const confirm = useConfirm();
 const toast = useToast();
 const gv = inject("$gv") 
 const folio_menu = ref();
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const folio_operation = ref(JSON.parse(setting.folio_operation_setting).payable_ledger);
 
 
@@ -87,6 +90,12 @@ const toggle = (event) => {
 const print_menus = ref([])
 
 function viewFolioSummaryReport() {
+    if (window.setting.server_report_url) {
+
+OpenServerReport("/Front Desk/rptPayableLedgerFolioSummary", "Payable Ledger Invoice Summary")
+
+}
+else {
     dialog.open(ComIFrameModal, {
         data: {
             doctype: "Payable%20Ledger",
@@ -109,6 +118,7 @@ function viewFolioSummaryReport() {
             },
         },
     });
+}
 
 
 }
@@ -129,6 +139,12 @@ print_menus.value.push({
     label: "Payable Ledger Detail Report",
     icon: 'pi pi-print',
     command: () => {
+        if (window.setting.server_report_url) {
+
+OpenServerReport("/Front Desk/rptPayableLedgerFolioDetail", "Payable Ledger Invoice Detail")
+
+}
+else {
         dialog.open(ComIFrameModal, {
             data: {
                 doctype: "Payable%20Ledger",
@@ -151,6 +167,7 @@ print_menus.value.push({
             },
             },
         });
+    }
     }
 })
 
@@ -389,5 +406,37 @@ function onDeleteFolio() {
 }
 
  
+function OpenServerReport(report_path, title, parameters = undefined) {
+
+let params = parameters;
+if (!parameters) {
+
+    params = [
+        { name: 'payable_ledger', values: [selectedFolio.value.name] },
+
+    ]
+}
+dialog.open(ComReportServerModal, {
+    data: {
+        report_path: report_path,
+        params: params
+    },
+    props: {
+        header: $t(title),
+        style: {
+            width: '80vw',
+        },
+        position: "top",
+        modal: true,
+        maximizable: true,
+        closeOnEscape: false,
+        breakpoints: {
+            '960px': '80vw',
+            '640px': '100vw'
+        },
+    },
+});
+}
+
 </script>
  
