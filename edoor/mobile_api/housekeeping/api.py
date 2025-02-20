@@ -33,7 +33,7 @@ def get_dashboard_data(property=None,working_date=None):
 def get_recent_work_order(property):
 
     filters = [["property", "=", property]]
-    fields = ["name","owner","creation","modified","modified_by","_assign","posting_date","description","photo","work_order_type","work_order_status"]
+    fields = ["name","owner","creation","modified","modified_by","_assign","posting_date","description","photo","work_order_type","work_order_status","location"]
     order_by = "modified desc"
     limit_page_length = 20
     result = frappe.db.get_list("Work Order", fields = fields,  filters = filters, limit_page_length =  limit_page_length, order_by=order_by)
@@ -43,7 +43,7 @@ def get_recent_work_order(property):
 def get_user_work_order(property):
  
     filters = [["property", "=", property],["_assign","like","%{}%".format(frappe.session.user)]]
-    fields = ["name","owner","creation","modified","modified_by","_assign","posting_date","description","photo","work_order_type","work_order_status"]
+    fields = ["name","owner","creation","modified","modified_by","_assign","posting_date","description","photo","work_order_type","work_order_status","location"]
     order_by = "modified desc"
     limit_page_length = 20
     result = frappe.db.get_list("Work Order", fields = fields,  filters = filters, limit_page_length =  limit_page_length, order_by=order_by)
@@ -76,7 +76,7 @@ def merge_assign_values(data):
 def test_get_room():
     return get_room_list(
         property="ESTC Hotel",
-        date='2024-12-05'
+        date='2025-01-27'
     )
 
    

@@ -307,7 +307,7 @@ const calendarOptions = reactive({
             return
         }
         const event = $event.event._def
- 
+        event.start = $event.event.start
         const elements    = document.querySelectorAll('.' + $event.event._def.extendedProps.reservation_stay);
         elements.forEach(e=>{
             e.parentNode.parentNode.parentNode.style.boxShadow = '2px 2px 5px 1px rgba(0, 0, 0, 0.8)';

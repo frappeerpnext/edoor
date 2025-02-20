@@ -1,6 +1,6 @@
 <template > 
     <div>
-            <div class="message-content">
+        <div class="message-content">
                 <Message severity="info" @close="closeMessage">
                     <h2 class="text-4xl">Congratulation!</h2>
                     <p>Night audit process executed successfully.</p>
@@ -8,7 +8,6 @@
                 </Message>           
             </div>
 
-        
         <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
             <SplitterPanel :size="25" class="pa-4">
                 <div class="p-2 overflow-y-auto" style="max-height: calc(100vh - 380px)">
@@ -21,7 +20,11 @@
 
             <SplitterPanel :size="75" class="pa-4">
                 <div v-if="selectedReport" class="p-2">
-                    <div class="flex justify-content-between mb-5">
+                    <template v-if="setting.server_report_url">
+                        <div id="night_audit_server_report_viewer"></div>
+                    </template>
+                    <template v-else>
+                        <div class="flex justify-content-between mb-5">
                         <ComLetterHead v-model="letter_head" @onSelect="onSelectLetterHead" />
                         <div class="flex">
                             <div class="pr-2">
@@ -30,9 +33,10 @@
                             <ComHeader isRefresh @onRefresh="showReport()" wrClass="p-0" />
                         </div>
                     </div>
-
                     <iframe @load="onIframeLoaded()" id="iframe_night_audit_report" width="100%"
-                        :src="url"></iframe>
+                    :src="url"></iframe>
+                    </template>
+                
                         
                 </div>
                 <div v-else class="p-2 flex align-items-center h-100 justify-center">
@@ -56,13 +60,66 @@ const activeButton = ref(0)
 const letter_head = ref(window.setting.property.default_letter_head)
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 let isShowMessage = true
+const setting = window.setting;
+
 function onViewReport(rpt, activeButton) {
+    
+    calculation_server_report_height()
+  
     selectedReport.value = rpt
-    showReport() 
+  
+    if (setting.report_service_url){
+       
+        let date = window.current_working_date
+        let cashier_shift = working_day.last_cashier_shift
+       
+        if (selectedReport.value.default_audit_date == 'Previous Audit Date') {
+            date = moment(date).add(-1, 'Days').format("YYYY-MM-DD")
+        }
+        let report_params = [
+            {name: 'printed_by', values: [window.user.full_name] },
+            {name: 'property', values: [window.property_name] },
+            {name: 'start_date', values: [date] },
+            {name: 'end_date', values: [date] },
+            {name: 'cashier_shift', values: [cashier_shift] }
+           
+        ];
+        
+        $("#night_audit_server_report_viewer").boldReportViewer({
+            reportServerUrl:window.setting.server_report_url,
+            reportServiceUrl: window.setting.report_service_url,
+            reportPath: selectedReport.value.server_report_path,
+            serviceAuthorizationToken: "bearer " + window.setting.embed_code,
+            parameters: report_params,
+            zoomFactor: 1.25,
+            toolbarSettings: {
+                            items: ej.ReportViewer.ToolbarItems.All
+            },
+            reportLoaded: function(event) {
+                // try to hide property
+                // setTimeout(() => {
+                //     let property  = document.querySelector("#main_server_report_viewer_Param_101")
+                
+                // }, 5000);
+            
+            }
+        });
+    }else {
+       showReport()  
+    }
+    
 }
 
-
-
+function calculation_server_report_height(){
+     
+    const el = document.querySelector("#night_audit_server_report_viewer");
+ 
+    const spliter = document.querySelector(".p-splitter")
+    
+   if(el){
+    el.style.height =   spliter.offsetHeight - 25 + "px"
+   }
+}
 
 function onPrint() {
     const el = document.getElementById("iframe_night_audit_report")
@@ -73,25 +130,30 @@ function onPrint() {
 
 function closeMessage () { 
     isShowMessage = false
-    setIframeHeight(0)
-    
+    setIframeHeight(0);
+    const spliter = document.querySelector(".p-splitter")
+    spliter.style.height =  spliter.offsetHeight - 25 + 100 + "px"
+    const el = document.querySelector("#night_audit_server_report_viewer");
+    el.style.height =  spliter.offsetHeight - 25 + 100 + "px"
 }
 
 function showReport() {
-    const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
-    let date = window.current_working_date
-    let cashier_shift = working_day.last_cashier_shift
-    if (selectedReport.value.default_audit_date == 'Previous Audit Date') {
-        date = moment(date).add(-1, 'Days').format("YYYY-MM-DD")
-    }
+    if(setting.server_report_url) return ;
 
-    url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + encodeURIComponent(window.property_name) + "&format=" + gv.getCustomPrintFormat(decodeURI(selectedReport.value.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0&start_date="+ date +"&cashier_shift="+ cashier_shift + "&end_date=" + date + "&" + selectedReport.value.default_filter
+        const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
+        let date = window.current_working_date
+        let cashier_shift = working_day.last_cashier_shift
+        if (selectedReport.value.default_audit_date == 'Previous Audit Date') {
+            date = moment(date).add(-1, 'Days').format("YYYY-MM-DD")
+        }
 
-    const el = document.getElementById("iframe_night_audit_report")
+        url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + encodeURIComponent(window.property_name) + "&format=" + gv.getCustomPrintFormat(decodeURI(selectedReport.value.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0&start_date="+ date +"&cashier_shift="+ cashier_shift + "&end_date=" + date + "&" + selectedReport.value.default_filter
 
-    if (el) {
-        el.contentWindow.location.replace(url.value)
-    }
+        const el = document.getElementById("iframe_night_audit_report")
+
+        if (el) {
+            el.contentWindow.location.replace(url.value)
+        }
     
     setIframeHeight()
 }
@@ -107,7 +169,7 @@ function onSelectLetterHead(d) {
 }
 
 const setIframeHeight = (delay = 500) => {
-    
+     if(setting.server_report_url) return ;
     let heightMessage = -30
     
     const dialogContent = document.querySelector('.p-dialog-content')
@@ -132,6 +194,7 @@ const setIframeHeight = (delay = 500) => {
 }
 
 onMounted(() => { 
+   
     date.value = moment(working_day.date_working_day).format("MMMM DD, YYYY")
     getDocList("System Report", {
         fields: ["*"],
@@ -144,7 +207,16 @@ onMounted(() => {
         report_list.value = data
         if (data.length > 0) {
             selectedReport.value = data[0]
-            showReport()
+           
+            if(window.setting.server_report_url){
+                setTimeout(function(){
+                    onViewReport(selectedReport.value);
+                }, 500)
+                
+            }else {
+                showReport();
+            }
+            
         }
     }) 
 

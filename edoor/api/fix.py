@@ -373,6 +373,28 @@ def get_token():
     return token
 
 
+
+
+@frappe.whitelist()
+def fix_keyword(doctype):
+    meta = frappe.get_meta(doctype)
+    data = frappe.db.sql("select name from `tab{}`".format(doctype),as_dict = 1)
+    search_fields = []
+    fields = "name"
+    if meta.search_fields:
+        for s in  meta.search_fields.split(","):
+            search_fields.append("coalesce({},'')".format(s))
+        
+        fields = fields + ",' ', " + ",' ',".join(search_fields)
+    for d in data:
+        sql = "update `tab{}` set keyword = concat({}) where name='{}'".format(doctype, fields, d.get("name"))                       
+        frappe.db.sql(sql)
+    
+    return data
+    frappe.db.commit()
+    
+
+
 @frappe.whitelist(allow_guest=True)
 def convert():
    

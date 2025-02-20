@@ -216,6 +216,7 @@ import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue';
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
 import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue';
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const isMobile = ref(window.isMobile)
@@ -230,6 +231,7 @@ const gv = inject("$gv")
 const dialog = useDialog()
 const opShowColumn = ref();
 const cityLedgerAmountSummary = ref()
+
 const width = ref(0)
 const data = ref([])
 const filter = ref({})
@@ -246,7 +248,49 @@ const rowClass = (data) => {
     return [{ 'auto-post': data.is_auto_post }];
 
 }; 
+const firstDayOfMonth = computed(() => {
+  const dateWorkingDay = new Date(working_day.date_working_day);
+  const firstDay = new Date(dateWorkingDay.getFullYear(), dateWorkingDay.getMonth(), 1);
+  return firstDay.toISOString().split('T')[0];
+});
+
+
 function viewCityLedgerReport(){
+
+    if(window.setting.server_report_url){
+
+    dialog.open(ComReportServerModal, {
+            
+            data: {
+                report_path: "/Front Desk/rptAccountCityLedgerTransaction",
+                params:[
+                      
+                {name: 'property', values: [property.name] },
+                {name: 'start_date', values: [firstDayOfMonth.value] },
+                {name: 'end_date', values: [working_day.date_working_day] },
+                {name:'printed_by',values: [window.user.full_name]},
+                {name:'transaction_number',values: [props.name]},
+                        
+                ]
+            },
+            props: {
+                header: $t("City Ledger Account"),
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                breakpoints:{
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
+
+            },
+        });
+    }
+    else {
     dialog.open(ComIFrameModal, {
             data: {
                 doctype: "City Ledger",
@@ -269,10 +313,12 @@ function viewCityLedgerReport(){
             },
             },
         });
+    }
 }
 
 const columns = ref([
     { fieldname: 'name', label: 'Folio Transaction', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
+    { fieldname: 'source_transaction_number', label: 'Folio', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_detail", default: true },
     { fieldname: 'posting_date', label: 'Date', fieldtype: "Date", default: true, header_class: "text-center" },
     { fieldname: 'room_number', label: 'Rooms',fieldtype: "Rooms" ,  header_class: "text-center" },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account', default: true },

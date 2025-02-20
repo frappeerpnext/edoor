@@ -300,6 +300,7 @@ const calendarOptions = reactive({
             return
         }
         const event = $event.event._def
+        event.start = $event.event.start
  
         const elements    = document.querySelectorAll('.' + $event.event._def.extendedProps.reservation_stay);
         elements.forEach(e=>{
@@ -510,7 +511,7 @@ function getEvents(date_range=null) {
                 r.total_room_night = result.message.room_occupy.reduce((n, d) => n + (d.adult || 0), 0) 
                 r.total_room_night = r.total_room_night + "/" +  result.message.room_occupy.reduce((n, d) => n + (d.child || 0), 0) 
             }else {
-                r.total_room_night = (days * r.total_room) -  result.message.room_occupy.filter(x=>x.room_type_id==r.id).reduce((n, d) => n + (d.total || 0), 0)
+                r.total_room_night = (days * r.total_room) -  result.message.room_occupy.filter(x=>x.room_type_id==r.id).reduce((n, d) => n + (d.total || 0) , 0)
             }
             
             const room_inventory_setting = JSON.parse(localStorage.getItem("room_inventory_setting"))
@@ -591,7 +592,7 @@ function getEvents(date_range=null) {
                     
                 } else {
                     const current_date_occupy = result.message.room_occupy.find(x => x.room_type_id == r.id && x.date == moment(current_date).format("YYYY-MM-DD"))
-                    event.title = r.total_room - ((current_date_occupy?.total || 0) + (current_date_occupy?.block || 0))   
+                    event.title =  r.total_room - ((current_date_occupy?.total || 0) + (current_date_occupy?.block || 0))   
                     if((current_date_occupy?.unassign_room || 0)!=0){
                        
                         if(room_inventory_setting && room_inventory_setting.show_unassign_room==1){
@@ -608,14 +609,14 @@ function getEvents(date_range=null) {
                     event.room_available=r.total_room - (current_date_occupy?.total || 0)  
                     event.unassign_room=(current_date_occupy?.unassign_room || 0)
                     event.room_type = r.title //room type from resource
-                    if(r.total_room - (current_date_occupy?.total || 0)  <0){
+                    if(r.total_room - ((current_date_occupy?.total || 0) + (current_date_occupy?.block || 0))  <0){
                         event.color="red"
                         event.textcolor ="white"
                     }
                   
                 }
                 
-
+              
                 events.value.push(event)
                 current_date.setDate(current_date.getDate() + 1);
             }

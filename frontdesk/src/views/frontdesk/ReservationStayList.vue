@@ -196,6 +196,12 @@
                         v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />
                 </div>
+
+                <div class="col-6 md:col-3">
+                    <ComSelect isFull optionLabel="reservation_color_code" optionValue="name"
+                        v-model="filter.selected_reservation_color_code" @onSelected="onSearch" placeholder="Reservation Color Code"
+                        doctype="Reservation Color Code" />
+                </div>
             </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -251,6 +257,7 @@ const columns = ref([
     { fieldname: 'modified_by', label: 'Modified By' },
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
     { fieldname: 'reservation_status', fieldtype: "Status", label: "Status", header_class: "text-center" },
+    { fieldname: 'reservation_color_code', label: "Reservation Color Code" },
     { fieldname: 'status_color' },
 ])
 
@@ -361,6 +368,10 @@ function loadData(show_loading = true) {
     if (filter.value?.search_date_type && filter.value.date_range != null) {
         filters.push([filter.value.search_date_type, '>=', dateRange.start])
         filters.push([filter.value.search_date_type, '<=', dateRange.end])
+    }
+
+    if (filter.value?.selected_reservation_color_code) {
+        filters.push(["reservation_color_code", '=', filter.value.selected_reservation_color_code])
     }
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]

@@ -199,6 +199,8 @@ import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComSummaryofBalence from '@/views/city_ledger/components/ComSummaryofBalence.vue' 
 import {i18n} from '@/i18n';
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
+const working_day = ref(JSON.parse(localStorage.getItem("edoor_working_day")))
 const { t: $t } = i18n.global; 
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
@@ -265,7 +267,36 @@ function onResetTable() {
 }
 
 function onPrint() {  
-    const dialogRef = dialog.open(ComIFrameModal, {
+    if(window.setting.server_report_url){
+    dialog.open(ComReportServerModal, {
+            data: {
+                report_path: "/Front Desk/rptCityLedgerTransaction",
+                params:[
+                        {name: 'property', values: [property.name] },
+                        {name: 'start_date', values: [working_day.value.date_working_day] },
+                        {name: 'end_date', values: [working_day.value.date_working_day] },
+                        {name:'printed_by',values: [window.user.full_name]}
+                ]
+            },
+            props: {
+                header: $t("City Ledger Transaction"),
+                style: {
+                    width: '80vw',
+                },
+                position: "top",
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                breakpoints:{
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
+
+            },
+        });
+    }
+    else {
+            const dialogRef = dialog.open(ComIFrameModal, {
         data: {
             "doctype": "Business Branch",
             name: window.property_name,
@@ -291,6 +322,7 @@ function onPrint() {
             }
         }
     });
+    }
 }
 
 function debouncer(fn, delay) {

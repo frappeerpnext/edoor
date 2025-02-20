@@ -79,6 +79,9 @@
                 </ComReservationStayPanel>
             </div>
         </div>
+        <template #footer-left>
+            <Button @click="SaveDefault">Save Default</Button>
+        </template>
     </ComDialogContent>
 </template>
 <script setup>
@@ -102,10 +105,30 @@ const rowClass = (data) => {
 
 };
 onMounted(() => {
+
     data.value = dialogRef.value.data
     folioNumberFilter.value= {'property':window.property_name, status:'Open','name':['!=',data.value.folio_number]}
 
+
+    let default_selection = localStorage.getItem("folio_item_transfer_default_selection")
+    if (default_selection){
+       default_selection = JSON.parse(default_selection)
+       data.value.change_room_number = default_selection.change_room_number || 0 
+       data.value.change_guest = default_selection.change_guest || 0 
+    }
+
+
 })
+
+function SaveDefault(){
+    localStorage.setItem("folio_item_transfer_default_selection",JSON.stringify(
+        {change_room_number:data.value.change_room_number,change_guest:data.value.change_guest}
+    ))
+
+    toast.add({ severity: 'success', summary: "Save Default", detail: "Save default selection successfully", life: 3000 })
+
+
+}
 
 function onOk() {
     if (!data.value.new_folio_number) {

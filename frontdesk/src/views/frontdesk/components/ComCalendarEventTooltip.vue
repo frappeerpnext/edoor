@@ -1,4 +1,5 @@
 <template>
+  
     <div class="p-2 w-full " v-if="event.extendedProps.type == 'stay'">
         <div class="text-center mb-3 border-1 p-2 border-round-lg overflow-hidden text-overflow-ellipsis ">
             <span class="me-2"> {{ event.title }}
@@ -331,7 +332,7 @@
                 <tr class="table-rs-de">
                     <td>{{ $t('Date') }}</td>
                     <td class="px-3">:</td>
-                    <td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td>
+                    <td> {{ moment(event.start).format("DD-MM-YYYY") }}</td>
                 </tr>
                 <tr class="table-rs-de">
                     <td>{{ $t('Vacant Room') }}</td>

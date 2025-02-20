@@ -14,6 +14,7 @@
                 <template #end>
                    
                     <template v-if="!isMobile">
+                       
                        <NewFITReservationButton />
                     <NewGITReservationButton /> 
                     </template>
@@ -23,10 +24,17 @@
             <div class="mb-3 flex justify-between">
                 <div class="flex gap-2">
                     <div v-if="!isMobile">
-                        <span class="p-input-icon-left">
-                            <i class="pi pi-search" />
-                            <InputText v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
-                        </span>
+                        <div style="height: 37px;" class="flex  align-items-center p-0 gap-2">
+                            <span class="p-input-icon-left">
+                                <i class="pi pi-search" />
+                                <InputText v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" /> 
+                            
+                            </span>
+                            <ComAutoComplete class=" input-wrp-search-autocomplete" width="100%" optionLabel="business_source_type" optionValue="name"
+                                v-model="filter.selected_business_source_type" @onSelected="onSearch" :placeholder="$t('Business Source Type')" doctype="Business Source Type" />
+                            <ComAutoComplete class=" input-wrp-search-autocomplete" width="100%" optionLabel="business_source" optionValue="name"
+                                v-model="filter.selected_business_source" @onSelected="onSearch" :placeholder="$t('Business Source')" doctype="Business Source" />
+                        </div>
                     </div>
                     <div>
                         <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
@@ -47,6 +55,7 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
+            {{ pageState }}
             <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
                 <DataTable 
                 class="res_list_scroll" 
@@ -148,12 +157,7 @@
                             <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
                         </span>
                     </div>
-                <ComAutoComplete class="col-6 md:col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source_type" optionValue="name"
-                    v-model="filter.selected_business_source_type" @onSelected="onSearch" :placeholder="$t('Business Source Type')"
-                    doctype="Business Source Type" />
-                <ComAutoComplete class="col-6 md:col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source" optionValue="name"
-                    v-model="filter.selected_business_source" @onSelected="onSearch" :placeholder="$t('Business Source')"
-                    doctype="Business Source" />
+               
                 <ComSelect class="col-6 md:col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
                     placeholder="Reservation Type" :options="['GIT', 'FIT']" />
 
@@ -377,7 +381,7 @@ function onSelectFilterDate(event) {
 
 const onSearch = debouncer(() => {
     loadData();
-}, 500);
+}, 1000);
 
 function debouncer(fn, delay) {
     var timeoutID = null;

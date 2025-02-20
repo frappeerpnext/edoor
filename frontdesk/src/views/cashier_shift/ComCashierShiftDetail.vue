@@ -393,6 +393,14 @@ print_menus.value.push({
     label: "Cashier Shift Audit Trail Report",
     icon: 'pi pi-print',
     command: () => {
+        if(setting.server_report_url){
+            const params = [
+            { name: 'start_date', values: [doc.value.posting_date] },
+            { name: 'reference_doc_name', values: [doc.value.name] },
+            { name: 'reference_doctype', values: ["Cashier Shift"] }
+            ];
+            OpenServerReport("/Front Desk/rptDocumentAuditTrail","Cashier Shift Audit Trail",params)
+        } else { 
         dialog.open(ComIFrameModal, {
             data: {
                 "doctype": "Cashier%20Shift",
@@ -413,6 +421,7 @@ print_menus.value.push({
             },
             },
         });
+    }
 
     }
 })

@@ -158,6 +158,7 @@ import Paginator from 'primevue/paginator';
 
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComActivityTimeLine from "@/views/activities/components/ComActivityTimeLine.vue";
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
@@ -322,6 +323,34 @@ const onCloseAdvanceSearch = () => {
 }
 
 function onPrint() {
+	if(window.setting.server_report_url){
+		dialog.open(ComReportServerModal, {
+        data: {
+            report_path: "/Front Desk/rptDocumentAuditTrail",
+            params: [
+					{ name: 'reference_doctype', values: [ref_data.value.doctype] },
+					{ name: 'reference_doc_name', values: [ref_data.value.docname] },
+			]
+        },
+        props: {
+            header: "Audit Trail",
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
+
+        }
+        else {
+
 	dialog.open(ComIFrameModal, {
 		data: {
 			doctype: "Business Branch",
@@ -349,6 +378,11 @@ function onPrint() {
             },
 		},
 	});
+
+}
+
+
+
 }
 
 

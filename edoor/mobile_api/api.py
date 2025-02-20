@@ -20,8 +20,9 @@ def check_api_url(property_code):
 
 
 
-@frappe.whitelist( allow_guest=True )
+@frappe.whitelist( allow_guest=True,methods="POST" )
 def login(property,usr, pwd):
+ 
     # from frappe.core.doctype.user.user import generate_keys
     try:
         login_manager = frappe.auth.LoginManager()
@@ -33,11 +34,7 @@ def login(property,usr, pwd):
         
     frappe.response["message"] = get_response_user_information(property)
 
-    
      
-    
- 
-
 
 def generate_keys(user):
 	"""
@@ -68,7 +65,10 @@ def check_user_login(property):
         frappe.response["message"] = get_response_user_information(property)
         
 def get_response_user_information(property):
-    
+    phone_number =""
+    address =""
+    employee_id=""
+    position=""
     user = frappe.get_doc("User", frappe.session.user)
     
     sql = "select position,name,phone_number_1,address from `tabEmployee` where user_id = '{}' limit 1".format(frappe.session.user)

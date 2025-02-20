@@ -7,11 +7,12 @@ from edoor.api.cache_functions import get_account_code_doc, get_account_code_sub
 from edoor.api.folio_transaction import update_reservation_folio
 from edoor.api.generate_room_rate import get_charge_breakdown_by_account_code_breakdown, get_room_rate_account_code_breakdown, package_base_account_code_charge_breakdown
 from edoor.api.tax_calculation import get_tax_breakdown
-from edoor.api.utils import get_working_day, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger
+from edoor.api.utils import add_audit_trail, get_working_day, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger
 from frappe.model.document import bulk_insert
 import frappe
 import json
 from frappe import _
+import copy
 from frappe.model.naming import make_autoname
 
 
@@ -223,6 +224,8 @@ def create_folio_transaction(data):
     # chekc if reservation is still allow to edit information
     # and more
     working_day = get_working_day(data["property"])
+    new_working_day = copy.deepcopy(working_day)
+    
     old_doc = None
     if "name" in data:
         # delete all sub transaction
@@ -246,7 +249,7 @@ def create_folio_transaction(data):
     breakdown_data =  get_folio_transaction_breakdown(data)    
 
     
-    add_folio_transaction_record(data, breakdown_data,working_day, old_doc)
+    base_doc =  add_folio_transaction_record(data, breakdown_data,working_day, old_doc)
     
     
     
@@ -261,15 +264,20 @@ def create_folio_transaction(data):
                 stays.append(data["source_reservation_stay"])
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=stays)
     
+    
     # update creation and ownere when user edit
-         
+    
     frappe.db.commit()
         
     if "name" in data:
+        add_audit_trail_when_edit_transaction(base_doc, old_doc,new_working_day)
+            
         frappe.db.sql("update `tabFolio Transaction` set owner='{0}',creation='{1}' where name='{2}' or reference_folio_transaction='{2}'".format(data["owner"],data["creation"],data["name"]))
         frappe.db.commit()
 
     frappe.msgprint(_("Posting transaction successfully"))
+    
+    
     
     pass
 
@@ -669,6 +677,8 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
             "transaction_type":base_doc.target_transaction_type,
             "transaction_number":base_doc.target_transaction_number
         })
+        
+    return base_doc
 
         
 def get_folio_transaction_doc_share_property(data,folio_transaction_data,working_day):
@@ -836,7 +846,63 @@ def update_transaction_type_summary(data):
     
         update_city_ledger(name= data["transaction_number"],run_commit=False, ignore_on_update= True, ignore_validate= True )    
         
+
+def add_audit_trail_when_edit_transaction(new_doc, old_doc,working_day):
+    from frappe.utils import getdate
+ 
+    changes = {}
+
+    # Compare fields
+    for field in new_doc.meta.fields:
+        fieldname = field.fieldname
+        value1 = new_doc.get(fieldname)
+        value2 = old_doc.get(fieldname)
+        # if field.fieldtype =="Date":
+        #     value1 = getdate(value1)
+        #     value2 = getdate(value2)
         
+        value1 = frappe.format(value1,{"fieldtype":field.fieldtype})
+        value2 = frappe.format(value2,{"fieldtype":field.fieldtype})
+        
+            
+        if value1 != value2:
+            changes[fieldname] = {
+                "old_value": value2,
+                "new_value": value1
+            }
+    audit_trail_document = frappe.get_cached_doc("Audit Trail Document","Folio Transaction")
+    posting_date = frappe.format(old_doc.posting_date,{"fieldtype":"Date"})
+    change_string = f"Edit transaction of  {old_doc.account_code} - {old_doc.account_name}, Posting Date: {posting_date}, Room: {old_doc.room_number}, "
+    change_string =change_string +  ", ".join([
+        f"{key.replace('_', ' ').title()}: <b>{value['old_value']}</b> to <b>{value['new_value']}</b>" 
+        for key, value in changes.items() if key  in  [x.field_name for x in audit_trail_document.tracking_field]
+    ])
+    
+     
+    add_audit_trail([{
+					"comment_type":"Edit",
+					"custom_audit_trail_type":"Edit",
+					"custom_icon":"pi pi-dollar",
+					"subject":"Edit Posting Transaction",
+					"reference_doctype":"Folio Transaction",
+					"reference_name":new_doc.name,
+					"custom_property":new_doc.property,
+					"custom_posting_date":working_day.get("date_working_day"),
+					"custom_cashier_shift":working_day.get("cashier_shift").get("name"),
+					"custom_reservation":new_doc.reservation,
+					"custom_reservation_stay":new_doc.reservation_stay,
+					"custom_folio_transaction_type":new_doc.transaction_type,
+					"custom_folio_number":new_doc.transaction_number,
+					"custom_folio_transaction":new_doc.name,
+					"custom_guest":new_doc.guest,
+     
+					"content":change_string
+				}])
+    
+    
+    
+ 
+    
 def delete_transaction(parent_transaction_name):
     frappe.db.sql("delete from `tabFolio Transaction` where reference_folio_transaction='{0}' or name='{0}'".format(parent_transaction_name))
     frappe.db.sql("delete from `tabFolio Transaction Products` where parent='{0}'".format(parent_transaction_name))

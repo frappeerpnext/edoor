@@ -6,7 +6,7 @@
                     <div class="text-2xl"> {{ $t('City Ledger') }} </div>
                 </template>
                 <template #end>
-                    <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" /> 
+                    <!-- <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" />  -->
                 </template>
             </ComHeader>
             <div class="flex justify-between">

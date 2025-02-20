@@ -127,7 +127,6 @@ def web_logout():
 
 @frappe.whitelist()
 def uploadfile():
- 
 	ret = None
 
 	try:
@@ -167,7 +166,18 @@ def uploadfile():
 
 @frappe.whitelist(allow_guest=True)
 def upload_file():
-	
+	if frappe.form_dict.folder :
+		if frappe.form_dict.folder !="":
+			if not frappe.db.exists("File", {"file_name": frappe.form_dict.folder, "is_folder": 1}):
+				folder_doc = frappe.get_doc({
+					"doctype": "File",
+					"file_name": frappe.form_dict.folder,
+					"is_folder": 1,
+					"folder": "Home" 
+				})
+				folder_doc.insert(ignore_permissions=True)
+				frappe.db.commit()
+        
 	user = None
 	if frappe.session.user == "Guest":
 		if frappe.get_system_settings("allow_guests_to_upload_files"):
@@ -180,8 +190,6 @@ def upload_file():
 
 	files = frappe.request.files
  
- 
-	
 	is_private = frappe.form_dict.is_private
 	doctype = frappe.form_dict.doctype
 	docname = frappe.form_dict.docname
@@ -228,7 +236,8 @@ def upload_file():
 		is_whitelisted(method)
 		return method()
 	else:
-		return frappe.get_doc(
+		
+		uploadedFile = frappe.get_doc(
 			{
 				"doctype": "File",
 				"attached_to_doctype": doctype,
@@ -244,6 +253,10 @@ def upload_file():
 				"custom_show_in_edoor":1
 			}
 		).save(ignore_permissions=ignore_permissions)
+		if fieldname:
+			frappe.db.set_value(uploadedFile.attached_to_doctype,uploadedFile.attached_to_name,fieldname,uploadedFile.file_url);
+   
+		return uploadedFile
 
 
 @frappe.whitelist(allow_guest=True)

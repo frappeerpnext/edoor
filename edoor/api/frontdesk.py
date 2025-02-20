@@ -3297,7 +3297,7 @@ def check_room_config_and_over_booking(property):
     return 0
 
 @frappe.whitelist()
-def get_day_end_summary_report(property="ESTC Hotel", date='2024-10-28',show_package_breakdown=0): 
+def get_day_end_summary_report(property="ESTC Hotel", date='2025-01-02',show_package_breakdown=0): 
     amount_field = "total_amount"
     if int(show_package_breakdown)==1:
         amount_field = "transaction_amount"
@@ -3309,16 +3309,13 @@ def get_day_end_summary_report(property="ESTC Hotel", date='2024-10-28',show_pac
             where 
             {} and 
             property=%(property)s and posting_date = '{}' and
-            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge') and
+            account_category in ('Room Charge','Other Room Charge','Room Tax','Room Discount','Service Charge') and
             is_base_transaction=1
         """.format(
             amount_field, 
             " coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0 else "  1=1  " ,
             date)
-    
-    
-       
-
+ 
     data = frappe.db.sql(sql,{'property':property},as_dict=1)
     room_revenue = 0
     if len(data)>0:
@@ -3341,7 +3338,7 @@ def get_day_end_summary_report(property="ESTC Hotel", date='2024-10-28',show_pac
             date)
     
     
-       
+  
 
     data = frappe.db.sql(sql,{'property':property},as_dict=1)
     adjustment_amount = 0
@@ -3437,7 +3434,7 @@ def get_day_end_summary_report(property="ESTC Hotel", date='2024-10-28',show_pac
         group by
             transaction_type
     """.format( amount_field, " coalesce(parent_reference,'') ='' " if int(show_package_breakdown)==0  else "  1=1 " )
-    
+     
 
     current_date_transaction  = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
 
