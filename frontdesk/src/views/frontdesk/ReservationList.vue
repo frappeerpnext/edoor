@@ -55,7 +55,6 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
-            {{ pageState }}
             <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
                 <DataTable 
                 class="res_list_scroll" 
@@ -306,10 +305,14 @@ function pageChange(page) {
 
 function loadData(show_loading = true) {
     gv.loading = show_loading
+    let orFilter = []
     let filters = [
         ["Reservation", "property", '=', property.name]
     ]
     if (filter.value?.keyword) {
+        // loop from meta
+        
+        orFilter.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
         filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
     }
     if (filter.value?.selected_business_source_type) {

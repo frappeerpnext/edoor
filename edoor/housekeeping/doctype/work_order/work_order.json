@@ -10,6 +10,7 @@
   "property",
   "posting_date",
   "workorder_date",
+  "due_date",
   "description",
   "work_order_type",
   "work_order_status",
@@ -102,12 +103,17 @@
    "fieldtype": "Table",
    "label": "Assign Employee",
    "options": "Work Order Employee"
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due Date"
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-20 15:11:34.025380",
+ "modified": "2025-02-24 10:30:19.108273",
  "modified_by": "Administrator",
  "module": "Housekeeping",
  "name": "Work Order",

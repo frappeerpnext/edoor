@@ -152,7 +152,6 @@ def get_report_data(filters,columns):
     if filters.hide_empty_record==1:
             # show hide emplty record
         report_data = [d for d in report_data if d["indent"] == 0 or ( "is_total_row" in d and d["is_total_row"] ==1) or ("total" in d and d["total"]> 0)]
-
     return report_data
 
 def get_summary_data(filters,report_data):
@@ -189,7 +188,6 @@ def get_row_group(filters):
     elif filters.row_group=="Room Type":
          sql="select distinct alias as row_group,1 as indent  from `tabRoom Type` where property=%(property)s  order by room_type"
      
-    
     data = frappe.db.sql(sql,filters,as_dict=1)
     
     return data
@@ -217,7 +215,7 @@ def get_room_occupy(filters):
                 )
     
     
-    
+
     return frappe.db.sql(sql,filters, as_dict=1)
 def get_report_chart(filters,data,months):
     if filters.chart_type=="None":

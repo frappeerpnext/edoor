@@ -190,6 +190,7 @@ const onRefresh = debouncer((showLoading = true) => {
     rs.LoadReservation(name.value, showLoading);
     if (activeTab.value == 0) {
         rs.getChargeSummary(name.value)
+        rs.getSummaryByRoomType(name.value)
 
     } else if (activeTab.value == 2) {
         window.postMessage({ action: "load_reservation_folio_list", reservation: name.value }, "*")

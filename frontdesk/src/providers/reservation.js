@@ -8,6 +8,7 @@ export default class Reservation {
 		this.reservation = {}
 		this.masterGuest = {}
 		this.roomList = []
+		this.roomtypelist = ref([])
 		this.filterStatusRooms = []
 		this.selecteds = []
 		this.reservationSummary = ref([])
@@ -69,7 +70,16 @@ export default class Reservation {
 			this.roomList = this.reservationStays
 		}
 	}
-
+	// summarybyroomtype
+	getSummaryByRoomType = async (name = null) => { 	
+		getApi("reservation.get_summary_by_room_type", {
+		  reservation:name ||  this.reservation.name,
+		})
+		  .then((result) => {
+			this.roomtypelist.value = result.message;
+		  })
+	}
+	// summarybyroomtype
 	getChargeSummary = async (name = null) => {
 		this.loadingSummary = true
 		getApi("reservation.get_reservation_charge_summary", {
@@ -139,6 +149,7 @@ export default class Reservation {
 			this.reservationSummary.value = []
 			this.depositTransaction = []
 			this.room_rates = []
+			this.roomtypelist = []
 			this.selectedRoomRates = [],
 			this.reservationFolioList=[]
 			this.attacheds.value=[]

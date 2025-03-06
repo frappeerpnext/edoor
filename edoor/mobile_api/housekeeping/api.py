@@ -101,7 +101,8 @@ def get_room_list(property,
             r.room_status,
             r.housekeeping_status_code,
             r.housekeeping_icon,
-            r.status_color
+            r.status_color,
+            r.room_type_alias
         from `tabRoom` r 
         inner join `tabFloor` as f on f.name = r.floor
         where

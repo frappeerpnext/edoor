@@ -29,7 +29,29 @@ from edoor.api.generate_room_rate import generate_forecast_revenue, generate_new
 def test():
     data = frappe.db.get_all("Account Code", filters={"parent_account_code":"1000"}, order_by='lft')
     return data 
+# get_summary_by room type
+@frappe.whitelist()
+def get_summary_by_room_type(reservation):
+    sql="""
+        select 
+            name,
+            room_type,
+            count(room_type) as rooms,
+            sum(adult) as adult,
+            sum(child) as child,
+            sum(total_rate) as total_amount,
+            start_date,
+            end_date,
+            sum(room_nights) as room_nights
+        from `tabReservation Stay Room` 
+        where 
+            reservation='{}' And reservation_status NOT IN ('cancelled', 'Void' , 'No Show')
+        group by room_type    
+        """.format(reservation)
+    data = frappe.db.sql(sql,as_dict=1)
 
+    return data
+# get_summary_by room type
 @frappe.whitelist()
 def get_reservation_folio_list(reservation):
     show_room_rate_in_guest_folio_invoice = frappe.get_cached_value("Reservation",reservation,"show_room_rate_in_guest_folio_invoice")

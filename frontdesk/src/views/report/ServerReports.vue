@@ -44,17 +44,18 @@ function onSelectReport(p) {
     
     if(selectedReport.value.filter_default_value){
         const default_filter = JSON.parse(selectedReport.value.filter_default_value)
+ 
         if( default_filter.start_date){
             report_params = report_params.filter(r=>r.name!='start_date')
-            report_params.push({name: 'start_date', values: [get_date_by_timpstamp(default_filter.start_date)] })
-            
+            report_params.push({name: 'start_date', values: [get_date_by_timestamp(default_filter.start_date)] })
         }
         if( default_filter.end_date){
+           
             report_params = report_params.filter(r=>r.name!='end_date')
-            report_params.push({name: 'end_date', values: [get_date_by_timpstamp(default_filter.end_date)] })
-            
+            report_params.push({name: 'end_date', values: [get_date_by_timestamp(default_filter.end_date)] })
+            console.log(report_params)
         }
-
+       
         if (default_filter.row_group){
             report_params.push({name: 'row_group', values: [default_filter.row_group] })
         }
@@ -66,6 +67,7 @@ function onSelectReport(p) {
         }
         if (default_filter.show_package_breakdown){
             report_params.push({name: 'show_package_breakdown', values: [default_filter.show_package_breakdown] })
+            
         }
         if (default_filter.show_all_breakdown){
             report_params.push({name: 'show_all_breakdown', values: [default_filter.show_all_breakdown] })
@@ -123,8 +125,8 @@ function onSelectReport(p) {
     });
 } 
 
-function get_date_by_timpstamp(timestap){
-    function getTimestamp(timestap) {
+function get_date_by_timestamp(timestap){
+
     if (timestap === "current_working_date") {
         return window.current_working_date;
     } else if (timestap === "today") {
@@ -132,18 +134,22 @@ function get_date_by_timpstamp(timestap){
     } else if (timestap === "previous_working_day") {
         return moment(window.current_working_date).add(-1, "days").format("YYYY-MM-DD");
     } else if (timestap === "start_mtd") {
-        return moment().startOf("month").format("YYYY-MM-DD");
+        return moment(window.current_working_date).startOf("month").format("YYYY-MM-DD");
     } else if (timestap === "end_mtd") {
+        return moment(window.current_working_date).endOf("month").format("YYYY-MM-DD");
+    } else if (timestap === "start_current_mtd") {
+        return moment().startOf("month").format("YYYY-MM-DD");
+    } else if (timestap === "end_current_mtd") {
         return moment().endOf("month").format("YYYY-MM-DD");
-    } else if (timestap === "start_ytd") {
-        return moment().startOf("year").format("YYYY-MM-DD");
+    }  else if (timestap === "start_ytd") {
+        return moment(window.current_working_date).startOf("year").format("YYYY-MM-DD");
     } else if (timestap === "end_ytd") {
-        return moment().endOf("year").format("YYYY-MM-DD");
+        return moment(window.current_working_date).endOf("year").format("YYYY-MM-DD");
     } else {
-        return timestap;
+        return window.current_working_date;
     }
 }
-}
+ 
  
 
 onMounted(() => {

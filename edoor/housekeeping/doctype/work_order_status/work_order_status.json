@@ -6,7 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "work_order_status"
+  "work_order_status",
+  "status_category"
  ],
  "fields": [
   {
@@ -14,11 +15,17 @@
    "fieldtype": "Data",
    "label": "Work Order Status",
    "unique": 1
+  },
+  {
+   "fieldname": "status_category",
+   "fieldtype": "Select",
+   "label": "Status Category",
+   "options": "Ongoing\nIn Progress\nComplete\nCancelled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-14 17:31:54.713856",
+ "modified": "2025-02-24 10:22:46.340333",
  "modified_by": "Administrator",
  "module": "Housekeeping",
  "name": "Work Order Status",

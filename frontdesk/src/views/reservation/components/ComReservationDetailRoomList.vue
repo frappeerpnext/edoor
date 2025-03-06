@@ -1,4 +1,39 @@
 <template lang="">
+    <!-- Summary By Room Type -->
+
+<Panel toggleable >
+    <template #header>
+        <div class="flex items-center gap-2">
+            <span class="font-bold">Summary By Room Type</span>
+        </div>
+    </template>
+   <div style="margin:-1rem !important;">
+    <DataTable :value="rs?.roomtypelist" tableStyle="min-width: 50rem">
+    <Column field="room_type" header="Room Type"></Column>
+    <Column field="rooms" bodyClass="text-center p-0" headerClass="text-center p-0" header="No of Room"></Column>
+    <Column bodyClass="text-center p-0" headerClass="text-center p-0" :header="$t('Pax(A/C)')">
+    <template #body="slotProps">
+        <span v-tippy="$t('Adults')">{{slotProps.data.adult}}</span>/<span v-tippy ="$t('Children')">{{slotProps.data.child}}</span>
+    </template>
+    </Column>
+    <Column :header="$t('Nights')" headerClass="text-center" bodyClass="text-center">
+                        <template #body="slotProps">
+                            <div>
+                                <span>
+                                    {{ slotProps.data.room_nights || 0 }}
+                                </span>
+                            </div>
+                        </template></Column>
+    <Column   class="text-right res__room-list-right white-space-nowrap" :header="$t('Total Rate')">
+                            <template #body="slotProps">
+                                <CurrencyFormat :value="slotProps.data.total_amount"/>
+                            </template>
+                        </Column>                    
+</DataTable>       
+</div>
+</Panel>
+<!-- Summary By Room Type -->`
+<div class="mb-1"></div>
     <ComReservationStayPanel title="Reservation Room List">
         <template #content>
             <ComPlaceholder :isNotEmpty="true">
@@ -149,9 +184,10 @@
             </ComPlaceholder>
         </template>
     </ComReservationStayPanel> 
+
 </template>
 <script setup>
-import { inject, ref, useDialog,postApi } from '@/plugin'
+import { inject, ref, useDialog,postApi,getApi,onMounted } from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
 import ComReservationStayListStatusBadge from '@/views/reservation/components/ComReservationStayListStatusBadge.vue'
@@ -263,7 +299,6 @@ function onUnassignRoom() {
     alert("no selected")
 }
 }
-
 
 </script>
 <style scoped>

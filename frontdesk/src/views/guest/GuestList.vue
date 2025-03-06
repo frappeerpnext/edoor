@@ -40,6 +40,7 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
+            {{ meta?.search_fields }}
             <ComPlaceholder text="No Data"  :loading="gv.loading"  :is-not-empty="data?.length > 0">   
                 <DataTable 
                 class="res_list_scroll"
@@ -157,7 +158,7 @@ const showAdvanceSearch = ref()
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 
 const skip_columns = ["customer_name_kh","customer_code_name","customer_code"]
-
+const meta = ref()
 
 
 
@@ -225,9 +226,10 @@ function pageChange(page) {
 function loadData(show_loading = true) {
     gv.loading = show_loading
     let filters = []
-    if (filter.value?.keyword) {
-        filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
-    }
+    //if (filter.value?.keyword) {
+    //   filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
+    //}
+
     if (filter.value?.selected_customer_group) {
         filters.push(["customer_group", '=', filter.value.selected_customer_group])
     }
@@ -241,6 +243,8 @@ function loadData(show_loading = true) {
     fields = [...fields , ...selectedColumns.value]
     fields =  [...new Set(fields.filter(x=>x))]
     fields.push('is_disabled')
+
+  
     getDocList('Customer', {
         fields: fields,
         orderBy: {
@@ -262,6 +266,18 @@ function loadData(show_loading = true) {
     localStorage.setItem("page_state_customer", JSON.stringify(pageState.value))
 }
 
+
+function getOrFilter(keyword){
+    const encodeKeyword = encodeURIComponent(keyword)
+    let orFilter = [["name",'like',`%${encodeKeyword}%`]]
+    if(meta.value?.search_fields){
+        meta.value?.search_fields.value.split(",").forEach(k=>{
+            orFilter.push([k,'like',`%${encodeKeyword}%`])
+        })
+    }
+    return orFilter;
+}
+
 function getTotalRecord(filters) {
     getCount('Customer', filters)
     .then((count) => pageState.value.totalRecords = count || 0)
@@ -275,6 +291,7 @@ function onOrderBy(data) {
 }
 
 const onSearch = debouncer(() => {
+    alert(JSON.stringify(getOrFilter("55")))
     loadData();
 }, 500);
 
@@ -318,7 +335,7 @@ onMounted(() => {
     });
     loadData()
     getApi("frontdesk.get_meta",{doctype:"Customer"}).then((result)=>{
-   
+        meta.value = result.message;
         result.message.fields.filter(r=>r.in_list_view==1 && !columns.value.map(x=>x.fieldname).includes(r.fieldname)).forEach(r=>{
             let header_class = ""
              
