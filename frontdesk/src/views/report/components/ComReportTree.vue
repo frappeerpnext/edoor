@@ -7,9 +7,9 @@
         <div v-if="!loading">
         
             <PanelMenu  :model="reportItems" class="w-full">
-                <template #item="{ item }">
-                   
-                    <a v-ripple class="flex align-items-center px-3 py-2 cursor-pointer" :class="[selectedReport?.name == item.name ? 'bg-blue-100': '',item.items.length>0 ? 'bg-gray-50 border-2': '']" >
+                
+                <template #item="{ item }"> 
+                    <a v-ripple class="flex align-items-center px-3 py-2 cursor-pointer" :class="[selectedReport?.name == item.name ? 'bg-blue-100': '',item.items.length>0 ? 'bg-gray-50 border-2': 'mx-2 border-1 border-round-md my-1' , item?.parent_system_report != 'All Reports' , '' , 'mx-2 border-1 border-round-md my-1']" >
                         
                         <span :class="['pi pi-angle-right', 'text-primary']" v-if="item.items.length>0" />
                         <span :class="['ml-2', { 'font-semibold': item.items }]">{{ item.report_title }} 
@@ -148,3 +148,8 @@ onMounted(() => {
 })
 
 </script>
+<style scoped>
+.p-panelmenu .p-panelmenu-content .p-menuitem:not(.p-highlight):not(.p-disabled)>.p-menuitem-content:hover{
+    background: none !;
+}
+</style>

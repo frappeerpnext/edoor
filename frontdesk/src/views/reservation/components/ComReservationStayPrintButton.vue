@@ -107,9 +107,13 @@ items.value.push({
                 toast.add({ severity: 'warn', summary: 'Folio Summary Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
             } else {
                 if (window.setting.server_report_url) {
+                 
                     const params = [
+                        { name: 'reservation', values: [result.message[0].reservation] },
+                        { name: 'reservation_stay', values: [result.message[0].reservation_stay] },
                         { name: 'reservation_folio', values: [result.message[0].name] }
                     ]
+
                     OpenServerReport("/Front Desk/rptReservationStayFolioSummary", "Folio Summary", params)
 
                 }
@@ -155,10 +159,13 @@ items.value.push({
         }).then((result) => {
 
             if (result.message.length == 0) {
-                toast.add({ severity: 'warn', summary: 'Folio Summary Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
+                toast.add({ severity: 'warn', summary: 'Folio Detail Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
             } else {
                 if (window.setting.server_report_url) {
+                    alert(result.message[0].reservation_stay)
                     const params = [
+                        { name: 'reservation', values: [result.message[0].reservation] },
+                        { name: 'reservation_stay', values: [result.message[0].reservation_stay] },
                         { name: 'reservation_folio', values: [result.message[0].name] }
                     ]
                     OpenServerReport("/Front Desk/rptReservationStayFolioDetail", "Folio Detail", params)

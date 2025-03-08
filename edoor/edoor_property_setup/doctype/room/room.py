@@ -81,6 +81,28 @@ def update_to_related_transaction(param):
 
         """
         frappe.db.sql(sql)
+        
+        # udpate room occupy
+        sql="""
+				 update `tabRoom Occupy` a
+			join `tabRoom Type` b  on a.room_type_id = b.name
+			set a.room_type = b.room_type,
+				a.room_type_alias = b.alias
+
+        """
+        frappe.db.sql(sql)
+        
+        # udpate room update to room
+        sql="""
+				 update `tabRoom` a
+			join `tabRoom Type` b  on a.room_type_id = b.name
+			set a.room_type = b.room_type,
+				a.room_type_alias = b.alias
+
+        """
+        frappe.db.sql(sql)
+        
+        
     else:
         
         sql="""

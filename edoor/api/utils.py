@@ -273,10 +273,10 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
                 update_files.append("subject='Adding {}'".format(doc.comment_type))
 
     
-   
-    frappe.db.sql("update `tabComment` set {} where name='{}'".format(",".join(update_files), doc.name),updated_data)
-    frappe.db.commit()
-    
+    if update_files:
+        frappe.db.sql("update `tabComment` set {} where name='{}'".format(",".join(update_files), doc.name),updated_data)
+        frappe.db.commit()
+        
     # if audit trail type == Reminder then audto add data to reminder
     if doc.custom_audit_trail_type =="Reminder":
         add_reminder(doc)
@@ -372,11 +372,10 @@ def submit_update_audit_trail_from_version(doc):
             "custom_comment_by_photo":frappe.get_cached_value("User",doc.owner, "user_image") or "",
             
             }
-          
                 
             
             # frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
-            add_audit_trail(comment_doc, update_creation_date=True)
+            add_audit_trail([comment_doc], update_creation_date=True)
 
 
     
@@ -1071,8 +1070,10 @@ def get_months(start_date,end_date):
 	return months
 
 def add_audit_trail(data,update_creation_date=False,doc=None):
+  
     for d in data:
         if not d.get("custom_property"):
+         
             doc = frappe.get_doc(d["reference_doctype"],d["reference_name"])
             if hasattr(doc,"property"):
                 working_day = get_working_day(doc.property)
@@ -1188,31 +1189,25 @@ def sort_parent_account_code(parent_account_code, account_codes):
     frappe.db.commit()
     frappe.msgprint("Update parent account code sort order successfully")
 
-
 @frappe.whitelist()
 def update_account_code_to_folio_transaction():
     sql="""
-        update `tabFolio Transaction` set parent_account_code = (select parent_account_code from `tabAccount Code` t where t.name = account_code )
+        update `tabFolio Transaction` ft
+        join `tabAccount Code` acc on acc.name = ft.account_code
+        set 
+            ft.parent_account_code = acc.parent_account_code,
+            ft.parent_account_name = acc.parent_account_name,
+            ft.account_group = acc.account_group,
+            ft.account_group_name = acc.account_group_name,
+            ft.flash_report_revenue_group = acc.flash_report_revenue_group,
+            ft.payment_type = acc.payment_type,
+            ft.payment_type_group = acc.payment_type_group,
+            ft.account_name = acc.account_name
     """
     frappe.db.sql(sql)
-    #update parent account name
-    sql="""
-        update `tabFolio Transaction` f set parent_account_name = (select account_name from `tabAccount Code` t where t.name = f.parent_account_code )
-        
-    """
-    frappe.db.sql(sql)
-
-    #update account grouup code
-    sql="""
-        update `tabFolio Transaction` f set account_group = (select parent_account_code from `tabAccount Code` t where t.name = f.parent_account_code )
-    """
-    frappe.db.sql(sql)
-
-    #update account grouup name
-    sql="""
-        update `tabFolio Transaction` f set account_group_name = (select account_name from `tabAccount Code` t where t.name = f.account_group )
-    """
-    frappe.db.sql(sql)
+    
+ 
+ 
    
     #update report quantity
     sql="""
@@ -1220,23 +1215,7 @@ def update_account_code_to_folio_transaction():
     """
     frappe.db.sql(sql)
    
-    #Update flash report revenue group
-    sql="""
-         update `tabFolio Transaction` f set flash_report_revenue_group = (select flash_report_revenue_group from `tabAccount Code` t where t.name = f.account_code )
-    """
-    frappe.db.sql(sql)
-    
-    sql = """
-        update `tabFolio Transaction` a 
-        join `tabAccount Code` b on a.account_code = b.name
-        set 
-            a.payment_type = b.payment_type,
-            a.payment_type_group = b.payment_type_group
-    
-    """
-    frappe.db.sql(sql)
-    
-    
+ 
     
     # update parent account name to account code doctye
     sql="""
@@ -1272,8 +1251,7 @@ def update_account_code_to_folio_transaction():
     frappe.db.commit()
 
   
-
-    frappe.db.commit()
+ 
     return "Done"
 
 @frappe.whitelist()

@@ -142,7 +142,6 @@
 <script setup>
 
 import { inject, ref, useDialog, computed, onUnmounted, onMounted, getApi, watch } from '@/plugin';
-
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayFolioTransactionAction from '@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionAction.vue';

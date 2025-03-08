@@ -161,6 +161,7 @@
 import { useToast, ref, inject, getDoc, onUnmounted, onMounted, getApi, computed, useConfirm, createUpdateDoc, useDialog, watch } from "@/plugin"
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComCashCount from "@/views/cashier_shift/components/ComCashCount.vue";
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 const doc = ref({})
 
 const moment = inject("$moment")
@@ -379,7 +380,8 @@ function onCloseShift() {
 
 function openPrint() {
 
-    dialog.open(ComIFrameModal, {
+    if(!window.setting.server_report_url){
+      dialog.open(ComIFrameModal, {
         data: {
             "doctype": "Cashier Shift",
             name: doc.value.name,
@@ -399,7 +401,38 @@ function openPrint() {
                 '640px': '100vw'
             },
         },
+    });  
+    } else {
+        
+
+    dialog.open(ComReportServerModal, {
+        data: {
+            report_path: "/Night Audit/rptCashierShiftTransactionSummary",
+            params: [
+                { name: 'start_date', values: [doc.value.posting_date] },
+                { name: 'cashier_shift', values: [doc.value.name] }
+            ]
+        },
+        props: {
+            header: $t("Cashier Shift Report") + " - " + doc.value.name ,
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
     });
+
+    }
+    
+
+
 }
 
 function getSummary() {

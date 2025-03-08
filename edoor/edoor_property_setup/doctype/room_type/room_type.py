@@ -35,7 +35,7 @@ def update_fetch_from_fields(self):
 		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"room_type_alias='{}'".format(self.alias)})
 		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"room_type_alias='{}'".format(self.alias)})
 		data_for_updates.append({"doctype":"Room","update_field":"room_type_alias='{}'".format(self.alias)})
-		data_for_updates.append({"doctype":"Room Occupy","update_field":"room_type_alias='{}'".format(self.room_type)})
+		data_for_updates.append({"doctype":"Room Occupy","update_field":"room_type_alias='{}'".format(self.alias)})
 		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"room_type_alias='{}'".format(self.room_type)})
   
   
@@ -46,5 +46,5 @@ def update_fetch_from_fields(self):
 				",".join([x["update_field"] for x in data_for_updates if x["doctype"]==d]),
 				self.name
 			)
-			
+		 
 			frappe.db.sql(sql)

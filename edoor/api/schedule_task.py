@@ -578,6 +578,7 @@ def generate_audit_trail_from_version():
                         fields=['name','ref_doctype', 'docname',"creation"],
                         page_length=100
                     )
+ 
     if len(version_data)> 0:
         for v in version_data:
             
@@ -740,4 +741,63 @@ def validate_temp_room_occupy_that_do_not_have_room_number(run_commit =  True):
         frappe.db.sql(sql)
         if run_commit:
             frappe.db.commit()
+    
+@frappe.whitelist()
+def hourly_jobs():
+    update_guest_ledger_balance()
+    update_desk_folio_balance()
+    
+def update_guest_ledger_balance():
+    updated_data = frappe.db.sql("select distinct transaction_number from `tabFolio Transaction` where date(modified) = date(now()) and transaction_type='Reservation Folio'",as_dict=1)
+    if updated_data:
+        sql="""
+            update `tabReservation Folio` a
+            join (
+                select 
+                    ft.transaction_number,
+                    sum(ft.transaction_amount* if(type='Debit',1,0)) as debit, 
+                    sum(ft.transaction_amount* if(type='Credit',1,0)) as credit 
+                from `tabFolio Transaction` ft
+                where
+                    ft.transaction_number in %(transaction_number)s  and 
+                    ft.is_base_transaction = 1
+                group by
+                    ft.transaction_number 
+            ) b on b.transaction_number = a.name
+            SET
+                a.total_debit = coalesce(b.debit,0) ,
+                a.total_credit = coalesce(b.credit,0) ,
+                a.balance =  coalesce(b.debit,0) - coalesce(b.credit,0)
+            
+        """
+        frappe.db.sql(sql,{"transaction_number":[d.get("transaction_number") for d in updated_data]})
+        frappe.db.commit()
+        return "done"
+    
+def update_desk_folio_balance():
+    updated_data = frappe.db.sql("select distinct transaction_number from `tabFolio Transaction` where date(modified) = date(now()) and transaction_type='Desk Folio'",as_dict=1)
+    if updated_data:
+        sql="""
+            update `tabDesk Folio` a
+            join (
+                select 
+                    ft.transaction_number,
+                    sum(ft.transaction_amount* if(type='Debit',1,0)) as debit, 
+                    sum(ft.transaction_amount* if(type='Credit',1,0)) as credit 
+                from `tabFolio Transaction` ft
+                where
+                    ft.transaction_number in %(transaction_number)s and 
+                    ft.is_base_transaction = 1
+                group by
+                    ft.transaction_number
+            ) b on b.transaction_number = a.name
+            SET
+                a.total_debit = coalesce(b.debit,0) ,
+                a.total_credit = coalesce(b.credit,0) ,
+                a.balance =  coalesce(b.debit,0) - coalesce(b.credit,0)
+            
+        """
+        frappe.db.sql(sql,{"transaction_number":[d.get("transaction_number") for d in updated_data]})
+        frappe.db.commit()
+        return "done"
     
