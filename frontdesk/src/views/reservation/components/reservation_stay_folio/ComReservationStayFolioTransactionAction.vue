@@ -43,6 +43,7 @@ import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTr
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
+import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import Enumerable from 'linq'
 import {i18n} from '@/i18n';
 const props = defineProps({
@@ -122,8 +123,8 @@ const onViewFolioDetail = () => {
 
 }
 function onPrintFolioTransaction() {
-
-    const dialogRef = dialog.open(ComIFrameModal, {
+	if (!window.setting.server_report_url){
+		const dialogRef = dialog.open(ComIFrameModal, {
         data: {
             doctype: "Folio Transaction",
             name: props.data.name,
@@ -142,6 +143,36 @@ function onPrintFolioTransaction() {
             },
         },
     })
+	}else {
+		OpenServerReport(props.data.print_format,"Preview Report",[{ name: 'folio_transaction', values: [props.data.name] }])
+	}
+    
+}
+
+
+
+function OpenServerReport(report_path, title, parameters = undefined) {
+
+    dialog.open(ComReportServerModal, {
+        data: {
+            report_path: report_path,
+            params: parameters
+        },
+        props: {
+            header: title,
+            style: {
+                width: '80vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+    });
 }
 
 function onOpenDelete() {

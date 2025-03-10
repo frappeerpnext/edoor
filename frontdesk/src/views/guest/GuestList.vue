@@ -40,7 +40,6 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
-            {{ meta?.search_fields }}
             <ComPlaceholder text="No Data"  :loading="gv.loading"  :is-not-empty="data?.length > 0">   
                 <DataTable 
                 class="res_list_scroll"
