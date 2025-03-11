@@ -1,0 +1,34 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"ZumqZXhIRl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Server Report\",\"col\":12}}]",
+ "creation": "2025-01-30 11:23:18.632785",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Server Report",
+   "label": "Server Report"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "chart",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Reports",
+ "links": [],
+ "modified": "2025-03-11 17:17:20.573117",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Reports",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 18.0,
+ "shortcuts": [],
+ "title": "Reports"
+}
