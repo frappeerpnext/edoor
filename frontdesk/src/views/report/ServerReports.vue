@@ -53,7 +53,7 @@ function onSelectReport(p) {
            
             report_params = report_params.filter(r=>r.name!='end_date')
             report_params.push({name: 'end_date', values: [get_date_by_timestamp(default_filter.end_date)] })
-            console.log(report_params)
+           
         }
        
         if (default_filter.row_group){

@@ -37,6 +37,7 @@
             </SplitterPanel>
 
             <SplitterPanel :size="75" class="pa-4">
+            
                 <div v-if="selectedReport" class="p-2">
                     <div class="wrapp-filter-report"> 
                         <ComReportFilter @onFilter="onFilter" @onGetHeight="onGetHeight" :selectedReport="selectedReport" />
@@ -86,9 +87,10 @@ function onFilter(f) {
    
     if (selectedReport.value) {
         filters.value = f 
-
         loadIframe()
+
     }
+
 
 }
 

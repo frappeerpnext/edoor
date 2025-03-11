@@ -7,8 +7,7 @@ onmessage = function(event) {
   
     // Perform some computation with the data
     const result = a + b;
-    console.log("from worker")
-    
+
     // Send the result back to the main thread using postMessage method
     postMessage(result);
   };

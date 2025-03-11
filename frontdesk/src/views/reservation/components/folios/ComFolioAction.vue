@@ -482,6 +482,10 @@ if (selectedFolio?.value?.tax_invoice_number) {
     }
 })  
 }
+
+
+if(window.setting.server_report_url){
+
 print_menus.value.push({
     label: $t("Print General Journal"),
     icon: 'pi pi-print',
@@ -514,7 +518,7 @@ print_menus.value.push({
     }
     })  
 
-
+}
 function onAddFolioTransaction(account_code) {
     if(props.newDoc){
         

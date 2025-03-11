@@ -353,16 +353,18 @@ else {
 }
 })
 
-items.value.push({
-    label: $t("General Journal Transaction"),
-    icon: 'pi pi-check-circle',
+if(window.setting.server_report_url){
+    items.value.push({
+        label: $t("General Journal Transaction"),
+        icon: 'pi pi-check-circle',
 
-    command: () => {
+        command: () => {
 
-        OpenServerReport("/Front Desk/rptGeneralJournalTransactionForReservation", "General Journal Transaction");
+            OpenServerReport("/Front Desk/rptGeneralJournalTransactionForReservation", "General Journal Transaction");
 
-    }
-})
+        }
+    })
+}
 
 function OpenServerReport(report_path, title, parameters = undefined) {
     let params = parameters;

@@ -3,7 +3,7 @@ const request = require("superagent");
 
 const { get_conf, get_redis_subscriber } = require("./node_utils");
 const conf = get_conf();
-const log = console.log; // eslint-disable-line
+const log = console.log; 
 const subscriber = get_redis_subscriber();
 
 const io = require("socket.io")(conf.socketio_port, {

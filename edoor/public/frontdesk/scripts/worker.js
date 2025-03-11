@@ -6,8 +6,7 @@ onmessage = function(event) {
     const b = event.data.b;
  
     const result = a + b;
-    console.log("from worker xxxxxxxxxxxxxxxx")
-    
+   
  
     postMessage(result);
   };

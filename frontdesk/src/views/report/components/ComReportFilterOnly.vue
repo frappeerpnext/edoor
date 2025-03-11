@@ -1,4 +1,5 @@
 <template>
+   
     <div class="grid w-full">
         <div class="col-12 lg:col" v-if="hasFilter('filter_date_by')"> 
             <label> {{ $t('Filters') }} </label><br/>
@@ -457,13 +458,14 @@ import {i18n} from '@/i18n';
 import { onMounted } from "vue";
 const { t: $t } = i18n.global;
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-
+const moment = inject("$moment")
 const property = setting.property
 
 const props = defineProps({
     selectedReport: Object,
     filter: Object
 })
+
 const print_format = ref({})
 const sortOrderFields =ref([])
 const groupByFields =ref([])
@@ -523,15 +525,46 @@ function getSortOrderField(){
 function setFilterDefaultValue(filterValue){
     
     Object.keys(filterValue).forEach(key => {
-         props.filter[key] =filterValue[key] 
+        if(['month','start_ytd','end_ytd','start_current_mtd','end_current_mtd','current_working_date','today','previous_working_day','start_mtd','end_mtd'].includes(filterValue[key])){
+            props.filter[key] =moment.utc(get_date_by_timestamp(filterValue[key] )).toDate()
+        }else {
+            props.filter[key] =filterValue[key] 
+        }
+         
      });
 }
+function get_date_by_timestamp(timestap){
+
+if (timestap === "current_working_date") {
+    return window.current_working_date;
+} else if (timestap === "today") {
+    return moment().format("YYYY-MM-DD");
+} else if (timestap === "previous_working_day") {
+    return moment(window.current_working_date).add(-1, "days").format("YYYY-MM-DD");
+} else if (timestap === "start_mtd") {
+    return moment(window.current_working_date).startOf("month").format("YYYY-MM-DD");
+} else if (timestap === "end_mtd") {
+    return moment(window.current_working_date).endOf("month").format("YYYY-MM-DD");
+} else if (timestap === "start_current_mtd") {
+    return moment().startOf("month").format("YYYY-MM-DD");
+} else if (timestap === "end_current_mtd") {
+    return moment().endOf("month").format("YYYY-MM-DD");
+}  else if (timestap === "start_ytd") {
+    return moment(window.current_working_date).startOf("year").format("YYYY-MM-DD");
+} else if (timestap === "end_ytd") {
+    return moment(window.current_working_date).endOf("year").format("YYYY-MM-DD");
+} else {
+    return window.current_working_date;
+}
+}
+
 onMounted(()=>{
     selectedReport.value = props.selectedReport
 
     if (props.selectedReport.filter_default_value){
        
         const filterValue = JSON.parse(props.selectedReport.filter_default_value)
+
         setFilterDefaultValue(filterValue);
        
       

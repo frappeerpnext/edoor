@@ -1,6 +1,8 @@
 <template>
+    
     <div v-if="showFilter">
         <div class="">
+            
             <ComReportFilterOnly v-if="!isMobile" :filter="filter" :selectedReport="selectedReport" />
         </div>
         <div class="w-full items-center flex justify-end p-3 pb-0">
@@ -64,7 +66,6 @@ const showOpenFilter = ref()
 const showCustomReport = ref()
 const props = defineProps({
     selectedReport: Object,
-    filter: Object
 })
 
 function onShowfilter() {
@@ -90,6 +91,7 @@ const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
 
+
 const filter = ref({
     _lang: user.language || "en",
     start_date: moment.utc(window.current_working_date).toDate(),
@@ -105,9 +107,10 @@ const filter = ref({
     show_cash_count: "1",
     show_cash_float: "1",
     row_group: "Date",
-  
-
+   
 })
+
+
 function onSelectLetterHead(l) {
     filter.value.letterhead = l
 }
@@ -120,18 +123,23 @@ const onSelectStartDate = (date) => {
 }
 
 function onSearch() {
+    
     let f = {}
  
     const filter_option = props.selectedReport.filter_option + ",_lang,letterhead"
+    
     if (filter_option) {
         filter_option.split(",").forEach(r => {
-
-            f[r.trim()] = filter.value[r.trim()]
+            
+            
+            
+                f[r.trim()] = filter.value[r.trim()]
+            
+            
 
         })
     }
- 
-    
+
     if (f.start_date) {
         f.start_date = moment( moment.utc(moment(f.start_date).format("YYYY-MM-DD")).toDate()).format("YYYY-MM-DD")
     }
@@ -151,6 +159,9 @@ function onSearch() {
     emit("onFilter", f)
  
 }
+
+
+
 
 onMounted(() => {
     onSearch()

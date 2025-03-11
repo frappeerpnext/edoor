@@ -264,6 +264,7 @@ if (selectedFolio?.value?.tax_invoice_number) {
 
 
 //General Journal
+if(window.setting.server_report_url){
 print_menus.value.push({
     label: "General Journal",
     icon: 'pi pi-print',
@@ -271,7 +272,7 @@ print_menus.value.push({
         OpenServerReport("/Front Desk/rptGeneralJournalTransactionForDeskFolio","General Journal by Desk Folio")
     }
 })
-
+}
 
 
 function onAddFolioTransaction(account_code) {

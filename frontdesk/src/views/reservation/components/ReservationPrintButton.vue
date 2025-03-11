@@ -254,7 +254,7 @@ const items = ref([
 
 
 // Generaal transaction
-
+if(window.setting.server_report_url){
 items.value.push({
     label: $t("General Journal Transaction"),
     icon: 'pi pi-check-circle',
@@ -288,7 +288,7 @@ items.value.push({
 })
 
 
-
+}
 function openReport(title, data) {
     dialog.open(ComIFrameModal, {
         data: data,
