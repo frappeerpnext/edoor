@@ -98,8 +98,7 @@ function onTabClick () {
 
 
 function buildTreeData(){
-    const route = useRoute();
-     alert(route.query.root_report)
+ 
     if(filterReports.value){
         let tree_report_data = filterReports.value.filter(r=>r.parent_system_report == rootReport.value  );
     tree_report_data.forEach(parent=>{
