@@ -2,3 +2,4 @@ eDoor
 eDoor Property Setup
 eDoor Configuration
 Housekeeping
+eDoor Report
