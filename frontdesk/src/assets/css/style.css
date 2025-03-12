@@ -185,7 +185,7 @@ align-items: center;
     background-color: var(--bg-primary-color);
     height: 62.5px;
     position: fixed;
-    z-index: 1000;
+    z-index: 10000;
 }
 
 .text-color-btn {

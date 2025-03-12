@@ -25,6 +25,7 @@
   "email",
   "vattin_number",
   "photo",
+  "position",
   "credit_card_information_section",
   "bank_name",
   "credit_card_number",
@@ -167,12 +168,17 @@
    "fieldtype": "Link",
    "label": "Link Guest",
    "options": "Customer"
+  },
+  {
+   "fieldname": "position",
+   "fieldtype": "Data",
+   "label": "Position"
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-14 09:10:32.392906",
+ "modified": "2025-03-12 15:35:55.765925",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

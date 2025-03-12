@@ -396,6 +396,32 @@ def fix_keyword(doctype):
 
 
 @frappe.whitelist(allow_guest=True)
+def fix_guest_folio_balance():
+    sql = """
+        update `tabReservation Folio` t
+        join (
+            
+            select 
+            transancaction_number,
+            sum(transaction_amount * (type='Debit',1,-1)) as debit,
+            sum(transaction_amount * (type='Credit',1,-1)) as credit
+            from `tabFolio Transaction` 
+            where
+                transaction_type = 'Reservation Folio'
+            group by
+                transancaction_number
+        ) b on b.transancaction_number = t.name
+        set
+            t.total_debit = coaleace(b.debit,0),    
+            t.total_credit = coaleace(b.credit,0),    
+            t.balance = coaleace(b.debit,0) - coaleace(b.credit,0),    
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
+    
+    
+
+@frappe.whitelist(allow_guest=True)
 def convert():
    
     # Input PDF and Output DOCX paths
@@ -408,3 +434,5 @@ def convert():
     cv = Converter(pdf_file,pages="1-3")
     cv.convert(docx_file)      # all pages by default
     cv.close()
+    
+    
