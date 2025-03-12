@@ -1,7 +1,8 @@
 <template>
-    
+
     <div class="p-2">
         <div class="mb-3">
+          
             <InputText class="w-full" v-model="keyword" @input="onSearch" :placeholder="$t('Search Report (min. 3 characters)')" />
         </div>
         <div v-if="!loading">
@@ -9,7 +10,7 @@
             <PanelMenu  :model="reportItems" class="w-full">
                 
                 <template #item="{ item }"> 
-                    <a v-ripple class="flex align-items-center px-3 py-2 cursor-pointer" :class="[selectedReport?.name == item.name ? 'bg-blue-100': '',item.items.length>0 ? 'bg-gray-50 border-2': 'mx-2 border-1 border-round-md my-1' , item?.parent_system_report != 'All Reports' , '' , 'mx-2 border-1 border-round-md my-1']" >
+                    <a v-ripple class="flex align-items-center px-3 py-2 cursor-pointer" :class="[selectedReport?.name == item.name ? 'bg-blue-100': '',item.items.length>0 ? 'bg-gray-50 border-2': 'mx-2 border-1 border-round-md my-1' , item?.parent_system_report != rootReport.value , '' , 'mx-2 border-1 border-round-md my-1']" >
                         
                         <span :class="['pi pi-angle-right', 'text-primary']" v-if="item.items.length>0" />
                         <span :class="['ml-2', { 'font-semibold': item.items }]">{{ item.report_title }} 
@@ -27,7 +28,11 @@
 </template>
 <script setup>
 import { ref, getDocList, onMounted, computed } from "@/plugin"
+import { useRoute } from 'vue-router';
 import {i18n} from '@/i18n';
+const props = defineProps({
+    root_report:String
+})
 const { t: $t } = i18n.global;
 const emit = defineEmits(["onSelectReport","onTabClick"])
 const selectedReport = ref()
@@ -39,6 +44,16 @@ const loading = ref(false)
 const reportItems = ref([])
 const allReports =ref([]) 
 const filterReports =ref([]) 
+
+
+const rootReport = computed(() => {
+    return props.root_report === "ServerReports" ? "eDoor Report" : "POS Report";
+});
+
+watch(() => props.root_report, (newValue, oldValue) => {
+  
+    reportItems.value = buildTreeData();
+});
 
 
 const onSearch = debouncer(() => {
@@ -59,6 +74,7 @@ const onSearch = debouncer(() => {
    
    
 }, 700);
+
 
 
 function debouncer(fn, delay) {
@@ -82,10 +98,10 @@ function onTabClick () {
 
 
 function buildTreeData(){
-   
-     
+    const route = useRoute();
+     alert(route.query.root_report)
     if(filterReports.value){
-        let tree_report_data = filterReports.value.filter(r=>r.parent_system_report == 'All Reports'  );
+        let tree_report_data = filterReports.value.filter(r=>r.parent_system_report == rootReport.value  );
     tree_report_data.forEach(parent=>{
         parent.keyword  = parent.report_title 
         parent.items = getSubReportItem(parent)
@@ -138,7 +154,7 @@ onMounted(() => {
       }));
         allReports.value = translatedResults
         filterReports.value = translatedResults;
-         
+        
          reportItems.value = buildTreeData();
         loading.value = false;
     }).catch((err) => {

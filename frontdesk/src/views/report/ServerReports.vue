@@ -1,11 +1,11 @@
 <template>
      
         <Splitter class="mb-5" style="height:calc(100vh - 110px) ;" state-key="report_spliter_state" state-storage="local">
-            <SplitterPanel :size="25" class="pa-4 left-side-panel overflow-y-auto">
-                <ComReportTree   @onSelectReport="onSelectReport" />
+            <SplitterPanel :size="20" class="pa-4 left-side-panel overflow-y-auto">
+                <ComReportTree :root_report="root_report"   @onSelectReport="onSelectReport" />
             </SplitterPanel>
 
-            <SplitterPanel :size="75" class="pa-4">
+            <SplitterPanel :size="80" class="pa-4">
            
                 <div id="main_server_report_viewer"></div>
             </SplitterPanel>
@@ -14,7 +14,7 @@
 
 </template>
 <script setup>
-import { ref, onMounted, inject,onUnmounted } from "@/plugin"
+import { ref, onMounted, inject,onUnmounted,useRouter,useRoute ,watch} from "@/plugin"
 import ComReportTree from "@/views/report/components/ComReportTree.vue"
  
 import Splitter from 'primevue/splitter';
@@ -22,6 +22,13 @@ import SplitterPanel from 'primevue/splitterpanel';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const moment = inject("$moment")
+
+const route = useRoute()
+const router = useRouter()
+const root_report = ref(route.name)
+watch(() => route.name, (newName, oldName) => {
+    root_report.value=newName;
+});
  
 const setting = window.setting
  
