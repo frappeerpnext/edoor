@@ -18,7 +18,7 @@ class ReservationFolio(Document):
 				frappe.throw("You have reached the maximum number of folios allowed per reservation stay. Please contact your system administrator for assistance.")
 
 		doc_status = frappe.get_doc("Reservation Status", self.reservation_status)
-		if doc_status.allow_user_to_edit_information==0 or  doc_status.is_active_reservation==0:
+		if doc_status.allow_user_to_edit_information==0:
 			frappe.throw("{} reservation is not allow to add or update information".format(self.reservation_status) )
 		
 
@@ -106,8 +106,6 @@ class ReservationFolio(Document):
 
 		if (self.note):
 			comment["content"] = comment["content"] + "<br /> Note: " + self.note
-		
-
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
 
 

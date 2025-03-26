@@ -185,7 +185,11 @@ align-items: center;
     background-color: var(--bg-primary-color);
     height: 62.5px;
     position: fixed;
-    z-index: 10000;
+    z-index: 1000;
+}
+#main_server_report_viewer {
+    position: relative;
+    z-index: 999;
 }
 
 .text-color-btn {

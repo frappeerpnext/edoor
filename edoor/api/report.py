@@ -20,4 +20,9 @@ def get_summary_folio_transaction(property, cashier_shift=None ):
         order by
             account_code_sort_order
     """
-    
+
+@frappe.whitelist()
+def update_prepared_report():
+    frappe.db.sql("UPDATE `tabReport` SET prepared_report = 0 WHERE prepared_report = 1")
+    frappe.db.commit()
+

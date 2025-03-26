@@ -57,10 +57,8 @@ function onSelectReport(p) {
             report_params.push({name: 'start_date', values: [get_date_by_timestamp(default_filter.start_date)] })
         }
         if( default_filter.end_date){
-           
             report_params = report_params.filter(r=>r.name!='end_date')
             report_params.push({name: 'end_date', values: [get_date_by_timestamp(default_filter.end_date)] })
-           
         }
        
         if (default_filter.row_group){

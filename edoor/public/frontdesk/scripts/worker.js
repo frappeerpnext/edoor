@@ -6,7 +6,7 @@ onmessage = function(event) {
     const b = event.data.b;
  
     const result = a + b;
-   
+ 
  
     postMessage(result);
   };

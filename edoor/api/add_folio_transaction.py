@@ -3,6 +3,7 @@
 # if put these code below in folio_transaction.py and call some function from generate_room_rate.py 
 # it will cause circular error
 # will optimize this in the future
+from edoor.edoor.doctype.city_ledger_invoice.city_ledger_invoice import update_city_ledger_invoice_balance
 from edoor.api.cache_functions import get_account_code_doc, get_account_code_sub_account_information, get_cache_data
 from edoor.api.folio_transaction import update_reservation_folio
 from edoor.api.generate_room_rate import get_charge_breakdown_by_account_code_breakdown, get_room_rate_account_code_breakdown, package_base_account_code_charge_breakdown
@@ -267,19 +268,24 @@ def create_folio_transaction(data):
     
     # update creation and ownere when user edit
     
-    frappe.db.commit()
+ 
         
     if "name" in data:
         add_audit_trail_when_edit_transaction(base_doc, old_doc,new_working_day)
-            
         frappe.db.sql("update `tabFolio Transaction` set owner='{0}',creation='{1}' where name='{2}' or reference_folio_transaction='{2}'".format(data["owner"],data["creation"],data["name"]))
-        frappe.db.commit()
 
+    # check if post transactyion in city ledger in voice
+    if data.get("city_ledger_invoice"):
+ 
+        update_city_ledger_invoice_balance(data.get("city_ledger_invoice"),run_commit=False)
+        
+        
+    frappe.db.commit()
     frappe.msgprint(_("Posting transaction successfully"))
     
     
     
-    pass
+    
 
 def validate_add_folio_transaction(data,working_day):
     if data["input_amount"] <0:

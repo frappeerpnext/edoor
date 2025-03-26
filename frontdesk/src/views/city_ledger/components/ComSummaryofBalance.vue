@@ -18,19 +18,19 @@
                         </div>
                         <div class="flex justify-end">
                         <span
-                            class="text-xl line-height-2 font-semibold text-end">
+                            class="text-xl line-height-2 font-bold text-end my-3">
                             <span>{{ s.value }}</span></span>
                         </div>
                            
                         </div> 
                       
-                    <!-- <ComBoxSummaryBalanceTransaction v-if="summary" label="Audit Date" :value='moment(start_date).format("DD-MM-YYYY")' :class="'bg-purple-50 border-purple-300 md:mx-1 my-1'"  /> -->
+                
                 </div>
 </template>
 <script setup>
 import { inject, getDoc, ref } from '@/plugin';
 const moment = inject("$moment")
-import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue'
+
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
 const props = defineProps({

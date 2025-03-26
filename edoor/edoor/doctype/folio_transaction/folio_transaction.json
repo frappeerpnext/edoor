@@ -128,8 +128,10 @@
   "parent_account_code",
   "parent_account_name",
   "account_group",
+  "city_ledger_invoice",
   "account_group_name",
   "deleted_note",
+  "payment_status",
   "column_break_73",
   "account_category",
   "account_category_sort_order",
@@ -1164,11 +1166,24 @@
    "fieldtype": "Table",
    "label": "Items",
    "options": "Folio Transaction Products"
+  },
+  {
+   "fetch_from": ".",
+   "fieldname": "city_ledger_invoice",
+   "fieldtype": "Link",
+   "label": "City ledger invoice",
+   "options": "City Ledger Invoice"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "\nUnpaid\nPartially Paid\nPaid"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-23 13:56:43.367944",
+ "modified": "2025-03-25 18:23:45.398814",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

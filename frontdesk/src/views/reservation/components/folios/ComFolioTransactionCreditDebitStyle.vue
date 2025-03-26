@@ -1,45 +1,48 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
-  
-        <DataTable v-model:selection="selectedfolioTransactions" @row-dblclick="onViewFolioDetail"
-            :value="folioTransactions" tableStyle="min-width: 50rem" :rowClass="rowStyleClass" paginator
-            :stateKey="'folo_transaction_table_state_' + selectedFolio.name" :rows="10"
-            :rowsPerPageOptions="[5, 10, 20, 50]" @row-select="onRowSelection" @row-unselect="onRowUnSelection">
-            <div class="absolute bottom-6 left-4">
-                <strong> {{ $t('Total Records') }}: <span class="ttl-column_re">{{ folioTransactions.length }}</span></strong>
-            </div>
+        <DataTable :scrollable="folioTransactions.length > 10"
+            :scrollHeight="(folioTransactions.length > 10 ? '500px' : 'auto')" 
+            :virtualScrollerOptions="{ itemSize: 40 }"
+            v-model:selection="selectedfolioTransactions" @row-dblclick="onViewFolioDetail" :value="folioTransactions"
+            tableStyle="min-width: 50rem" :rowClass="rowStyleClass" @row-select="onRowSelection"
+            @row-unselect="onRowUnSelection">
 
+            <Column expander style="width: 5rem" v-if="showExpander" />
             <Column selectionMode="multiple" headerStyle="width: 3rem" v-if="showCheckbox">
 
             </Column>
-            <Column  field="is_package"  bodyClass="text-center p-0" headerClass="text-center p-0">
-        <template #body="slotProps">
-          <span @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.is_package" class="package_room_rate" >
-          <ComIcon icon="iconPackage" height="20px" /> 
-          </span>
-        </template>
-      </Column>
-            <Column field="name" :header="$t('Name')" headerClass="text-center" bodyClass="text-center">
+            <Column field="is_package" bodyClass="text-center p-0" headerClass="text-center p-0">
                 <template #body="slotProps">
-                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')" >{{
-                        slotProps.data?.name }}</button>
+                    <span @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.is_package"
+                        class="package_room_rate">
+                        <ComIcon icon="iconPackage" height="20px" />
+                    </span>
                 </template>
             </Column>
-            <Column field="room_number" :header="$t('Room') + ' #'" headerClass="text-center white-space-nowrap" bodyClass="text-center"></Column>
+            <Column field="name" :header="$t('Name')" headerClass="text-center" bodyClass="text-center">
+                <template #body="slotProps">
+                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name"
+                        :class="'link_line_action1 ' + (slotProps.data?.is_auto_post == 1 ? 'auto_post' : '')">{{
+                            slotProps.data?.name }}</button>
+                </template>
+            </Column>
+            <Column field="room_number" :header="$t('Room') + ' #'" headerClass="text-center white-space-nowrap"
+                bodyClass="text-center"></Column>
             <Column field="posting_date" :header="$t('Post Date')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <span v-if="slotProps.data?.posting_date">{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY")
-                    }}</span>
+                    <span v-if="slotProps.data?.posting_date">{{
+                        moment(slotProps.data?.posting_date).format("DD-MM-YYYY")
+                        }}</span>
                 </template>
             </Column>
 
             <Column field="account_name" :header="$t('Account Name')" style="min-width: 160px;">
                 <template #body="slotProps">
-                   {{$t(slotProps.data.account_name)}}  
-                   
-                   <span v-if="slotProps.data.sale">({{slotProps.data.sale}}/{{slotProps.data.tbl_number}})</span>
-                     
-                   
+                    {{ $t(slotProps.data.account_name) }}
+
+                    <span v-if="slotProps.data.sale">({{ slotProps.data.sale }}/{{ slotProps.data.tbl_number }})</span>
+                    <slot name="description" :item="slotProps.data" :index="slotProps.data.name">
+                    </slot>
                 </template>
             </Column>
 
@@ -49,7 +52,7 @@
                 </template>
             </Column>
 
-            <Column field="debit" :header="$t('Debit(Charges)')" class="text-right">
+            <Column field="debit" :header="$t('Debit(Charge)')" class="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat v-if="slotProps.data.debit > 0" :value="slotProps.data.debit"
                         class="white-space-nowrap" />
@@ -79,7 +82,7 @@
                     </span>
                 </template>
             </Column>
-            
+
             <Column header="">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.name">
@@ -90,7 +93,8 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column :footer="$t('Total') + ':'" :colspan="showCheckbox ? 6 : 5" footerStyle="text-align:right" />
+                    <Column :footer="$t('Total') + ':'" :colspan="showCheckbox ? 6 : 5"
+                        footerStyle="text-align:right" />
                     <Column footerStyle="text-align:center">
                         <template #footer>
                             {{ totalQuantity }}
@@ -100,21 +104,22 @@
                     <Column footerStyle="text-align:right">
                         <template #footer>
 
-                            <CurrencyFormat  v-if="can_view_rate" :value="totalDebit" />
+                            <CurrencyFormat v-if="can_view_rate" :value="totalDebit" />
                         </template>
                     </Column>
 
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat  v-if="can_view_rate" :value="totalCredit" />
+                            <CurrencyFormat v-if="can_view_rate" :value="totalCredit" />
                         </template>
                     </Column>
- 
+
 
 
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat v-if="can_view_rate" :value="(selectedFolio.total_debit - selectedFolio.total_credit)" />
+                            <CurrencyFormat v-if="can_view_rate"
+                                :value="(selectedFolio.total_debit - selectedFolio.total_credit)" />
                         </template>
                     </Column>
 
@@ -147,16 +152,26 @@ import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInfo
 import ComReservationStayFolioTransactionAction from '@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionAction.vue';
 
 import Enumerable from 'linq'
-import {i18n} from '@/i18n';
-const { t: $t } = i18n.global; 
+import { i18n } from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
-    folio: Object, doctype: {
+    folio: Object,
+    doctype: {
         type: String,
         default: "Reservation Folio"
     },
+    transaction_number: String,
     showCheckbox: {
         type: Boolean,
         default: true
+    },
+    showExpander: {
+        type: Boolean,
+        default: false
+    },
+    cityLedgerInvoice: {
+        type: String,
+        default: ""
     }
 })
 const selectedFolio = ref(props.folio)
@@ -183,7 +198,6 @@ function onRowUnSelection(r) {
 
 watch(() => props.folio, (newValue, oldValue) => {
     selectedFolio.value = newValue
-
     LoadFolioTransaction()
     selectedfolioTransactions.value = []
 })
@@ -193,14 +207,16 @@ watch(() => props.folio, (newValue, oldValue) => {
 //load data
 function LoadFolioTransaction() {
     let show_package_breakdown = 0
-    if(localStorage.getItem('displayViewFolioTransaction')){
-        show_package_breakdown = localStorage.getItem('displayViewFolioTransaction');  
+    if (localStorage.getItem('displayViewFolioTransaction')) {
+        show_package_breakdown = localStorage.getItem('displayViewFolioTransaction');
     }
-    
+
+
     getApi('reservation.get_folio_transaction', {
         transaction_type: props.doctype,
-        transaction_number: selectedFolio.value.name,
-        show_package_breakdown:show_package_breakdown
+        transaction_number: props.transaction_number ? props.transaction_number : selectedFolio.value.name,
+        show_package_breakdown: show_package_breakdown,
+        city_ledger_invoice: props.cityLedgerInvoice
     })
         .then((result) => {
             folioTransactions.value = result.message
@@ -214,13 +230,13 @@ function LoadFolioTransaction() {
 
 function getFolioSummary() {
     let show_package_breakdown = 0
-    if(localStorage.getItem('displayViewFolioTransaction')){
-        show_package_breakdown = localStorage.getItem('displayViewFolioTransaction');  
+    if (localStorage.getItem('displayViewFolioTransaction')) {
+        show_package_breakdown = localStorage.getItem('displayViewFolioTransaction');
     }
     getApi("reservation.get_folio_summary_by_transaction_type", {
         transaction_type: "Reservation Folio",
         transaction_number: selectedFolio.value.name,
-        show_package_breakdown:show_package_breakdown
+        show_package_breakdown: show_package_breakdown
     }).then((result) => {
         folio_summary.value = result.message
     })
@@ -243,7 +259,7 @@ const rowStyleClass = (r) => {
     if (!r.name) {
         classRow = classRow + "ui-helper-hidden "
     } else {
-       
+
         if (r.debit > 0) {
             classRow = classRow + ("row-debit ")
         }
@@ -259,27 +275,8 @@ const rowStyleClass = (r) => {
 
 const onViewFolioDetail = (doc) => {
     if (doc.data.name) {
-        const dialogRef = dialog.open(ComFolioTransactionDetail, {
-            data: {
-                folio_transaction_number: doc.data.name
-            },
-            props: {
-                header: 'Folio Transaction Detail - ' + doc.data.name,
-                style: {
-                    width: '90vw',
-                },
-                modal: true,
-                position: 'top',
-                closeOnEscape: false,
-                breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
-            },
-            onClose: (options) => {
+        window.postMessage("view_folio_transaction_detail|" + doc.data.name, '*')
 
-            }
-        });
     }
 
 }
@@ -325,7 +322,7 @@ const totalBalance = computed(() => {
 const windowActionHandler = async function (e) {
     if (e.isTrusted) {
         if (e.data.action == "load_folio_transaction") {
-           
+
             LoadFolioTransaction()
 
 
@@ -334,11 +331,11 @@ const windowActionHandler = async function (e) {
     }
 }
 onMounted(() => {
-    
-    if(window.isMobile){
+
+    if (window.isMobile) {
         let elem = document.querySelectorAll(".p-dialog");
-        if (elem){
-            elem = elem[elem.length-1]
+        if (elem) {
+            elem = elem[elem.length - 1]
             elem?.classList.add("p-dialog-maximized"); // adds the maximized class
         }
     }
@@ -375,7 +372,8 @@ onUnmounted(() => {
 .ui-helper-hidden .p-selection-column .p-checkbox {
     display: none !important;
 }
-.link_line_action1.auto_post{
+
+.link_line_action1.auto_post {
     border: 1px dashed #ff3720 !important;
     color: #ff3720 !important;
 }

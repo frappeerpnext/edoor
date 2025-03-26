@@ -74,14 +74,11 @@ class RoomBlock(Document):
 				data = frappe.db.sql(sql,{"property":self.property}, as_dict=1)
 				if data:
 					frappe.throw("Room {} is already occupy or block on date {}".format( self.room_number,data[0]["date"].strftime("%d-%m-%Y")))
-
 				generate_block_date(self)
-
 				working_day = get_working_day(self.property)
 				room_doc = frappe.get_doc("Room",self.room_id)
 				if  getdate(self.start_date)<= getdate(working_day["date_working_day"])  and getdate(self.end_date) > getdate(working_day["date_working_day"]):
 					room_doc.room_status="Room Block"
-
 				if   getdate(self.end_date) <= getdate(working_day["date_working_day"]):
 					room_doc.room_status = "Vacant"
      

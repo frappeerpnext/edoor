@@ -169,7 +169,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
         folio_names.append(master_folio.name)
     
     stays_info = get_reservation_stay_list_infor(stay_names =[d["stay_name"] for d in stays])
-    
+ 
     for s in stays_info:
         folio = {}
         if s["paid_by_master_room"] == 1:
@@ -200,7 +200,6 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
                 s["reservation_folio"] = folio.name
             
     charge_list = get_charge_list_for_posting_room_charge(stay_names=[d["name"] for d in stays_info], working_day=working_day)
-    
 
     folio_transaction_list = get_folio_transaction_new_record(stays_infor=stays_info,charge_list=charge_list, working_day = working_day)
     bulk_insert("Folio Transaction",folio_transaction_list , chunk_size=10000)
@@ -217,6 +216,14 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays,master_f
     # return folio_transaction_list
 
 def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rate_names = None, working_day=None):
+    # check reservation stay arrival date. some reservation stay arrival date is equal reservation_date some is < current working
+    stays = []
+    if stay_names:
+        sql = "select name from `tabReservation Stay` where    name in %(stay_names)s and arrival_date<%(current_working_date)s"
+        stays = frappe.db.sql(sql,{"stay_names":stay_names,"current_working_date":working_day["date_working_day"]},as_dict = 1)
+     
+    
+    
     sql="""
         select 
             name, 
@@ -272,7 +279,14 @@ def get_charge_list_for_posting_room_charge(stay_names=None,reservation_room_rat
     sql = sql + " order by date, room_rate_id, sort_order"
 
     
-    return  frappe.db.sql(sql,{"stay_names":stay_names, "reservation_room_rate_names":reservation_room_rate_names,"date":working_day["date_working_day"]},as_dict=1)
+    data =   frappe.db.sql(sql,{"stay_names":stay_names, "reservation_room_rate_names":reservation_room_rate_names,"date":working_day["date_working_day"]},as_dict=1)
+    if stays:
+        deleted_record = [d.get("name") for d in data if d.get("reservation_stay")   in [x.get("name") for x in stays] and d.get("posting_date")==working_day["date_working_day"]]
+        if deleted_record:
+            data = [d for d in data if d.get("name") not in deleted_record]
+            
+    return data
+    
 
 def get_folio_transaction_new_record( stays_infor,charge_list,working_day):
     
@@ -536,7 +550,7 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
                     s["reservation_folio"] = folio.name
             
         charge_list = get_charge_list_for_posting_room_charge(reservation_room_rate_names= reservation_room_rate_names, working_day=working_day)
- 
+      
         folio_transaction_list = get_folio_transaction_new_record(stays_infor=stays_info, charge_list=charge_list , working_day = working_day)
         bulk_insert("Folio Transaction",folio_transaction_list , chunk_size=10000)
         
@@ -549,4 +563,23 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
         if run_commit:
             frappe.db.commit()
             
-            
+@frappe.whitelist()
+def update_folio_transaction_info( data={}):
+    # data = {doctype:, name}
+    data={
+        "doctype":"Folio Transaction",
+        "name":"FT2025-0202",
+        "data":{
+            "reference_number":"hellx"
+        }
+    }
+    doc = frappe.get_doc(data.get("doctype"),data.get("name"))
+    for field, value in data.get("data").items():
+        setattr(doc, field, value)
+    
+    doc.flags.ignore_validate =True
+    doc.save()
+    return doc
+    
+    
+    

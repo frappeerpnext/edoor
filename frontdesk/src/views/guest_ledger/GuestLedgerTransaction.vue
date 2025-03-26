@@ -55,7 +55,7 @@
                 </div>
             </div>
             <div>
-                <ComSummaryofBalence :summary="summary" :start_date="filter.start_date" :end_date="filter.end_date" />
+                <ComSummaryofBalance :summary="summary" :start_date="filter.start_date" :end_date="filter.end_date" />
             </div>
         </div>
         <div class="overflow-auto h-full">
@@ -193,7 +193,7 @@ import { ref, onMounted, onUnmounted, inject, computed, useDialog, watch } from 
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-import ComSummaryofBalence from '@/views/city_ledger/components/ComSummaryofBalence.vue' 
+import ComSummaryofBalance from '@/views/city_ledger/components/ComSummaryofBalance.vue' 
 import {i18n} from '@/i18n';
 import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 const working_day = ref(JSON.parse(localStorage.getItem("edoor_working_day")))

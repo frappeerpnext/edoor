@@ -14,10 +14,12 @@ from frappe import _
 
 class FolioTransaction(Document):
 	def validate(self):
-		
+		if self.flags.ignore_validate:
+			return
+
+
 		if self.is_new():
 			if self.transaction_type =="Reservation Folio":
-				
 				self.folio_type = frappe.get_cached_value("Reservation Folio", self.transaction_number,"folio_type")  
 				self.is_master_folio =  frappe.get_cached_value("Reservation Folio", self.transaction_number,"is_master")
 			if not self.working_day or not self.cashier_shift:
@@ -46,8 +48,12 @@ class FolioTransaction(Document):
 				validate_desk_folio_posting(self)
 			update_sub_account_description(self)
 
-		
-		
+		else:
+			# check if reservation status allow to edit informnatin
+			# desk or paybe ,,, check if status is open
+			
+			pass 
+
 	def after_insert(self):
 		 
 	 

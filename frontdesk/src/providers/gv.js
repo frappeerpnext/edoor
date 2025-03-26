@@ -29,6 +29,7 @@ export default class Gv {
 			window.postMessage('show_alert|' + message, '*')
 		}	
 	}
+	
 	toast(type = 'alert', message){
 		window.postMessage(`show_${type == 'warn' ? 'alert' : type}|` + message, '*')
 	}

@@ -100,26 +100,8 @@ function onEditFolioTransaction() {
     })
 }
 const onViewFolioDetail = () => {
-
-    const dialogRef = dialog.open(ComFolioTransactionDetail, {
-        data: {
-            folio_transaction_number: props.data.name
-        },
-        props: {
-            header: 'Folio Transaction Detail - ' + props.data.name,
-            style: {
-                width: '90vw',
-            },
-            modal: true,
-            position:'top',
-            closeOnEscape: false,
-            breakpoints:{
-                '960px': '50vw',
-                '640px': '100vw'
-            },
-        },
-
-    });
+    window.postMessage("view_folio_transaction_detail|" +  props.data.name, '*')
+     
 
 }
 function onPrintFolioTransaction() {

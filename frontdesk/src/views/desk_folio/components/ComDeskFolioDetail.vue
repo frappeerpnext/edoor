@@ -91,10 +91,10 @@
                             </div>
                         </div>
                     </div>
-                    <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="doc" doctype="Desk Folio"
+                   
+                    <ComFolioTransactionCreditDebitStyle :folio="doc" doctype="Desk Folio"
                         :showCheckbox="false" />
-                    <ComFolioTransactionSimpleStyle v-else :folio="doc" doctype="Desk Folio" :showCheckbox="false" />
-
+                  
 
                 </div>
             </TabPanel>
@@ -158,7 +158,6 @@
 import OverlayPanel from 'primevue/overlaypanel';
 import { ref, onMounted, inject, getApi, useDialog, computed, onUnmounted ,updateDoc } from '@/plugin'
 import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
-import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folios/ComFolioTransactionSimpleStyle.vue"
 import ComDeskFolioAction from "@/views/desk_folio/components/ComDeskFolioAction.vue"
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';

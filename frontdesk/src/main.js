@@ -160,7 +160,9 @@ import ComReportServerModal from '@/components/ComReportServerModal.vue';
 import VueSortable from "vue3-sortablejs";
 import vInteract from './directives/v-interact';
 import DraggableResizableVue from 'draggable-resizable-vue3'
-
+import Grid from '@/components/layout/components/Grid.vue'
+import Col from '@/components/layout/components/Col.vue'
+import Stack from './components/layout/components/Stack.vue';
 
 app.config.globalProperties.$t = i18n.global.t;
 
@@ -244,6 +246,9 @@ app.component('ComAttachWebcam', ComAttachWebcam)
 app.component('ComOpenStatus', ComOpenStatus)
 app.component('ComIFrameModal', ComIFrameModal)
 app.component('ComReportServerModal', ComReportServerModal )
+app.component('Grid',Grid )
+app.component('Col', Col )
+app.component('Stack', Stack )
  
 app.use(DraggableResizableVue)
 
@@ -302,7 +307,7 @@ app.provide("$numberFormat", NumberFormat)
 
 app.directive('badge', BadgeDirective);
 app.directive('tooltip', Tooltip);
-app.directive('debounce', vue3Debounce({ lock: true }))
+app.directive('debounce', vue3Debounce({ lock: true, defaultTime: '1000ms', }))
 app.directive('interact', vInteract);
 
 const gv = reactive(new Gv());

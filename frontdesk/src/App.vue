@@ -37,6 +37,7 @@ import ComReservationStayAssignRoom from "./views/reservation/components/ComRese
 import { useDialog } from 'primevue/usedialog';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
+import FolioTransactionDetail from '@/views/folio_transaction/FolioTransactionDetail.vue';
 import ComFolioDetail from '@/views/reservation/components/folios/ComFolioDetail.vue';
 import ComIsTrainingMessage from '@/components/ComIsTrainingMessage.vue';
 
@@ -54,6 +55,7 @@ import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
 import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
 import NewReservation from "@/views/reservation/NewReservation.vue"
 import ComLostAndFoundDetail from "@/views/lost_and_found/components/ComLostAndFoundDetail.vue"
+import ComCityLedgerInvoiceDetail from "@/views/city_ledger_invoice/components/ComCityLedgerInvoiceDetail.vue"
 const urlParams = new URLSearchParams(window.location.search);
 const route = useRoute();
 import {i18n} from '@/i18n';
@@ -61,6 +63,7 @@ const { t: $t } = i18n.global;
 const ui = ref(urlParams.get('layout') || "main_layout")
 
 window.isMobile = (/mobile/i.test(navigator.userAgent));
+
  
 const layout = computed(()=>{
     if (route.query.layout){
@@ -89,6 +92,7 @@ if (localStorage.getItem("edoor_property") == null) {
 }
 
  
+
 
 const actionClickHandler = async function (e) {
 
@@ -167,6 +171,11 @@ const actionClickHandler = async function (e) {
             }
             else if (data[0] == "get_workingday") {
                 getWorkingDay();
+            }
+            else if (data[0] == "view_city_invoice_detail") {
+                
+                showCityInvoiceDetail(data[1])
+
             }
         }
 
@@ -456,6 +465,29 @@ function onAssignRoom(reservation_stay_name, name) {
     })
 }
 
+function showCityInvoiceDetail(name) {
+        // iframe component ComFolioTransactionDetail
+
+    const dialogRef = dialog.open(ComCityLedgerInvoiceDetail, {
+        data: {
+            name: name
+        },
+        props: {
+            header: 'City Ledger Invoice Detail - ' + name,
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            position:"top",
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+    });
+    
+}
 function showReservationStayDetail(name) {
     
     if (!window.reservation_stay){
@@ -497,15 +529,16 @@ else{
 
 
 function showFolioTransactionDetail(name) {
+        // iframe component ComFolioTransactionDetail
 
-    const dialogRef = dialog.open(ComFolioTransactionDetail, {
+    const dialogRef = dialog.open(FolioTransactionDetail, {
         data: {
             folio_transaction_number: name
         },
         props: {
             header: 'Folio Transaction Detail - ' + name,
             style: {
-                width: '90vw',
+                width: '75vw',
             },
             modal: true,
             position:"top",
@@ -516,6 +549,7 @@ function showFolioTransactionDetail(name) {
             },
         },
     });
+    
 }
 
 function showCityLedgerDetail(name) {

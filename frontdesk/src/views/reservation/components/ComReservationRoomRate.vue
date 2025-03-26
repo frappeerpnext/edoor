@@ -29,23 +29,18 @@
             </template>
           </Button>
         </div>
-        <!-- hide funtion -->
-        <!-- <div>
-          <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onDiscount">
-            <i class="pi pi-percentage me-2" style="font-size: 1rem"></i>
-            {{ $t('Discount') }}
-            
-            <template v-if="rs.selectedRoomRates.length>0">
-              ({{ rs.selectedRoomRates.length  }})
-            </template>
-          </Button>
-        </div> -->
+       
       </div>
     </div>
-      <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
+      <DataTable 
+      :scrollable="rs?.room_rates.length>20" 
+                    :scrollHeight="(rs?.room_rates.length>20?'700px':'auto')" 
+                    :virtualScrollerOptions="{ itemSize: 40 }"
+                    
+      v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem"
       v-model:filters="filters"
       :globalFilterFields="['room_number','date_search','room_type','room_type_alias','rate_type','reservation_stay','guest_name']"
-      :rowsPerPageOptions="[20, 50, 100]">
+      >
 
       <div class="absolute bottom-6 left-4">
         <strong>{{ $t('Total Records') }}: <span class="ttl-column_re">{{rs?.room_rates.length }}</span></strong>

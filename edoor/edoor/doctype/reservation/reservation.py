@@ -66,20 +66,7 @@ class Reservation(Document):
 
 
 	def after_insert(self):
-		add_audit_trail([{
-			"comment_type":"Created",
-			"subject":"Create New Reservation",
-			"reference_doctype":"Reservation",
-			"reference_name":self.name,
-			"custom_audit_trail_type":"Created",
-			"custom_icon":"pi pi-file",
-			"custom_reservation":self.name,
-			"custom_guest":self.guest,
-			"custom_posting_date":self.working_date,
-			"content":f"New reservation added. Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.name}'>{self.name}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}",
-			"custom_property":self.property
-
-		}])
+		
 	 
 			# udate keyworkd
 		update_keyword(self)

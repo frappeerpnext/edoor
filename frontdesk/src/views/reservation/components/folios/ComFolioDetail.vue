@@ -141,7 +141,7 @@
 </template>
 <script setup>
 
-import { ref, onMounted, inject, getApi, useDialog } from '@/plugin'
+import { ref, onMounted, onUnmounted, inject, getApi, useDialog } from '@/plugin'
 import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
 import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folios/ComFolioTransactionSimpleStyle.vue"
 import ComFolioAction from "@/views/reservation/components/folios/ComFolioAction.vue"
@@ -246,6 +246,11 @@ onMounted(() => {
     name.value = dialogRef.value.data.name;
     getData()
 
+    window.has_folio_detail = true
+
+})
+onUnmounted(() => {
+    window.has_folio_detail = true
 })
 
 

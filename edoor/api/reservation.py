@@ -528,8 +528,48 @@ def add_new_reservation(doc):
 
     
     frappe.msgprint("Add new reservation successfully")
+    
+    add_audit_trail_after_add_new_reservation(reservation)
+
+    
+   
     return reservation
 
+
+
+def add_audit_trail_after_add_new_reservation(reservation):
+    
+    frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data = [{
+            "comment_type":"Created",
+            "subject":"Create New Reservation",
+            "reference_doctype":"Reservation",
+            "reference_name":reservation.name,
+            "custom_audit_trail_type":"Created",
+            "custom_icon":"pi pi-file",
+            "custom_reservation":reservation.name,
+            "custom_guest":reservation.guest,
+            "custom_posting_date":reservation.working_date,
+            "content":f"New reservation added. Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{reservation.name}'>{reservation.name}</a>, Ref #: {reservation.reference_number or ''}, Reservation Type: {reservation.reservation_type}, Guest: {reservation.guest} - {reservation.guest_name}, Bussiness Source: {reservation.business_source}",
+            "custom_property":reservation.property
+
+    }])
+    
+    # add comment to reservation stay
+    for d in frappe.db.sql("select name from `tabReservation Stay` where reservation ='{}'".format(reservation.name),as_dict=1):
+        doc = frappe.get_cached_doc("Reservation Stay", d.get("name"))
+        frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
+            "comment_type":"Created",
+            "subject":"Create New Reservation Stay",
+            "reference_doctype":"Reservation Stay",
+            "reference_name":doc.name,
+            "custom_audit_trail_type":"Created",
+            "custom_icon":"pi pi-file",
+            "custom_property":doc.property,
+            "custom_posting_date":doc.working_date,
+            "custom_reservation":doc.reservation,
+            "custom_guest":doc.guest,
+            "content":f"New reservation stay added. Reservation Stay #: <a target='_blank' href='/frontdesk/stay-detail/{doc.name}'>{doc.name}</a>,  Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{doc.reservation}'>{doc.reservation}</a>, Ref #: {doc.reference_number or ''}, Reservation Type: {doc.reservation_type}, Guest: {doc.guest} - {doc.guest_name}, Bussiness Source: {doc.business_source}"
+        }])
  
 def get_package_item_for_reservation_stay(rate_type):
     rate_type_doc = get_rate_type_doc(rate_type)
@@ -745,8 +785,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note="",arrival_
         stays = reservation_stays
     else:
         stays = frappe.get_list("Reservation Stay",filters={"reservation":reservation},limit=100) # limit 100 to prevent reservation that have more than 20 stay
-
-
+ 
     #check if master room is already check in
     if frappe.db.count('Reservation Stay', {'is_master': 1,"reservation":reservation})>0:
         if not is_master_room_check_in(doc.name,reservation_stays):
@@ -839,7 +878,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note="",arrival_
             if is_no_show:
                 generate_forecast_revenue(stay_names=[stay.name],run_commit=False)
 
- 
+  
     if len(checked_in_stays)> 0:
         # create master folio and post master post change to master folio first   
         master_folio = get_master_folio(reservation=reservation,create_if_not_exists=True, reopen_folio_if_closed=True)  
@@ -2277,15 +2316,15 @@ def update_master_room(reservation):
 
 
 @frappe.whitelist()
-def get_folio_transaction(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1", show_package_breakdown = 0):
+def get_folio_transaction(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1", show_package_breakdown = 0 , city_ledger_invoice = ""):
     if cint(show_package_breakdown) ==1:
-        return get_folio_transaction_with_package_breakdown(transaction_type=transaction_type, transaction_number=transaction_number,reservation=reservation, reservation_stay=reservation_stay,show_account_code=show_account_code)
+        return get_folio_transaction_with_package_breakdown(transaction_type=transaction_type, transaction_number=transaction_number,reservation=reservation, reservation_stay=reservation_stay,show_account_code=show_account_code , city_ledger_invoice = city_ledger_invoice)
         
     else:
-        return get_folio_transaction_without_breakdown_account_code(transaction_type=transaction_type, transaction_number=transaction_number,reservation=reservation, reservation_stay=reservation_stay,show_account_code=show_account_code)
+        return get_folio_transaction_without_breakdown_account_code(transaction_type=transaction_type, transaction_number=transaction_number,reservation=reservation, reservation_stay=reservation_stay,show_account_code=show_account_code , city_ledger_invoice = city_ledger_invoice)
         
 @frappe.whitelist()
-def get_folio_transaction_with_package_breakdown(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1"):
+def get_folio_transaction_with_package_breakdown(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1" , city_ledger_invoice = ""):
     if show_account_code =="-1":
         show_account_code = frappe.get_cached_value("eDoor Setting",None,"show_account_code_in_folio_transaction")==1
     else:
@@ -2304,6 +2343,8 @@ def get_folio_transaction_with_package_breakdown(transaction_type="", transactio
         filters["reservation"]=reservation
     if reservation_stay:
         filters["reservation_stay"]=reservation_stay
+    if city_ledger_invoice:
+        filters["city_ledger_invoice"]=city_ledger_invoice
     
     data = frappe.db.get_list("Folio Transaction", fields=["*"], filters=filters, page_length=1000, order_by='name')
     
@@ -2341,7 +2382,7 @@ def get_folio_transaction_with_package_breakdown(transaction_type="", transactio
     return folio_transactions
         
 @frappe.whitelist()
-def get_folio_transaction_with_breakdown_account_code(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1"):
+def get_folio_transaction_with_breakdown_account_code(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1",city_ledger_invoice=""):
     if show_account_code =="-1":
         show_account_code = frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction")==1
     else:
@@ -2359,7 +2400,8 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
         filters["reservation"]=reservation
     if reservation_stay:
         filters["reservation_stay"]=reservation_stay
-        
+    if city_ledger_invoice:
+        filters["city_ledger_invoice"]=city_ledger_invoice    
     data = frappe.db.get_list("Folio Transaction", fields=["*"], filters=filters, page_length=1000, order_by='name')
     
  
@@ -2476,7 +2518,7 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
     return folio_transactions
 
 
-def get_folio_transaction_without_breakdown_account_code(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1"):
+def get_folio_transaction_without_breakdown_account_code(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1" , city_ledger_invoice = ""):
     if show_account_code =="-1":
         show_account_code = frappe.get_cached_value("eDoor Setting",None,"show_account_code_in_folio_transaction")==1
     else:
@@ -2495,7 +2537,8 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
 
     if reservation_stay:
         filters["reservation_stay"]=reservation_stay
-    
+    if city_ledger_invoice:
+        filters["city_ledger_invoice"]=city_ledger_invoice
     filters["parent_reference"]=""
     filters["is_package_charge"]=0
     
@@ -3178,11 +3221,35 @@ def update_business_source(reservation, business_source, regenerate_rate,reserva
     
 @frappe.whitelist()
 def get_folio_transaction_detail(name):
+    product_items=[]
+    sale=[]
+
     folio_transaction = frappe.get_doc("Folio Transaction", name)
+
+    
+
+
     account_code = frappe.get_doc("Account Code", folio_transaction.account_code)
+
+    if folio_transaction.sale:
+        sale = frappe.get_doc("Sale", folio_transaction.sale)
+    else:
+        sale=[]
+
+    sub_record = frappe.db.sql( "select account_code,account_name, sum(amount*if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where parent_reference in (%(parent_references)s) group by account_code,account_name order by account_category_sort_order",{"parent_references":tuple([name])},as_dict=1)
+    
+    ft_product_items = frappe.db.sql( "select product_code,product_name,quantity,price,total_amount from `tabFolio Transaction Products` where parent=%(parent)s",{"parent":tuple([name])},as_dict=1)
+    sale_product_items = frappe.db.sql( "select product_code,product_name,quantity,(price + ifnull(modifiers_price, 0)) as price,amount as total_amount,discount_amount from `tabSale Product` where parent=%(parent)s order by revenue_group",{"parent":folio_transaction.sale},as_dict=1)
+
+    product_items = ft_product_items if ft_product_items else sale_product_items
+
     return {
         "folio_transaction":folio_transaction,
-        "account_code":account_code
+        "account_code":account_code,
+        "sub_record": sub_record,
+        "product_items":product_items,
+        "sale":sale,
+        "city_ledger_invoice_date":"" if not folio_transaction.city_ledger_invoice else frappe.get_cached_value("City Ledger Invoice", folio_transaction.city_ledger_invoice, "posting_date")
     }
 
 @frappe.whitelist(methods="POST")

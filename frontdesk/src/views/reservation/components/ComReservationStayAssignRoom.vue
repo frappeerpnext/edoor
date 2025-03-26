@@ -1,7 +1,7 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="">
-
+        
         <ComReservationStayPanel title="Assign Room">
             <template #content> 
  
@@ -54,13 +54,13 @@
                                   </div>
                                 </template>
                             </Dropdown>
-                                
-                                
+                                 
                             </td>
                             <td class="px-2 select-room-number-style">
                                 <div class=" lg:w-full flex">
+                              
                                     <Dropdown v-model="selectedStay.room_id"
-                                        :options="rooms"
+                                        :options="rooms?.filter(x=>x.room_type_id==selectedStay.room_type_id)"
                                         optionValue="name"   optionLabel="room_number"
                                         placeholder="Select Room" showClear filter  class="w-full" 
                                          @change="onSelectRoom"
@@ -142,6 +142,8 @@
     return room
 
 }
+
+ 
     const onClose = (r) =>{ 
         dialogRef.value.close(r);
     }

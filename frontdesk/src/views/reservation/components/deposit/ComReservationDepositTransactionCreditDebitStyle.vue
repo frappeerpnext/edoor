@@ -139,27 +139,8 @@ const totalCredit=computed(()=>{
 
 const onViewFolioDetail = (doc) => { 
     if (doc.data.name){
-        const dialogRef = dialog.open(ComFolioTransactionDetail, {
-            data:{
-                folio_transaction_number:doc.data.name
-            },
-            props: {
-                header: 'Folio Transaction Detail - ' + doc.data.name ,
-                style: {
-                    width: '90vw',
-                },
-                modal: true,
-                position:'top',
-                closeOnEscape: false,
-                breakpoints:{
-                '960px': '50vw',
-                '640px': '100vw'
-            },
-            },
-            onClose: (options) => {
-                
-            }
-        });
+        window.postMessage("view_folio_transaction_detail|" + doc.data.name, '*')
+         
     }
      
 }

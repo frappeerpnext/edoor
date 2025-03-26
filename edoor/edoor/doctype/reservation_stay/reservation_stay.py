@@ -184,19 +184,7 @@ class ReservationStay(Document):
  
 
 	def after_insert(self):
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
-			"comment_type":"Created",
-			"subject":"Create New Reservation Stay",
-			"reference_doctype":"Reservation Stay",
-			"reference_name":self.name,
-			"custom_audit_trail_type":"Created",
-			"custom_icon":"pi pi-file",
-			"custom_property":self.property,
-			"custom_posting_date":self.working_date,
-			"custom_reservation":self.reservation,
-			"custom_guest":self.guest,
-			"content":f"New reservation stay added. Reservation Stay #: <a target='_blank' href='/frontdesk/stay-detail/{self.name}'>{self.name}</a>,  Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.reservation}'>{self.reservation}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
-		}])
+		
 		# update keyword
 		update_keyword(self)
 

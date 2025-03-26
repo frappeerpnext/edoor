@@ -52,7 +52,7 @@
     </template>
 </template>
 <script setup>
-import { ref, onMounted, inject,onUnmounted } from "@/plugin"
+import { ref, onMounted, inject,onUnmounted , getApi } from "@/plugin"
 import ComReportTree from "@/views/report/components/ComReportTree.vue"
 import ComReportFilter from "@/views/report/components/ComReportFilter.vue"
 import Splitter from 'primevue/splitter';
@@ -180,6 +180,7 @@ const actionRefreshData = async function (e) {
 onMounted(() => {
     loadIframe() 
     window.addEventListener('message', actionRefreshData, false)
+    getApi("report.update_prepared_report")
 });
 
 onUnmounted(() => {

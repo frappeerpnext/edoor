@@ -164,7 +164,7 @@ def update_fetch_from_field(doc, method=None, *args, **kwargs):
 
 
 def update_comment_after_insert(doc, method=None, *args, **kwargs):
-    
+     
 
     ignore_comment_types = ["Deleted","Workflow","Attachment"]
     if doc.comment_type in ignore_comment_types:
@@ -280,6 +280,7 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
     # if audit trail type == Reminder then audto add data to reminder
     if doc.custom_audit_trail_type =="Reminder":
         add_reminder(doc)
+        
         
 def add_reminder(doc):
     users = [doc.owner]
@@ -1070,7 +1071,7 @@ def get_months(start_date,end_date):
 	return months
 
 def add_audit_trail(data,update_creation_date=False,doc=None):
-  
+    
     for d in data:
         if not d.get("custom_property"):
          
@@ -1111,10 +1112,6 @@ def add_audit_trail(data,update_creation_date=False,doc=None):
         if update_creation_date:
             frappe.db.sql("update `tabComment` set creation=%(creation)s, comment_by=%(owner)s ,owner=%(owner)s,modified_by=%(owner)s where name=%(name)s",{"name":comment_doc.name, "creation":d["creation"],"owner":d.get("owner","")})
             
-
-
-
-
 
 @frappe.whitelist()
 def get_deposit_ledger_detail(name):
@@ -2273,3 +2270,39 @@ def get_folio_transaction_without_breakdown(property, start_date,end_date,accoun
 @frappe.whitelist()
 def ping():
     return "pong"
+
+@frappe.whitelist(methods="POST")
+def get_doctype_count(doctype_name,filters=None,or_filters=None):
+    # Base query
+    query = f"SELECT COUNT(*) as total FROM `tab{doctype_name}` WHERE 1=1"
+    
+    # Dictionary for named parameters
+    query_params = {}
+    
+    # Adding AND conditions (filters)
+    if filters:
+        for idx, condition in enumerate(filters):
+            field, operator, value = condition
+            param_name = f"filter_{idx}"  # Unique parameter name
+            query += f" AND `{field}` {operator} %({param_name})s"
+            query_params[param_name] = value
+    
+    # Adding OR conditions (or_filters)
+    if or_filters:
+        or_clauses = []
+        for idx, condition in enumerate(or_filters):
+            field, operator, value = condition
+            param_name = f"or_filter_{idx}"  # Unique parameter name
+            or_clauses.append(f"`{field}` {operator} %({param_name})s")
+            query_params[param_name] = value
+        
+        # Append OR conditions inside parentheses
+        if or_clauses:
+            query += " AND (" + " OR ".join(or_clauses) + ")"
+    
+    # Execute the query safely
+    result = frappe.db.sql(query, query_params)
+    
+    return result[0][0] if result else 0
+        
+    

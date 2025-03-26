@@ -1,12 +1,13 @@
 <template> 
+
     <template
         v-for="(d, index) in data" :key="index">
         <Button v-if="!d.sub_account" @click="onClick(d)" class="conten-btn mr-1">
-            {{ $t(  d.label)  }}
+            {{ $t(  d.label)  }}  
         </Button>
         <SplitButton v-else
         @click="onClick(d)"
-        class="spl__btn_cs sp"
+        class="spl__btn_cs sp mr-1"
         :label="$t(d.label)"
         :model="d.sub_account"
         /> 

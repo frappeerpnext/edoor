@@ -50,7 +50,14 @@
                 </div>
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
                
-                    <DataTable :rowClass="rowClass" class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
+                    <DataTable 
+                    :scrollable="rs.roomList.length>10" 
+                    :scrollHeight="(rs.roomList.length>10?'400px':'auto')" 
+                    :virtualScrollerOptions="{ itemSize: 40 }"
+                    :rowClass="rowClass" 
+                    class="p-datatable-sm" 
+                    v-model:selection="rs.selecteds" 
+                    sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column  field="is_package"  bodyClass="text-center p-0" headerClass="text-center p-0">
         <template #body="slotProps">
