@@ -53,7 +53,8 @@
    "hidden": 1,
    "in_standard_filter": 1,
    "label": "Property",
-   "options": "Business Branch"
+   "options": "Business Branch",
+   "search_index": 1
   },
   {
    "fieldname": "guest",
@@ -85,7 +86,8 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Posting Date"
+   "label": "Posting Date",
+   "search_index": 1
   },
   {
    "fieldname": "working_day",
@@ -228,7 +230,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-10 14:31:16.931335",
+ "modified": "2025-03-26 09:48:32.455127",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Desk Folio",

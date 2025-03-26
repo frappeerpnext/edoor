@@ -184,7 +184,8 @@
    "fieldname": "arrival_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Arrival Date"
+   "label": "Arrival Date",
+   "search_index": 1
   },
   {
    "fetch_from": "reservation.departure_date",
@@ -192,7 +193,8 @@
    "fieldname": "departure_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Departure Date"
+   "label": "Departure Date",
+   "search_index": 1
   },
   {
    "default": "12:00",
@@ -258,7 +260,8 @@
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Reservation Status",
-   "options": "Reservation Status"
+   "options": "Reservation Status",
+   "search_index": 1
   },
   {
    "fetch_from": "guest.customer_name_en",
@@ -287,7 +290,8 @@
    "fieldname": "property",
    "fieldtype": "Link",
    "label": "Property",
-   "options": "Business Branch"
+   "options": "Business Branch",
+   "search_index": 1
   },
   {
    "default": "0",
@@ -793,7 +797,8 @@
   {
    "fieldname": "cancelled_date",
    "fieldtype": "Date",
-   "label": "Cancelled Date"
+   "label": "Cancelled Date",
+   "search_index": 1
   },
   {
    "fieldname": "pickup_driver",
@@ -814,7 +819,8 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Reservation Date"
+   "label": "Reservation Date",
+   "search_index": 1
   },
   {
    "fieldname": "rooms_data",
@@ -1033,7 +1039,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-21 14:19:59.862664",
+ "modified": "2025-03-26 09:47:10.918774",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

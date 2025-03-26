@@ -144,7 +144,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
             `date` = %(date)s AND 
             property = %(property)s and 
             type='Reservation' and 
-            room_type_id=if('{0}'='',room_type_id,'{0}');
+             (room_type_id = '{0}' OR '{0}' = '');
     """.format( room_type_id or '')
  
 
@@ -161,7 +161,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                 `date` >= %(date)s AND 
                 property = %(property)s and 
                 type='Reservation' and 
-                room_type_id=if('{0}'='',room_type_id,'{0}') and 
+                 (room_type_id = '{0}' OR '{0}' = '') and 
                 ifnull(room_id,'') = ''
         ) and is_active_reservation = 1
         """.format( room_type_id or ''),{"property":property,"date":date}, as_dict =1)
@@ -197,7 +197,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                         where
                             date = %(date)s and 
                             property = %(property)s and 
-                            room_type_id = if('{0}'='',room_type_id,'{0}')
+                             (room_type_id = '{0}' OR '{0}' = '')
                     )  and
                     property = %(property)s;""".format(room_type_id or '')
     
@@ -223,7 +223,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                 WHERE  
                     date = %(date)s and 
                     property = %(property)s  and 
-                    room_type_id = if('{0}'='',room_type_id,'{0}')
+                     (room_type_id = '{0}' OR '{0}' = '')
         """.format(room_type_id or '')
 
     stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)[0]]
@@ -238,7 +238,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                     inner join `tabReservation Stay Room` b on b.parent = a.name
                     
                 WHERE  
-                    b.room_type_id = if('{0}'='',room_type_id,'{0}') and 
+                     (b.room_type_id = '{0}' OR '{0}' = '') and 
                     a.cancelled_date = %(date)s and 
                     a.property = %(property)s;""".format( room_type_id or '')
     
@@ -255,7 +255,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                         select reservation_stay from `tabRoom Occupy`
                         where
                             date = %(date)s and 
-                            room_type_id = if('{0}'='',room_type_id,'{0}') and 
+                            (room_type_id ='{0}' or '{0}' = '') and 
                             property=%(property)s and 
                             is_departure = 1 and 
                             is_active_reservation= 1
@@ -326,7 +326,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     desk_folio = frappe.db.sql("select count(name) as total  from `tabDesk Folio` where posting_date = %(date)s and property=%(property)s",{"property":property,"date":date}, as_dict=1)
     
     #get total room block 
-    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = %(date)s AND property = %(property)s and type='Block' and room_type_id = if('{0}'='',room_type_id,'{0}');".format(room_type_id or '')
+    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = %(date)s AND property = %(property)s and type='Block' and  (room_type_id = '{0}' or '{0}' = '');".format(room_type_id or '')
     total_room_block = frappe.db.sql(sql,{"property":property,"date":date},as_dict=1)
     total_room_block = total_room_block[0]["total_room_block"] or 0
     
@@ -351,7 +351,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         vacant_room = 0
     occupancy = 0
     
-    if int(frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")) ==1:
+    if int(frappe.get_cached_value("eDoor Setting",None, "calculate_room_occupancy_include_room_block")) ==1:
 
         occupancy = round( (total_room_occupy or 0)   / (total_room or 1) * 100,2)
     else:

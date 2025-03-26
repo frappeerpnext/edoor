@@ -446,6 +446,7 @@ function EditFolio() {
 
         data: {
             name: selectedCityLedgerInvoice.value.name,
+            method:"edit"
         },
         props: {
             header: 'Edit Desk Folio ' + selectedCityLedgerInvoice.value.name,

@@ -38,7 +38,8 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Block Date",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "allow_on_submit": 1,
@@ -151,7 +152,8 @@
    "fieldtype": "Link",
    "label": "Property",
    "options": "Business Branch",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fetch_from": "housekeeping_status.status_color",
@@ -201,7 +203,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-25 11:45:49.537213",
+ "modified": "2025-03-26 09:50:36.509450",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",

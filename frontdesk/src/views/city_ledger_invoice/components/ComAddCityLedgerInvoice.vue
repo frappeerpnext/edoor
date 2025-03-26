@@ -1,5 +1,7 @@
 <template>
     <ComDialogContent @onOK="onSave" hideButtonClose titleButtonOK="Save" :hideIcon="false" :loading="loading">
+        {{ doc }}
+        {{ editdata }}
         <Grid>
             <Col>
             <Stack>
@@ -42,11 +44,12 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, postData } from "@/plugin"
+import { ref, inject, postData ,updateDoc, onMounted , getDoc } from "@/plugin"
 import ComSelectFolioTransactionList from "@/views/city_ledger_invoice/components/ComSelectFolioTransactionList.vue"
 import { i18n } from '@/i18n';
 import { useConfirm } from "primevue/useconfirm";
-
+import { useDialog } from 'primevue/usedialog';
+const dialog = useDialog();
 const confirm = useConfirm();
 const { t: $t } = i18n.global;
 const moment = inject("$moment")
@@ -57,6 +60,7 @@ const doc = ref({
 })
 
 const dialogRef = inject('dialogRef')
+const editdata = ref(dialogRef.value.data)
 const selectedFolioTransactions = ref([])
 
 function onSelectCityLedgerAccount(d) {
@@ -95,10 +99,20 @@ async function onSave() {
     const res = await postData("city_ledger_invoice.add_new_city_ledger_invoice", {
         data: data
     }, "", true, "edoor.edoor.doctype.city_ledger_invoice.");
-
+    // updateDoc('City Ledger Invoice', data.value.name, savedData).then((r) => {
+        
+    // })
     loading.value = false;
     if(res.data){
         dialogRef.value.close(res.data)
     }
     }
+    onMounted(() => {
+        if (dialogRef.value.data.name) {
+             getDoc("City Ledger Invoice",dialogRef.value.data.name).then(d=>{
+            console.log(d)
+            doc.value = d
+        }) 
+        }
+})
 </script>

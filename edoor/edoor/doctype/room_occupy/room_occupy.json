@@ -84,7 +84,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Room ID",
-   "options": "Room"
+   "options": "Room",
+   "search_index": 1
   },
   {
    "fetch_from": "room_id.room_number",
@@ -300,7 +301,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-26 09:29:36.423378",
+ "modified": "2025-03-26 09:30:50.158516",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

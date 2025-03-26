@@ -87,7 +87,8 @@
    "fieldname": "property",
    "fieldtype": "Link",
    "label": "Property",
-   "options": "Business Branch"
+   "options": "Business Branch",
+   "search_index": 1
   },
   {
    "fieldname": "reservation",
@@ -111,7 +112,8 @@
    "fieldname": "room_type_id",
    "fieldtype": "Link",
    "label": "Room Type ID",
-   "options": "Room Type"
+   "options": "Room Type",
+   "search_index": 1
   },
   {
    "fetch_from": "room_type_id.room_type",
@@ -124,7 +126,8 @@
    "fieldname": "room_id",
    "fieldtype": "Link",
    "label": "Room ID",
-   "options": "Room"
+   "options": "Room",
+   "search_index": 1
   },
   {
    "fetch_from": "room_id.room_number",
@@ -500,7 +503,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-06 11:09:33.205445",
+ "modified": "2025-03-26 09:35:36.761977",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",
