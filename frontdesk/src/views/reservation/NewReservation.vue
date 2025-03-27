@@ -17,10 +17,13 @@
                             <div class="col-12 md:col">
                                 
                                 <label> {{ $t('Reservation Date') }} <span class="text-red-500">*</span></label><br />
-                                <Calendar :disabled="doc.reservation.is_walk_in" :selectOtherMonths="true" class="p-inputtext-sm w-full"
-                                    v-model="doc.reservation.reservation_date" placeholder="Reservation Date"
+                                <Calendar :disabled="doc.reservation.is_walk_in" 
+                                :selectOtherMonths="true" class="p-inputtext-sm w-full"
+                                    v-model="doc.reservation.reservation_date"
+                                     placeholder="Reservation Date"
                                     dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear"
-                                    :maxDate="moment(working_day.date_working_day).toDate()" />
+                                    :maxDate="moment(working_day.date_working_day).toDate()" 
+                                    />
                             </div>
                             <div class="col-12 md:col">
                                 <label>{{ $t('Reservation Color Code') }}</label>                          

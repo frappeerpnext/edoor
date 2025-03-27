@@ -20,8 +20,7 @@
     const props = defineProps({
         data: Object,
     }) 
-
-
+    
     props.data.filter(x=>x.sub_account).forEach(r=>{
      
         r.sub_account.filter(y=>!y.separator).forEach(s=>{

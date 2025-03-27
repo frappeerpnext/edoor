@@ -5,6 +5,7 @@
       v-model:operator="operator" 
        v-model:keyword="keyword"
        :operatorOptions="operatorOptions"
+    
        >
        {{ keyword || option.label }}
 
@@ -21,9 +22,11 @@ const operator = ref("like")
 const keyword = ref("")
 const operatorOptions = [
     {label:"Equal", value:'=',},
-    {label:"Not Equal", value:'='},
+    {label:"Not Equal", value:'!='},
     {label:"Contain", value:'like',prefix:'%',sufix:'%'},
     {label:"Not Contain", value:'not like',prefix:'%',sufix:'%'},
+    {label:"Start width", value:'like',sufix:'%'},
+    {label:"End width", value:'like',prefix:'%'},
     {label:"Is", value:'is'},
 ]
  

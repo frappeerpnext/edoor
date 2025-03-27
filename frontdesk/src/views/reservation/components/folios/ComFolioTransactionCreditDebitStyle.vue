@@ -1,11 +1,16 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
-        <DataTable :scrollable="folioTransactions.length > 10"
+ 
+        <DataTable 
+            :scrollable="folioTransactions.length > 10"
             :scrollHeight="(folioTransactions.length > 10 ? '500px' : 'auto')" 
             :virtualScrollerOptions="{ itemSize: 40 }"
-            v-model:selection="selectedfolioTransactions" @row-dblclick="onViewFolioDetail" :value="folioTransactions"
-            tableStyle="min-width: 50rem" :rowClass="rowStyleClass" @row-select="onRowSelection"
-            @row-unselect="onRowUnSelection">
+            v-model:selection="selectedfolioTransactions"
+             @row-dblclick="onViewFolioDetail" 
+             :value="folioTransactions"
+            tableStyle="min-width: 50rem" :rowClass="rowStyleClass" 
+          
+            >
 
             <Column expander style="width: 5rem" v-if="showExpander" />
             <Column selectionMode="multiple" headerStyle="width: 3rem" v-if="showCheckbox">
@@ -178,23 +183,13 @@ const selectedFolio = ref(props.folio)
 const gv = inject('$gv');
 const can_view_rate = window.can_view_rate;
 const folioTransactions = ref([])
-const selectedfolioTransactions = ref([])
+const selectedfolioTransactions = defineModel('selectedfolioTransactions')
 const folio_summary = ref()
 
 const dialog = useDialog();
 const show = ref()
 
-function onRowSelection(r) {
-
-    selectedfolioTransactions.value.push(...folioTransactions.value.filter(x => x.parent_reference == r.data.name))
-
-}
-function onRowUnSelection(r) {
-
-    selectedfolioTransactions.value = selectedfolioTransactions.value.filter(x => x.name || (x.parent_reference || "") != r.data.name)
-
-
-}
+ 
 
 watch(() => props.folio, (newValue, oldValue) => {
     selectedFolio.value = newValue

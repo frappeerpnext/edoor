@@ -13,16 +13,18 @@ export   function useDocumentList(props) {
     const fields = ref(["name"])
     const meta =ref()
     const columns = ref([])
+    const filterOptions = ref([])
+
 
     function getOptions(){
         let options = props.options
         options.fields = getFields();
         options.filters =  getFilters()
         options.orFilters =  getOrFilters()
-        options.orderBy =   {
-            field: 'reservation',
-            order: 'asc',
-          }
+        // options.orderBy =   {
+        //     field: 'reservation',
+        //     order: 'asc',
+        //   }
 
         return  options
     }
@@ -59,10 +61,18 @@ export   function useDocumentList(props) {
 
     function getFilters(){
         filters.value = props.filters || []
+        
         if(filter.value){
             Object.keys(filter.value).forEach(key => {
                 if(key!='keyword'){
-                    filters.value.push(filter.value[key])
+                  
+                    if((typeof filter.value[key][0]) == 'string'){
+                        filters.value.push(filter.value[key])
+                    }else {
+                        
+                        filters.value = filters.value.concat(filter.value[key])
+                    }
+                    
                 }
               });
         }
@@ -95,6 +105,7 @@ export   function useDocumentList(props) {
     }
 
     async function onSearch(f){
+        console.log(f)
         filter.value = f;
   
         await getData();
@@ -136,10 +147,16 @@ export   function useDocumentList(props) {
     onMounted(async ()=>{
         scrollHeight.value = getScrollHeight();
         meta.value =  await getMeta(props.doctype)
-   
         await getData();
         getColumns();
-         
+
+
+
+        filterOptions.value = props.filterOptions || []
+
+        if (!filterOptions.value || filterOptions.value.length==0){
+            filterOptions.value = meta.value.fields.filter(x=>x.in_standard_filter ==1)
+        }
         
     })
 
@@ -150,6 +167,7 @@ export   function useDocumentList(props) {
    items,
    scrollHeight,
    columns,
+   filterOptions,
    onLoadMore,
    onSearch,
    

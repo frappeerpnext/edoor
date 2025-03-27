@@ -464,8 +464,7 @@ function EditFolio() {
         onClose: (options) => {
             let data = options.data;
             if (data != undefined) {
-                window.postMessage({ action: "ComDeskFolioDetail" }, "*")
-                window.postMessage({ action: "DeskFolio" }, "*")
+                window.postMessage({ action: "CityLedgerInvoiceDetail" }, "*")
             }
         }
     })
@@ -533,10 +532,10 @@ function onDeleteFolio() {
             api_url: "utils.delete_doc",
             method: "DELETE",
             confirm_message: "Are you sure you want to delete this folio?",
-            data: { doctype: "Desk Folio", name: selectedCityLedgerInvoice.value.name },
+            data: { doctype: "City Ledger Invoice", name: selectedCityLedgerInvoice.value.name },
         },
         props: {
-            header: "Delete Desk Folio" + " " + selectedCityLedgerInvoice.value.name,
+            header: "Delete City Ledger Invoice" + " " + selectedCityLedgerInvoice.value.name,
             style: {
                 width: '50vw',
             },
@@ -552,7 +551,7 @@ function onDeleteFolio() {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                window.postMessage({ action: "DeskFolio" }, "*")
+                window.postMessage({ action: "CityLedgerInvoiceDetail" }, "*")
                 emit("onClose")
             }
         }

@@ -580,6 +580,5 @@ def update_folio_transaction_info( data={}):
     doc.flags.ignore_validate =True
     doc.save()
     return doc
-    
-    
+
     

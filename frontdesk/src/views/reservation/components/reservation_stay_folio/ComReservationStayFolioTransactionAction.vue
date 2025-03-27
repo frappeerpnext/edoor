@@ -24,6 +24,14 @@
                         {{$t('Edit')}}
                     </button>
                 </template>
+
+               
+                    <button @click="onUpdateInformation"
+                        v-if="!data.parent_reference"
+                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        {{$t('Update Information')}}
+                    </button>
+               
                 <template v-if="isDelete">
                     <button @click="onOpenDelete"
                         v-if="!data.parent_reference"
@@ -42,6 +50,7 @@ import { ref, useDialog, inject, useConfirm, deleteApi } from '@/plugin'
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
+import ComUpdateFolioTransactionInformation from '@/views/reservation/components/folios/ComUpdateFolioTransactionInformation.vue';
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import Enumerable from 'linq'
@@ -94,6 +103,37 @@ function onEditFolioTransaction() {
                 window.postMessage({action:"load_folio_transaction"})
 
 
+            }
+
+        }
+    })
+}
+
+function onUpdateInformation() {
+    const dialogRef = dialog.open(ComUpdateFolioTransactionInformation, {
+        data: {
+            folio_transaction_number: props.data.name,
+        },
+        props: {
+            header:  'Update Folio Transaction Information- ' + props.data.name,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            position:'top',
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if (data) {
+                
+                window.postMessage({action:"load_reservation_folio_list"},"*")
+                window.postMessage({action:"load_reservation_stay_folio_list"},"*")
+                window.postMessage({action:"load_folio_transaction"})
             }
 
         }

@@ -34,6 +34,8 @@ def add_new_city_ledger_invoice(data):
     return invoice_doc
 
 def update_city_ledger_invoice_balance(name,run_commit = True):
+    payment_status = get_payment_status(name)
+    
     sql ="""
         update `tabCity Ledger Invoice` a
         join (
@@ -49,38 +51,82 @@ def update_city_ledger_invoice_balance(name,run_commit = True):
         SET 
             a.total_debit = b.debit,
             a.total_credit = b.credit,
-            a.balance = b.debit - b.credit
+            a.balance = b.debit - b.credit,
+            a.payment_status = %(payment_status)s
         where
             a.name = %(city_ledger_invoice)s
     """
-    frappe.db.sql(sql,{"city_ledger_invoice":name})
+    frappe.db.sql(sql,{"city_ledger_invoice":name,"payment_status":payment_status})
+    
+    
+    # update payment status to folio transaction
+    sql = """
+        update `tabFolio Transaction` 
+        SET 
+            payment_status = %(payment_status)s 
+        where
+            city_ledger_invoice = %(city_ledger_invoice)s and 
+            account_group != '3000'
+    """
+    frappe.db.sql(sql,{"city_ledger_invoice":name,"payment_status":payment_status})
+    
     if run_commit:
         frappe.db.commit()
+
+        
+def get_payment_status(name):
     sql = """
     SELECT 
-        SUM(ft.amount * IF(ft.type = 'debit', 1, -1)) AS total_amount
+        ft.account_group,
+        SUM(ft.transaction_amount * IF(ft.type = 'debit', 1, -1)) AS total_amount
     FROM `tabFolio Transaction` ft
     WHERE ft.transaction_type = 'City Ledger' 
     AND ft.city_ledger_invoice = %(city_ledger_invoice)s
-    AND ft.account_group = '30000' 
     GROUP BY ft.account_group
     """
-    payemnt_data = frappe.db.sql(sql, {"property": property, "city_ledger_invoice": name}, as_dict=True)
-    payment = payemnt_data[0]["total_amount"] if payemnt_data else 0
-    balance_value = frappe.get_value("City Ledger Invoice", {"name": name}, "balance")
+    payment_data = frappe.db.sql(sql, {"city_ledger_invoice":name}, as_dict=True)
+    payment = 0
+    balance_value = 0
+    
+    if [d for d in payment_data if d.get("account_group") == '3000']:
+        payment =abs( max([d.get("total_amount") for d in payment_data if d.get("account_group") == '3000']) )#payment account group
+    
+    balance_value = sum([d.get("total_amount") for d in payment_data])
+    payment_status = ""
+    
     if payment == 0:
         payment_status = "Unpaid"
-    elif payment < 0 and balance_value > 0:
+    elif payment < 0 and balance_value != 0:
         payment_status = "Partially Paid"
-    else:
+    elif payment>0 and balance_value == 0:
         payment_status = "Paid"
-    sql_update_payment_status = """
-        update `tabCity Ledger Invoice` a set
-        a.payment_status = %(payment_status)s 
-        where
-            a.name = %(city_ledger_invoice)s
-    """
-    frappe.db.sql(sql_update_payment_status,{"city_ledger_invoice":name,"payment_status":payment_status})
-    if run_commit:
+    return payment_status
+
+   
+        
+@frappe.whitelist(methods="POST")
+def remove_folio_transaction_from_invoice(city_ledger_invoice, data):
+    if data:
+        transactions_with_empty_reference = frappe.db.get_list(
+            "Folio Transaction",
+            filters={"name": ["in", data], "reference_folio_transaction": ""},
+            pluck="name" 
+        )
+        if len(transactions_with_empty_reference) >0: 
+            frappe.throw("Can't remove payment from City Ledger Invoice")
+        sql = "update `tabFolio Transaction` set payment_status = '', city_ledger_invoice ='' Where name in %(names)s"
+        frappe.db.sql(sql, {"names":data})
         frappe.db.commit()
+        update_city_ledger_invoice_balance(city_ledger_invoice)
+        return frappe.get_doc("City Ledger Invoice", city_ledger_invoice)
+@frappe.whitelist(methods="POST")
+def add_city_ledger_transaction_invoice(city_ledger_invoice, data ):
+    if data:
+        sql = "update `tabFolio Transaction` set  city_ledger_invoice = %(city_ledger_invoice)s Where name in %(names)s"
+        frappe.db.sql(sql, {"city_ledger_invoice":city_ledger_invoice,"names":data})
+        frappe.db.commit()
+        update_city_ledger_invoice_balance(city_ledger_invoice)
+        return frappe.get_doc("City Ledger Invoice", city_ledger_invoice)    
     
+        
+        

@@ -1,9 +1,10 @@
 <template>
     <div class="mt-4">
-
-        <ComFilter @onSearch="onSearch" />
+ 
+        <ComFilter @onSearch="onSearch" :filters="filterOptions" />
+        
         <div id="table-container">
-            <!-- rowGroupMode="subheader" groupRowsBy="reservation"  -->
+           
             <DataTable v-if="scrollHeight" :value="items"
              scrollable :scrollHeight="scrollHeight" 
              :loading="loading"
@@ -11,12 +12,7 @@
                 
                 tableStyle="min-width: 50rem"
                 :virtualScrollerOptions="{ itemSize: 46 }">
-                <!-- <template #groupheader="slotProps">
-                    <div class="flex align-items-center gap-2">
-                               <span>{{ slotProps.data.reservation }}</span>
-                    </div>
-                </template> -->
-
+              
 
                 <Column v-for="(col, index) of columns" :field="col.field" :header="col.header"
                     :key="col.field + '_' + index">
@@ -47,6 +43,8 @@ const props = defineProps({
 })
 
 
-const { items, scrollHeight, onSearch, loading, columns } = useDocumentList(props)
+const { items, scrollHeight, onSearch, loading, columns,
+    filterOptions
+ } = useDocumentList(props)
 
 </script>

@@ -1,7 +1,7 @@
 <template>
-    <ComDocumentList doctype="Reservation Stay">
-        <template #guest_name="{ item, index }">
-           guest name
+    <ComDocumentList doctype="Reservation">
+        <template #product_name_en="{ item, index }">
+           
         </template>
     </ComDocumentList>
 </template>

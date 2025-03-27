@@ -7,7 +7,7 @@
 
             <div class="grid" style="margin-top: 10px;">
                 <div class="col">
-                    <table class="mb-4">
+                    <table >
                         <tbody>
                             <tr>
                                 <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
@@ -17,7 +17,19 @@
                             
                             {{ doc.status}}
                             </span>
-                            - {{ doc.payment_status}}
+                            <span 
+                            v-if="doc.status"  
+                            class="px-2 rounded-lg text-white p-1px border-round-3xl ms-2"
+                            :style="{ 
+                            backgroundColor: 
+                            doc.payment_status === 'Unpaid' ? '#FF0000' :    // Red
+                            doc.payment_status === 'Partially Paid' ? '#FFFF00' :  // Yellow
+                            doc.payment_status === 'Paid' ? '#008000' : '#6F6E6E'  // Default Grey
+                            }"
+                            >
+                            {{ doc.payment_status }}
+                            </span>
+
                                 </th>
                             </tr>
                             
@@ -92,14 +104,22 @@
                 </div>
                     </div>
                 </div>
-            </div>
 
-            <Stack >
-                <ComCityledgerInvoiceTransactionsAction :data="doc" />
-                <ComFolioTransactionCreditDebitStyle  :cityLedgerInvoice="name" v-if="doc?.name" :folio="doc"
+            </div>
+            <div v-if="doc.note">
+               <b>Note</b>
+           <div class="border-1 border-round-lg shadow-sm px-3 py-2 mb-2"> 
+{{ doc.note }}
+           </div>  
+            </div>
+           
+            <Stack>
+                <ComCityledgerInvoiceTransactionsAction :data="doc" v-model:selections="selectedfolioTransactions"  />
+                <ComFolioTransactionCreditDebitStyle v-model:selectedfolioTransactions="selectedfolioTransactions"  :cityLedgerInvoice="name" v-if="doc?.name" :folio="doc"
                     :transaction_number="doc?.city_ledger"  doctype="City Ledger" :showCheckbox="true">
                     <template #description="{ item, index }">
-                        <span @onclick="onOpenLink('view_reservation_stay_detail', item.reservation)" class="link_line_action w-auto"> {{ item.reservation }} </span>
+                        {{ getStayDetail(item.name) }}
+                        <span v-if="item.reservation" @click="onOpenLink('view_reservation_detail', item.reservation)" class="link_line_action w-auto"> {{ item.reservation }} </span>
                     </template>
                 </ComFolioTransactionCreditDebitStyle>
             </Stack>
@@ -119,6 +139,7 @@ import {useApp} from "@/hooks/useApp"
 
  const {isCityLedgerInvoiceDetailOpen} = useApp()
 
+
 const dialogRef = inject("dialogRef")
 const loading = ref(true)
 const balance_doc = ref()
@@ -126,10 +147,11 @@ const dialog = useDialog()
 const moment = inject("$moment")
 const name = ref("")
 const doc = ref({})
+
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const { t: $t } = i18n.global;
 const newDoc = ref()
- 
+const selectedfolioTransactions = ref([])
 function onOpenLink(view, name) {
     window.postMessage(view + "|" + name , '*')
 }
@@ -138,9 +160,21 @@ function OnViewCityLedgerDetail(){
   
     window.postMessage("view_city_ledger_detail|" + doc.value.city_ledger,"*");
 }
+function getStayDetail(rs) {
+    if (!rs || typeof rs.value === "undefined") {
+        rs = ref({});
+    }
+    getDoc("Folio Transaction", rs.value)
+        .then(doc => {
+            rs.value = doc;
+        })
+        .catch(error => {
+            console.error("Error fetching document:", error);
+        });
 
-
-onMounted(async () => {
+    return rs;
+}
+async function loadData(){
     isCityLedgerInvoiceDetailOpen.value = true
     getApi("city_ledger.get_balance_city_ledger_transaction",{ property: window.property_name , city_ledger_invoice : dialogRef.value.data.name }).then((result)=>{
         balance_doc.value = result.message;
@@ -148,7 +182,6 @@ onMounted(async () => {
     name.value = dialogRef.value.data.name;
     loading.value = true
     const res = await getDocument('City Ledger Invoice', dialogRef.value.data.name)
-
     if (!res.error) {
         doc.value = res.data;
         newDoc.value = {
@@ -160,6 +193,22 @@ onMounted(async () => {
             }
     }
     loading.value = false
+}
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="CityLedgerInvoiceDetail"){
+            setTimeout(()=>{
+                loadData(false)
+            },1000)
+            
+        }
+    };
+}
+
+onMounted(async () => {
+   
+    loadData()
+    window.addEventListener('message', actionRefreshData, false); 
 });
 onUnmounted(()=>{
     isCityLedgerInvoiceDetailOpen.value = false

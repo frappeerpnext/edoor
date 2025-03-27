@@ -145,6 +145,7 @@
    "fieldname": "reservation_date",
    "fieldtype": "Date",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Reservation Date",
    "reqd": 1
   },
@@ -152,12 +153,15 @@
    "fieldname": "arrival_date",
    "fieldtype": "Date",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Arrival Date",
    "reqd": 1
   },
   {
    "fieldname": "departure_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Departure Date",
    "reqd": 1
   },
@@ -208,6 +212,7 @@
    "fieldname": "reservation_type",
    "fieldtype": "Select",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Reservation Type",
    "options": "FIT\nGIT",
    "reqd": 1
@@ -337,6 +342,7 @@
    "fieldname": "total_reservation_stay",
    "fieldtype": "Int",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total Reservation Stay"
   },
   {
@@ -788,7 +794,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-25 09:08:09.889879",
+ "modified": "2025-03-27 14:56:22.901861",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
