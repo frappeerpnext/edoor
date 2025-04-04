@@ -132,6 +132,8 @@ function onSubmitRoomBlock() {
                     window.postMessage({"action":"ComHousekeepingStatus"},"*")
                     window.postMessage({"action":"RoomBlockList"},"*")
                     window.postMessage({"action":"FloorPlanView"},"*")
+                   window.postMessage({action:"ComDocumentList"},"*")
+                   
                 }).catch(err => {
                     loading.value = false
                 })

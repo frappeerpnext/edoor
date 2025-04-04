@@ -23,6 +23,12 @@ class RoomBlock(Document):
 
 		status = frappe.get_doc("Housekeeping Status", "Room Block")
 		self.status_color=status.status_color
+		self.status = "Draft"
+		if self.docstatus == 1:
+			if self.is_unblock ==1:
+				self.status = "Unblock"
+			else:
+				self.status = "Blocked"
 
 
 
@@ -39,6 +45,8 @@ class RoomBlock(Document):
 
 	def on_submit(self):
 		generate_block_date(self)
+		self.status = 'Blocked'
+  
 		
 	def before_update_after_submit(self):
 		self.total_night_count = date_diff(self.end_date,self.start_date)
@@ -54,6 +62,7 @@ class RoomBlock(Document):
 
 	def on_update_after_submit(self): 
 		if self.is_unblock ==1:
+			self.status = 'Unblocked'
 			if not self.unblock_housekeeping_status_code:
 				frappe.throw("Please select current room housekeeping status.")
 			room_doc = frappe.get_doc("Room", self.room_id)
@@ -63,7 +72,7 @@ class RoomBlock(Document):
 			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 		else:
-			
+			self.status = 'Blocked'
 			#check if date is extend
 			old_doc = frappe.get_doc("Room Block", self.name)
 			if self.end_date != old_doc.end_date or  self.start_date != old_doc.start_date:

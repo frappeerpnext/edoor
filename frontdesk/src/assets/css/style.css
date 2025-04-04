@@ -800,11 +800,11 @@ span.p-button-icon.pi.pi-ellipsis-v{
 }
 .link_line_action1{
     border-bottom: 1px dashed var(--bg-purple-cs) !important;
-    
     padding: 0 5px !important;
     color: var(--bg-purple-cs) !important;
     cursor: pointer !important;
     display: inline-block !important;
+    border-radius: 0;
 }
 .filter-calen-fro .p-inputtext.p-component {
     width: 12rem;

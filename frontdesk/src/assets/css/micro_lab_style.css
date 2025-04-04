@@ -730,8 +730,8 @@ span.p-button-icon.pi.pi-ellipsis-v{
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px 0px;
 }
 .link_line_action1{
-    border: 1px dashed var(--bg-primary-color) !important;
-    border-radius: 10px !important;
+    border-bottom: 1px dashed var(--bg-primary-color) !important;
+    border-radius: 0;
     padding: 0 5px !important;
     color: var(--bg-primary-color) !important;
     cursor: pointer !important;

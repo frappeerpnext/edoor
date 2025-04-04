@@ -30,6 +30,14 @@
 
             </Button>
         </template>
+        <template #room_type="{ item, index }">
+            xxxxx
+            {{ item.room_type_alias }}
+        </template>
+        <template #reservation_status="{ item, index }">
+             
+                <ComReservationStatus :statusName="item.reservation_status" />
+        </template>
 
 
     </ComDocumentList>
@@ -39,6 +47,7 @@ import {ref} from "@/plugin"
 import ComDocumentList from "@/components/document/ComDocumentList.vue"
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
+import ComReservationStatus from "@/components/label/ComReservationStatus.vue"
 const options = {
     fields: [
         { fieldname: "name", label: "Stay. #" },
@@ -50,8 +59,8 @@ const options = {
         { fieldname: "arrival_date", label: "Arrival" },
         { fieldname: "departure_date", label: "Departure" },
         { fieldname: "room_nights", label: "Nights" },
-        { fieldname: "room_type_alias", label: "Room Type" },
-
+        { fieldname: "room_types", label: "Room Type" },
+        { fieldname: "room_type_alias", is_hide:true },
         { fieldname: "rooms", label: "Rooms" },
         { fieldname: "adr", label: "ADR" },
         { fieldname: "total_amount", label: "Charge" },
@@ -63,6 +72,7 @@ const options = {
         { fieldname: "reservation_date" },
         { fieldname: "arrival_date" },
         { fieldname: "departure_date" },
+        { fieldname: "room_types", fieldtype: 'Link', options: 'Room Type', operator: "like", optionValue: 'label' },
         { fieldname: "business_source" },
         { fieldname: "reservation_status" }
     ],

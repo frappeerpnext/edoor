@@ -84,7 +84,9 @@ const options = ref({
     { fieldname: "unblock_date", label: "Unblock Date", fieldtype:"Date" },
     { fieldname: "unblock_note", label: "Unblock Note" },
     { fieldname: "docstatus", label: "Document Status", fieldtype: "Int",is_hide: true },  
-    { fieldname: "is_unblock", label: "Status", fieldtype: "Status" } 
+    { fieldname: "is_unblock", label: "Status", fieldtype: "Status" } ,
+    { fieldname: "modified_by", label: "Modified By" }, 
+    { fieldname: "modified", label: "Last Modified", fieldtype:'Datetime'} 
   ],
   filterOptions: [
     { fieldname: "block_date", fieldtype: "Date" },
@@ -92,14 +94,7 @@ const options = ref({
     { fieldname: "end_date", fieldtype: "Date" },
     { fieldname: "room_type", fieldtype: "Link", options: "Room Type", optionValue: "label", operator: "like" },
     { fieldname: "room_number", fieldtype: "Link", options: "Room", optionValue: "label", operator: "like" }, 
-    { fieldname: "is_unblock",fieldtype: "Link",label:"Status"
-    , options:[
-        { label: "Draft", value: "0" },
-        { label: "Blocked", value: "0" },
-        { label: "Unblocked", value: "1" }
-    ],
-    hideSearch:true
-    }
+    { fieldname:  "status"}
   ],
   filters: [['property', '=', window.property_name]],
   contextMenuOptions: [
@@ -152,6 +147,9 @@ function onAddNewRoomBlock() {
       const result = options.data
       if (result) {
         window.postMessage("view_room_block_detail|" + result.name, "*")
+        setTimeout(() => {
+                    window.postMessage({action:"ComDocumentList"},"*")
+                }, 5000);
       }
     }
   })

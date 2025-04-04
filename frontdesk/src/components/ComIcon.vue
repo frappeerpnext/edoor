@@ -57,6 +57,7 @@
     <img v-else-if="icon == 'adultIcon'" :style="{'height' : height}" :class="class" :src="adultIcon"/>
     <img v-else-if="icon == 'childIcon'" :style="{'height' : height}" :class="class" :src="childIcon"/>
     <img v-else-if="icon == 'broomIcon'" :style="{'height' : height}" :class="class" :src="broomIcon"/>
+    <img v-else-if="icon == 'arrowDown'" :style="{'height' : height}" :class="class" :src="arrowDown"/>
 
 
     
@@ -134,6 +135,7 @@ import moonIcon from '@/assets/svg/icon-moon.svg'
 import adultIcon from '@/assets/svg/icon-adult.svg'
 import childIcon from '@/assets/svg/icon-kid.svg'
 import broomIcon from '@/assets/svg/icon-broom.svg'
+import arrowDown from '@/assets/svg/arrow-down-icon.svg'
 
 </script>
  

@@ -70,6 +70,7 @@ const options = {
         { fieldname: "reservation" },
         { fieldname: "reservation_stay" },
         { fieldname: "business_source" },
+        { fieldname: "reservation_status" },
 
     ],
     filters: [

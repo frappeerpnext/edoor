@@ -2,8 +2,8 @@
     <span class="text-2xl pb-2">Pending Outgoing Invoice</span>
 <div  class="pb-5" style="max-height: 50rem;overflow: auto;" > 
     <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="data && data.length > 0">
-        <div @click="onOpenLink('view_city_invoice_detail',d.name)" v-for="d in data" class="shadow-md p-3 my-2 border-1 border-round-lg">
-{{ d.name }} <span style="background-color: red;" class="border-round-lg px-2 py-1 text-white ms-1">{{ d.status }}</span>
+        <div  v-for="d in data" class="shadow-md p-3 my-2 border-1 border-round-lg">
+<span @click="onOpenLink('view_city_ledger_invoice_detail',d.name)" class="link_line_action1">{{ d.name }} </span>  <span style="background-color: red;" class="border-round-lg px-2 py-1 text-white ms-1">{{ d.status }}</span>
 <span v-if="d.payment_status" style="background-color: red;" class="border-round-lg px-2 py-1 text-white ms-1">{{ d.payment_status }}</span>
 <div class="grid mt-2">
     <div style="width: 100%;">

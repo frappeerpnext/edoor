@@ -64,18 +64,7 @@ const options = {
 
     ],
     filters: [['property', '=', window.property_name]],
-    settingMenus: [
-
-        {
-            label: 'Refresh',
-            icon: 'pi pi-refresh'
-        },
-        {
-            label: 'Export',
-            icon: 'pi pi-upload'
-        }
-
-    ],
+   
     // contextMenuOptions: [
     //     { label: 'View Reservation Detail', icon: 'pi pi-fw pi-search', command: () => alert(selectedRow.value.name) },
     //     // { label: 'Delete', icon: 'pi pi-fw pi-times', command: () => alert("Delete") }

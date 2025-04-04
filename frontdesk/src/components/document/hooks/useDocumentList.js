@@ -57,7 +57,9 @@ const settingMenus = ref([
                 label: 'Reset View',
                 icon: 'pi pi-cog',
                 command: ()=>{
-                    deleteDocument("App List View Setting",props.list_view_setting)
+                    deleteDocument("App List View Setting",props.list_view_setting,{
+                        hide_error_message:true
+                    })
 
                 }
             },
@@ -351,8 +353,7 @@ watch(() => route.hash, async (newHash) => {
            },
            onClose: async (options) => {
                if(options.data){
-                 await getData();
-                 getColumns();
+                 window.location.reload();
                }
            }
           

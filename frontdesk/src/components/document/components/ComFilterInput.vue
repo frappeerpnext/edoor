@@ -8,6 +8,7 @@
             {{ option?.label }} 
         
          </slot>
+         <ComIcon v-if="hasDropDownIcon" class="ml-2" icon="arrowDown" style="width: 10px;"/>
         </Button>
 
         <OverlayPanel ref="op"  @show="onShow" class="filter_overlay_panel_custom">
@@ -27,7 +28,7 @@
                 v-model="keyword"
                 :placeholder="'Search ' + option.label" class="w-full"
                  v-debounce="onSearch"
-                 v-if="operator!='is' "
+                 v-if="operator!='is'"
                  ></InputText>
                 
               
@@ -72,6 +73,10 @@ const props = defineProps({
     optionValue:{
         type:String,
         default:"value"
+    },
+    hasDropDownIcon: {
+        type: Boolean,
+        default: true
     }
     
 })

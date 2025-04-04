@@ -1,7 +1,6 @@
 <template>
 
     <ComDialogContent dialogClass="max-h-screen-newres overflow-auto" @onOK="onSave" :loading="isSaving" hideButtonClose>
- 
         <div class="ms_message_cs_edoor">
             <Message v-if="hasFutureResertion">
                 {{ checkFutureReservationInfo.message }} <br />
@@ -1006,8 +1005,7 @@ const onSave = () => {
             window.postMessage({"action":"Dashboard"},"*")
         }
         
-        window.postMessage({action:"ReservationList"},"*")
-        window.postMessage({action:"ReservationStayList"},"*")
+        window.postMessage({action:"ComDocumentList"},"*")
 
         window.postMessage({"action":"Frontdesk"},"*")
 

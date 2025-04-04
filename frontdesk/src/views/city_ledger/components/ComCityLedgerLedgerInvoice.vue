@@ -7,7 +7,7 @@
                 tableStyle="min-width: 50rem" >
                 <Column header="INV#" style="width:max-content !important;max-width: max-content !important;">
                         <template #body="slotProps">
-                            <button  @click="onOpenLink('view_city_invoice_detail', slotProps.data?.name)"  :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')">{{slotProps.data?.name }}</button>
+                            <button  @click="onOpenLink('view_city_ledger_invoice_detail', slotProps.data?.name)"  :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')">{{slotProps.data?.name }}</button>
                         </template>
                 </Column>
                 <Column header="City Ledger" style="width:max-content !important;max-width: max-content !important;">

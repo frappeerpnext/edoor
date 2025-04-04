@@ -196,17 +196,23 @@ export function deleteDoc(doctype, name, message){
 }
 
 
-export function deleteDocument(doctype, name, message){
+export function deleteDocument(doctype, name, option={show_error_message:true}){
 
     return  db.deleteDoc(doctype, name)
         .then((doc) => {
+            if(!option?.hide_message){
+                window.postMessage('show_success|' + `${message ? message : 'Deleted successful'}`, '*')
+            }
             
-            window.postMessage('show_success|' + `${message ? message : 'Deleted successful'}`, '*')
             return {data:true, error:null}
 
         })
         .catch((error) => {
-            const message = handleServerMessage(error)
+            
+            if(option?.show_error_message){
+                const message = handleServerMessage(error)
+            }
+           
             return {data:null, error:error}
             
         });

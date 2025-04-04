@@ -1,12 +1,12 @@
 <template>
     <ComDialogContent hideButtonOK @onClose="onClose"  :hideIcon="false" :loading="loading" >
     <div class="bg-card-info">
-      <Message v-if="doc?.source_transaction_number">This transaction has been transferred from the <span>{{doc?.source_transaction_type}}</span>. View folio transaction
+      <Message v-if="doc?.source_transaction_number">This transaction has been transferred from the <span>{{doc?.source_transaction_type}}</span>. View folio number
         <span class="link_line_action overflow-hidden w-min" @click="onOpenReservationFolioDetail(doc?.source_transaction_number)">{{doc?.source_transaction_number}}</span><br/>
         {{$t('View source transaction number ')}}<span class="link_line_action overflow-hidden w-min" @click="onOpenFolioTransactionDetail(doc?.reference_folio_transaction)">{{ doc?.reference_folio_transaction }}</span>
       </Message>
 
-      <Message v-if="doc?.target_transaction_number && doc?.target_transaction_type=='Desk Folio'">This transaction has been transferred to <span>{{doc?.target_transaction_type}}</span>. View folio transaction
+      <Message v-if="doc?.target_transaction_number && doc?.target_transaction_type=='Desk Folio'">This transaction has been transferred to <span>{{doc?.target_transaction_type}}</span>. View folio number
         <span class="link_line_action overflow-hidden w-min" @click="onOpenDeskFolioDetail(doc?.target_transaction_number)">{{doc?.target_transaction_number}}</span>
       </Message>
       
@@ -121,7 +121,7 @@
       <div>
         <div class="grid p-3">
           <div class="col-6">
-            <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom mt-3" v-if="show_payment_by==1 || doc?.city_ledger_invoices">
+            <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom mt-3" v-if="show_payment_by==1 || doc?.city_ledger_invoice">
               <TabPanel :header="$t('Payment Information')" v-if="show_payment_by==1 || show_payment_information==1">
                 <div class="pb-3"> 
                   <div class="grid w-full"> 
@@ -184,11 +184,11 @@
                 </div>
               </TabPanel>
               <TabPanel :header="$t('City Ledger Invoice')" v-if="doc?.city_ledger_invoice">
-                <div class="pb-3">
-                  <div class="flex mt-2 gap-2" v-if="doc?.city_ledger_invoice">
+                <div class="pb-3 grid">
+                  <div class="flex mt-2 gap-2 col-6" v-if="doc?.city_ledger_invoice">
                     <ComBoxStayInformation valueMaxWidth="50%" titleTooltip="Invoice No." title="Invoice No." @onClick="onViewCityLedgerInvoiceDetail(doc?.city_ledger_invoice)" :value="doc?.city_ledger_invoice" :isAction="true" valueClass="grow col-8 bg-gray-edoor-10"  titleClass="col-4"></ComBoxStayInformation>
                   </div>
-                  <div class="flex mt-2 gap-2" v-if="city_ledger_invoice_date!=''">
+                  <div class="flex mt-2 gap-2 col-6" v-if="city_ledger_invoice_date!=''">
                     <ComBoxStayInformation valueMaxWidth="50%" titleTooltip="Issue Date" title="Issue Date"  valueClass="grow col-8 bg-gray-edoor-10"  titleClass="col-4">
                       {{gv.dateFormat(city_ledger_invoice_date)}}
                     </ComBoxStayInformation> 
@@ -383,6 +383,7 @@
     <template #footer-left>
       <Button v-if="doc?.show_print_preview!=0" icon="pi pi-print" class="border-none" @click="onPrintFolioTransaction" :label="$t('Print')" :disabled="loading"></Button>
       <Button icon="pi pi-file-edit" class="border-none" @click="onEditFolioTransaction" :label="$t('Edit')" :disabled="loading"></Button>
+      <Button icon="pi pi-history" class="border-none" :label="$t('Audit Trail')" :disabled="loading"></Button>
     </template> 
     <OverlayPanel ref="op">
       <ComOverlayPanelContent title="" :width="isMobile ? '100%' : '50rem'" :loading="isLoading" @onSave="onSaveData" @onCancel="onCloseRef">
@@ -601,7 +602,7 @@ const onViewCityLedgerInvoiceDetail = (id) => {
     dialogRef.value.close()
   }
   else {
-    window.postMessage('view_city_invoice_detail' + "|" + id, '*')
+    window.postMessage('view_city_ledger_invoice_detail' + "|" + id, '*')
   }
 }
 

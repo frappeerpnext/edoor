@@ -21,6 +21,7 @@
     </div>
     <div>
         <ComCityLedgerDetailPaymentReceived :name="data?.name" />
+        <ComCityLedgerDetailAging  :name="data?.name" />
     </div>
 </div>
 </template>
@@ -28,6 +29,7 @@
 import { ref, getDoc, inject, useDialog, onMounted, deleteDoc, useConfirm, onUnmounted, useToast ,getApi} from '@/plugin'
 import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue';
 import ComCityLedgerDetailPaymentReceived from './ComCityLedgerDetailPaymentReceived.vue';
+import ComCityLedgerDetailAging from './ComCityLedgerDetailAging.vue';
 const working_day =  window.working_day
 const props = defineProps({
     data: Object,

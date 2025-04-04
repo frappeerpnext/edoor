@@ -30,7 +30,8 @@
   "amended_from",
   "housekeeping_status_code",
   "status_color",
-  "keyword"
+  "keyword",
+  "status"
  ],
  "fields": [
   {
@@ -198,12 +199,19 @@
    "label": "Housekeeping Status",
    "mandatory_depends_on": "eval:doc.is_unblock==1",
    "options": "Housekeeping Status Code"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nDraft\nBlocked\nUnblocked"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-26 09:50:36.509450",
+ "modified": "2025-04-04 16:22:44.804340",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",

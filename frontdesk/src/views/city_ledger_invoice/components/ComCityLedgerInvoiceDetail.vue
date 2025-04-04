@@ -1,8 +1,8 @@
 <template>
-    <ComDialogContent hideButtonOK :hideIcon="false" :loading="loading">
+    <ComDialogContent hideButtonOK :hideIcon="false" @onClose="onClose" :loading="loading">
         <div v-if="doc" class="mt-2">
     
-            <ComCityLedgerInvoiceAction :folio="doc" :newDoc="newDoc" @onClose="onClose" />
+            <ComCityLedgerInvoiceAction :folio="doc" :newDoc="newDoc"  />
 
             <div class="grid" style="margin-top: 10px;">
                 <div class="col">
@@ -154,7 +154,9 @@ import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInfo
 import ComCityledgerInvoiceTransactionsAction from './ComCityledgerInvoiceTransactionsAction.vue';
 import {useApp} from "@/hooks/useApp"
 const {isCityLedgerInvoiceDetailOpen} = useApp()
-
+function onClose() {
+    dialogRef.value.close()
+}
 
 const dialogRef = inject("dialogRef")
 const loading = ref(true)

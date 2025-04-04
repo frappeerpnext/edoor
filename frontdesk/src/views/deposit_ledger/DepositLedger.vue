@@ -106,7 +106,7 @@ function onAddDepositLedger(data) {
             if (data) {
                 window.postMessage("view_deposit_ledger_detail|" + data.name,"*")
                 setTimeout(() => {
-                    loadData(false)    
+                    window.postMessage({action:"ComDocumentList"},"*")
                 }, 5000);
                 
             }
