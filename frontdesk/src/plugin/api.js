@@ -196,11 +196,11 @@ export function deleteDoc(doctype, name, message){
 }
 
 
-export function deleteDocument(doctype, name, option={show_error_message:true}){
+export function deleteDocument(doctype, name, option={show_error_message:true,show_message:true}){
 
     return  db.deleteDoc(doctype, name)
         .then((doc) => {
-            if(!option?.hide_message){
+            if(!option.show_message){
                 window.postMessage('show_success|' + `${message ? message : 'Deleted successful'}`, '*')
             }
             

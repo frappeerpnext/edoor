@@ -56,10 +56,13 @@ const settingMenus = ref([
             {
                 label: 'Reset View',
                 icon: 'pi pi-cog',
-                command: ()=>{
-                    deleteDocument("App List View Setting",props.list_view_setting,{
+                command: async ()=>{
+                    const res = await deleteDocument("App List View Setting",props.list_view_setting,{
                         hide_error_message:true
                     })
+
+                    window.postMessage('show_success|' + 'Reset successfully', '*')
+                    window.location.reload()
 
                 }
             },
