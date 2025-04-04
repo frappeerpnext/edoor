@@ -56,6 +56,7 @@ import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySu
 import NewReservation from "@/views/reservation/NewReservation.vue"
 import ComLostAndFoundDetail from "@/views/lost_and_found/components/ComLostAndFoundDetail.vue"
 import ComCityLedgerInvoiceDetail from "@/views/city_ledger_invoice/components/ComCityLedgerInvoiceDetail.vue"
+
 const urlParams = new URLSearchParams(window.location.search);
 const route = useRoute();
 import {i18n} from '@/i18n';
@@ -172,8 +173,8 @@ const actionClickHandler = async function (e) {
             else if (data[0] == "get_workingday") {
                 getWorkingDay();
             }
-            else if (data[0] == "view_city_invoice_detail") {
-                
+            else if (data[0] == "view_city_ledger_invoice_detail") {
+               
                 showCityInvoiceDetail(data[1])
 
             }
@@ -879,6 +880,7 @@ function LostAndFoundDetail(data) {
       });
 }
 
+ 
 
 function onViewVacantData(selected_date, room_type) {
     const dialogRef = dialog.open(ComIFrameModal, {
