@@ -3346,20 +3346,6 @@
   "time_zones": "Europe/London"
  },
  {
-  "code": "th",
-  "country_name": "Thailand",
-  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/th.svg",
-  "custom_lat": 15.609185,
-  "custom_long": 101.059352,
-  "date_format": "dd-mm-yyyy",
-  "docstatus": 0,
-  "doctype": "Country",
-  "modified": "2024-08-03 17:24:56.700094",
-  "name": "Thailand",
-  "time_format": "HH:mm:ss",
-  "time_zones": "Asia/Bangkok"
- },
- {
   "code": "cn",
   "country_name": "China",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/cn.svg",
@@ -3402,6 +3388,20 @@
   "time_zones": "Asia/Tokyo"
  },
  {
+  "code": "th",
+  "country_name": "Thailand",
+  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/th.svg",
+  "custom_lat": 15.609185,
+  "custom_long": 101.059352,
+  "date_format": "dd-mm-yyyy",
+  "docstatus": 0,
+  "doctype": "Country",
+  "modified": "2024-08-03 17:24:56.700094",
+  "name": "Thailand",
+  "time_format": "HH:mm:ss",
+  "time_zones": "Asia/Bangkok"
+ },
+ {
   "code": "dz",
   "country_name": "Algeria",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/dz.svg",
@@ -3430,20 +3430,6 @@
   "time_zones": "America/Adak\nAmerica/Anchorage\nAmerica/Boise\nAmerica/Chicago\nAmerica/Denver\nAmerica/Detroit\nAmerica/Indiana/Indianapolis\nAmerica/Indiana/Knox\nAmerica/Indiana/Marengo\nAmerica/Indiana/Petersburg\nAmerica/Indiana/Tell_City\nAmerica/Indiana/Vevay\nAmerica/Indiana/Vincennes\nAmerica/Indiana/Winamac\nAmerica/Juneau\nAmerica/Kentucky/Louisville\nAmerica/Kentucky/Monticello\nAmerica/Los_Angeles\nAmerica/Menominee\nAmerica/Metlakatla\nAmerica/New_York\nAmerica/Nome\nAmerica/North_Dakota/Beulah\nAmerica/North_Dakota/Center\nAmerica/North_Dakota/New_Salem\nAmerica/Phoenix\nAmerica/Denver\nAmerica/Sitka\nAmerica/Yakutat\nPacific/Honolulu"
  },
  {
-  "code": "al",
-  "country_name": "Albania",
-  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/al.svg",
-  "custom_lat": 41.3275,
-  "custom_long": 19.8189,
-  "date_format": "dd-mm-yyyy",
-  "docstatus": 0,
-  "doctype": "Country",
-  "modified": "2024-08-03 17:24:49.179248",
-  "name": "Albania",
-  "time_format": "HH:mm:ss",
-  "time_zones": "Europe/Tirane"
- },
- {
   "code": "be",
   "country_name": "Belgium",
   "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/be.svg",
@@ -3456,6 +3442,20 @@
   "name": "Belgium",
   "time_format": "HH:mm:ss",
   "time_zones": "Europe/Brussels"
+ },
+ {
+  "code": "al",
+  "country_name": "Albania",
+  "custom_flag_url": "https://flagicons.lipis.dev/flags/4x3/al.svg",
+  "custom_lat": 41.3275,
+  "custom_long": 19.8189,
+  "date_format": "dd-mm-yyyy",
+  "docstatus": 0,
+  "doctype": "Country",
+  "modified": "2024-08-03 17:24:49.179248",
+  "name": "Albania",
+  "time_format": "HH:mm:ss",
+  "time_zones": "Europe/Tirane"
  },
  {
   "code": "kh",

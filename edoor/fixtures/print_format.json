@@ -199,7 +199,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2024-11-26 14:41:43.911217",
+  "modified": "2025-03-19 15:27:38.183493",
   "module": "eDoor",
   "name": "Folio Payment Receipt",
   "page_number": "Hide",
@@ -208,12 +208,12 @@
   "print_format_type": "Jinja",
   "raw_commands": null,
   "raw_printing": 0,
-  "server_report_name": null,
+  "server_report_name": "/Front Desk/rptFolioPaymentReceipt",
   "short_order_field": null,
   "show_section_headings": 0,
   "show_sort_order_option": 1,
   "standard": "No",
-  "use_report_server": 0
+  "use_report_server": 1
  },
  {
   "absolute_value": 0,

@@ -14,7 +14,7 @@
                             </Button> 
         </template>
         <template #guest_name="{ item, index }">
-           Type={{ item.guest_name }} 
+           {{ item.guest_name }} 
         </template>
         <!-- <template #header_reservation_type="{ column }">
             <span style="color: blue">Res. Type </span>
@@ -35,6 +35,7 @@
             { "fieldname": "room_type", label: "Room Type" },
             { "fieldname": "guest", },
             { "fieldname": "guest_name",is_hide:true },
+            { "fieldname": "posting_date", label: "Desk Folio. Date"},
             // { "fieldname": "arrival_date" },
             // { "fieldname": "departure_date" },
             // { "fieldname": "owner" ,fieldtype:"Data",label:"Owner" },
