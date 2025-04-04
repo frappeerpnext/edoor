@@ -30,10 +30,10 @@
                  v-if="operator!='is'"
                  ></InputText>
                 
-             
+              
                 <Listbox v-model="selected" v-if="option.fieldtype == 'Link' && operator!='is'"
                  :options="listData"
-                 optionValue="value"
+                 :optionValue="optionValue"
                  @change="onSelectOptionChange"
                  :multiple="operator=='in' || operator=='not in'" 
 
@@ -68,7 +68,11 @@ const emit = defineEmits();
 const props = defineProps({
     option:Object,
     operatorOptions:Object,
-    hasFilter:Boolean
+    hasFilter:Boolean,
+    optionValue:{
+        type:String,
+        default:"value"
+    }
     
 })
 const operator = defineModel('operator')

@@ -1,5 +1,5 @@
 <template>
-
+ 
     <ComFilterInput :option="option" 
         @onSearch="onSearch"
       v-model:operator="operator" 
@@ -10,6 +10,7 @@
        @onLoadOptionData = "onLoadOptionData"
        @onFilter="onFilter"
        :hasFilter="selected"
+       :optionValue="optionValue"
        >
         {{ option.label }}
        
@@ -27,13 +28,23 @@ import {ref,getData,watch} from "@/plugin"
 import ComFilterInput from "@/components/document/components/ComFilterInput.vue"
 const props = defineProps({
     option:Object,
-    defaultValue:Object//[key,"operator","value"]
+    defaultValue:Object,//[key,"operator","value"],
+    operator:{
+        type:String,
+        default: '='
+    },
+    optionValue:{
+        type:String,
+        default:"value"
+
+    }
 })
 const emit = defineEmits()
-const operator = ref("=")
+const operator = ref(props.operator)
 const keyword = ref("")
 const operatorOptions = [
     {label:"Equal", value:'=',},
+    {label:"Contain", value:'like',prefix:'%',sufix:'%'},
     {label:"Not Equal", value:'!='},
     {label:"In", value:'in'},
     {label:"Not In", value:'not in'},

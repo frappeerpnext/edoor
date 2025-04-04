@@ -35,6 +35,7 @@
     </ComDocumentList>
 </template>
 <script setup>
+import {ref} from "@/plugin"
 import ComDocumentList from "@/components/document/ComDocumentList.vue"
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
@@ -50,8 +51,11 @@ const options = {
         { fieldname: "departure_date", label: "Departure" },
         { fieldname: "room_nights", label: "Nights" },
         { fieldname: "room_type_alias", label: "Room Type" },
-        { fieldname: "reservation_status", label: "Status" },
+
         { fieldname: "rooms", label: "Rooms" },
+        { fieldname: "adr", label: "ADR" },
+        { fieldname: "total_amount", label: "Charge" },
+        { fieldname: "reservation_status", label: "Status" },
         { fieldname: "modified", label: "Last Modified", fieldtype: "Datetime" }
 
     ],

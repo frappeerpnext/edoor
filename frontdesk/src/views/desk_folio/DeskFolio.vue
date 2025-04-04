@@ -13,15 +13,13 @@
                                 
                             </Button> 
         </template>
-        <template #guest_name="{ item, index }">
-           {{ item.guest_name }} 
+        <template #guest="{ item, index }">
+           <Button   class="link_line_action1"
+                                @click="onOpenLink('view_guest_detail',item.guest)" link>
+                                {{ item.guest }} {{ item.guest_name }}
+                                
+                            </Button> 
         </template>
-        <!-- <template #header_reservation_type="{ column }">
-            <span style="color: blue">Res. Type </span>
-    </template> -->
-        <!-- <template #header_reservation_date="{ column }">
-            <span style="color: red">Res. Date </span>
-    </template> -->
     </ComDocumentList>
 </template>
 <script setup>
@@ -33,50 +31,41 @@
             { "fieldname": "room_number", label: "Room"},
             { "fieldname": "reference_number" },
             { "fieldname": "room_type", label: "Room Type" },
-            { "fieldname": "guest", },
-            { "fieldname": "guest_name",is_hide:true },
+            { "fieldname": "guest"},
+            { "fieldname": "guest_name",is_hide:true},
             { "fieldname": "posting_date", label: "Desk Folio. Date"},
-            // { "fieldname": "arrival_date" },
-            // { "fieldname": "departure_date" },
-            // { "fieldname": "owner" ,fieldtype:"Data",label:"Owner" },
-            // { "fieldname": "modified_by",fieldtype:"Data" ,label:"Modified"},
-            // { "fieldname": "creation", fieldtype:"Datetime",label:"Creation"},
-            // { "fieldname": "modified" ,fieldtype:"Datetime",label:"Last Modified"}
-            // { "fieldname": "business_source",is_hide:true },
+            { "fieldname": "total_debit", label: "Debit"},
+            { "fieldname": "total_credit", label: "Credit" },
+            { "fieldname": "balance" },
+            { "fieldname": "owner", fieldtype:"Data", label:"Created By"},
+            { "fieldname": "creation", fieldtype:"Datetime", label: "Creation"},
+            { "fieldname": "status"},
         ]
 ,
-    //    filterOptions:[
-    //     {
-    //         fieldname:"reservation_date",
-    //         label:"Reservation Date"
-    //     },
-    //     {
-    //         fieldname:"guest",
-    //     },
+       filterOptions:[
+        {
+           fieldname:"guest",
+        },
+        {
+            fieldname:"status",
+        },
+        {
+            fieldname:"room_type",
+        },
+        {
+            fieldname:"room_number",
+        },
+        {
+            fieldname:"posting_date",
+        },
 
-    //    ],
+       ],
         filters:[['property','=',window.property_name]],
-        // settingMenus:[
-         
-        //     {
-        //         label: 'Refresh',
-        //         icon: 'pi pi-refresh'
-        //     },
-        //     {
-        //         label: 'Export',
-        //         icon: 'pi pi-upload'
-        //     }
-        
-        // ],
-    //     contextMenuOptions:[
-    //     {label: 'View', icon: 'pi pi-fw pi-search', command: () => alert("View")},
-    //     {label: 'Delete', icon: 'pi pi-fw pi-times', command: () => alert("Delete")}
-    // ]
     }
 
-    // function onRowDoubleClick(data){
-    //     onOpenLink("view_reservation_detail",data.name)
-    // }
+    function onRowDoubleClick(data){
+        onOpenLink("view_desk_folio_detail",data.name)
+    }
     function onOpenLink(action,name){
         window.postMessage(action + '|' +name,'*')
     }
