@@ -246,11 +246,12 @@ onMounted(() => {
     name.value = dialogRef.value.data.name;
     getData()
 
-    window.has_folio_detail = true
+    window.folioDetailDialogBoxRef = dialogRef;
 
 })
 onUnmounted(() => {
-    window.has_folio_detail = true
+   
+    window.folioDetailDialogBoxRef = false;
 })
 
 

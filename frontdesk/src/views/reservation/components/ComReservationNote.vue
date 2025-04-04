@@ -59,7 +59,7 @@
             </div>
         </div>
         <OverlayPanel ref="op">
-            <ComOverlayPanelContent width="100%" :loading="saving" @onSave="onSave" @onCancel="onClose">
+            <ComOverlayPanelContent width="70rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
                 <div>
                     <div v-if="dataUpdate.updating == 'note'">
                         <label for="textnote" class="text-lg font-semibold line-height-4">{{ $t('Reservation Note') }}</label><br />

@@ -284,9 +284,12 @@ onMounted(() => {
     name.value = dialogRef.value.data.name;
     getData() 
     window.addEventListener('message', actionRefreshData, false);
+    window.deskFolioDetailDialogBox = dialogRef
+
 })
 onUnmounted(() => {
     window.removeEventListener('message', actionRefreshData, false);
+    window.deskFolioDetailDialogBox = false
 })
 
 

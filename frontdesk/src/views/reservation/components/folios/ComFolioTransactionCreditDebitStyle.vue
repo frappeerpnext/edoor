@@ -29,15 +29,25 @@
                     <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name"
                         :class="'link_line_action1 ' + (slotProps.data?.is_auto_post == 1 ? 'auto_post' : '')">{{
                             slotProps.data?.name }}</button>
+                     <slot name="name" :item="slotProps.data" :index="slotProps.data.name">
+                    </slot>        
                 </template>
             </Column>
-            <Column field="room_number" :header="$t('Room') + ' #'" headerClass="text-center white-space-nowrap"
-                bodyClass="text-center"></Column>
+            <Column  :header="$t('Room') + ' #'" headerClass="text-center white-space-nowrap"
+                bodyClass="text-center">
+                <template #body="slotProps">
+            {{ slotProps.data.room_number }}
+                <slot name="room" :item="slotProps.data" :index="slotProps.data.name">
+                </slot>  
+            </template>
+            </Column>
             <Column field="posting_date" :header="$t('Post Date')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span v-if="slotProps.data?.posting_date">{{
                         moment(slotProps.data?.posting_date).format("DD-MM-YYYY")
                         }}</span>
+                    <slot name="posting_date" :item="slotProps.data" :index="slotProps.data.name">
+                    </slot>      
                 </template>
             </Column>
 
@@ -369,7 +379,7 @@ onUnmounted(() => {
 }
 
 .link_line_action1.auto_post {
-    border: 1px dashed #ff3720 !important;
+    border-bottom: 1px dashed #ff3720 !important;
     color: #ff3720 !important;
 }
 </style>

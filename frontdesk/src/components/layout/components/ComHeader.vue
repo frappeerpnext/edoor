@@ -10,6 +10,11 @@
             <slot name="end"></slot>
             <div v-if="isRefresh" class="border-left-1 border-primary-100"></div>
             <Button v-if="isRefresh && !isMobile" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
+            <div v-if="isSetting" class="border-left-1 border-primary-100"></div>
+           
+            <Button :class="fillClass ? fillClass : 'content_btn_b'" v-if="isSetting" type="button" icon="pi pi-ellipsis-v" @click="onToggleSetting" aria-haspopup="true" aria-controls="overlay_menu" />
+<Menu ref="settingMenu" :id="menuID" :model="settingMenus" :popup="true" />
+
             
         </div>
     </div>
@@ -17,6 +22,7 @@
 <script setup>
 import { ref } from '@/plugin'
 const isMobile = ref(window.isMobile) 
+const menuID = Math.random().toString(36).substring(2, 100);
 
 const props = defineProps({
     isRefresh: {
@@ -30,15 +36,18 @@ const props = defineProps({
     fillClass: String,
     wrClass: String,
     colClass:String,
+    settingMenus:Object
 })
-const emit = defineEmits(['onRefresh','onSetting'])
+const settingMenu = ref();
+const emit = defineEmits(['onRefresh'])
 function onRefresh(){
     emit('onRefresh')
 }
-function onSetting(){
-    emit('onSetting')
-}
+ 
 
+const onToggleSetting = (event) => {
+    settingMenu.value.toggle(event);
+}
 
 </script>
 <style scoped>

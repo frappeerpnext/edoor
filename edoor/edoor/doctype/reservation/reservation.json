@@ -287,6 +287,7 @@
    "reqd": 1
   },
   {
+   "bold": 1,
    "fieldname": "business_source",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -794,7 +795,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-27 14:56:22.901861",
+ "modified": "2025-03-27 16:03:56.800270",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

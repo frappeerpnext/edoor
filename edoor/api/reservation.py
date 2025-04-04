@@ -1112,7 +1112,7 @@ def check_out(reservation,reservation_stays=None):
     
     # validate folio balance
     folio_balance = check_folio_balance_before_check_out(reservation,reservation_stays)
- 
+   
     if folio_balance:
         balance = folio_balance.get("balance",0)
  
@@ -2358,6 +2358,7 @@ def get_folio_transaction_with_package_breakdown(transaction_type="", transactio
         balance = balance + (amount * (1 if d.type=="Debit" else -1))        
         folio_transactions.append({ 
             "reservation":d["reservation"],
+            "reservation_stay":d["reservation_stay"],
             "name":"" if d.is_package_charge==1 else d["name"],
             "room_number":d.room_number,
             "account_name": "{}-{}".format(d.account_code, d.report_description)  if show_account_code else ( d.report_description) ,
@@ -2415,6 +2416,7 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
           
             folio_transactions.append({ 
                 "reservation":d["reservation"],
+                 "reservation_stay":d["reservation_stay"],
                 "name":d["name"],
                 "room_number":d.room_number,
                 "account_name": "{}-{}".format(d.bank_fee_account, d.bank_fee_description)  if show_account_code else d.bank_fee_description,
@@ -2445,6 +2447,13 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
 
         folio_transactions.append({ 
             "reservation":d["reservation"],
+            "reservation_stay":d["reservation_stay"],
+            "guest_name":d["guest_name"],
+            "reservation_status":d["reservation_status"],
+            "reservation_status_color":d["reservation_status_color"],
+            "adult":d["adult"],
+            "child":d["child"],
+            "room_type":d["room_type"],
             "name":d["name"],
             "room_number":d.room_number,
             "account_name": "{}-{}".format(d.account_code, d.account_name)  if show_account_code else (d.account_name) ,
@@ -2553,9 +2562,16 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
         amount = d.total_amount 
         # if d.rate_include_tax=="Yes":
         #     amount =( amount - d.total_tax ) + d.discount_amount
-        balance = balance + (amount * (1 if d.type=="Debit" else -1))        
+        balance = balance + (amount * (1 if d.type=="Debit" else -1)) 
         folio_transactions.append({ 
             "reservation":d["reservation"],
+            "reservation_stay":d["reservation_stay"],
+            "guest_name":d["guest_name"],
+            "reservation_status":d["reservation_status"],
+            "reservation_status_color":d["reservation_status_color"],
+            "adult":d["adult"],
+            "child":d["child"],
+            "room_type":d["room_type"],
             "name":d["name"],
             "room_number":d['room_number'],
             "account_name": "{}-{}".format(d.account_code,d.report_description)  if show_account_code else (d.report_description) ,
@@ -3249,7 +3265,9 @@ def get_folio_transaction_detail(name):
         "sub_record": sub_record,
         "product_items":product_items,
         "sale":sale,
-        "city_ledger_invoice_date":"" if not folio_transaction.city_ledger_invoice else frappe.get_cached_value("City Ledger Invoice", folio_transaction.city_ledger_invoice, "posting_date")
+        "city_ledger_invoice_date":"" if not folio_transaction.city_ledger_invoice else frappe.get_cached_value("City Ledger Invoice", folio_transaction.city_ledger_invoice, "posting_date"),
+        "show_payment_by": frappe.get_cached_value("Account Code", folio_transaction.account_code, "show_payment_by"),
+        "show_payment_information": frappe.get_cached_value("Account Code", folio_transaction.account_code, "show_payment_information")
     }
 
 @frappe.whitelist(methods="POST")

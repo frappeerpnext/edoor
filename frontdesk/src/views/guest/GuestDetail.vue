@@ -190,6 +190,8 @@ onMounted(() => {
         window.addEventListener('message', actionRefreshData, false);
     }
     loadIframe()
+
+    window.guestDetailDialogBoxRef = dialogRef;
 });
 
 const onClose = () => {
@@ -214,6 +216,7 @@ onUnmounted(() => {
     if (document.querySelectorAll('.guest-detail').length - 1 == 0){ 
         window.removeEventListener('message', actionRefreshData, false);
     }
+    window.guestDetailDialogBoxRef = false;
 })
 
 

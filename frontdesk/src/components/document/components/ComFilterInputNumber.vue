@@ -1,14 +1,15 @@
 <template>
 
     <ComFilterInput :option="option" @onSearch="onSearch" v-model:operator="operator" v-model:keyword="selected"
-        :operatorOptions="operatorOptions">
-        {{ option.label }}
+        :operatorOptions="operatorOptions" :hasFilter="selected!=null || startNumber!=null || endNumber!=null">
+        {{ option.label }} 
         
 
         <template v-slot:filter-template>
        
             <template v-if="['=', '>=', '!=', '>', '<', '<='].includes(operator)">
                 <InputNumber v-model="selected" @input="onInput"   :minFractionDigits="0" :maxFractionDigits="9" fluid   v-debounce="onSearch" />
+                <Button @click="onClearSelection" :disabled="!selected" label="Clear Filter" severity="warning" class="w-full" />
             </template>
            
             <template v-else-if="operator == 'Between'">
@@ -20,7 +21,7 @@
                     
                         <Button label="Search" @click="onSearchBetween" class="w-full"></Button>
                         
-                        <Button label="Clear Filter" class="w-full" @click="onClearSelection"
+                        <Button label="Clear Filter" class="w-full" @click="onClearSelection"  severity="warning"
                             ></Button>
                         
 
@@ -31,20 +32,24 @@
             </template>
              
         </template>
+        <template #bottom>
+       
+       </template>
     </ComFilterInput>
 </template>
 <script setup>
-import { ref } from "@/plugin"
+import { ref ,watch} from "@/plugin"
 import ComFilterInput from "@/components/document/components/ComFilterInput.vue"
 const props = defineProps({
-    option: Object
+    option: Object,
+    defaultValue:Object//[key,"operator","value"]
 })
 
-const startNumber = ref()
-const endNumber = ref()
+const startNumber = ref(null)
+const endNumber = ref(null)
 const emit = defineEmits()
 const operator = ref("=")
-const selected = ref(0)
+const selected = ref(null)
 
  
 const operatorOptions = [
@@ -58,22 +63,47 @@ const operatorOptions = [
     { label: "Between", value: 'Between' }
 ]
 
+watch(() => props.defaultValue, (newVal, oldVal) => {
+    if(props.defaultValue){ 
+    if(newVal){
+        if(newVal.length==3){
+            operator.value = newVal[1]
+            selected.value = newVal[2]
+        }else {
+            // between search
+            operator.value = 'Between'
+            startNumber.value = newVal[0][2]
+            endNumber.value = newVal[1][2]
+        }
+        
+      
+    }
+}else {
+     selected.value = null
+     startNumber.value = null
+     endNumber.value = null
+
+}
+});
+
 
 function onInput(event){
     selected.value = event.value
 }
 
 function onSearch() {
- 
+ if(operator.value!='Between' && operator.value !='is'){
+    emit("onFilter", [props.option.fieldname, operator.value,selected.value])
+    
+ }
    
-            emit("onFilter", [props.option.fieldname, operator.value,selected.value])
        
 
     
 }
 
 function onSearchBetween() {
-    alert(123)
+     
     emit("onFilter", [
         [props.option.fieldname, '>=', startNumber.value],
         [props.option.fieldname, '<=', endNumber.value]
@@ -82,11 +112,13 @@ function onSearchBetween() {
 }
  
 function onClearSelection() {
-    
+    selected.value = null
     endNumber.value = null
     startNumber.value = null
     emit("onFilter", [props.option.fieldname, operator.value,null])
 }
+
+
 
 
 </script>

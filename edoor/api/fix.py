@@ -5,6 +5,10 @@ from edoor.api.utils import update_city_ledger
 
 
 @frappe.whitelist()
+def testme():
+    return  frappe.db.count("Reservation", filters=[], or_filters=[])
+
+@frappe.whitelist()
 def fix_update_account_code_show_hide_in_guest_folio_invoice():
     account_codes=[
         "10101",

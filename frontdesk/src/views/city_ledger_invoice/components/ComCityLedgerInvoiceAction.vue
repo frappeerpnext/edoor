@@ -2,7 +2,7 @@
     <div
         class="flex pb-1 md:pb-0 overflow-auto justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
         <div class="flex gap-2">
-     
+           
             <ComFolioActionButton @onClick="onAddFolioTransaction"
                 :data="folio_operation" />
 
@@ -44,8 +44,7 @@
             </Menu>
         </div>
         <div class="flex ms-2 md:ms-0">
-            <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" :label="$t('Print')" icon="pi pi-print"
-                :model="print_menus" />
+            <Button @click="viewCityLedgerDetail" class="conten-btn sp" :label="$t('Print')" icon="pi pi-print" />
             <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b btn-size2 ml-2"></Button>
         </div>
 
@@ -102,10 +101,9 @@ const gv = inject("$gv")
 const setting = window.setting
 const folio_menu = ref();
 
-const folio_operation = ref(JSON.parse(setting.folio_operation_setting).city_ledger);
+const folio_operation = ref(JSON.parse(setting.folio_operation_setting).city_ledger_Invoice);
  
-console.log(folio_operation.value)
-//trach user select new folio and reload folio information
+
 
 watch(() => props.folio, (newValue, oldValue) => {
 
@@ -120,10 +118,10 @@ const toggle = (event) => {
 
 const print_menus = ref([])
 
-function viewFolioSummaryReport() {
+function viewCityLedgerDetail() {
     if (window.setting.server_report_url) {
 
-        OpenServerReport("/Front Desk/rptDeskFolioSummary", "Desk Folio Summary Invoice")
+        OpenServerReport("/Front Desk/rptCityLedgerInvoiceDetail", "City Ledger Invoice Detail" , [{ name: 'city_ledger_invoice', values: [selectedCityLedgerInvoice.value.name] }])
 
     }
     else {
@@ -206,7 +204,7 @@ print_menus.value.push({
     icon: 'pi pi-print',
     command: () => {
 
-        viewFolioSummaryReport()
+        viewCityLedgerDetail()
     }
 })
 
@@ -329,18 +327,18 @@ function onAddFolioTransaction(account_code) {
         })
 
     } else {
-        toast.add({ severity: 'warn', summary: "", detail: "Folio is already closed.", life: 3000 })
+        toast.add({ severity: 'warn', summary: "", detail: "City Ledger Invoice is already closed.", life: 3000 })
     }
 
 }
 
 function reloadData() {
-    window.postMessage({ action: "ComDeskFolioDetail" }, "*")
-    window.postMessage({ action: "DeskFolio" }, "*")
+    window.postMessage({ action: "CityLedgerInvoiceDetail" }, "*")
 }
 
 const onRefresh = debouncer(() => {
-    window.postMessage({ action: "ComDeskFolioDetail" }, "*")
+    window.postMessage({ action: "CityLedgerInvoiceDetail" }, "*")
+
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;

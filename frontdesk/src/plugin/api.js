@@ -20,12 +20,15 @@ export function getDoc(doctype, name){
 }
 
 
-export function getDocument(doctype, name){
+export function getDocument(doctype, name,show_message=true){
  
     return db.getDoc(doctype, name)
   .then((doc) =>({ data: doc, error: null }))
   .catch((error) => {
-    handleServerMessage(error)
+    if(show_message){
+        handleServerMessage(error)
+    }
+    
     return { data: null, error }
   });
 
@@ -103,13 +106,15 @@ export function updateDoc(doctype, name, data, message="",show_message=true){
     })
 }
 
+
+
 export function updateData(param){
     //doctype:"", name:"", data:{}, message:"",show_message=true
     return db.updateDoc(param.doctype, param.name, param.data,param.ignores)
         .then((doc) => {
            
             if(!param.hide_message){
-            window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+            window.postMessage('show_success|' + `${param.message ? param.message : 'Update successful'}`, '*')
             }
             return  { data: doc, error: null }
         })
@@ -172,6 +177,7 @@ export function createUpdateDoc(doctype, data, message, rename=null,show_error_m
         }
     })
 }
+
 export function deleteDoc(doctype, name, message){
 
     return new Promise((resolve, reject)=>{
@@ -187,6 +193,24 @@ export function deleteDoc(doctype, name, message){
             reject(message) 
         });
     })
+}
+
+
+export function deleteDocument(doctype, name, message){
+
+    return  db.deleteDoc(doctype, name)
+        .then((doc) => {
+            
+            window.postMessage('show_success|' + `${message ? message : 'Deleted successful'}`, '*')
+            return {data:true, error:null}
+
+        })
+        .catch((error) => {
+            const message = handleServerMessage(error)
+            return {data:null, error:error}
+            
+        });
+    
 }
 export function getApi(api, params = Object,base_url="edoor.api."){
 
@@ -268,6 +292,21 @@ export function postData(api, params = Object, message="",show_message=true,base
         handleServerMessage(error)
         return { data: null, error }
     });
+}
+
+export function createDocument(doctype, params = Object){
+      return db.createDoc(doctype,params)
+        .then((doc) =>{
+            window.postMessage('show_success|Save successfully', '*')
+            return   { data: doc, error: null }
+        }
+            
+        )
+        .catch((error) => 
+        {
+            handleServerMessage(error)
+            return   { data: null, error: error }
+        });
 }
 
 export function postReservationStay(docname,data,update_docs){

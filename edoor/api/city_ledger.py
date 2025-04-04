@@ -110,7 +110,8 @@ def get_city_Ledger_jounal(property):
     data = frappe.db.sql(sql, {"property":property} , as_dict=True)
     return data
 @frappe.whitelist()
-def get_balance_city_ledger(property, date=None):
+def get_balance_city_ledger(property, date=None, cityleder=None):
+    # Aging Balance Query
     aging_balance_sql = """
     SELECT 
         SUM(CASE WHEN DATEDIFF(DATE(%(date)s), ft.posting_date) < 1 THEN ft.amount * IF(ft.type='Debit',1,-1) ELSE 0 END) AS current_amount,
@@ -125,26 +126,49 @@ def get_balance_city_ledger(property, date=None):
         AND ft.property = %(property)s 
         AND ft.posting_date <= DATE(%(date)s)
     """
-    
+
+    # Pending Balance Query
     pending_balance_sql = """
     SELECT 
         SUM(ft.amount * IF(ft.type='Debit',1,-1)) AS total_pending,
-SUM(
-    CASE 
-        WHEN (ft.city_ledger_invoice IS NULL OR ft.city_ledger_invoice = '') 
-        THEN ft.amount * CASE WHEN ft.type = 'Debit' THEN 1 ELSE -1 END
-        ELSE 0
-    END
-) AS city_ledger_invoice_pending
+        SUM(
+            CASE 
+                WHEN (ft.city_ledger_invoice IS NULL OR ft.city_ledger_invoice = '') 
+                THEN ft.amount * CASE WHEN ft.type = 'Debit' THEN 1 ELSE -1 END
+                ELSE 0
+            END
+        ) AS city_ledger_invoice_pending,
+        SUM(
+            CASE 
+                WHEN ft.city_ledger_invoice IS NOT NULL  
+                THEN ft.amount * CASE WHEN ft.type = 'Debit' THEN 1 ELSE -1 END
+                ELSE 0
+            END
+        ) AS city_ledger_uninvoice
     FROM `tabFolio Transaction` ft
     WHERE 
         ft.transaction_type = 'City Ledger' 
-        AND ft.property = %(property)s 
+        AND ft.property = %(property)s
     """
-    
-    aging_data = frappe.db.sql(aging_balance_sql, {"property": property, "date": date}, as_dict=True)
-    pending_data = frappe.db.sql(pending_balance_sql, {"property": property}, as_dict=True)
-    
+
+    # SQL Query Parameters
+    params = {"property": property, "date": date}
+
+    # Add city ledger filter if provided
+    count_pending = 0
+    if cityleder:
+        aging_balance_sql += " AND ft.transaction_number = %(cityleder)s"
+        pending_balance_sql += " AND ft.transaction_number = %(cityleder)s"
+        params["cityleder"] = cityleder  # Include in parameters
+        count_pending = frappe.db.count("City Ledger Invoice", {
+        "city_ledger": cityleder,
+        "status": "Open"
+        })
+        
+
+    # Execute queries using Frappe ORM
+    aging_data = frappe.db.sql(aging_balance_sql, params, as_dict=True)
+    pending_data = frappe.db.sql(pending_balance_sql, params, as_dict=True)
     result = {
         "aging_balance": [
             {"label": "Current Amount", "value": aging_data[0].get("current_amount", 0)},
@@ -155,7 +179,9 @@ SUM(
         ],
         "pending_balance": {
             "total_pending": pending_data[0].get("total_pending", 0),
-            "city_ledger_invoice_pending": pending_data[0].get("city_ledger_invoice_pending", 0)
+            "city_ledger_invoice_pending": pending_data[0].get("city_ledger_invoice_pending", 0),
+            "city_ledger_uninvoice": pending_data[0].get("city_ledger_uninvoice", 0),
+            "count_pending":count_pending
         }
     }
     
@@ -174,4 +200,49 @@ def get_balance_city_ledger_transaction(property,city_ledger_invoice = None):
     """
     data = frappe.db.sql(sql, {"property": property, "city_ledger_invoice": city_ledger_invoice}, as_dict=True)
     return data
+@frappe.whitelist()
+def get_city_Ledger_payment_received(filters):
+    filters = json.loads(filters)
+    sql_today = """
+    SELECT 
+        account_code,
+        account_name,
+        SUM(amount * CASE WHEN type = 'Debit' THEN 1 ELSE -1 END) AS total_amount
+    FROM `tabFolio Transaction`
+    WHERE 
+        property = %(property)s
+        AND transaction_type = "City Ledger"
+        AND account_group = "30000"
+        AND posting_date = %(date)s
+    """
+
+    sql_mtd = """
+    SELECT 
+        account_code,
+        account_name,
+        SUM(amount * CASE WHEN type = 'Debit' THEN 1 ELSE -1 END) AS total_amount
+    FROM `tabFolio Transaction`
+    WHERE 
+        property = %(property)s
+        AND transaction_type = "City Ledger"
+        AND account_group = "30000"
+        AND posting_date BETWEEN DATE_FORMAT(%(date)s, '%%Y-%%m-01') AND %(date)s
+    """
+    params = {"property": filters.get("property"), "date": filters.get("date")}
+
+    if "city_ledger" in filters and filters["city_ledger"]:
+        sql_today += " AND transaction_number = %(city_ledger)s"
+        sql_mtd += " AND transaction_number = %(city_ledger)s"
+        params["city_ledger"] = filters["city_ledger"]
+
+    sql_today += " GROUP BY account_code ORDER BY creation DESC"
+    sql_mtd += " GROUP BY account_code ORDER BY creation DESC"
+
+    today_data = frappe.db.sql(sql_today, params, as_dict=True)
+    mtd_data = frappe.db.sql(sql_mtd, params, as_dict=True)
+
+    return {
+        "today_payment": today_data,
+        "mtd_payment": mtd_data
+    }
 

@@ -7,8 +7,9 @@
 
             <Dropdown 
             class="w-full" v-else 
+            :class="dClass"
             :showClear="clear" 
-            :style="{ 'min-width': width , 'max-width':maxWidth }"
+            :style="{ 'min-width': width , 'max-width':maxWidth, 'height':dHeight }"
             v-model="selected" :filter="isFilter"
             :options="dataOptions" 
             :optionLabel="option.label" 
@@ -86,7 +87,15 @@ const props = defineProps({
         type: Number,
         default: 3
     },
-    mClass: String
+    mClass: String,
+    dHeight: {
+        type: String,
+        default: 'unset'
+    },
+    dClass: {
+        type: String,
+        default: ''
+    }
 })
 const toast = useToast();
 const frappe = inject('$frappe')

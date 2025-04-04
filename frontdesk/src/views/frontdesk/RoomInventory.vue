@@ -351,6 +351,8 @@ function onChangePeriod(period) {
     const cal = fullCalendar.value.getApi()
     filter.value.period = period
     calendarOptions.visibleRange = { start: cal.view.currentStart, end: getEndDate(cal.view.currentStart, filter.value.period) }
+
+
     getEvents()
 }
 
@@ -476,9 +478,7 @@ function getResources() {
 function getEvents(date_range=null) {
     const cal = fullCalendar.value.getApi()
     const start= date_range?moment(date_range.start).format("YYYY-MM-DD"):moment(cal.view.currentStart).format("YYYY-MM-DD")
-    const end= date_range?moment(date_range.end).add(-1,"days").format("YYYY-MM-DD"):moment(cal.view.currentEnd).add(-1,"days").format("YYYY-MM-DD")
-    
-
+    const end= moment(filter.value.end_date).format("YYYY-MM-DD")
     
     getApi('frontdesk.get_room_inventory_calendar_event', {
         start: start,
@@ -701,15 +701,19 @@ onMounted(() => {
  
 
 function getEndDate(start, period) {
+
     let date = moment()
     if (period == "week") {
         date = moment(start).add(7, "days").toDate()
     } else if (period == "15_days") {
         date = moment(start).add(15, "days").toDate()
     } else {
+       
         date = moment(start).add(1, "months").toDate()
     }
     filter.value.end_date = date
+
+ 
     return date
 }
 

@@ -5,21 +5,28 @@
       v-model:operator="operator" 
        v-model:keyword="keyword"
        :operatorOptions="operatorOptions"
-    
+       :hasFilter="keyword!=''"
+        v-model:selected ="selected"
        >
-       {{ keyword || option.label }}
+       {{option.label }}
 
-       </ComFilterInput>
+       <template #bottom>
+        <Button @click="onClearFilter" :disabled="!keyword" label="Clear Filter" severity="warning" class="w-full mt-4" />
+       </template>
+    </ComFilterInput>
+
 </template>
 <script setup>
-import {ref} from "@/plugin"
+import {ref,watch} from "@/plugin"
 import ComFilterInput from "@/components/document/components/ComFilterInput.vue"
 const props = defineProps({
-    option:Object
+    option:Object,
+    defaultValue:Object//[key,"operator","value"]
 })
 const emit = defineEmits()
 const operator = ref("like")
 const keyword = ref("")
+const selected = ref("")
 const operatorOptions = [
     {label:"Equal", value:'=',},
     {label:"Not Equal", value:'!='},
@@ -30,6 +37,21 @@ const operatorOptions = [
     {label:"Is", value:'is'},
 ]
  
+
+watch(() => props.defaultValue, (newVal, oldVal) => {
+    if(props.defaultValue){ 
+    if(newVal){
+        operator.value = newVal[1]
+        keyword.value = newVal[2].replaceAll("%","")
+        selected.value = keyword.value ;
+
+    }
+}else {
+     keyword.value = "";
+    selected.value = ""
+}
+});
+
 function onSearch(){
     let searchValue = keyword.value;
     const op = operatorOptions.find(r=>r.value==operator.value);
@@ -43,6 +65,13 @@ function onSearch(){
     
 
     emit("onFilter",[props.option.fieldname,operator.value,searchValue] )
+}
+
+
+function onClearFilter(){
+    keyword.value = "";
+    selected.value = ""
+    emit("onFilter",[props.option.fieldname,operator.value,""] )
 }
 
 

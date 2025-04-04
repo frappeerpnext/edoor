@@ -1,22 +1,23 @@
 <template>
     <ComDialogContent hideButtonOK @onClose="onClose"  :hideIcon="false" :loading="loading" >
     <div class="bg-card-info">
-
       <Message v-if="doc?.source_transaction_number">This transaction has been transferred from the <span>{{doc?.source_transaction_type}}</span>. View folio transaction
-        <span class="link_line_action overflow-hidden w-min" @click="onOpenReservationFolioDetail(doc?.source_transaction_number)">{{doc?.source_transaction_number}}</span>
+        <span class="link_line_action overflow-hidden w-min" @click="onOpenReservationFolioDetail(doc?.source_transaction_number)">{{doc?.source_transaction_number}}</span><br/>
+        {{$t('View source transaction number ')}}<span class="link_line_action overflow-hidden w-min" @click="onOpenFolioTransactionDetail(doc?.reference_folio_transaction)">{{ doc?.reference_folio_transaction }}</span>
       </Message>
 
       <Message v-if="doc?.target_transaction_number && doc?.target_transaction_type=='Desk Folio'">This transaction has been transferred to <span>{{doc?.target_transaction_type}}</span>. View folio transaction
         <span class="link_line_action overflow-hidden w-min" @click="onOpenDeskFolioDetail(doc?.target_transaction_number)">{{doc?.target_transaction_number}}</span>
       </Message>
-
-      <Message v-else="doc?.target_transaction_number && doc?.target_transaction_type=='City Ledger'">This transaction has been transferred to <span>{{doc?.target_transaction_type}}</span>. View City Ledger transaction
+      
+      <Message v-if="doc?.target_transaction_number && doc?.target_transaction_type=='City Ledger'">This transaction has been transferred to <span>{{doc?.target_transaction_type}}</span>. View City Ledger transaction
         <span class="link_line_action overflow-hidden w-min" @click="onOpenCityLedgerDetail(doc?.target_transaction_number)">{{doc?.target_transaction_number || doc?.transaction_number}}</span>
       </Message>
 
-      <Message v-if="doc?.sale">This folio transaction is transferred from <span>{{doc?.account_category}}</span>. View Sale transaction
-        <span class="link_line_action overflow-hidden w-min" @click="onOpenReservationFolioDetail(doc?.target_transaction_number)">{{doc?.sale}}</span>
+      <Message v-if="doc?.sale">This folio transaction is transferred from <span>{{doc?.account_category}}</span>. View Sale Receipt
+        <span class="link_line_action overflow-hidden w-min" @click="onOpenSaleRecieptReport(doc?.sale)">{{doc?.sale}}</span>
       </Message>
+
       <Message v-if="doc?.parent_reference">This transaction is a sub transaction of 
         <span class="link_line_action overflow-hidden w-min" @click="onOpenFolioTransactionDetail(doc?.parent_reference)">{{doc?.parent_reference}}</span> folio transaction
       </Message>
@@ -110,7 +111,9 @@
               <td class="text-center p-2 border">{{ doc?.quantity }}</td>
               <td class="text-right p-2 border"><CurrencyFormat :value="doc?.input_amount" /></td>
               <td class="text-right p-2 border"><CurrencyFormat :value="doc?.total_amount" /> </td>
-              <td class="text-left p-2 border max-w-15rem white-space-normal">{{ doc?.note }}</td>
+              <td class="text-left p-2 border max-w-15rem white-space-normal" style="word-break: break-word;white-space: break-spaces !important;">
+                <div>{{ doc?.note }}</div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -118,26 +121,26 @@
       <div>
         <div class="grid p-3">
           <div class="col-6">
-            <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom mt-3" v-if="doc?.credit_card_number || doc?.bank_name || doc?.city_ledger_invoice || doc?.payment_by">
-              <TabPanel :header="$t('Payment Information')" v-if="doc?.credit_card_number || doc?.bank_name || doc?.payment_by">
-                <div class="pb-3">
-                  <div class="grid w-full">
-                    <div class="flex mt-2 gap-2 col-6" v-if="doc?.payment_by">
-                      <ComBoxStayInformation @onClick="toggle($event, 'payment_info')" :isSlot="true" :isAction="true" valueMaxWidth="" titleTooltip="Payment By" title="Payment By"  valueClass="grow col-8 bg-gray-edoor-10"  titleClass="col-4">
-                        <span>
-                          <i v-if="!doc?.payment_by" class="pi pi-pencil"></i>
-                          {{ doc?.payment_by ? doc?.payment_by : '...' }}
-                        </span>
-                      </ComBoxStayInformation> 
-                    </div>
-                    <div class="flex mt-2 gap-2 col-6" v-if="doc?.payment_by_phone_number">
-                      <ComBoxStayInformation @onClick="toggle($event, 'payment_info')" :isSlot="true" :isAction="true" valueMaxWidth="" titleTooltip="Phone Number" title="Phone Number"  valueClass="grow col-8 bg-gray-edoor-10"  titleClass="col-4">
-                        <span>
-                          <i v-if="!doc?.payment_by_phone_number" class="pi pi-pencil"></i>
-                          {{ doc?.payment_by_phone_number ? doc?.payment_by_phone_number : '...' }}
-                        </span>
-                      </ComBoxStayInformation> 
-                    </div>
+            <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom mt-3" v-if="show_payment_by==1 || doc?.city_ledger_invoices">
+              <TabPanel :header="$t('Payment Information')" v-if="show_payment_by==1 || show_payment_information==1">
+                <div class="pb-3"> 
+                  <div class="grid w-full"> 
+                      <div class="flex mt-2 gap-2 col-6">
+                        <ComBoxStayInformation @onClick="toggle($event, 'payment_info')" :isSlot="true" :isAction="true" valueMaxWidth="" titleTooltip="Payment By" title="Payment By"  valueClass="grow col-8 bg-gray-edoor-10"  titleClass="col-4">
+                          <span>
+                            <i v-if="!doc?.payment_by" class="pi pi-pencil"></i>
+                            {{ doc?.payment_by ? doc?.payment_by : '...' }}
+                          </span>
+                        </ComBoxStayInformation> 
+                      </div>
+                      <div class="flex mt-2 gap-2 col-6">
+                        <ComBoxStayInformation @onClick="toggle($event, 'payment_info')" :isSlot="true" :isAction="true" valueMaxWidth="" titleTooltip="Phone Number" title="Phone Number"  valueClass="grow col-8 bg-gray-edoor-10"  titleClass="col-4">
+                          <span>
+                            <i v-if="!doc?.payment_by_phone_number" class="pi pi-pencil"></i>
+                            {{ doc?.payment_by_phone_number ? doc?.payment_by_phone_number : '...' }}
+                          </span>
+                        </ComBoxStayInformation> 
+                      </div> 
                   </div>
 
                   <div class="grid w-full">
@@ -173,7 +176,7 @@
 
                         <span>
                           <i v-if="!doc?.credit_expired_date" class="pi pi-pencil"></i>
-                          {{ doc?.credit_expired_date ? moment(doc?.credit_expired_date).format("MMM yy") : '...' }}
+                          {{ doc?.credit_expired_date ? moment(doc?.credit_expired_date).format("MM/yy") : '...' }}
                         </span>
                       </ComBoxStayInformation> 
                     </div> 
@@ -182,8 +185,8 @@
               </TabPanel>
               <TabPanel :header="$t('City Ledger Invoice')" v-if="doc?.city_ledger_invoice">
                 <div class="pb-3">
-                  <div class="flex mt-2 gap-2 justify-end" v-if="doc?.city_ledger_invoice">
-                    <ComBoxStayInformation titleTooltip="Invoice No." title="Invoice No." @onClick="onViewCityLedgerInvoiceDetail(doc?.city_ledger_invoice)" :value="doc?.city_ledger_invoice" :isAction="true" valueClass="grow col-8"  titleClass="col-4"></ComBoxStayInformation>
+                  <div class="flex mt-2 gap-2" v-if="doc?.city_ledger_invoice">
+                    <ComBoxStayInformation valueMaxWidth="50%" titleTooltip="Invoice No." title="Invoice No." @onClick="onViewCityLedgerInvoiceDetail(doc?.city_ledger_invoice)" :value="doc?.city_ledger_invoice" :isAction="true" valueClass="grow col-8 bg-gray-edoor-10"  titleClass="col-4"></ComBoxStayInformation>
                   </div>
                   <div class="flex mt-2 gap-2" v-if="city_ledger_invoice_date!=''">
                     <ComBoxStayInformation valueMaxWidth="50%" titleTooltip="Issue Date" title="Issue Date"  valueClass="grow col-8 bg-gray-edoor-10"  titleClass="col-4">
@@ -211,8 +214,6 @@
           </div>
         </div>
       </div>
-
-
       <template v-if="product_items?.length>0"> 
         <div class="p-3">
           <p class="font-bold mb-1">Products</p>
@@ -245,10 +246,32 @@
       <div>
         <div class="grid p-3">
           <div class="col-6">
-            <template v-if="doc?.note">
-              <div>Note:</div>
-              <Textarea disabled v-model="doc.note" rows="6" cols="50" />
-            </template>
+            <div class="">
+              <div v-if="doc?.note" class="link_line_action_res_note px-3">
+                  <div class="pt-2 pb-3 text-color-black">
+                      <div class="">
+                          <div class="flex justify-content-between flex-wrap">
+                              <span class="text-lg font-semibold line-height-4">{{$t('Note')}}</span>
+                              <Button text icon="pi pi-file-edit" class="w-1rem h-1rem"
+                                  @click="toggle($event, 'change_note')"></Button>
+                          </div>
+                          <div class="text-sm">
+                              <span class="font-italic">{{$t('Last Modified')}}: </span><span class="text-500 font-italic"> 
+                                {{ doc?.modified_by.split("@")[0] }} {{ gv.datetimeFormat(doc?.modified)}}
+                              </span>
+                          </div>
+                      </div>
+                      <hr class="my-2">
+                      <div class="text-color wrap__sp_not">{{ doc?.note }}</div>
+                  </div>
+              </div> 
+              <div v-else class="link_line_action_res_note px-3 cursor-pointer" @click="toggle($event, 'change_note')">
+                  <div class="flex justify-center items-center my-3">
+                      <ComIcon icon="iconNoteBlue" class="me-2" style="height: 16px;" />
+                      <span class="text-xl">{{ $t('Add Note') }}</span>
+                  </div>
+              </div>
+            </div>
           </div>
           <div class="col-6">  
             <div class="flex mt-2 gap-2 justify-end" v-if="sale_summary?.total_quantity">
@@ -331,54 +354,56 @@
                 <CurrencyFormat :value="sale_summary?.commission_amount" />
               </ComBoxStayInformation> 
             </div> 
-             
-             
           </div>
         </div>
       </div> 
     </div> 
     <template #footer-left>
-      <Button @click="test">Test</Button>
       <Button v-if="doc?.show_print_preview!=0" icon="pi pi-print" class="border-none" @click="onPrintFolioTransaction" :label="$t('Print')" :disabled="loading"></Button>
       <Button icon="pi pi-file-edit" class="border-none" @click="onEditFolioTransaction" :label="$t('Edit')" :disabled="loading"></Button>
     </template> 
     <OverlayPanel ref="op">
-      <ComOverlayPanelContent title="" :width="isMobile ? '100%' : '50rem'" :loading="isLoading" @onSave="onSave" @onCancel="onCloseRef">
+      <ComOverlayPanelContent title="" :width="isMobile ? '100%' : '50rem'" :loading="isLoading" @onSave="onSaveData" @onCancel="onCloseRef">
+        <template v-if="overLayName=='change_ref_number'">
+          <div>
+            <label>{{ $t('Ref. No') }} </label><br/>
+            <InputText v-model="setDoc.reference_number" class="w-full"/>
+          </div> 
+        </template>
         <div class="grid">
-          <template v-if="overLayName=='change_ref_number'">
-            <div class="col-6">
-              <label>{{ $t('Ref. No') }} </label><br/>
-              <InputText v-model="doc.reference_number" class="w-full"/>
-            </div> 
-          </template>
           <template v-if="overLayName=='payment_info'">
             <div class="col-6">
               <label>{{ $t('Payment By') }} </label><br/>
-              <InputText v-model="doc.payment_by" class="w-full"/>
+              <InputText v-model="setDoc.payment_by" class="w-full"/>
             </div>
             <div class="col-6">
               <label>{{ $t('Payment(Phone No.)') }} </label><br/>
-              <InputText v-model="doc.payment_by_phone_number" class="w-full"/>
+              <InputText v-model="setDoc.payment_by_phone_number" class="w-full"/>
             </div>
           </template>
           <template v-if="overLayName=='bank_info'">
             <div class="col-6">
               <label>{{ $t('Credit Card Number') }} </label><br/>
-              <InputText v-model="doc.credit_card_number" class="w-full"/>
+              <InputText v-model="setDoc.credit_card_number" class="w-full"/>
             </div>
             <div class="col-6">
               <label>{{ $t('Card Holder Name') }} </label><br/>
-              <InputText v-model="doc.card_holder_name" class="w-full"/>
+              <InputText v-model="setDoc.card_holder_name" class="w-full"/>
             </div>
             <div class="col-6">
               <label>{{ $t('Bank Name') }} </label><br/>
-              <InputText v-model="doc.bank_name" class="w-full"/>
+              <InputText v-model="setDoc.bank_name" class="w-full"/>
             </div>
             <div class="col-6">
               <label>{{ $t('Credit Expired Date') }} </label><br/> 
-              <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy" showIcon showButtonBar  />
+              <Calendar class="w-full" v-model="expired_card_date" view="month" dateFormat="mm/yy" showIcon />
             </div>
           </template>
+        </div>
+
+        <div v-if="overLayName=='change_note'">
+          <label for="textnote" class="text-lg font-semibold line-height-4">{{$t('Note')}}</label><br />
+          <Textarea class="w-full my-2" id="textnote" v-model="setDoc.note" rows="5" />
         </div>
       </ComOverlayPanelContent>
     </OverlayPanel>
@@ -386,12 +411,12 @@
     
 </template>
 <script setup>
-
+import { ref, onMounted, getApi, inject, useDialog, updateData, postData, useToast, onUnmounted } from "@/plugin"
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
-import {ref,getDoc,onMounted,getApi,inject,useDialog,updateData} from "@/plugin"
+import Calendar from 'primevue/calendar';
 import BtnCloseIcon from '@/assets/svg/icon-close.svg' 
 import {i18n} from '@/i18n';
  
@@ -400,6 +425,12 @@ const {isCityLedgerInvoiceDetailOpen} = useApp()
 
 
 const gv = inject('$gv');
+const toast = useToast();
+const frappe = inject("$frappe")
+const call = frappe.call()
+const db = frappe.db()
+
+
 const loading = ref(true)
 const doc = ref()
 const sub_record = ref()
@@ -411,15 +442,51 @@ const city_ledger_invoice_date = ref()
 const overLayName = ref("")
 const op = ref();
 const moment = inject("$moment")
+const setDoc = ref()
+const expired_card_date = ref()
+const show_payment_by = ref()
+const show_payment_information = ref()
+
+
 
 const toggle = ($event, name) => {
     overLayName.value = name
     op.value.toggle($event);
+    expired_card_date.value = moment(setDoc.value.credit_expired_date).format("MM/yy")
+    console.log(expired_card_date.value)
 }
 
-async function test(){
-  
 
+async function onSaveData(){
+  loading.value=true
+  const res = await postData(
+        "folio_transaction.update_folio_transaction_info",
+        {
+          "data":{
+            "doctype":"Folio Transaction",
+            "name":doc.value.name,
+            "data":{
+                "reference_number":setDoc.value.reference_number,
+                "credit_card_number":setDoc.value.credit_card_number,
+                "card_holder_name":setDoc.value.card_holder_name,
+                "bank_name":setDoc.value.bank_name,
+                "credit_expired_date":expired_card_date.value,
+                "payment_by":setDoc.value.payment_by,
+                "payment_by_phone_number":setDoc.value.payment_by_phone_number,
+                "note":setDoc.value.note
+            }
+          }
+        }, "", false, "edoor.api."
+  )
+  loading.value = false
+  if (res.data) {
+    toast.add({
+        severity: 'success',
+        detail: 'Update Successful', life: 3000
+    });
+    op.value.hide()
+    loadData()
+  }
 }
 
 const setting =window.setting
@@ -427,32 +494,56 @@ const { t: $t } = i18n.global;
 
 function loadData(){
     if (dialogRef.value.data.folio_transaction_number) {
-    loading.value = true
-    getApi("reservation.get_folio_transaction_detail", {
-      name: dialogRef.value.data.folio_transaction_number
-    })
-      .then((result) => { 
-        doc.value = result.message.folio_transaction
-        sub_record.value = result.message.sub_record
-        doc.value.tax_rule_data = JSON.parse(result.message.folio_transaction.tax_rule_data)
-        product_items.value = result.message.product_items
-        sale_summary.value = result.message.sale
-        city_ledger_invoice_date.value = result.message.city_ledger_invoice_date
- 
-        loading.value = false
-      }).catch((err) => {
-        loading.value = false
+      loading.value = true
+      getApi("reservation.get_folio_transaction_detail", {
+        name: dialogRef.value.data.folio_transaction_number
       })
-  }
+        .then((result) => {  
+          show_payment_by.value = result.message.show_payment_by 
+          show_payment_information.value = result.message.show_payment_information
+          doc.value = result.message.folio_transaction
+          setDoc.value = JSON.parse(JSON.stringify(doc.value))
+          sub_record.value = result.message.sub_record
+          doc.value.tax_rule_data = JSON.parse(result.message.folio_transaction.tax_rule_data)
+          product_items.value = result.message.product_items
+          sale_summary.value = result.message.sale
+          city_ledger_invoice_date.value = result.message.city_ledger_invoice_date
+          
+
+          loading.value = false
+        }).catch((err) => {
+          loading.value = false
+        })
+
+        
+    }
+}
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="FolioTransactionDetail"){
+            setTimeout(()=>{
+                loadData(false)
+            },1000)
+            
+        }
+    };
 }
 
 onMounted(() => {
     loadData();
+    window.addEventListener('message', actionRefreshData, false);
+    window.folio_transaction_detail_has_open = true 
+    window.folioTransactionDetailRef = dialogRef;
+
+    
+
 })
 
 const onClose = () => {
 
     dialogRef.value.close()
+
 }
 
 const onOpenGuestDetail = (id) => {
@@ -469,7 +560,7 @@ const onOpenReservationFolioDetail = (id) => {
 }
 
 const onOpenFolioTransactionDetail = (id) => {
-  window.postMessage('view_folio_transaction_detail' + "|" + id, '*')
+  window.postMessage('view_folio_transaction_detail' + "|" + id, '*') 
 }
 
 const onOpenCityLedgerDetail = (id) => {
@@ -478,6 +569,10 @@ const onOpenCityLedgerDetail = (id) => {
 
 const onOpenDeskFolioDetail = (id) => {
   window.postMessage('view_desk_folio_detail' + "|" + id, '*')
+}
+
+const onOpenSaleRecieptReport = (id) => {
+  window.postMessage('view_sale_detail' + "|" + id, '*')
 }
 
 const onViewCityLedgerInvoiceDetail = (id) => {
@@ -555,4 +650,20 @@ function onEditFolioTransaction() {
 function onCloseRef(result){
     op.value.hide()
 } 
+
+onUnmounted(()=> {
+  window.folio_transaction_detail_has_open = false
+  window.folioTransactionDetailRef = false;
+    
+})
 </script>
+<style scoped>
+.link_line_action_res_note {
+    border: 1px dashed #d1d4e5;
+    border-radius: 10px;
+    padding: 0 5px;
+    display: inline-block;
+    width: 100%;
+    background-color: #fdfdff;
+}
+</style>

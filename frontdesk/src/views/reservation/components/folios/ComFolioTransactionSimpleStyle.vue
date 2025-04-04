@@ -453,8 +453,8 @@ onUnmounted(()=>{
         display: none !important;
     }
     
-    .link_line_action1.auto_post{
-        border: 1px dashed #ff3720 !important;
+    .link_line_action1.auto_post {
+        border-bottom: 1px dashed #ff3720 !important;
         color: #ff3720 !important;
         }
 </style>

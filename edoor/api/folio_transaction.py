@@ -563,16 +563,16 @@ def post_charge_to_folio_afer_after_run_night_audit(property, working_day,run_co
         if run_commit:
             frappe.db.commit()
             
-@frappe.whitelist()
-def update_folio_transaction_info( data={}):
-    # data = {doctype:, name}
-    data={
-        "doctype":"Folio Transaction",
-        "name":"FT2025-0202",
-        "data":{
-            "reference_number":"hellx"
-        }
-    }
+@frappe.whitelist(methods="POST")
+def update_folio_transaction_info(data={}):
+    # data = {doctype:, name} 
+    # data={
+    #     "doctype":"Folio Transaction",
+    #     "name":"FT2025-0202",
+    #     "data":{
+    #         "reference_number":"hellx"
+    #     }
+    # }
     doc = frappe.get_doc(data.get("doctype"),data.get("name"))
     for field, value in data.get("data").items():
         setattr(doc, field, value)
@@ -580,5 +580,3 @@ def update_folio_transaction_info( data={}):
     doc.flags.ignore_validate =True
     doc.save()
     return doc
-
-    

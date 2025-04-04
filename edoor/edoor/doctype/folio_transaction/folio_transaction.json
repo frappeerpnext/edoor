@@ -166,6 +166,7 @@
   "source_reservation_stay",
   "stay_room_id",
   "report_description",
+  "invoice_description",
   "column_break_91",
   "bank_fee_description",
   "is_auto_post",
@@ -1179,11 +1180,16 @@
    "fieldtype": "Select",
    "label": "Payment Status",
    "options": "\nUnpaid\nPartially Paid\nPaid"
+  },
+  {
+   "fieldname": "invoice_description",
+   "fieldtype": "Small Text",
+   "label": "Invoice Description"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-25 18:23:45.398814",
+ "modified": "2025-04-02 17:02:32.349050",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

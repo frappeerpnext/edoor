@@ -1,16 +1,18 @@
 
 <template>
     <div class="card flex justify-content-center">
-        <Button type="button"  @click="toggle">
+ 
+        <Button class="border-blue-200 content_btn_b h-full px-2 py-1 border-none" :severity="(hasFilter?'warning':'secondary')" type="button" @click="toggle" style="height: 30px !important;">
          <slot>
-         
-            {{ selected || option?.label }} 
+        
+            {{ option?.label }} 
         
          </slot>
         </Button>
 
-        <OverlayPanel ref="op"  @show="onShow">
+        <OverlayPanel ref="op"  @show="onShow" class="filter_overlay_panel_custom">
             <Stack>
+                <h1 class="font-bold">{{ option.label }}</h1>
                 <ComSelect :options="operatorOptions"  optionLabel="label" optionValue="value" 
                   v-model="operator"
                   @onSelected="onOperatorChanged"
@@ -23,7 +25,7 @@
 
                  ref="searchInput"
                 v-model="keyword"
-                :placeholder="'Search ' + option.label" class="w-25rem"
+                :placeholder="'Search ' + option.label" class="w-full"
                  v-debounce="onSearch"
                  v-if="operator!='is'"
                  ></InputText>
@@ -31,13 +33,14 @@
              
                 <Listbox v-model="selected" v-if="option.fieldtype == 'Link' && operator!='is'"
                  :options="listData"
+                 optionValue="value"
                  @change="onSelectOptionChange"
                  :multiple="operator=='in' || operator=='not in'" 
 
-                 class="w-full md:w-56">
+                 class="w-full md:w-56 filter_content_custom">
                     <template #option="slotProps">
-                        <Stack>
-                            <h1>{{ slotProps.option.label || slotProps.option.value }}</h1>
+                        <Stack gap="2px">
+                            <h1 class="font-bold">{{ slotProps.option.label || slotProps.option.value }}</h1>
                             <p v-if="slotProps.option.description">{{ slotProps.option.description }}</p>
                         </Stack>
                     </template>
@@ -46,12 +49,14 @@
             <ComSelect 
                   v-if="operator=='is'"
                  :options="[{label:'Set',value:'set'},{label:'Not Set',value:'not set'}]"  optionLabel="label" optionValue="value" 
-                  v-model="keyword"
+                  v-model="selected"
                   @onSelected="onSearch"
                   :clear="false"
                   placeholder="Select Value"
                 />
             </Stack>
+
+            <slot name="bottom"></slot>
             
         </OverlayPanel>
     </div>
@@ -62,7 +67,8 @@ import { ref ,nextTick } from "vue";
 const emit = defineEmits();
 const props = defineProps({
     option:Object,
-    operatorOptions:Object
+    operatorOptions:Object,
+    hasFilter:Boolean
     
 })
 const operator = defineModel('operator')

@@ -1,21 +1,35 @@
 <template>
- <div class="flex gap-2" >
+ <div class="flex gap-2 justify-content-end" >
     <BlockUI v-tippy="data.status == 'Closed' ? 'This City Ledger Invoice is Closed' : ''" :blocked="data.status == 'Closed'">
-                    <Button @click="onAddTransaction">Add Transaction</Button>
+                    <Button class="conten-btn" @click="onAddTransaction">
+                        <i class="pi pi-download me-2" />
+                        Add Transaction</Button>
     </BlockUI>
-    <BlockUI v-tippy="data.status == 'Closed' ? 'This City Ledger Invoice is Closed' : ''" :blocked="data.status == 'Closed'">
-                <Button class="h-full conten-btn white-space-nowrap"  iconPos="right" type="button"
-                label="Remove" @click="onremove" aria-haspopup="true" aria-controls="folio_menu" />
-    </BlockUI>
+    
+              
+               
+                <BlockUI v-tippy="data.status == 'Closed' ? 'This City Ledger Invoice is Closed' : ''" :blocked="data.status == 'Closed'">
+    <Button class=" conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button"
+                label="Option" @click="toggle" aria-haspopup="true" aria-controls="folio_menu" /> </BlockUI> 
+                <Menu ref="folio_menu" id="folio_menu" :popup="true">
+                <template #end>
+                        <button  @click="onremove()"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-upload" />
+                            <span class="ml-2 ">{{ $t('Remove') }}</span>
+                        </button>
+                </template>
+                
+                </Menu>
 </div>
 </template>
 <script setup>
-import { ref, inject, useDialog, useConfirm,postData } from '@/plugin'
+import { ref, inject, useDialog, useConfirm ,postData } from '@/plugin'
 import ComSelectCityLedgerTransferTransaction from "@/views/city_ledger_invoice/components/ComSelectCityLedgerTransferTransaction.vue"
 const selectedFolioTransactions = ref({})
 
 import BlockUI from 'primevue/blockui';
-
+const folio_menu = ref();
 const dialogRef = inject("dialogRef")
 const dialog = useDialog()
 import {i18n} from '@/i18n';
@@ -24,10 +38,13 @@ const { t: $t } = i18n.global;
 const props = defineProps({
     data: Object,
 })
+const toggle = (event) => {
+    folio_menu.value.toggle(event);
+}
 const selections = defineModel("selections")
 function onremove(){
     dialogConfirm.require({
-        message: 'Do you want to Remove this record from this Folio',
+        message: 'Do you want to Remove this record from this City Ledger Invoice',
         header: 'Confirmation',
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',

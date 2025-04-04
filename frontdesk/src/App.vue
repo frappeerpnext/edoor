@@ -306,7 +306,9 @@ function showBusinessSourceDetail(name){
 }
 
 function showGuestDetail(name) {
-
+    if (window.guestDetailDialogBoxRef){
+        window.guestDetailDialogBoxRef.value.close()
+    }
     const dialogRef = dialog.open(GuestDetail, {
         data: {
             name: name
@@ -489,7 +491,7 @@ function showCityInvoiceDetail(name) {
     
 }
 function showReservationStayDetail(name) {
-    
+    console.log(window.reservation_stay)
     if (!window.reservation_stay){
     const dialogRef = dialog.open(ReservationStayDetail, {
         data: {
@@ -530,7 +532,10 @@ else{
 
 function showFolioTransactionDetail(name) {
         // iframe component ComFolioTransactionDetail
-
+       
+    if (window.folioTransactionDetailRef ){
+        window.folioTransactionDetailRef.value.close();
+    }
     const dialogRef = dialog.open(FolioTransactionDetail, {
         data: {
             folio_transaction_number: name
@@ -597,6 +602,9 @@ function showDepositLedgerDetail(name) {
 }
 
 function showFolioDetail(name) {
+    if(window.folioDetailDialogBoxRef){
+        window.folioDetailDialogBoxRef.value.close();
+    }
     const dialogRef = dialog.open(ComFolioDetail, {
         data: {
             name: name,
@@ -768,6 +776,9 @@ function showSaleDetail(name) {
 }
 
 function showDeskFolioDetail(name) {
+    if(window.deskFolioDetailDialogBox){
+        window.deskFolioDetailDialogBox.value.close();
+    }
     const dialogRef = dialog.open(ComDeskFolioDetail, {
         data: {
             name: name,

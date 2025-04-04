@@ -629,8 +629,8 @@ span.p-button-icon.pi.pi-ellipsis-h {
 }
 
 .link_line_action {
-    border: 1px dashed var(--bg-purple-cs);
-    border-radius: 10px;
+    border-bottom: 1px dashed var(--bg-purple-cs);
+    
     padding: 0 5px;
     color: var(--bg-purple-cs);
     cursor: pointer;
@@ -799,8 +799,8 @@ span.p-button-icon.pi.pi-ellipsis-v{
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px 0px;
 }
 .link_line_action1{
-    border: 1px dashed var(--bg-purple-cs) !important;
-    border-radius: 10px !important;
+    border-bottom: 1px dashed var(--bg-purple-cs) !important;
+    
     padding: 0 5px !important;
     color: var(--bg-purple-cs) !important;
     cursor: pointer !important;
@@ -1988,4 +1988,19 @@ background-color: rgb(255, 234, 234);
 }
 .fc-datagrid-cell-cushion.fc-scrollgrid-sync-inner{
     display: flex !important;
+}
+.reservation-detail-order > .p-dropdown-label.p-inputtext {
+    padding: 4px;
+}
+.filter_content_custom .p-listbox-item:nth-child(odd) {
+    background-color: var(--bg-tb-sec-color);
+    
+}
+.filter_content_custom .p-listbox-item:nth-child(even) {
+    background-color: #fff;
+}
+.filter_overlay_panel_custom {
+    max-width: 50rem;
+    max-height: 40rem;
+    overflow-y: scroll;
 }

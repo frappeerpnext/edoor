@@ -1,4 +1,5 @@
 <template>
+
     <ComFilterInput :option="option" 
         @onSearch="onSearch"
       v-model:operator="operator" 
@@ -8,22 +9,25 @@
        v-model:selected = "selected"
        @onLoadOptionData = "onLoadOptionData"
        @onFilter="onFilter"
+       :hasFilter="selected"
        >
-      
-       <span v-if="selected">{{ selected.value  }}</span>
-       <span v-else>
         {{ option.label }}
-       </span>
        
+
+
+        <template #bottom>
+        <Button @click="onClearFilter" :disabled="!selected" label="Clear Filter" severity="warning" class="w-full mt-4" />
+       </template>
     </ComFilterInput>
 
 
 </template>
 <script setup>
-import {ref,getData} from "@/plugin"
+import {ref,getData,watch} from "@/plugin"
 import ComFilterInput from "@/components/document/components/ComFilterInput.vue"
 const props = defineProps({
-    option:Object
+    option:Object,
+    defaultValue:Object//[key,"operator","value"]
 })
 const emit = defineEmits()
 const operator = ref("=")
@@ -36,29 +40,52 @@ const operatorOptions = [
     {label:"Is", value:'is'},
 ]
 const selected = ref()
-const listData = ref([1,2,3])
- 
-function onSearch(){
-   
-   
-    onLoadOptionData()
+const listData = ref([])
+watch(() => props.defaultValue, (newVal, oldVal) => {
+    if(props.defaultValue){ 
+    if(newVal){
+        operator.value = newVal[1]
+        selected.value = newVal[2] ;
 
+    }
+}else {
+     keyword.value = "";
+    selected.value = null
+}
+});
+
+
+function onSearch(){
+    if(operator.value!='is'){
+ 
+        onLoadOptionData()
+
+    }else {
+        emit("onFilter",[props.option.fieldname,operator.value,selected.value] )
+    }
+    
 
 }
 
 function onFilter(){
+    
     if(!selected.value){
         emit("onFilter",[props.option.fieldname,operator.value,null] )
     }else {
 if(Array.isArray(selected.value)){
-        emit("onFilter",[props.option.fieldname,operator.value,selected.value.map(r=>r.value)] )
+        emit("onFilter",[props.option.fieldname,operator.value,selected.value.map(r=>r)] )
     }else {
-        emit("onFilter",[props.option.fieldname,operator.value,selected.value.value] )
+        emit("onFilter",[props.option.fieldname,operator.value,selected.value] )
     }
     }
 
     
     
+}
+
+function onClearFilter(){
+    selected.value = null
+    emit("onFilter",[props.option.fieldname,operator.value,""] )
 }
 
 async function onLoadOptionData(){

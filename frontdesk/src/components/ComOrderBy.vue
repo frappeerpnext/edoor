@@ -1,6 +1,6 @@
 <template> 
 <div class="flex gap-2 h-full">
-    <ComSelect width="100%" optionLabel="label" optionValue="fieldname"
+    <ComSelect d-class="reservation-detail-order" d-height="30px" width="100%" optionLabel="label" optionValue="fieldname"
       placeholder="Sort By" v-model="data.order_by" :clear="false" @onSelected="onSelectOrderBy"
     :options="sortOptions" />
 
@@ -12,13 +12,16 @@
 </template>
 <script setup>
 import {getApi,ref, onMounted} from "@/plugin"
+import { useApp } from "@/hooks/useApp";
 const loading = ref(false)
+const {getMeta} = useApp()
+
 const data= ref({order_by:"modified", order_type:"desc"})
 const emit = defineEmits(['onOrderBy'])
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({
-    doctype:String,
+    doctype:String, 
     
 })
 const state = JSON.parse(localStorage.getItem("page_state_" + props.doctype.toLowerCase().replaceAll(" ","_")))
@@ -38,13 +41,12 @@ function onSelectOrderBy(d){
     emit("onOrderBy",data.value)
 }
 
-onMounted(()=>{
+onMounted(async ()=>{
     loading.value = true
-    getApi("frontdesk.get_meta",{doctype:props.doctype}).then((result)=>{
-        result.message.fields.filter(x=>x.in_list_view==1  || x.bold==1).forEach(r=>{
+    const meta = await getMeta(props.doctype);
+    meta.fields.filter(x=>x.in_list_view==1  || x.bold==1).forEach(r=>{
             sortOptions.value.push({fieldname:r.fieldname, label:$t(r.label)})
         })
-    })
 })
 
 function onOrderTypeClick(){

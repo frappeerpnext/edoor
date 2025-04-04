@@ -163,6 +163,7 @@ import DraggableResizableVue from 'draggable-resizable-vue3'
 import Grid from '@/components/layout/components/Grid.vue'
 import Col from '@/components/layout/components/Col.vue'
 import Stack from './components/layout/components/Stack.vue';
+import ComRepeatView from '@/components/layout/components/ComRepeatView.vue';
 
 app.config.globalProperties.$t = i18n.global.t;
 
@@ -249,6 +250,7 @@ app.component('ComReportServerModal', ComReportServerModal )
 app.component('Grid',Grid )
 app.component('Col', Col )
 app.component('Stack', Stack )
+app.component('ComRepeatView', ComRepeatView )
  
 app.use(DraggableResizableVue)
 

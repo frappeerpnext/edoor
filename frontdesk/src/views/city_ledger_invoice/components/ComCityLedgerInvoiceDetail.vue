@@ -1,8 +1,7 @@
 <template>
     <ComDialogContent hideButtonOK :hideIcon="false" :loading="loading">
         <div v-if="doc" class="mt-2">
-           
-
+    
             <ComCityLedgerInvoiceAction :folio="doc" :newDoc="newDoc" @onClose="onClose" />
 
             <div class="grid" style="margin-top: 10px;">
@@ -112,14 +111,32 @@
 {{ doc.note }}
            </div>  
             </div>
-           
             <Stack>
                 <ComCityledgerInvoiceTransactionsAction :data="doc" v-model:selections="selectedfolioTransactions"  />
                 <ComFolioTransactionCreditDebitStyle v-model:selectedfolioTransactions="selectedfolioTransactions"  :cityLedgerInvoice="name" v-if="doc?.name" :folio="doc"
                     :transaction_number="doc?.city_ledger"  doctype="City Ledger" :showCheckbox="true">
-                    <template #description="{ item, index }">
-                        {{ getStayDetail(item.name) }}
-                        <span v-if="item.reservation" @click="onOpenLink('view_reservation_detail', item.reservation)" class="link_line_action w-auto"> {{ item.reservation }} </span>
+                    <template  #description="{ item, index }">
+                        <div v-if="item.reservation">
+                        <div >
+                        Guest: {{ item.guest_name }} -
+                        <span :style="{ color: item.reservation_status_color }">
+                          {{item.reservation_status}}  
+                        </span>
+                        <div>
+                            RS: <span v-if="item.reservation" @click="onOpenLink('view_reservation_detail', item.reservation)" class="text-blue-300 cursor-pointer w-auto"> {{ item.reservation }} </span>    
+                            | 
+                            ST: <span v-if="item.reservation" @click="onOpenLink('view_reservation_stay_detail', item.reservation_stay)" class="text-blue-300 cursor-pointer w-auto"> {{ item.reservation_stay }} </span>
+                        </div></div>
+                        </div>
+                    </template>
+                    <template  #posting_date="{ item, index }">                       
+                    </template>
+                    <template #room="{ item, index }" >
+                        <div>
+                    {{ item.room_type }}        
+                        </div>
+                    </template>
+                    <template  #name="{ item, index }">
                     </template>
                 </ComFolioTransactionCreditDebitStyle>
             </Stack>
@@ -129,15 +146,14 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, useDialog, onMounted,   getDocument , getApi,onUnmounted } from '@/plugin'
+import { ref, inject, useDialog, onMounted,   getDocument , getApi,onUnmounted , getDoc } from '@/plugin'
 import ComCityLedgerInvoiceAction from '@/views/city_ledger_invoice/components/ComCityLedgerInvoiceAction.vue';
 import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
 import {i18n} from '@/i18n';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComCityledgerInvoiceTransactionsAction from './ComCityledgerInvoiceTransactionsAction.vue';
 import {useApp} from "@/hooks/useApp"
-
- const {isCityLedgerInvoiceDetailOpen} = useApp()
+const {isCityLedgerInvoiceDetailOpen} = useApp()
 
 
 const dialogRef = inject("dialogRef")
@@ -147,7 +163,7 @@ const dialog = useDialog()
 const moment = inject("$moment")
 const name = ref("")
 const doc = ref({})
-
+const show_detail = ref(false)
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const { t: $t } = i18n.global;
 const newDoc = ref()
@@ -156,23 +172,10 @@ function onOpenLink(view, name) {
     window.postMessage(view + "|" + name , '*')
 }
 
+
 function OnViewCityLedgerDetail(){
   
     window.postMessage("view_city_ledger_detail|" + doc.value.city_ledger,"*");
-}
-function getStayDetail(rs) {
-    if (!rs || typeof rs.value === "undefined") {
-        rs = ref({});
-    }
-    getDoc("Folio Transaction", rs.value)
-        .then(doc => {
-            rs.value = doc;
-        })
-        .catch(error => {
-            console.error("Error fetching document:", error);
-        });
-
-    return rs;
 }
 async function loadData(){
     isCityLedgerInvoiceDetailOpen.value = true
