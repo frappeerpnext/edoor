@@ -357,7 +357,29 @@
           </div>
         </div>
       </div> 
+      <hr/>
+      <div class="p-3">
+        <div class="line-height-1 text-right flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
+          <div>
+              <span class="italic">{{ $t('Created By') }} : </span>
+              <span class="text-500 font-italic">
+                  {{ doc?.owner?.split("@")[0] }}
+                  <ComTimeago :date="doc?.creation"/>  
+              </span>
+          </div>
+          <div>
+              <span class="italic"> {{ $t('Last Modified') }} : </span>
+              <span class="text-500 font-italic">
+                  {{ doc?.modified_by?.split("@")[0] }}
+                  <ComTimeago :date="doc?.modified"/>  
+              </span>
+          </div>
+        </div>
+      </div>
+
     </div> 
+
+
     <template #footer-left>
       <Button v-if="doc?.show_print_preview!=0" icon="pi pi-print" class="border-none" @click="onPrintFolioTransaction" :label="$t('Print')" :disabled="loading"></Button>
       <Button icon="pi pi-file-edit" class="border-none" @click="onEditFolioTransaction" :label="$t('Edit')" :disabled="loading"></Button>
@@ -458,7 +480,6 @@ const toggle = ($event, name) => {
 
 async function onSaveData(){
   loading.value=true
-  console.log(expired_card_date.value)
   const res = await postData(
         "folio_transaction.update_folio_transaction_info",
         {
@@ -470,7 +491,7 @@ async function onSaveData(){
                 "credit_card_number":setDoc.value.credit_card_number,
                 "card_holder_name":setDoc.value.card_holder_name,
                 "bank_name":setDoc.value.bank_name,
-                "credit_expired_date":expired_card_date.value ,
+                "credit_expired_date":expired_card_date.value!="Invalid date"?expired_card_date.value:null,
                 "payment_by":setDoc.value.payment_by,
                 "payment_by_phone_number":setDoc.value.payment_by_phone_number,
                 "note":setDoc.value.note

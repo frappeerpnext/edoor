@@ -33,7 +33,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-15 10:35:41.134990",
+ "modified": "2025-04-04 11:31:20.004268",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Ledger Type",
@@ -55,5 +55,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "label"
 }
