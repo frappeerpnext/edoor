@@ -36,7 +36,7 @@
         <div class="bg-white p-2 rounded-xl">
             <div class="flex justify-content-between mb-2">
                 <div>
-                  
+              
                     <ComFilter v-if="!options.hideFilter" :hideSearchField="options.hideSearchField" @onSearch="onSearch" :filters="filterOptions"  v-model:filter="tempFilter" />
                 </div>
                 <div>
@@ -135,6 +135,7 @@ const edoorReservationDetailSavedFilter = localStorage.getItem("edoor_reservatio
 const emit = defineEmits();
 const props = defineProps({
     doctype: String,
+    title:String,
     router_name:String,
     list_view_setting:String,
     options: {

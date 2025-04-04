@@ -3863,7 +3863,7 @@ def get_city_ledger_balance(property,start_date,end_date):
     data = frappe.db.sql(sql,{"property":property,"start_date":start_date,"end_date":end_date},as_dict =1)
     debit  = 0 if not data else data[0]["debit"]
     credit  = 0 if not data else data[0]["credit"]
-    balance = opening +(debit - credit )
+    balance = (opening or 0)  +((debit or 0) - (credit or 0) )
     
     
     

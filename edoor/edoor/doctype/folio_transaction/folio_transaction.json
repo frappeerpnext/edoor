@@ -1189,7 +1189,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-02 17:02:32.349050",
+ "modified": "2025-04-04 10:52:09.975330",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",
@@ -1304,7 +1304,7 @@
    "write": 1
   }
  ],
- "search_fields": "transaction_number,guest_name, room_number,account_code,account_name",
+ "search_fields": "transaction_number,guest_name, room_number,account_code,account_name,reservation,reservation_stay",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

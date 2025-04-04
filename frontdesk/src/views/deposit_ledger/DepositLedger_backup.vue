@@ -288,6 +288,7 @@ function loadData(show_loading = true) {
     }
     if (filter.value?.selected_room_number) {
         filters.push(["room_id", '=', filter.value.selected_room_number])
+    
     }
 
     

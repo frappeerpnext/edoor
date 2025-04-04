@@ -453,12 +453,12 @@ const toggle = ($event, name) => {
     overLayName.value = name
     op.value.toggle($event);
     expired_card_date.value = moment(setDoc.value.credit_expired_date).format("MM/yy")
-    console.log(expired_card_date.value)
 }
 
 
 async function onSaveData(){
   loading.value=true
+  console.log(expired_card_date.value)
   const res = await postData(
         "folio_transaction.update_folio_transaction_info",
         {
@@ -470,7 +470,7 @@ async function onSaveData(){
                 "credit_card_number":setDoc.value.credit_card_number,
                 "card_holder_name":setDoc.value.card_holder_name,
                 "bank_name":setDoc.value.bank_name,
-                "credit_expired_date":expired_card_date.value,
+                "credit_expired_date":expired_card_date.value ,
                 "payment_by":setDoc.value.payment_by,
                 "payment_by_phone_number":setDoc.value.payment_by_phone_number,
                 "note":setDoc.value.note
