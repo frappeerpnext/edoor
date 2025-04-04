@@ -27,7 +27,7 @@
                 v-model="keyword"
                 :placeholder="'Search ' + option.label" class="w-full"
                  v-debounce="onSearch"
-                 v-if="operator!='is'"
+                 v-if="operator!='is' "
                  ></InputText>
                 
               

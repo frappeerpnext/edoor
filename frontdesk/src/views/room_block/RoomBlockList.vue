@@ -50,6 +50,9 @@
         {{ $t('Draft') }}
       </Chip>
     </template>
+    <template #unblock_date="{ item }">
+      <span>{{ formatDate(item.unblock_date) }}</span>
+    </template>
   </ComDocumentList>
 </template>
 
@@ -65,7 +68,7 @@ import Chip from 'primevue/chip'
 const dialog = useDialog()
 const { t: $t } = i18n.global
 const gv = inject("$gv")
-
+const moment = inject("$moment")
 const selectedRow = ref()
 
 const options = ref({
@@ -78,29 +81,24 @@ const options = ref({
     { fieldname: "room_type", label: "Room Type" },
     { fieldname: "total_night_count", label: "Total Night(s)" },
     { fieldname: "reason", label: "Reason" },
-    { fieldname: "unblock_date", label: "Unblock Date", fieldtype: "Date" },
+    { fieldname: "unblock_date", label: "Unblock Date", fieldtype:"Date" },
     { fieldname: "unblock_note", label: "Unblock Note" },
-    { fieldname: "docstatus", label: "Document Status", fieldtype: "Int" }, // Added as regular field
-    { fieldname: "is_unblock", label: "Status", fieldtype: "Status" } // Removed extra_field
+    { fieldname: "docstatus", label: "Document Status", fieldtype: "Int",is_hide: true },  
+    { fieldname: "is_unblock", label: "Status", fieldtype: "Status" } 
   ],
   filterOptions: [
     { fieldname: "block_date", fieldtype: "Date" },
     { fieldname: "start_date", fieldtype: "Date" },
     { fieldname: "end_date", fieldtype: "Date" },
     { fieldname: "room_type", fieldtype: "Link", options: "Room Type", optionValue: "label", operator: "like" },
-    { fieldname: "room_number", fieldtype: "Link", options: "Room", optionValue: "label", operator: "like" },
-    { 
-      options: [
+    { fieldname: "room_number", fieldtype: "Link", options: "Room", optionValue: "label", operator: "like" }, 
+    { fieldname: "is_unblock",fieldtype: "Link",label:"Status"
+    , options:[
         { label: "Draft", value: "0" },
-        { label: "Blocked", value: "1" },
-        { label: "Unblocked", value: "2" }
-      ],
-      customFilter: (value) => {
-        if (value === "0") return [["docstatus", "=", 0], ["is_unblock", "=", 0]]
-        if (value === "1") return [["docstatus", "=", 1], ["is_unblock", "=", 0]]
-        if (value === "2") return [["is_unblock", "=", 1]]
-        return []
-      }
+        { label: "Blocked", value: "0" },
+        { label: "Unblocked", value: "1" }
+    ],
+    hideSearch:true
     }
   ],
   filters: [['property', '=', window.property_name]],
@@ -114,9 +112,13 @@ const options = ref({
 })
 
 function onRowDblclick(event) {
-  if (event?.data?.name) {
-    onOpenLink("view_room_block_detail", event.data.name)
+  if (event) {
+    onOpenLink("view_room_block_detail", event.name)
   }
+}
+
+function formatDate(date) {
+  return date && moment(date).isValid() ? moment(date).format("DD-MM-YYYY") : ''
 }
 
 function onOpenLink(action, name) {

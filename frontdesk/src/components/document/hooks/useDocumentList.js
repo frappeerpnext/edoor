@@ -1,10 +1,11 @@
 
-import { onMounted, ref,getDocumentList,postData,watch ,useRoute,getDocument,deleteDocument } from "@/plugin";
+import {onUnmounted, onMounted, ref,getDocumentList,postData,watch ,useRoute,getDocument,deleteDocument } from "@/plugin";
 import { useApp } from "@/hooks/useApp";
 import moment from "@/utils/moment.js";
 import ComSaveView from  "@/components/document/components/ComSaveView.vue"
 import ComListViewSetting from  "@/components/document/components/ComListViewSetting.vue"
 import {i18n} from '@/i18n';
+ 
 const { t: $t } = i18n.global; 
 export   function useDocumentList(props,emit,dialog=null) {
     const route = useRoute();
@@ -31,8 +32,8 @@ export   function useDocumentList(props,emit,dialog=null) {
     const listViewSetting = ref({})
  
     const contextMenuOptions = ref([
-        {label: 'View', icon: 'pi pi-fw pi-search', command: () =>alert(selectedRow.value.name)},
-        {label: 'Delete', icon: 'pi pi-fw pi-times', command: () =>alert(selectedRow.value.name)}
+        // {label: 'View', icon: 'pi pi-fw pi-search', command: () =>alert(selectedRow.value.name)},
+        // {label: 'Delete', icon: 'pi pi-fw pi-times', command: () =>alert(selectedRow.value.name)}
     ]);
     
 
@@ -397,6 +398,18 @@ watch(() => route.hash, async (newHash) => {
         emit("row-dblclick",event.data)
     }
 
+     
+    const actionRefreshData = async function (e) {
+     
+        if (e.isTrusted && typeof (e.data) != 'string') {
+            if (e.data.action == "ComDocumentList") {
+
+               getData();
+            }
+        };
+    }
+    
+
     onMounted(async ()=>{
         scrollHeight.value = getScrollHeight();
         meta.value =  await getMeta(props.doctype)
@@ -427,8 +440,12 @@ watch(() => route.hash, async (newHash) => {
         }
 
  
-
+        window.addEventListener('message', actionRefreshData, false);
         
+    })
+
+    onUnmounted(()=>{
+        window.removeEventListener('message', actionRefreshData, false);
     })
 
     

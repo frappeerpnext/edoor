@@ -162,14 +162,17 @@ const { items, scrollHeight, onSearch, loading, columns,
     onRowDoubleClick,
     getData
 } = useDocumentList(props,emit,dialog)
-const cm = ref();
 
+defineExpose({
+    getData 
+})
+
+const cm = ref();
 const onRowContextMenu = (event) => {
-    
         cm.value.show(event.originalEvent);
-  
-   
 };
+
+
 
 
 function onShowSummary() {

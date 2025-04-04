@@ -1,5 +1,6 @@
 <template>
   <ComDocumentList
+    ref="docListRef"
     doctype="Desk Folio"
     list_view_setting="deskfolio_list"
     :options="options"
@@ -38,35 +39,39 @@
   </ComDocumentList>
 </template>
 <script setup>
-import { inject } from "@/plugin";
+import { ref, inject } from "@/plugin";
 import ComDocumentList from "@/components/document/ComDocumentList.vue";
 import ComAddDeskFolio from "@/views/desk_folio/components/ComAddDeskFolio.vue";
 import { useDialog } from "primevue/usedialog";
+const docListRef = ref(null)
 const gv = inject("$gv");
 const dialog = useDialog();
 const options = {
   fields: [
     { fieldname: "name", label: "Desk Folio #", fieldtype: "Data" },
+    { fieldname: "posting_date", label: "Date" },
     { fieldname: "room_number", label: "Room" },
     { fieldname: "reference_number" },
     { fieldname: "room_type", label: "Room Type" },
     { fieldname: "guest" },
     { fieldname: "guest_name", is_hide: true },
-    { fieldname: "posting_date", label: "Desk Folio. Date" },
+ 
     { fieldname: "total_debit", label: "Debit" },
     { fieldname: "total_credit", label: "Credit" },
     { fieldname: "balance" },
-    { fieldname: "owner", fieldtype: "Data", label: "Created By" },
-    { fieldname: "creation", fieldtype: "Datetime", label: "Creation" },
     { fieldname: "status" },
+    { fieldname: "modified_by", fieldtype: "Data", label: "Modified By" },
+    { fieldname: "modified", fieldtype: "Datetime", label: "Last Modified" },
+    
   ],
   filterOptions: [
+  {
+      fieldname: "posting_date",
+    },
     {
       fieldname: "guest",
     },
-    {
-      fieldname: "status",
-    },
+   
     {
       fieldname: "room_type",
     },
@@ -74,19 +79,14 @@ const options = {
       fieldname: "room_number",
     },
     {
-      fieldname: "posting_date",
-    },
+      fieldname: "status",
+    }
+    
   ],
-  settingMenus: [
-    {
-      label: "Refresh",
-      icon: "pi pi-refresh",
-    },
-    {
-      label: "Export",
-      icon: "pi pi-upload",
-    },
-  ],
+  filters: [
+        ['property', '=', window.property_name]
+    ],
+  
 };
 
 function onRowDoubleClick(data) {
@@ -119,7 +119,8 @@ function onAddDeskFolio(data) {
     onClose: (options) => {
       const result = options.data;
       if (result) {
-        loadData();
+       window.postMessage({action:"ComDocumentList"},"*")
+       
         window.postMessage("view_desk_folio_detail|" + result.name, "*");
       }
     },

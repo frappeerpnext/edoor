@@ -100,7 +100,9 @@ function onClearFilter(){
 }
 
 async function onLoadOptionData(){
-    const searchParams = {
+  
+    if((typeof props.option.options)=="string"){
+        const searchParams = {
         doctype: props.option.options,
         txt: keyword.value,
         limit_page_length: 50, 
@@ -109,6 +111,10 @@ async function onLoadOptionData(){
     if(!res.error){
         listData.value = res.data;
     }
+    }else {
+        listData.value = props.option.options
+    }
+   
 
     
 

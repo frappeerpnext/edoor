@@ -32,6 +32,9 @@
           {{ item.guest }} {{ item.guest_name }}
         </Button>
       </template>
+      <template #payment_status="{ item, index }">
+        <ComStatus :status="item.payment_status" />
+      </template>
       <template #status="{ item, index }">
         <ComStatus :status="item.status" />
       </template>
@@ -51,6 +54,7 @@ const { t: $t } = i18n.global;
   const options = {
     fields: [
       { fieldname: "name", label: "Tran. #", },
+      { fieldname: "payment_status", label: "Payment Status" },
       { fieldname: "posting_date", label: "Date" },
       { fieldname: "reference_number", label: "Ref #" },
       { fieldname: "city_ledger_name" },
@@ -64,21 +68,21 @@ const { t: $t } = i18n.global;
       { fieldname: "status" },
     ],
     filterOptions: [
+      
       {
-        fieldname: "guest",
+        fieldname: "posting_date",
+      },
+      {
+        fieldname: "city_ledger",
+      },
+      {
+        fieldname: "payment_status",
       },
       {
         fieldname: "status",
       },
-      {
-        fieldname: "room_type",
-      },
-      {
-        fieldname: "room_number",
-      },
-      {
-        fieldname: "posting_date",
-      },
+
+      
     ],
     settingMenus: [
       {

@@ -806,6 +806,8 @@ function onSave(){
             window.postMessage({action:"DepositLedger"},"*")
             window.postMessage({action:"ComDepositLedgerDetail"},"*")
             window.postMessage({action:"load_folio_transaction"},"*")
+            window.postMessage({action:"ComDocumentList"},"*")
+
             
         }).catch((err) => {
             isSaving.value = false;
