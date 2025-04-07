@@ -314,7 +314,7 @@ def clear_cache():
 @frappe.whitelist()
 def one_minute_job():
     generate_audit_trail_from_version()
-    update_keyword(-1)
+    
     
         
 @frappe.whitelist()
@@ -429,52 +429,7 @@ def update_fetch_from_field(data):
         
         frappe.db.sql("delete from `tabQueue Job` where document_type='{}' and document_name=%(name)s and action='{}'".format(x["document_type"],x["action"]),{"name":x["document_name"]})
     frappe.db.commit()
-            
-
-
-@frappe.whitelist()
-def update_keyword(m=-1,d=0):
-    m = int(m)#month
-    d = int(d)#day
-    
-
-    doctypes = [
-        "Room",
-        "Reservation Stay",
-        "Business Source",
-        "City Ledger",
-         "Customer",
-         "Vendor",
-        "Reservation",
-        "Room Block",
-        "Folio Transaction"
-        ]
-    date = frappe.utils.now()
-    date = add_to_date( date,minutes=m,days=d)
-    for dt in doctypes:
-            
-            meta = frappe.get_meta(dt)
-             
-            if meta.has_field("keyword"):
-                fields = "name"
-                search_fields = []
-                if meta.search_fields:
-                    for s in  meta.search_fields.split(","):
-                        search_fields.append("coalesce({},'')".format(s))
-                    
-                    fields = fields + ",' ', " + ",' ',".join(search_fields)
-
-                sql = "update `tab{}` set keyword = concat({}) where modified>='{}'".format(dt,fields,date)                       
-                
-                frappe.db.sql(sql)
-                
-                if dt == "Reservation Stay":
-                    sql = "update `tabReservation Stay Room` a join `tabReservation Stay` b on a.parent = b.name set a.keyword = b.keyword where b.modified>='{}'".format(date)
-                    frappe.db.sql(sql)
-                      
-    frappe.db.commit()
-    return date
-                
+              
 @frappe.whitelist()
 def validate_property_data():
     if not can_run_job("edoor.api.schedule_task.validate_property_data"):

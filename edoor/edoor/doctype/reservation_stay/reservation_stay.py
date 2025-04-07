@@ -184,9 +184,7 @@ class ReservationStay(Document):
  
 
 	def after_insert(self):
-		
-		# update keyword
-		update_keyword(self)
+		pass
 
 	def on_update(self):
 		
@@ -262,21 +260,6 @@ class ReservationStay(Document):
 				frappe.db.sql("update `tabReservation Room Rate` set adult={} , child={} where reservation_stay='{}' and is_manual_change_pax=0".format(self.adult,self.child,self.name))
 	
 
-def update_keyword(self):
-	meta = frappe.get_meta("Reservation Stay")
-	search_fields = []
-	fields = "name"
-	if meta.search_fields:
-		for s in  meta.search_fields.split(","):
-			search_fields.append("coalesce({},'')".format(s))
-		
-		fields = fields + ",' ', " + ",' ',".join(search_fields)
-
-	sql = "update `tabReservation Stay` set keyword = concat({}) where name='{}'".format( fields, self.name)                       
-	frappe.db.sql(sql)
-	
-	sql = "update `tabReservation Stay Room` a join `tabReservation Stay` b on a.parent = b.name set a.keyword = b.keyword where b.name = '{}'".format(self.name)
-	frappe.db.sql(sql)
 
 
 def update_note(self):

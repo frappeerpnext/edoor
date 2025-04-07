@@ -38,6 +38,10 @@
       <template #status="{ item, index }">
         <ComStatus :status="item.status" />
       </template>
+      <template #footer="{ item }">
+        <Column :footer="$t('Total') + ':'" :colspan="7"
+        footerStyle="text-align:right" />
+      </template>
     </ComDocumentList>
   </template>
   <script setup>

@@ -285,11 +285,9 @@ function onUnblock() {
             },
         },
         onClose: (options) => {
-            
-          
-
-            if (result) {
-                doc.value = result
+            if (options.data) {
+                doc.value = options.data
+                window.postMessage({action:"ComDocumentList"},"*")
             }
         }
     })

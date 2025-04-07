@@ -9,6 +9,20 @@
                                        
                 </template>
             </Column>
+            <Column  field="action" header="Action" >
+                <template #body="slotProps">
+                    <InputText type="text" class="p-inputtext-sm w-full"  v-model="slotProps.data.action" :maxlength="50" />
+                                       
+                </template>
+            </Column>
+            
+            <Column  field="id_field" header="ID Field" >
+                <template #body="slotProps">
+                    <InputText type="text" class="p-inputtext-sm w-full"  v-model="slotProps.data.id_field" :maxlength="50" />
+                                       
+                </template>
+            </Column>
+
             
             <Column  field="is_hide" header="Hid in table" >
                 <template #body="slotProps">

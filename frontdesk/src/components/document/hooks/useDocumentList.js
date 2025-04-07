@@ -25,7 +25,7 @@ export   function useDocumentList(props,emit,dialog=null) {
     const filterOptions = ref([])
     const orderBy = ref()
     const totalRecord = ref(0)
-    const limit = ref(50)
+    const limit = ref(20)
     const viewList = ref([])
     const currentView=ref()
     const  saveViewList= ref(null); //we use to reload save view list via define expost when add or update view
@@ -216,7 +216,7 @@ watch(() => route.hash, async (newHash) => {
 
     function getColumns(){
         columns.value = [];
-
+        
         fields.value.filter(x=>!x.is_hide).forEach((f)=>{
           
             // doclist query field can be assign alias field
@@ -229,15 +229,19 @@ watch(() => route.hash, async (newHash) => {
                     field:arrField.length==1?field.fieldname:arrField[1].trim(),
                     header: f.label || field.label,
                     fieldtype:f.fieldtype ||  field.fieldtype,
-                    header_class: getAlignmentClass(field)
+                    header_class: getAlignmentClass(field),
+                    action:f.action || "",
+                    id_field: f.id_field || ""
                 })
-            }else if (["name","owner","modified",'creation','modified_by'].includes(f.fieldname)){
+            }else if (["name","owner","modified",'creation','modified_by'].includes(arrField[0].trim())){
                 
                 columns.value.push({
-                    field:f.fieldname,
+                    field:arrField.length==1?f.fieldname:arrField[1].trim(),
                     header: f.label || f.fieldname,
                     fieldtype:f.fieldtype ,
-                    header_class: getAlignmentClass(f)
+                    header_class: getAlignmentClass(f),
+                     action:f.action || "",
+                    id_field: f.id_field || ""
                 })
             }
         })
@@ -413,7 +417,11 @@ watch(() => route.hash, async (newHash) => {
         };
     }
     
-
+    function onOpenLink(action, name) {
+        
+        window.postMessage(action + '|' + name, '*')
+    }
+    
     onMounted(async ()=>{
         scrollHeight.value = getScrollHeight();
         meta.value =  await getMeta(props.doctype)
@@ -473,7 +481,8 @@ watch(() => route.hash, async (newHash) => {
    onSearch,
    onOrderBy,
    onRowDoubleClick,
-   getData
+   getData,
+   onOpenLink
    
 };
 }

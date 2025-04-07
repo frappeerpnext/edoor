@@ -1,10 +1,7 @@
 <template>
 <div>           
-    <div class="p-2 bg-gray-200 border-round-lg text-center">
-        <b>Issue An Invoice</b>
-    </div>
     <div class="mt-1 mb-2">
-        <b>Transatction Durring  - {{ working_day.date_working_day }}</b>
+        <b>transaction during  - {{ working_day.date_working_day }}</b>
        
     </div>
     <div class="grid ">
@@ -19,17 +16,13 @@
         <ComBoxSummaryBalanceTransaction label="Unpaid Invoice" :value='transatction?.pending_balance.city_ledger_invoice_pending' :isCurrency="true" :class="'col-4 md:col  md:mx-1 my-1'" />
         <ComBoxSummaryBalanceTransaction label="UnInvoice" :value='transatction?.pending_balance.city_ledger_uninvoice' :isCurrency="true" :class="'col-4 md:col md:mx-1 my-1'" />
     </div>
-    <div>
-        <ComCityLedgerDetailPaymentReceived :name="data?.name" />
-        <ComCityLedgerDetailAging  :name="data?.name" />
-    </div>
+
 </div>
 </template>
 <script setup>
 import { ref, getDoc, inject, useDialog, onMounted, deleteDoc, useConfirm, onUnmounted, useToast ,getApi} from '@/plugin'
 import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue';
-import ComCityLedgerDetailPaymentReceived from './ComCityLedgerDetailPaymentReceived.vue';
-import ComCityLedgerDetailAging from './ComCityLedgerDetailAging.vue';
+
 const working_day =  window.working_day
 const props = defineProps({
     data: Object,
@@ -45,7 +38,7 @@ function loadData(){
     }).then((result) => {
         cityLedgerAmountSummary.value = result.message
     })
-    getApi("city_ledger.get_balance_city_ledger",{ property: window.property_name , date:window.current_working_date , cityleder:props.data?.name }).then((result)=>{
+    getApi("city_ledger.get_balance_city_ledger",{ property: window.property_name , date:window.current_working_date , city_leger:props.data?.name }).then((result)=>{
         transatction.value = result.message;
     })
 }

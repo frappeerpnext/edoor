@@ -6,27 +6,8 @@
    list_view_setting="city_ledger_folio_transaction"
    @row-dblclick="onRowDblclick"
    >
-      <template #name="{ item, index }">
-         <Button class="p-0 link_line_action1" link @click="onOpenLink('view_folio_transaction_detail',item.name)" >
-            {{ item.name }}
-         </Button>
-      </template>
-      <template #city_ledger_name="{ item, index }">
-         <Button class="p-0 link_line_action1" link @click="onOpenLink('view_city_ledger_detail',item.transaction_number)" >
-            {{ item.city_ledger_name }}
-         </Button>
-      </template>
-      <template #reservation="{ item, index }">
-         <Button v-if="item.reservation" class="p-0 link_line_action1" link @click="onOpenLink('view_reservation_detail',item.reservation)" >
-            {{ item.reservation }}
-         </Button>
-      </template>
-      
-      <template #reservation_stay="{ item, index }">
-         <Button v-if="item.reservation_stay" class="p-0 link_line_action1" link @click="onOpenLink('view_reservation_stay_detail',item.reservation_stay)" >
-            {{ item.reservation_stay }}
-         </Button>
-      </template>
+     
+          
       <template #room_number="{ item, index }">
          {{ item.room_number }} - {{  item.room_type_alias }}
       </template>
@@ -51,15 +32,17 @@
 import ComDocumentList from "@/components/document/ComDocumentList.vue"
 const options = {
    fields:[
-      {fieldname:"name",label:"Tran. #"},
+      {fieldname:"name",label:"Tran. #",action:"view_folio_transaction_detail"},
       {fieldname:"posting_date",label:"Date"},
-      {fieldname:"reservation",label:"Res. #"},
-      {fieldname:"reservation_stay",label:"Stay. #"},
+      {fieldname:"reservation",label:"Res. #",action:"view_reservation_detail"},
+      {fieldname:"reservation_stay",label:"Stay. #",action:"view_reservation_stay_detail"},
       {fieldname:"transaction_number",label:"City Ledger" ,is_hide:true},
-      {fieldname:"city_ledger_name",label:"City Ledger"},
+      {fieldname:"city_ledger_name",label:"City Ledger",action:"view_city_ledger_detail"},
+      {fieldname:"guest",label:"Guest",is_hide:true},
+      {fieldname:"guest_name",label:"Guest",action:"view_guest_detail",id_field:"guest"},
       {fieldname:"room_number",label:"Room"},
       {fieldname:"room_type_alias",label:"Room Type" , is_hide:true},
-      {fieldname:"account_code",label:"account_code"},
+      {fieldname:"account_code",label:"Account Code"},
       {fieldname:"account_name",label:"account_name", is_hide:true},
       {fieldname:"type",label:"account_name", is_hide:true},
       {fieldname:"transaction_amount as debit",label:"Debit"},
@@ -73,7 +56,7 @@ const options = {
       {fieldname:"transaction_number",label:"City Ledger", fieldtype:"Link", options:"City Ledger",operator:"="},
       {fieldname:"reservation"},
       {fieldname:"reservation_stay"},
-      {fieldname:"account_code"},
+      {fieldname:"account_code",fieldtype:"Tree"},
 
    ],
    filters: [["property", '=', window.property_name], ["transaction_type", '=', 'City Ledger'], ["is_base_transaction", '=', 1]]

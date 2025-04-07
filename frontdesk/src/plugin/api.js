@@ -125,6 +125,23 @@ export function updateData(param){
     
 }
 
+export function updateDocument(param){
+    //doctype:"", name:"", data:{}, message:"",show_message=true
+    return db.updateDoc(param.doctype, param.name, param.data,param.ignores)
+        .then((doc) => {
+           
+            if(!param.hide_message){
+            window.postMessage('show_success|' + `${param.message ? param.message : 'Update successful'}`, '*')
+            }
+            return  { data: doc, error: null }
+        })
+        .catch((error) => {
+            handleServerMessage(error)
+            return { data: null, error }
+        });
+    
+}
+
 
 export function createUpdateDoc(doctype, data, message, rename=null,show_error_message=true){ 
  

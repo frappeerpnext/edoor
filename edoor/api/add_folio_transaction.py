@@ -302,9 +302,14 @@ def validate_add_folio_transaction(data,working_day):
     
     # validate user select target document number 
     if account_code_doc.target_document:
+        
         if not  "target_transaction_number" in data or not data["target_transaction_number"]:
             frappe.throw(_("Please select target transaction number"))
-              
+
+        if data.get("target_transaction_type") == "City Ledger":
+            if frappe.get_cached_value("City Ledger",data.get("target_transaction_number"),"status") == 'Closed':
+                frappe.throw("This city ledger account is already closed")
+                
     
     if not account_code_doc.allow_zero_amount_posting:
  

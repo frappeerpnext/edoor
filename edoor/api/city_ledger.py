@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 from frappe import _ 
 from frappe import utils
+from frappe.model.document import Document
+
 @frappe.whitelist()
 def get_city_ledger_account(property):
     sql = """
@@ -110,7 +112,7 @@ def get_city_Ledger_jounal(property):
     data = frappe.db.sql(sql, {"property":property} , as_dict=True)
     return data
 @frappe.whitelist()
-def get_balance_city_ledger(property, date=None, cityleder=None):
+def get_balance_city_ledger(property, date=None, city_leger=None):
     # Aging Balance Query
     aging_balance_sql = """
     SELECT 
@@ -156,12 +158,12 @@ def get_balance_city_ledger(property, date=None, cityleder=None):
 
     # Add city ledger filter if provided
     count_pending = 0
-    if cityleder:
-        aging_balance_sql += " AND ft.transaction_number = %(cityleder)s"
-        pending_balance_sql += " AND ft.transaction_number = %(cityleder)s"
-        params["cityleder"] = cityleder  # Include in parameters
+    if city_leger:
+        aging_balance_sql += " AND ft.transaction_number = %(city_leger)s"
+        pending_balance_sql += " AND ft.transaction_number = %(city_leger)s"
+        params["city_leger"] = city_leger  # Include in parameters
         count_pending = frappe.db.count("City Ledger Invoice", {
-        "city_ledger": cityleder,
+        "city_ledger": city_leger,
         "status": "Open"
         })
         
@@ -235,9 +237,8 @@ def get_city_Ledger_payment_received(filters):
         sql_mtd += " AND transaction_number = %(city_ledger)s"
         params["city_ledger"] = filters["city_ledger"]
 
-    sql_today += " GROUP BY account_code ORDER BY creation DESC"
-    sql_mtd += " GROUP BY account_code ORDER BY creation DESC"
-
+    sql_today += " GROUP BY account_group ORDER BY creation DESC"
+    sql_mtd += " GROUP BY account_group ORDER BY creation DESC"
     today_data = frappe.db.sql(sql_today, params, as_dict=True)
     mtd_data = frappe.db.sql(sql_mtd, params, as_dict=True)
 

@@ -36,29 +36,14 @@
                             <tr>
                                 <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
                                     {{ $t('City Ledger Invoice Information') }} - 
-                                    <span v-if="inv_value?.status"  class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                            :style="{ backgroundColor: inv_value?.status == 'Open' ? '#8BFE9B' : '#6F6E6E' }">
-                            
-                            {{ inv_value?.status}}
-                            </span>
-                            <span 
-                            v-if="inv_value?.status"  
-                            class="px-2 rounded-lg text-white p-1px border-round-3xl ms-2"
-                            :style="{ 
-                            backgroundColor: 
-                            inv_value?.payment_status === 'Unpaid' ? '#FF0000' :    // Red
-                            inv_value?.payment_status === 'Partially Paid' ? '#FFFF00' :  // Yellow
-                            inv_value?.payment_status === 'Paid' ? '#008000' : '#6F6E6E'  // Default Grey
-                            }"
-                            >
-                            {{ inv_value?.payment_status }}
-                            </span>
+                                    <ComStatus :status="inv_value?.status" /> 
+                                    <ComStatus :status="inv_value?.payment_status" /> 
 
                                 </th>
                             </tr>
                             
-                            <ComStayInfoNoBox label="INV#" :value="inv_value?.name" />
-                            <ComStayInfoNoBox label="Refernce #" :value="inv_value?.reference_number" />
+                            <ComStayInfoNoBox label="Invoice #" :value="inv_value?.name" />
+                            <ComStayInfoNoBox label="Reference #" :value="inv_value?.reference_number" />
                             <ComStayInfoNoBox label="City Ledger">
                                 <Stack :row="true">
                                     <span   @click=""   v-tippy="'Click to view city ledger detail'" class="link_line_action1" style="margin-left: -10px;">{{ inv_value?.city_ledger }}</span> 

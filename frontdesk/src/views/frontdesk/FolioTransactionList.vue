@@ -66,11 +66,13 @@ const options = {
     ,
     filterOptions: [
         { fieldname: "posting_date" },
+        {fieldname:"account_code",fieldtype:"Tree"},
         { fieldname: "transaction_type", label: "Ledger Type", options: "Ledger Type" },
         { fieldname: "reservation" },
         { fieldname: "reservation_stay" },
         { fieldname: "business_source" },
         { fieldname: "reservation_status" },
+
 
     ],
     filters: [

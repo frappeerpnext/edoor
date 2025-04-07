@@ -2305,4 +2305,11 @@ def get_doctype_count(doctype_name,filters=None,or_filters=None):
     
     return result[0][0] if result else 0
         
-    
+@frappe.whitelist()
+def getChildrenOf(doctype,parent,include_parent=False):
+    from frappe.utils.nestedset import get_descendants_of
+
+    descendants = get_descendants_of(doctype, parent)
+    if include_parent:
+        descendants.append(parent)
+    return descendants

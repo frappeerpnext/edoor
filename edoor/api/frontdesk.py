@@ -3852,15 +3852,15 @@ def get_room_occupy(property,date,keyword='',business_source = "",room_type="",r
     return data 
 
 @frappe.whitelist()
-def get_city_ledger_balance(property,start_date,end_date):
+def get_ledger_balance(property,start_date,end_date,ledger_type):
     # get opening
-    sql = "select sum(total_amount * if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where property = %(property)s and posting_date<%(date)s"
-    data = frappe.db.sql(sql,{"property":property,"date":start_date},as_dict =1)
+    sql = "select sum(total_amount * if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where transaction_type=%(ledger_type)s and property = %(property)s and posting_date<%(date)s"
+    data = frappe.db.sql(sql,{"property":property,"date":start_date,"ledger_type":ledger_type},as_dict =1)
     opening  = 0 if not data else data[0]["amount"]
     
     # get debit,credit
-    sql = "select sum(total_amount * if(type='Debit',1,0)) as debit, sum(total_amount * if(type='Debit',0,1)) as credit   from `tabFolio Transaction` where property = %(property)s and posting_date between %(start_date)s and %(end_date)s"
-    data = frappe.db.sql(sql,{"property":property,"start_date":start_date,"end_date":end_date},as_dict =1)
+    sql = "select sum(total_amount * if(type='Debit',1,0)) as debit, sum(total_amount * if(type='Debit',0,1)) as credit   from  `tabFolio Transaction` where transaction_type=%(ledger_type)s and property = %(property)s and posting_date between %(start_date)s and %(end_date)s"
+    data = frappe.db.sql(sql,{"property":property,"start_date":start_date,"end_date":end_date,"ledger_type":ledger_type},as_dict =1)
     debit  = 0 if not data else data[0]["debit"]
     credit  = 0 if not data else data[0]["credit"]
     balance = (opening or 0)  +((debit or 0) - (credit or 0) )

@@ -26,7 +26,7 @@ class RoomBlock(Document):
 		self.status = "Draft"
 		if self.docstatus == 1:
 			if self.is_unblock ==1:
-				self.status = "Unblock"
+				self.status = "Unblocked"
 			else:
 				self.status = "Blocked"
 
@@ -49,6 +49,11 @@ class RoomBlock(Document):
   
 		
 	def before_update_after_submit(self):
+		if self.is_unblock:
+			self.status = 'Unblocked'
+		else:
+			self.status = 'Blocked'
+  
 		self.total_night_count = date_diff(self.end_date,self.start_date)
 		if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction") == 0:
 			
@@ -61,8 +66,9 @@ class RoomBlock(Document):
 			check_user_permission("role_for_back_date_transaction")
 
 	def on_update_after_submit(self): 
+		
 		if self.is_unblock ==1:
-			self.status = 'Unblocked'
+			
 			if not self.unblock_housekeeping_status_code:
 				frappe.throw("Please select current room housekeeping status.")
 			room_doc = frappe.get_doc("Room", self.room_id)
@@ -71,8 +77,9 @@ class RoomBlock(Document):
 			room_doc.save()
 			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
+			
 		else:
-			self.status = 'Blocked'
+		
 			#check if date is extend
 			old_doc = frappe.get_doc("Room Block", self.name)
 			if self.end_date != old_doc.end_date or  self.start_date != old_doc.start_date:
@@ -99,8 +106,7 @@ class RoomBlock(Document):
 
 				# if user change room block release date back date
 				room_doc.save()
-
-
+  
 	def after_insert(self):
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
 			"comment_type":"Created",

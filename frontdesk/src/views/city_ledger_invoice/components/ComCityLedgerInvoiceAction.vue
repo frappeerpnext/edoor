@@ -44,7 +44,8 @@
             </Menu>
         </div>
         <div class="flex ms-2 md:ms-0">
-            <Button @click="viewCityLedgerDetail" class="conten-btn sp" :label="$t('Print')" icon="pi pi-print" />
+            
+            <SplitButton class="spl__btn_cs_b sp_b" @click="viewCityLedgerDetail" id="btnprint" :label="$t('Print')" icon="pi pi-print" :model="items" />
             <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b btn-size2 ml-2"></Button>
         </div>
 
@@ -90,7 +91,24 @@ const props = defineProps({
     folio: Object,
     newDoc:Object
 })
-
+const items = [
+    {
+        label: $t('City Ledger Invoice Summary'),
+        icon: 'pi pi-print',
+        command: () => {
+            OpenServerReport("/Front Desk/rptCityLedgerInvoiceSummary", "City Ledger Invoice Summary" , [{ name: 'city_ledger_invoice', values: [selectedCityLedgerInvoice.value.name] }])
+        }
+    },
+    {
+        label: $t('City Ledger Invoice Summary'),
+        icon: 'pi pi-print',
+        command: () => {
+            const url = props.url.replace("printview","api/method/frappe.utils.print_format.download_pdf") + "&orientation=Landscape" 
+              window.open(url, "newWindow", "width=1000,height=1000");
+           
+        }
+    },
+];
 const emit = defineEmits(["onClose"])
 const accountGroups = ref(window.setting.account_group.filter(r => r.show_in_desk_folio == 1))
 const selectedCityLedgerInvoice = ref(props.folio)

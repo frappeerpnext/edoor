@@ -30,8 +30,8 @@
 
             </Button>
         </template>
-        <template #room_type="{ item, index }">
-            xxxxx
+        <template #room_types="{ item, index }">
+           
             {{ item.room_type_alias }}
         </template>
         <template #reservation_status="{ item, index }">

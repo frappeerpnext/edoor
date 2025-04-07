@@ -124,7 +124,8 @@ async function loadData() {
     filters.start_date = moment.utc(filter.value.start_date).format("YYYY-MM-DD")
     filters.end_date = moment.utc(filter.value.end_date).format("YYYY-MM-DD")
     filters.property = property.name
-    const res = await getData("frontdesk.get_city_ledger_balance", filters);
+    filters.ledger_type="City Ledger"
+    const res = await getData("frontdesk.get_ledger_balance", filters);
     
     if(res.data){
         summary.value = res.data

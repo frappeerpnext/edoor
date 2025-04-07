@@ -46,19 +46,19 @@ import { ref, getDoc, onMounted,getApi} from '@/plugin'
 const doc = ref({})
 const props = defineProps({
     name: String,
+
 })
 function loadData(){
     getApi("city_ledger.get_city_Ledger_payment_received", {
         filters: {
             date: working_day.date_working_day,
-            city_ledger: props.name,
+            city_ledger: props?.name,
             property:window.property.name
         }
     }).then((result) => {
         console.log(window.property)
         doc.value = result.message
     })
-    console.log(props.name)
 }
 onMounted(() => {
     loadData()

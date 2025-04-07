@@ -88,17 +88,15 @@ def get_payment_status(name):
     payment = 0
     balance_value = 0
     
-    if [d for d in payment_data if d.get("account_group") == '3000']:
-        payment =abs( max([d.get("total_amount") for d in payment_data if d.get("account_group") == '3000']) )#payment account group
-    
+    if [d for d in payment_data if d.get("account_group") == '30000']:
+        payment =abs( max([d.get("total_amount") for d in payment_data if d.get("account_group") == '30000']) )#payment account group
     balance_value = sum([d.get("total_amount") for d in payment_data])
     payment_status = ""
-    
     if payment == 0:
         payment_status = "Unpaid"
-    elif payment < 0 and balance_value != 0:
+    elif payment > 0 and balance_value != 0:
         payment_status = "Partially Paid"
-    elif payment>0 and balance_value == 0:
+    else:
         payment_status = "Paid"
     return payment_status
 

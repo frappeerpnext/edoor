@@ -89,6 +89,8 @@ function onSave() {
     createUpdateDoc('Room Block', savedData).then((r) => {
         dialogRef.value.close(r)
         window.postMessage({action:"Housekeeping"},"*")
+    
+
         loading.value = false
     }).catch((err) => {
         loading.value = false

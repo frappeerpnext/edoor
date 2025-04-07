@@ -1,20 +1,20 @@
 <template>
 <div>
-    <span class="text-xl">{{$t('Top Debtor Company')}}</span>
+    <span class="text-xl">{{$t('Top Debtor Companies')}}</span>
 <div>
     <ComChart v-if="chartData" height="300px" :chartData="chartData" />
 </div>
 <div>
-    <span class="text-xl">{{$t('Reccent Transaction')}}</span>
+    <span class="text-xl">{{$t('Reccently Transactions')}}</span>
     <div class="mt-2">
     <TabView>
-            <TabPanel :header="$t('Journal Transaction')">
+            <TabPanel :header="$t('Journal Transactions')">
                 <ComCityLedgerJournalTransactioin ref="cityledger_journal_refresh" />
             </TabPanel>
-            <TabPanel :header="$t('City Ledger Account')">
+            <TabPanel :header="$t('City Ledger Accounts')">
                 <ComCityledgerAccount ref="city_ledger_account_refresh" />
             </TabPanel>
-            <TabPanel :header="$t('City Ledger Invoice')">
+            <TabPanel :header="$t('City Ledger Invoices')">
                 <ComCityLedgerLedgerInvoice ref="city_ledger_invoice_refresh" />
             </TabPanel>
     </TabView>        

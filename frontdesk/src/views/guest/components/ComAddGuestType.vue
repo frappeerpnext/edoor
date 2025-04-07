@@ -1,5 +1,6 @@
 <template>
   <ComDialogContent :loading="loading" @onClose="onClose" @onOK="onSave()">
+ 
     <div class="grid">
       <div class="col-12">
       <label>{{ $t('Guest Type') }} </label>
@@ -38,7 +39,7 @@ function onSave(){
   }
   createUpdateDoc('Customer Group',guestType.value,null,rename.value)
   .then((r)=>{
-    window.postMessage({action:"GuestList"},"*")
+    window.postMessage({action:"ComDocumentList"},"*")
     window.socket.emit("GuestType", window.property_name)
 
     dialogRef.value.close(r)

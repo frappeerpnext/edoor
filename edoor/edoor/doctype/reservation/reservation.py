@@ -66,28 +66,8 @@ class Reservation(Document):
 
 
 	def after_insert(self):
-		
-	 
-			# udate keyworkd
-		update_keyword(self)
-
-	 
-
-def update_keyword(self):
-	meta = frappe.get_meta("Reservation")
-	search_fields = []
-	fields = "name"
-	if meta.search_fields:
-		for s in  meta.search_fields.split(","):
-			search_fields.append("coalesce({},'')".format(s))
-		
-		fields = fields + ",' ', " + ",' ',".join(search_fields)
-
-	sql = "update `tabReservation` set keyword = concat({}) where name='{}'".format( fields, self.name)                       
-	frappe.db.sql(sql)
-	
+		pass
  
-
    
    
 def update_note(self):

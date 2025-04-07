@@ -28,6 +28,8 @@
     </template>
 
     <template #is_unblock="{ item }">
+      {{ item.is_unblock }}
+      {{ item.docstatus }}
       <Chip 
         v-if="item.is_unblock == 1" 
         class="text-white surface-400 p-1px px-2"
@@ -112,15 +114,15 @@ function onRowDblclick(event) {
   }
 }
 
-function formatDate(date) {
-  return date && moment(date).isValid() ? moment(date).format("DD-MM-YYYY") : ''
-}
-
 function onOpenLink(action, name) {
   if (name) {
     window.postMessage(`${action}|${name}`, '*')
   }
 }
+function formatDate(date) {
+  return date && moment(date).isValid() ? moment(date).format("DD-MM-YYYY") : ''
+}
+
 
 function onAddNewRoomBlock() {
   if (!gv.cashier_shift?.name) {
@@ -149,7 +151,7 @@ function onAddNewRoomBlock() {
         window.postMessage("view_room_block_detail|" + result.name, "*")
         setTimeout(() => {
                     window.postMessage({action:"ComDocumentList"},"*")
-                }, 5000);
+                }, 3000);
       }
     }
   })

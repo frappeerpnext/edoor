@@ -23,7 +23,7 @@
                 </Column>
                 <Column header="Business Source" style="width:max-content !important;max-width: max-content !important;">
                         <template #body="slotProps">
-                            <button v-if="slotProps.data?.business_source"  @click="onOpenLink('view_folio_detail', slotProps.data?.business_source)"  class="link_line_action1">{{slotProps.data?.business_source }}</button>
+                            <button v-if="slotProps.data?.business_source"  @click="onOpenLink('view_city_ledger_detail', slotProps.data?.name)"  class="link_line_action1">{{slotProps.data?.business_source }}</button>
                         </template>
                 </Column>
                 <Column header="Total Debit" style="width:max-content !important;max-width: max-content !important;">

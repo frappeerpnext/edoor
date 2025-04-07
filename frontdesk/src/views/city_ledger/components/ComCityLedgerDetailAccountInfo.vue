@@ -1,5 +1,11 @@
 <template>
-            <Panel class="p-0" header="City Ledger Information" toggleable>
+            <Panel class="p-0"  toggleable>
+                <template #header>
+
+            <span class="font-bold">City Ledger Information  <ComStatus :status="data?.status"/></span>
+           
+       
+    </template>
                 <div class="-m-3">
                 <table>
                         <tbody>

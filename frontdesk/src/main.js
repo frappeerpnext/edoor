@@ -164,6 +164,7 @@ import Grid from '@/components/layout/components/Grid.vue'
 import Col from '@/components/layout/components/Col.vue'
 import Stack from './components/layout/components/Stack.vue';
 import ComRepeatView from '@/components/layout/components/ComRepeatView.vue';
+import ComDataView from '@/components/layout/components/ComDataView.vue';
 import ComStatus from '@/components/label/ComStatus.vue';
 
 app.config.globalProperties.$t = i18n.global.t;
@@ -252,6 +253,7 @@ app.component('Grid',Grid )
 app.component('Col', Col )
 app.component('Stack', Stack )
 app.component('ComRepeatView', ComRepeatView )
+app.component('ComDataView', ComDataView )
 app.component('ComStatus', ComStatus )
  
 app.use(DraggableResizableVue)
