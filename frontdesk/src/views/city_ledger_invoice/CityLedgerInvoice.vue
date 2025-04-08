@@ -14,24 +14,8 @@
           @click="onAddCityLedgerInvoice"
         />
       </template>
-      <template #name="{ item, index }">
-        <Button
-          class="link_line_action1"
-          @click="onOpenLink('view_city_ledger_invoice_detail', item.name)"
-          link
-        >
-          {{ item.name }}
-        </Button>
-      </template>
-      <template #guest="{ item, index }">
-        <Button
-          class="link_line_action1"
-          @click="onOpenLink('view_guest_detail', item.guest)"
-          link
-        >
-          {{ item.guest }} {{ item.guest_name }}
-        </Button>
-      </template>
+      
+      
       <template #payment_status="{ item, index }">
         <ComStatus :status="item.payment_status" />
       </template>
@@ -57,11 +41,12 @@ const { t: $t } = i18n.global;
   const dialog = useDialog();
   const options = {
     fields: [
-      { fieldname: "name", label: "Tran. #", },
+      { fieldname: "name", label: "Tran. #",action:"view_city_ledger_invoice_detail" },
       { fieldname: "payment_status", label: "Payment Status" },
       { fieldname: "posting_date", label: "Date" },
       { fieldname: "reference_number", label: "Ref #" },
-      { fieldname: "city_ledger_name" },
+      { fieldname: "city_ledger_name",action:"view_city_ledger_detail",id_field:"city_ledger" },
+      { fieldname: "city_ledger",is_hide:true },
       { fieldname: "contact_name" },
       { fieldname: "phone_number" },
       { fieldname: "total_debit", label: "Debit" },
@@ -129,9 +114,9 @@ function onAddCityLedgerInvoice() {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                onViewCityledgerInvoiceDetail(data.name)
-                loadData()
-                
+              window.postMessage({action:"ComDocumentList"},"*")
+       
+       window.postMessage("view_city_ledger_invoice_detail|" + data.name, "*");
 
             }
         }

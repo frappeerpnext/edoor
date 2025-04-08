@@ -112,7 +112,7 @@ def get_city_Ledger_jounal(property):
     data = frappe.db.sql(sql, {"property":property} , as_dict=True)
     return data
 @frappe.whitelist()
-def get_balance_city_ledger(property, date=None, city_leger=None):
+def get_balance_city_ledger(property, date=None, cityLedger=None):
     # Aging Balance Query
     aging_balance_sql = """
     SELECT 
@@ -158,12 +158,12 @@ def get_balance_city_ledger(property, date=None, city_leger=None):
 
     # Add city ledger filter if provided
     count_pending = 0
-    if city_leger:
-        aging_balance_sql += " AND ft.transaction_number = %(city_leger)s"
-        pending_balance_sql += " AND ft.transaction_number = %(city_leger)s"
-        params["city_leger"] = city_leger  # Include in parameters
+    if cityLedger:
+        aging_balance_sql += " AND ft.transaction_number = %(cityLedger)s"
+        pending_balance_sql += " AND ft.transaction_number = %(cityLedger)s"
+        params["cityLedger"] = cityLedger 
         count_pending = frappe.db.count("City Ledger Invoice", {
-        "city_ledger": city_leger,
+        "city_ledger": cityLedger,
         "status": "Open"
         })
         
@@ -183,7 +183,8 @@ def get_balance_city_ledger(property, date=None, city_leger=None):
             "total_pending": pending_data[0].get("total_pending", 0),
             "city_ledger_invoice_pending": pending_data[0].get("city_ledger_invoice_pending", 0),
             "city_ledger_uninvoice": pending_data[0].get("city_ledger_uninvoice", 0),
-            "count_pending":count_pending
+            "count_pending":count_pending,
+            "ms":cityLedger
         }
     }
     

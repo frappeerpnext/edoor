@@ -39,8 +39,7 @@
      const moment= inject("$moment")
      const chartData = ref()
      function loadData() {  
-        console.log(props.name)
-            getApi("city_ledger.get_balance_city_ledger",{ property: window.property_name , date:window.current_working_date , city_ledger:props.name }).then((result)=>{
+            getApi("city_ledger.get_balance_city_ledger",{ property: window.property_name , date:window.current_working_date , cityLedger:props.name }).then((result)=>{
                 data.value = result.message;
     
     chartData.value = {

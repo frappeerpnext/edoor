@@ -38,7 +38,8 @@ function loadData(){
     }).then((result) => {
         cityLedgerAmountSummary.value = result.message
     })
-    getApi("city_ledger.get_balance_city_ledger",{ property: window.property_name , date:window.current_working_date , city_leger:props.data?.name }).then((result)=>{
+    console.log(props.data?.name)
+    getApi("city_ledger.get_balance_city_ledger",{ property: window.property_name , date:window.current_working_date , cityLedger:props.data?.name }).then((result)=>{
         transatction.value = result.message;
     })
 }

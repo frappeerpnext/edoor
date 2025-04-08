@@ -17,19 +17,9 @@
       />
     </template>
 
-    <template #name="{ item }">
-      <Button 
-        class="p-0 link_line_action1" 
-        @click="onOpenLink('view_room_block_detail', item.name)" 
-        link
-      >
-        {{ item.name }}
-      </Button>
-    </template>
-
+ 
     <template #is_unblock="{ item }">
-      {{ item.is_unblock }}
-      {{ item.docstatus }}
+     
       <Chip 
         v-if="item.is_unblock == 1" 
         class="text-white surface-400 p-1px px-2"
@@ -75,7 +65,7 @@ const selectedRow = ref()
 
 const options = ref({
   fields: [
-    { fieldname: "name", label: "Room Block Code", fieldtype: "Link" },
+    { fieldname: "name", label: "Room Block Code", action:"view_room_block_detail" },
     { fieldname: "block_date", label: "Block Date", fieldtype: "Date" },
     { fieldname: "start_date", label: "Start Date", fieldtype: "Date" },
     { fieldname: "end_date", label: "Release Date", fieldtype: "Date" },

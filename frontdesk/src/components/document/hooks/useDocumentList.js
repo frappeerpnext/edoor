@@ -89,12 +89,19 @@ watch(() => route.hash, async (newHash) => {
 
  
     function getOptions(){
-     
+    
+    const sort_order = orderBy.value?orderBy.value :  
+        {
+            field: meta.value.sort_field,
+            order: meta.value.sort_order,
+          }
+   
+ 
       return  {
             fields : getFields().map(x=>x.fieldname),
             filters :  getFilters(),
             orFilters :  getOrFilters(),
-            orderBy :   orderBy.value,
+            orderBy :   sort_order,
             limit:limit.value
         }
     }
@@ -123,6 +130,7 @@ watch(() => route.hash, async (newHash) => {
 
     async function getData(){
         loading.value = true ;
+      
         const res = await getDocumentList(props.doctype,getOptions())
         if(!res.error){
             items.value = res.data;

@@ -24,7 +24,7 @@
             </Column>
 
             
-            <Column  field="is_hide" header="Hid in table" >
+            <Column  field="is_hide" header="Hide in table" >
                 <template #body="slotProps">
                     <Checkbox 
                                 v-model="slotProps.data.is_hide" :binary="true" :trueValue="true" :falseValue="false" />

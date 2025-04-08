@@ -266,7 +266,7 @@ function viewCityLedgerReport(){
                 params:[
                       
                 {name: 'property', values: [property.name] },
-                {name: 'start_date', values: [firstDayOfMonth.value] },
+                {name: 'start_date', values: [working_day.date_working_day] },
                 {name: 'end_date', values: [working_day.date_working_day] },
                 {name:'printed_by',values: [window.user.full_name]},
                 {name:'transaction_number',values: [props.name]},
