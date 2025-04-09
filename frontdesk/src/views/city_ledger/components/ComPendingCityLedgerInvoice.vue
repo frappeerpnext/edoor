@@ -1,4 +1,6 @@
 <template>
+<ComDataView apiUrl="city_ledger.get_city_ledger_invoice" :options="params">
+    <template v-slot:default="{ data }">
     <span class="text-2xl pb-2">Pending Outgoing Invoices</span>
 <div  class="pb-5" style="max-height: 50rem;overflow: auto;" > 
     <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="data && data.length > 0">
@@ -11,7 +13,7 @@
         <table style="width: 100%;">
            <ComStayInfoNoBox label="City Ledger" :value="d.city_ledger_name" />
            <ComStayInfoNoBox label="Balance" :isCurrency="true" :value="d.balance" /> 
-           <ComStayInfoNoBox label="Posting Date" ><span class="-ms-3">{{gv.dateFormat(moment(d.posting_date))}}</span>
+           <ComStayInfoNoBox label="Posting Date" ><span class="-ms-3">{{moment(d.posting_date).format("DD-MM-YYYY")}}</span>
            
            </ComStayInfoNoBox>
         </table>
@@ -25,32 +27,12 @@
     </ComPlaceholder>    
 </div>
 </template>
+</ComDataView>
+</template>
 <script setup>
- import { ref, onMounted, inject,onUnmounted , getData ,computed , defineExpose} from "@/plugin"
-  import ComChart from "@/components/chart/ComChart.vue"
-import ComPendingOutgoingInvoice from "./ComPendingOutgoingInvoice.vue"
- const data = ref()
- const gv = inject('$gv')
- const moment= inject("$moment")
- const chartData = ref()
- const loading = ref(false)
- 
-async function loadData()  { 
-loading.value = true 
-const res = await getData("city_ledger.get_city_ledger_invoice",{ property: window.property_name , status:"Open" })
-if (res.data){
-    data.value = res.data
-}  
-loading.value = false
-}
-    function onOpenLink(view, name) {
-    window.postMessage(view + "|" + name , '*')
-}
-defineExpose({
- loadData
-});
-    onMounted(() => {
-    loadData()
- 
-}); 
+import {inject} from "@/plugin"
+import { useApp } from "@/hooks/useApp"
+    const params = { property: window.property_name, status: "Open" }
+    const moment = inject("$moment")
+    const {onOpenLink} = useApp()
 </script>

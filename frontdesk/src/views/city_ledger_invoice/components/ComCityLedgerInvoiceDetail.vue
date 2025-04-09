@@ -157,6 +157,7 @@
           :transaction_number="doc?.city_ledger"
           doctype="City Ledger"
           :showCheckbox="true"
+          :showSourceTransactionNumber="true"
         >
           <template #description="{ item, index }">
             <div v-if="item.reservation">
@@ -284,8 +285,10 @@ const actionRefreshData = async function (e) {
 onMounted(async () => {
   loadData();
   window.addEventListener("message", actionRefreshData, false);
+  window.cityLedgerInvoiceDialogBox = dialogRef
 });
 onUnmounted(() => {
   isCityLedgerInvoiceDetailOpen.value = false;
+  window.cityLedgerInvoiceDialogBox = null
 });
 </script>

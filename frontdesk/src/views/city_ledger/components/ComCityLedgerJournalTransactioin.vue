@@ -1,97 +1,59 @@
 <template>
-    <div class="py-0 px-1 -mt-2">
-           <ComPlaceholder text="No Data"  :is-not-empty="data && data.length > 0">
-                <DataTable 
-                class="tb-cs-datatable"
-                :value="data"
-                tableStyle="min-width: 50rem" >
-                <Column header="Tran#" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps">
-                            <button  @click="onOpenLink('view_folio_transaction_detail', slotProps.data?.name)"  :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')">{{slotProps.data?.name }}</button>
-                        </template>
-                </Column>
-                <Column header="Date" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps">
-                            {{ slotProps.data?.posting_date }}
-                        </template>
-                </Column>
-                <Column header="Account" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps">
-                            {{ slotProps.data?.account_code }} - {{ slotProps.data?.account_name }}
-                        </template>
-                </Column>
-                <Column header="Folio#" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps">
-                            <button v-if="slotProps.data?.source_transaction_number"  @click="onOpenLink('view_folio_detail', slotProps.data?.source_transaction_number)"  class="link_line_action1">{{slotProps.data?.source_transaction_number }}</button>
-                        </template>
-                </Column>
-                <Column header="Room" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps">
-                            <span v-if="slotProps.data?.room_type">
-                               {{ slotProps.data?.room_type }} / {{ slotProps.data?.room_number }} 
-                            </span>
-                            
-                        </template>
-                </Column>
-                <Column header="Debit" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps"> 
-                            <span v-if="slotProps.data.type == 'Debit'">
-                            <CurrencyFormat  :value="slotProps.data?.amount" />
-                            </span>
-                        </template>
-                </Column>
-                <Column header="Credit" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps"> 
-                            <span v-if="slotProps.data.type == 'Credit'">
-                                <CurrencyFormat  :value="slotProps.data?.amount" />
-                            </span>
-                        </template>
-                </Column>
-                <Column header="Status" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps"> 
-                            <span v-if="slotProps.data.reservation_status"  class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                            :style="{ backgroundColor: slotProps.data.reservation_status_color }">
-                            
-                            {{ slotProps.data.reservation_status}}
-                            </span>
-                        </template>
-                </Column>
-                <Column header="By" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps"> 
-                           
-                            {{ slotProps.data.owner}}
-                        
-                        </template>
-                </Column>
-                <Column header="Modified" style="width:max-content !important;max-width: max-content !important;">
-                        <template #body="slotProps"> 
-                  
-                            <ComTimeago  :date='slotProps.data?.modified' />
-                        
-                        </template>
-                </Column>
-                
+    <div>
 
-                </DataTable>
-            </ComPlaceholder>
+         <ComDocumentList doctype="Folio Transaction" :options="options">
+            <template #account_code="{ item, index }">
+         {{ item.account_code }} - {{ item.account_name }}</template>
+      <template #debit="{ item, index }">
+         <CurrencyFormat  :value="item.type == 'Debit' ? item.debit : 0" />
+      </template>
+      <template #credit="{ item, index }">
+         <CurrencyFormat  :value="item.type == 'Credit' ? item.credit : 0" />
+      </template>
+      <template #reservation_status="{ item, index }">
+      <ComReservationStatus :statusName="item.reservation_status" />
+    </template>
+    </ComDocumentList>
     </div>
 </template>
 <script setup>
- import { ref, onMounted, inject,onUnmounted , getApi , defineExpose } from "@/plugin"
- const data = ref()
- function loadData() {
-        getApi("city_ledger.get_city_Ledger_jounal",{ property: window.property_name }).then((result)=>{
-            data.value = result.message;
-    })
+    const options = {
+        fields:[
+            {"fieldname":"name" , label:"Tran#" , action:"view_folio_transaction_detail"},
+            {"fieldname":"posting_date" } ,
+            {"fieldname":"transaction_number",is_hide:true } ,
+            {"fieldname":"city_ledger_name", id_field:"transaction_number", action:"view_city_ledger_detail",label:"City Ledger" } ,
+            {"fieldname":"reservation_stay",label:"Stay#",action:"view_reservation_stay_detail"},
+            {"fieldname":"source_transaction_type",label:"Source Type"},
+            {"fieldname":"reference_number" , label:"Source#" , action:"view_folio_transaction_detail"},
+            {"fieldname":"account_name",label:"account_name", is_hide:true},
+            {"fieldname":"type",label:"account_name", is_hide:true},
+            {"fieldname":"transaction_amount as debit",label:"Debit"},
+            {"fieldname":"transaction_amount as credit",label:"Credit"},
+            { "fieldname": "total_amount" },
+            { "fieldname": "reservation_status"  },
+        { "fieldname": "owner", fieldtype: "Data", label: "Created By" },
+        { "fieldname": "modified", fieldtype: "Datetime", label: "Last Modified" }
+        ],
+       limit:10,
+
+       filters:[
+        ["property","=",window.property_name],
+        ["transaction_type","=",'City Ledger'],
+    ],
+       orderBy:{
+        field: "creation",
+        order: "desc"
+       },
+       scrollHeight:"473px",
+        hideFilter:true,
+        hideHeader:true,
+        hidePager:true,
+        hidesavefilter:true
     }
-    function onOpenLink(view, name) {
-    window.postMessage(view + "|" + name , '*')
-}
-defineExpose({
- loadData
-});
-    onMounted(() => {
-    loadData()
- 
-});    
+    function onOpenLink(action, name) {
+        window.postMessage(action + '|' + name, '*')
+    }
 </script>
+ 
+ 

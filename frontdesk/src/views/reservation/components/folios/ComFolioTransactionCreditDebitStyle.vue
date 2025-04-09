@@ -1,16 +1,11 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
- 
-        <DataTable 
-            :scrollable="folioTransactions.length > 10"
-            :scrollHeight="(folioTransactions.length > 10 ? '500px' : 'auto')" 
-            :virtualScrollerOptions="{ itemSize: 40 }"
-            v-model:selection="selectedfolioTransactions"
-             @row-dblclick="onViewFolioDetail" 
-             :value="folioTransactions"
-            tableStyle="min-width: 50rem" :rowClass="rowStyleClass" 
-          
-            >
+
+        <DataTable :scrollable="folioTransactions.length > 10"
+            :scrollHeight="(folioTransactions.length > 10 ? '500px' : 'auto')"
+            :virtualScrollerOptions="{ itemSize: 40 }" v-model:selection="selectedfolioTransactions"
+            :stateKey="'folo_transaction_table_state_' + selectedFolio.name" @row-dblclick="onViewFolioDetail"
+            :value="folioTransactions" tableStyle="min-width: 50rem" :rowClass="rowStyleClass">
 
             <Column expander style="width: 5rem" v-if="showExpander" />
             <Column selectionMode="multiple" headerStyle="width: 3rem" v-if="showCheckbox">
@@ -24,30 +19,41 @@
                     </span>
                 </template>
             </Column>
-            <Column field="name" :header="$t('Name')" headerClass="text-center" bodyClass="text-center">
+            <Column field="name" :header="$t('Tran. #')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name"
                         :class="'link_line_action1 ' + (slotProps.data?.is_auto_post == 1 ? 'auto_post' : '')">{{
                             slotProps.data?.name }}</button>
-                     <slot name="name" :item="slotProps.data" :index="slotProps.data.name">
-                    </slot>        
+                    <slot name="name" :item="slotProps.data" :index="slotProps.data.name">
+                    </slot>
                 </template>
             </Column>
-            <Column  :header="$t('Room') + ' #'" headerClass="text-center white-space-nowrap"
-                bodyClass="text-center">
+            <Column v-if="showSourceTransactionNumber" field="source_transaction_number" :header="$t('Folio #')"
+                headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-            {{ slotProps.data.room_number }}
-                <slot name="room" :item="slotProps.data" :index="slotProps.data.name">
-                </slot>  
-            </template>
+                    <button
+                        @click="onOpenLink('view_reservation_folio_detail', slotProps.data.source_transaction_number)"
+                        v-if="slotProps.data.source_transaction_type = 'Reservation Folio'" class="link_line_action1">{{
+                        slotProps.data?.name }}</button>
+
+
+
+                </template>
+            </Column>
+            <Column :header="$t('Room') + ' #'" headerClass="text-center white-space-nowrap" bodyClass="text-center">
+                <template #body="slotProps">
+                    {{ slotProps.data.room_number }}
+                    <slot name="room" :item="slotProps.data" :index="slotProps.data.name">
+                    </slot>
+                </template>
             </Column>
             <Column field="posting_date" :header="$t('Post Date')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span v-if="slotProps.data?.posting_date">{{
                         moment(slotProps.data?.posting_date).format("DD-MM-YYYY")
-                        }}</span>
+                    }}</span>
                     <slot name="posting_date" :item="slotProps.data" :index="slotProps.data.name">
-                    </slot>      
+                    </slot>
                 </template>
             </Column>
 
@@ -108,7 +114,7 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column :footer="$t('Total') + ':'" :colspan="showCheckbox ? 6 : 5"
+                    <Column :footer="$t('Total') + ':'" :colspan="getTotalSpanColumn()"
                         footerStyle="text-align:right" />
                     <Column footerStyle="text-align:center">
                         <template #footer>
@@ -162,7 +168,7 @@
 <script setup>
 
 import { inject, ref, useDialog, computed, onUnmounted, onMounted, getApi, watch } from '@/plugin';
-import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
+
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayFolioTransactionAction from '@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionAction.vue';
 
@@ -187,7 +193,8 @@ const props = defineProps({
     cityLedgerInvoice: {
         type: String,
         default: ""
-    }
+    },
+    showSourceTransactionNumber: Boolean
 })
 const selectedFolio = ref(props.folio)
 const gv = inject('$gv');
@@ -199,7 +206,7 @@ const folio_summary = ref()
 const dialog = useDialog();
 const show = ref()
 
- 
+
 
 watch(() => props.folio, (newValue, oldValue) => {
     selectedFolio.value = newValue
@@ -208,6 +215,12 @@ watch(() => props.folio, (newValue, oldValue) => {
 })
 
 
+function getTotalSpanColumn() {
+    let n = 5;
+    if (props.showCheckbox) n = n + 1
+    if (props.showSourceTransactionNumber) n = n + 1
+    return n
+}
 
 //load data
 function LoadFolioTransaction() {
@@ -276,6 +289,11 @@ const rowStyleClass = (r) => {
     return classRow
 };
 
+
+function onOpenLink(action, name) {
+
+    window.postMessage(action + '|' + name, '*')
+}
 
 
 const onViewFolioDetail = (doc) => {

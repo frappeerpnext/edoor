@@ -490,7 +490,7 @@ print_menus.value.push({
     label: $t("Print General Journal"),
     icon: 'pi pi-print',
     command: () => {
-        alert([selectedFolio.value.name])
+        
         dialog.open(ComReportServerModal, {
             data: {
                 report_path: "/Front Desk/rptGeneralJournalTransactionForReservation",

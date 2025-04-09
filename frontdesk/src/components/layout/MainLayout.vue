@@ -102,15 +102,21 @@
         <ComCheckRoomConfligAndOverBooking/>  
         <div>
             <div class="wrap-page-content -mb-2 px-2">
-               <template v-if="nested_layout=='OperationDasboardLayout'">
-                <ComOperationDashboard >
-                    <router-view />
-                </ComOperationDashboard>
-            </template>
-            <template v-else>
-                
-                <router-view />
-            </template>
+                <div class="flex w-full">
+                    <div class="-ms-1 bg-white side_bar_01"> 
+                        <ComTodayInfoSideBar/> 
+                    </div>
+                    <div style="margin-left: 5.3rem;" class="w-full">
+                        <template v-if="nested_layout=='OperationDasboardLayout'">
+                            <ComOperationDashboard >
+                                <router-view />
+                            </ComOperationDashboard>
+                        </template>
+                        <template v-else>
+                            <router-view />
+                        </template>
+                    </div>
+                </div>
             </div>
             <div v-if="route.name != 'Frontdesk'" class="mt-3" style="height: 22px;"></div>
             <ComFooter />
@@ -141,6 +147,7 @@ import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComC
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
 import ComOperationDashboard from '@/components/layout/components/ComOperationDashboard.vue'
 import ComReportServerModal  from "@/components/ComReportServerModal.vue";
+import ComTodayInfoSideBar from "@/components/layout/components/ComTodayInfoSideBar.vue"
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({

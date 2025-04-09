@@ -23,52 +23,51 @@ export   function useDocumentList(props,emit,dialog=null) {
     const meta =ref()
     const columns = ref([])
     const filterOptions = ref([])
-    const orderBy = ref()
+    const orderBy = ref(options.orderBy)
     const totalRecord = ref(0)
     const limit = ref(20)
     const viewList = ref([])
     const currentView=ref()
     const  saveViewList= ref(null); //we use to reload save view list via define expost when add or update view
-    const listViewSetting = ref({})
+    const listViewSetting = ref()
  
     const contextMenuOptions = ref([
         // {label: 'View', icon: 'pi pi-fw pi-search', command: () =>alert(selectedRow.value.name)},
         // {label: 'Delete', icon: 'pi pi-fw pi-times', command: () =>alert(selectedRow.value.name)}
     ]);
     
+    const settingMenus = ref([])
+    if (!options.hideSaveView){
+        settingMenus.value.push( {
+            label: 'Save this view',
+            icon: 'pi pi-plus',
+            command: () => {
+                onCreateNewView()
+            }
+        })
+    }
+ settingMenus.value = settingMenus.value.concat([
+    {
+        label: 'View Setting',
+        icon: 'pi pi-cog',
+        command: ()=>{
+            onOpenListViewSetting();
+        }
+    },
+    {
+        label: 'Reset View',
+        icon: 'pi pi-cog',
+        command: async ()=>{
+            const res = await deleteDocument("App List View Setting",props.list_view_setting,{
+                hide_error_message:true
+            })
 
-const settingMenus = ref([
-    
-            {
-                label: 'Save this view',
-                icon: 'pi pi-plus',
-                command: () => {
-                    onCreateNewView()
-                }
-            },
-            {
-                label: 'View Setting',
-                icon: 'pi pi-cog',
-                command: ()=>{
-                    onOpenListViewSetting();
-                }
-            },
-            {
-                label: 'Reset View',
-                icon: 'pi pi-cog',
-                command: async ()=>{
-                    const res = await deleteDocument("App List View Setting",props.list_view_setting,{
-                        hide_error_message:true
-                    })
+            window.postMessage('show_success|' + 'Reset successfully', '*')
+            window.location.reload()
 
-                    window.postMessage('show_success|' + 'Reset successfully', '*')
-                    window.location.reload()
-
-                }
-            },
-            
-
-]);
+        }
+    },
+ ])
 
 watch(() => route.hash, async (newHash) => {
     const view = viewList.value.find(r=>r.name == newHash.replace("#",""))
@@ -85,9 +84,7 @@ watch(() => route.hash, async (newHash) => {
     }
 
   });
-  
-
- 
+   
     function getOptions(){
     
     const sort_order = orderBy.value?orderBy.value :  
@@ -108,14 +105,18 @@ watch(() => route.hash, async (newHash) => {
 
     
     function getFields(){
+        
         fields.value = []
         if(listViewSetting.value){
+          
             fields.value =listViewSetting.value.fields
         }else {
+           
             if(options.fields){
+               
                 fields.value =options.fields
             }else {
-     
+               
                 fields.value = meta.value.fields.filter(r=>r.in_list_view==1 && r.fieldname).map(x=> {return {fieldname:x.fieldname}})
                
             }
@@ -275,7 +276,8 @@ watch(() => route.hash, async (newHash) => {
     }
 
     function getScrollHeight(){
-      
+        
+
         const myDiv = document.getElementById('table-container');
         let h = window.innerHeight;
         myDiv.style.height = `${h}px`;
@@ -430,10 +432,17 @@ watch(() => route.hash, async (newHash) => {
         window.postMessage(action + '|' + name, '*')
     }
     
+    
     onMounted(async ()=>{
-        scrollHeight.value = getScrollHeight();
+       
+        scrollHeight.value = options.scrollHeight || getScrollHeight();
         meta.value =  await getMeta(props.doctype)
-        listViewSetting.value = await getListViewSetting(props.list_view_setting)
+        if(props.list_view_setting){
+            listViewSetting.value = await getListViewSetting(props.list_view_setting)
+        }
+        if (options.limit){
+            limit.value = options.limit
+        }
       
         if(window.location.hash){
             await getFilterSetting()
@@ -455,9 +464,7 @@ watch(() => route.hash, async (newHash) => {
             settingMenus.value = settingMenus.value.concat(options.settingMenus)
         }
 
-        if (options.limit){
-            limit = props.limit
-        }
+        
 
  
         window.addEventListener('message', actionRefreshData, false);

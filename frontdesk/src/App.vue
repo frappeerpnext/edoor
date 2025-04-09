@@ -1,4 +1,5 @@
-<template>
+<template> 
+    
     <template v-if="hasProperty">
         <ComIsTrainingMessage />
         <main-layout v-if="$route.meta.layout!='blank_layout'" :nested_layout="$route.meta.nested_layout" />
@@ -470,7 +471,9 @@ function onAssignRoom(reservation_stay_name, name) {
 
 function showCityInvoiceDetail(name) {
         // iframe component ComFolioTransactionDetail
-
+    if(window.cityLedgerInvoiceDialogBox){
+        window.cityLedgerInvoiceDialogBox.value.close();
+    }
     const dialogRef = dialog.open(ComCityLedgerInvoiceDetail, {
         data: {
             name: name

@@ -1,6 +1,9 @@
 <template>
+    <template v-if="!options.hideHeader">
     <div class="flex w-full gap-2">
-        <div class="flex align-items-center mb-2">
+
+        <div v-if="!options.hideSaveView" class="flex align-items-center mb-2">
+          
             <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
         </div>
 
@@ -22,26 +25,32 @@
             </ComHeader>
         </div>
     </div>
+</template>
 
     <div class="grid gap-2">
-        <div v-if="showSummary" class="col-2 p-0 rounded-xl" style="width: 280px;">
+        <template v-if="!options.hidesavefilter">
+        <div v-if="showSummary" class="col-2 pr-0 py-0 rounded-xl" style="width: 280px;">
             <div class="bg-white w-full h-full p-3 rounded-xl">
                 <h1 class="font-bold">Saved Filter</h1>
                 <ComSaveViewList :doctype="doctype" v-model:items="viewList" ref="saveViewList" />
 
             </div>
         </div>
-        <div class="col p-0">
+        </template>
+        <div class="col py-0">
             <div class="bg-white p-2 rounded-xl">
+                <template v-if="!options.hideFilter">
                 <div class="flex justify-content-between mb-2">
                     <div>
-                        <ComFilter v-if="!options.hideFilter" :hideSearchField="options.hideSearchField"
+                        <ComFilter   :hideSearchField="options.hideSearchField"
                             @onSearch="onSearch" :filters="filterOptions" v-model:filter="tempFilter" />
                     </div>
                     <div>
+                     
                         <ComOrderBy :doctype="doctype" @onOrderBy="onOrderBy" />
                     </div>
                 </div>
+            </template>
                 
                 <slot name="top-summary"></slot>
 
@@ -115,7 +124,8 @@
 
                     </DataTable>
                 </div>
-                <Stack>
+                
+                <Stack v-if="!options.hidePager">
                     <div class="flex justify-content-between align-items-center mt-3">
                         <div>
                             <SelectButton class="flex footer-limit-page border-1 border-round" v-model="limit"
@@ -181,6 +191,7 @@ const { items, scrollHeight, onSearch, loading, columns,
 defineExpose({
     getData
 })
+ 
 
 const cm = ref();
 const onRowContextMenu = (event) => {

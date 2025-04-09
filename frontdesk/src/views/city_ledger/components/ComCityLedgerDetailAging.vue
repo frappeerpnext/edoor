@@ -30,7 +30,7 @@
     import ProgressBar from 'primevue/progressbar';
       import ComChart from "@/components/chart/ComChart.vue"
    
-    import ComPendingOutgoingInvoice from "@/views/city_ledger/components/ComPendingOutgoingInvoice.vue" 
+    
     const props = defineProps({
     name: String,
 })

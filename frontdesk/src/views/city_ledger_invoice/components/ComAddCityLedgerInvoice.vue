@@ -119,6 +119,9 @@ if (dialogRef.value.data.name) {
              getDoc("City Ledger Invoice",dialogRef.value.data.name).then(d=>{
             doc.value = d
         }) 
+
+
+
      getDocList(
     "Folio Transaction",{
     filters:{"city_ledger_invoice": dialogRef.value.data.name},
@@ -128,6 +131,8 @@ if (dialogRef.value.data.name) {
 ).then((r) => {
     invoices.value =r
 })
+        }else {
+            doc.value.city_ledger = dialogRef.value.data.city_ledger || ""
         }
 })
 </script>

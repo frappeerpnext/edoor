@@ -5,7 +5,7 @@
 
 </template>
 <script setup>
-import { getDocumentList, ref, inject,getDocument ,getData} from "@/plugin"
+import { getDocumentList, onUnmounted,ref, inject,getDocument ,getData} from "@/plugin"
 import { onMounted } from "vue";
 const props = defineProps({
     doctype: String,
@@ -69,8 +69,24 @@ async function loadApiData() {
     }
 }
 
-onMounted(async () => {
-    await loadData();
+const actionRefreshData = async function (e) {
+     
+     if (e.isTrusted && typeof (e.data) != 'string') {
+         if (e.data.action == "ComDataView") {
 
+            await loadData();
+         }
+     };
+ }
+
+
+onMounted(async () => {
+   
+    await loadData();
+    
+    window.addEventListener('message', actionRefreshData, false);
 })
+onUnmounted(()=>{
+        window.removeEventListener('message', actionRefreshData, false);
+    })
 </script>

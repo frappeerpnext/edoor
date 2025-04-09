@@ -2004,3 +2004,13 @@ background-color: rgb(255, 234, 234);
     max-height: 40rem;
     overflow-y: scroll;
 }
+.side_bar_01 { 
+    position: fixed;
+    height: calc(100vh - 63px);
+    width: 5rem; 
+    /* box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px; */
+}
+.badge-today-info {
+    top: -6px;
+    right: -5px;
+}

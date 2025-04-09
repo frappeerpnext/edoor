@@ -1,8 +1,9 @@
 <template>
     <ComDialogContent hideButtonOK @onClose="onClose" style="max-height: 80vh;" :loading="loading">
-        <TabView>
-            <TabPanel :header="$t('Account Information')">
-                <div class="grid">
+        <TabView  @tab-change="onTabChange">
+            <TabPanel value="account_information" :header="$t('Account Information')">
+                
+                <div class="grid" >
                      <div class="col-12">
                         <ComCityLedgerDetailInvoiceInfo v-if="data" :data="data" />
                     </div>
@@ -21,8 +22,14 @@
                    
                 </div>
             </TabPanel>
-            <TabPanel :header="$t('City Ledger Transaction')">
-                <ComCityLedgerTransaction v-if="data" :name="data?.name" />
+            <TabPanel   :header="$t('City Ledger Invoice')">
+
+                <ComCityLedgerInvoice :city_ledger="data?.name" v-if="isTabLoaded('city_ledger_invoice')"/>
+                
+            </TabPanel>
+            <TabPanel   :header="$t('City Ledger Transaction')">
+             
+                <ComCityLedgerTransaction v-if="isTabLoaded('city_ledger_transaction')" :city_ledger="data?.name" />
             </TabPanel>
             <TabPanel>
                 <template #header>
@@ -31,12 +38,15 @@
                         :attacheds="[data?.name]" v-if="data?.name" />
                 </template>
                 <div>
-
+                    <template v-if="isTabLoaded('document')">
                     <ComDocument v-if="data?.name" doctype="City Ledger" :doctypes="['City Ledger']"
                         :docname="data?.name" :fill="false" :attacheds="[data?.name]" />
+                    </template>
                 </div>
             </TabPanel>
         </TabView>
+
+
         <template #footer-left>
 
 
@@ -60,6 +70,7 @@ import ComCityLedgerDetailInvoiceInfo from './ComCityLedgerDetailInvoiceInfo.vue
 import { computed } from 'vue';
 import ComCityLedgerDetailPaymentReceived from '@/views/city_ledger/components/ComCityLedgerDetailPaymentReceived.vue';
 import ComCityLedgerDetailAging from '@/views/city_ledger/components/ComCityLedgerDetailAging.vue';
+import ComCityLedgerInvoice from '@/views/city_ledger/components/ComCityLedgerInvoice.vue';
 
 const dialogRef = inject("dialogRef")
 const gv = inject('$gv');
@@ -69,7 +80,22 @@ const data = ref()
 const loading = ref(false)
 const confirm = useConfirm()
 
- 
+const tabs =ref( [
+    {index:0,tab_name:"account_information",loaded:true,},
+    {index:1,tab_name:"city_ledger_invoice",loaded:false,},
+    {index:2,tab_name:"city_ledger_transaction",loaded:false,},
+    {index:3,tab_name:"document",loaded:false,}
+])
+
+function isTabLoaded(tab_name){
+    return tabs.value.find(r=>r.tab_name==tab_name)?.loaded || false;
+}
+
+function onTabChange(event) {
+    tabs.value.find(r=>r.index==event.index).loaded  =true
+  
+}
+
 
 
 

@@ -165,6 +165,7 @@ import Col from '@/components/layout/components/Col.vue'
 import Stack from './components/layout/components/Stack.vue';
 import ComRepeatView from '@/components/layout/components/ComRepeatView.vue';
 import ComDataView from '@/components/layout/components/ComDataView.vue';
+import ComDocumentList from '@/components/document/ComDocumentList.vue';
 import ComStatus from '@/components/label/ComStatus.vue';
 
 app.config.globalProperties.$t = i18n.global.t;
@@ -254,6 +255,7 @@ app.component('Col', Col )
 app.component('Stack', Stack )
 app.component('ComRepeatView', ComRepeatView )
 app.component('ComDataView', ComDataView )
+app.component('ComDocumentList', ComDocumentList )
 app.component('ComStatus', ComStatus )
  
 app.use(DraggableResizableVue)
@@ -335,6 +337,7 @@ app.provide("$operation_dashboard", operation_dashboard)
 //global property
 window.moment = moment;
 window.socket = socket;
+
 
 // get global data
 const apiCall = frappe.call()

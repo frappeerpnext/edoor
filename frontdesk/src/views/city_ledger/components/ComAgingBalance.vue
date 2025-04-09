@@ -1,5 +1,5 @@
 <template>
-<div class="bg-white border-round-lg">
+<div>
     <span class="text-xl font-medium ps-3">{{ $t('Aging Balance') }}</span>
 <ComChart v-if="chartData" height="300px" :chartData="chartData" />
 <div class="px-3">
@@ -31,25 +31,24 @@
     <span class="text-4xl font-medium"> <CurrencyFormat :value="data?.pending_balance.city_ledger_invoice_pending" /> </span>
 </div>
 </div>
-<div>
-    <ComPendingOutgoingInvoice ref="outgoinginvoice_refresh" />
-</div>
+ 
 
 </div>
 </div>
+
 </template>
 <script setup>
  import { ref, onMounted, inject,onUnmounted , getApi ,computed ,defineExpose } from "@/plugin"
 import ProgressBar from 'primevue/progressbar';
   import ComChart from "@/components/chart/ComChart.vue"
-import ComPendingOutgoingInvoice from "@/views/city_ledger/components/ComPendingOutgoingInvoice.vue"
+
  const data = ref()
  const balance = ref()
  const moment= inject("$moment")
- const outgoinginvoice_refresh = ref(null)
+//  const outgoinginvoice_refresh = ref(null)
  const chartData = ref()
  function loadData() {  
-    outgoinginvoice_refresh.value.loadData() 
+    // outgoinginvoice_refresh.value.loadData() 
         getApi("city_ledger.get_balance_city_ledger",{ property: window.property_name , date:window.current_working_date }).then((result)=>{
             data.value = result.message;
 

@@ -2357,6 +2357,8 @@ def get_folio_transaction_with_package_breakdown(transaction_type="", transactio
          
         balance = balance + (amount * (1 if d.type=="Debit" else -1))        
         folio_transactions.append({ 
+                "source_transaction_number":d["source_transaction_number"],
+            "source_transaction_type":d["source_transaction_type"],
             "reservation":d["reservation"],
             "reservation_stay":d["reservation_stay"],
             "name":"" if d.is_package_charge==1 else d["name"],
@@ -2564,6 +2566,8 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
         #     amount =( amount - d.total_tax ) + d.discount_amount
         balance = balance + (amount * (1 if d.type=="Debit" else -1)) 
         folio_transactions.append({ 
+            "source_transaction_number":d["source_transaction_number"],
+            "source_transaction_type":d["source_transaction_type"],
             "reservation":d["reservation"],
             "reservation_stay":d["reservation_stay"],
             "guest_name":d["guest_name"],

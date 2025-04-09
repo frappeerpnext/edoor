@@ -78,11 +78,16 @@ export function useApp() {
 
   }
 
+  function onOpenLink(action, name) {
+        
+    window.postMessage(action + '|' + name, '*')
+}
 
   return { 
     isCityLedgerInvoiceDetailOpen,
     getMeta,
     getDoctypeDefaultFields,
-    getListViewSetting
+    getListViewSetting,
+    onOpenLink
 };
 }

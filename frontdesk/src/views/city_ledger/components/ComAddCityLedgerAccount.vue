@@ -110,8 +110,9 @@ function onSave(){
     loading.value = true
     createUpdateDoc("City Ledger", data.value)
     .then((r)=>{
-        window.postMessage({action:"CityLedgerAccount"},"*")
+        
         window.postMessage({action:"ComCityLedgerDetail"},"*")
+        window.postMessage({action:"ComDocumentList"},"*")
         loading.value = false
         dialogRef.value.close(r)
         

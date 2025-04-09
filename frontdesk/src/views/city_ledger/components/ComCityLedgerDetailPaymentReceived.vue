@@ -5,7 +5,7 @@
     <div>
         <DataTable :value="doc?.today_payment"    >
       <template #empty>
-        <div class="flex items-center justify-center h-full  p-16 text-2xl">
+        <div class="flex items-center justify-center h-full  p-16">
   There is no city ledger transaction
 </div>
 
@@ -25,7 +25,7 @@
     <div>
         <DataTable :value="doc?.mtd_payment"    >
       <template #empty>
-        <div class="flex items-center justify-center h-full  p-16 text-2xl">
+        <div class="flex items-center justify-center h-full  p-16">
   There is no city ledger transaction
 </div>
 

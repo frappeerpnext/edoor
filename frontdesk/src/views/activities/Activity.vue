@@ -26,7 +26,7 @@
 
             <div>
                 <div class="grid gap-2">
-                    <div v-if="showSummary" class="col-2 p-0 rounded-xl" style="width:280px">
+                    <div v-if="showSummary" class="col-2 pr-0 py-0 rounded-xl" style="width:280px">
                         <ComHousekeepingStatistic />
                     </div>
                     <div class="col rounded-xl p-0">
