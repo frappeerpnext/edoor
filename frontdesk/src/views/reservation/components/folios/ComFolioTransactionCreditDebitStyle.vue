@@ -33,8 +33,8 @@
                 <template #body="slotProps">
                     <button
                         @click="onOpenLink('view_reservation_folio_detail', slotProps.data.source_transaction_number)"
-                        v-if="slotProps.data.source_transaction_type = 'Reservation Folio'" class="link_line_action1">{{
-                        slotProps.data?.name }}</button>
+                        v-if="slotProps.data.source_transaction_type = 'Reservation Folio' && slotProps.data.source_transaction_number" class="link_line_action1">{{
+                        slotProps.data.source_transaction_number }}</button>
 
 
 

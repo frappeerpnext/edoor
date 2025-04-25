@@ -248,17 +248,13 @@
             loading.value = false
             window.postMessage({action:"ComIframeModal"},"*")
             window.postMessage({"action":"Dashboard"},"*")
-            window.postMessage({action:"ReservationList"},"*")
-            window.postMessage({action:"ReservationStayList"},"*")
             window.postMessage({action:"ReservationStayDetail"},"*")
             window.postMessage({action:"ReservationDetail"},"*")
             window.postMessage({"action":"Frontdesk"},"*")
             window.postMessage({action:"TodaySummary"},"*")
-            window.postMessage({action:"GuestLedger"},"*")
-            window.postMessage({action:"GuestLedgerTransaction"},"*")
-            window.postMessage({action:"Reports"},"*")
             window.postMessage({action:"ComUnassignRoom"},"*")
             window.postMessage({action:"ComDashboardDataRecentList"},"*")
+            window.postMessage({action:"ComDocumentList"},"*")
             
 
             onClose(r)

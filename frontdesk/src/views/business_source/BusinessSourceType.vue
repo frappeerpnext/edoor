@@ -1,4 +1,129 @@
-<template>
+ <template>
+    <ComDocumentList
+      doctype="Business Source Type"
+      list_view_setting="business_source_type_list"
+      :options="options"
+      @row-dblclick="onRowDoubleClick"
+    > 
+    <template #action-button>
+        <Button class="border-none" :label="isMobile ? $t('Add New') : $t('Add New Business Source Type') " icon="pi pi-plus" @click="onAddNewBusinessSourceType" />
+    </template>
+
+        <template #name="{ item, index }">
+             {{ item.name }}
+        </template>
+        <template #action="{ item }" >
+            <div class="flex gap-2 justify-start">
+                <Button
+                    @click="onEdit(item)"
+                    icon="pi pi-pencil text-sm"
+                    class="h-2rem border-none"
+                    :label="$t('Edit')"
+                    rounded
+                    />
+                <Button
+                    @click="onDelete(item.name)"
+                    severity="danger"
+                    icon="pi pi-trash text-sm"
+                    class="h-2rem border-none"
+                    :label="$t('Delete')"
+                    rounded
+                    />
+                </div>
+        </template>
+    </ComDocumentList>
+  </template> 
+<script setup> 
+import {useDialog, useConfirm, deleteDoc} from "@/plugin" 
+import ComAddBusinessSourceType from "@/views/business_source/components/ComAddBusinessSourceType.vue"
+
+const confirm = useConfirm()
+
+const dialog = useDialog()
+
+
+const options = {
+    fields: [
+        { fieldname: "name", label: "Business Source Type" },  
+        { fieldname: "owner", label: "Owner" },  
+        { fieldname: "note", label: "Note" }, 
+        {fieldname: "name as action", label:"Action" },
+    ],   
+} 
+function onEdit(edit) {
+    dialog.open(ComAddBusinessSourceType, {
+        props: {
+            header: `Edit Business Source Type: ${edit.name}`,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        data: edit,
+        onClose: (options) => {
+            const data = options.data;
+            if (data) {
+                loadData()
+            }
+        }
+    });
+}
+
+function onDelete(name) {
+    confirm.require({
+        message: 'Are you sure you want to delete business source type?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            deleteDoc('Business Source Type', name)
+                .then(() => {
+                    loadData()
+                    loading.value = false
+                })
+                .catch((err) => {
+                    loading.value = false
+                })
+        },
+    });
+}
+
+function onAddNewBusinessSourceType() {
+    dialog.open(ComAddBusinessSourceType, {
+        props: {
+            header: `Add New Business Source Type`,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if (data) {
+                loadData()
+            }
+        }
+    });
+}
+
+</script> 
+
+<!-- <template>
     <div>
         <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
             <template #start>
@@ -18,7 +143,7 @@
         </div>
         <div class="">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="gv.search(data, filter.keyword).length > 0">
-                <!-- data?.filter((r)=>r.business_source_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))  -->
+
                 <DataTable showGridlines :value="gv.search(data, filter.keyword)" tableStyle="min-width: 50rem">
                     <Column headerClass="white-space-nowrap" field="business_source_type" :header=" $t('Business Source Type') "></Column>
                     <Column :header="$t('Owner')">
@@ -169,4 +294,4 @@ onMounted(() => {
     }
 })
 
-</script>
+</script> -->

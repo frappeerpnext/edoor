@@ -100,11 +100,10 @@ const items = [
         }
     },
     {
-        label: $t('City Ledger Invoice Summary'),
+        label: $t('City Ledger Invoice Detail'),
         icon: 'pi pi-print',
         command: () => {
-            const url = props.url.replace("printview","api/method/frappe.utils.print_format.download_pdf") + "&orientation=Landscape" 
-              window.open(url, "newWindow", "width=1000,height=1000");
+            OpenServerReport("/Front Desk/rptCityLedgerInvoiceDetail", "City Ledger Invoice Detail" , [{ name: 'city_ledger_invoice', values: [selectedCityLedgerInvoice.value.name] }])
            
         }
     },

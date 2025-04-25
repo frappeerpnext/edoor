@@ -10,9 +10,9 @@
             <div class="flex gap-2">
                 <div class="font-semibold">{{ data?.guest_name }}</div>
                 <div class="flex gap-2">
-                    <div>
-                        <div class="link_line_action overflow-hidden" style="width: fit-content;">{{ data?.name }}</div> <div class="link_line_action overflow-hidden" style="width: fit-content;">{{ data?.reservation }}</div>
-                    </div>
+                    <div @click="onOpenLink('view_reservation_stay_detail', data?.name)" class="link_line_action overflow-hidden" style="width: fit-content;">{{ data?.name }}</div> 
+                    <div>|</div>
+                    <div @click="onOpenLink('view_reservation_detail', data?.reservation)" class="link_line_action overflow-hidden" style="width: fit-content;">{{ data?.reservation }}</div>
                 </div>
             </div>
             <div class="text-500">{{ data?.guest_email }} <span v-if="data?.guest_phone_number">| {{ data?.guest_phone_number }}</span></div>
@@ -31,4 +31,8 @@
 const props = defineProps({
     data:Object
 })
+
+function onOpenLink(action, name) {
+    window.postMessage(action + '|' + name, '*')
+}
 </script>

@@ -24,9 +24,16 @@
                         {{$t('Edit')}}
                     </button>
                 </template>
+                <template v-if="isEdit">
+                    <button @click="onUpdateInformation(invoice_description = true)"
+                        v-if="!data.parent_reference"
+                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        {{$t('Edit Decription')}}
+                    </button>
+                </template>
 
                
-                    <button @click="onUpdateInformation"
+                    <button @click="onUpdateInformation(invoice_description = false)"
                         v-if="!data.parent_reference"
                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                         {{$t('Update Information')}}
@@ -109,10 +116,11 @@ function onEditFolioTransaction() {
     })
 }
 
-function onUpdateInformation() {
+function onUpdateInformation(invoice_description = false) {
     const dialogRef = dialog.open(ComUpdateFolioTransactionInformation, {
         data: {
             folio_transaction_number: props.data.name,
+            invoice_description:invoice_description
         },
         props: {
             header:  'Update Folio Transaction Information- ' + props.data.name,

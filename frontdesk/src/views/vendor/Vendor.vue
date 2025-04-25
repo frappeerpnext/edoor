@@ -1,4 +1,94 @@
-<template>
+ <template>
+    <ComDocumentList
+      doctype="Vendor"
+      list_view_setting="vendor_list"
+      :options="options"
+      @row-dblclick="onRowDoubleClick"
+    > 
+    <template #action-button>
+        <Button class="border-none" label="Add New Vendor" icon="pi pi-plus" @click="onAddNewVendor" />
+    </template>
+ 
+        <template #vendor="{ item, index }">
+            <Button class="link_line_action1" @click="onOpenLink('view_vendor_detail', item.vendor)" link>
+                {{ item.vendor }} - {{ item.vendor_name }}
+            </Button>
+        </template>
+        <template #status="{ item, index }">
+            <ComOpenStatus :status="item.status" />
+        </template>
+    </ComDocumentList>
+</template> 
+
+<script setup>
+import {useDialog, inject} from "@/plugin"
+import ComAddVendor from '@/views/vendor/ComAddVendor.vue';
+const dialog = useDialog()
+const gv = inject("$gv")
+
+
+    const options = {
+        fields: [
+            { fieldname: "name", label: "Vendor",action:"view_vendor_detail" },
+            { fieldname: "vendor_name", label: "Vendor Name"},  
+            { fieldname: "vendor_type", label: "Vendor Type"},  
+            { fieldname: "vendor_group", label: "Vendor Group"},  
+            { fieldname: "company", label: "Company"},  
+            { fieldname: "province", label: "Province"},  
+            { fieldname: "phone_number", label: "Phone Number"},  
+            { fieldname: "email_address", label: "Email Address"},  
+            { fieldname: "website", label: "Website"},  
+            { fieldname: "creation", label: "Creation",fieldtype:"Datetime"},  
+            { fieldname: "note", label: "Note"},  
+        ],   
+        filterOptions:[
+            {fieldname:"vendor_type"}, 
+            {fieldname:"vendor_group"}, 
+        ],
+    } 
+
+    function onRowDoubleClick(event) {
+        onOpenLink("view_vendor_detail", event.name)
+    }
+
+    function onAddNewVendor() {
+        if(!gv.cashier_shift?.name){
+            gv.toast('error', 'Please Open Cashier Shift.')
+            return
+        }
+        dialog.open(ComAddVendor, {
+            data: {
+                // name: name.value,
+            },
+            props: {
+                header: `Add New Vendor`,
+                style: {
+                    width: '50vw',
+                },
+                modal: true,
+                closeOnEscape: false,
+                position: 'top',
+                breakpoints:{
+                    '960px': '50vw',
+                    '640px': '100vw'
+                },
+            },
+            onClose: (options) => {
+                const data = options.data;
+                if (data) {
+                    loadData(data.name)
+                }
+            }
+        });
+    }
+
+</script>
+
+
+
+
+
+<!-- <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
             <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
@@ -386,4 +476,4 @@ onUnmounted(() => {
     window.removeEventListener('message', actionRefreshData, false);
 })
 
-</script>
+</script> -->

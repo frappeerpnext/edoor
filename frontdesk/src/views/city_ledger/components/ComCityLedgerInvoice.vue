@@ -4,6 +4,7 @@
       list_view_setting="city_ledger_detail_city_ledger_invoice_list"
       :options="options"
       @row-dblclick="onRowDoubleClick"
+      wrap-class="surface-50 "
     >
       <template #action-button>
         <Button
@@ -71,7 +72,7 @@ const { t: $t } = i18n.global;
       
     ],
     filters:[["property","=",window.property_name],["city_ledger","=",props.city_ledger]],
-    hideSaveView:true,
+    hideSaveView:false,
     scrollHeight:getDialogScrollHeight(-245)
     
   };

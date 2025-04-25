@@ -1,4 +1,67 @@
 <template>
+    <ComDocumentList
+      doctype="Cashier Shift"
+      list_view_setting="cashier_shift_list"
+      :options="options"
+      @row-dblclick="onRowDoubleClick"
+    > 
+        <template #name="{ item, index }">
+            <Button class="link_line_action1" @click="onOpenLink('view_cashier_shift_detail', item.name)" link>
+                {{ item.name }}
+            </Button>
+        </template>
+        <template #is_closed="{ item, index }">
+            <ComOpenStatus :status="item.is_closed==1?'Closed':'Open'" />
+        </template>
+        <template #modified_by="{item, index}">
+            <span>{{  item.modified_by.split("@")[0] }}</span>
+        </template>
+        <template #modified="{item, index}">
+            <ComTimeago :date="item.modified" />
+        </template>
+    </ComDocumentList>
+  </template> 
+<script setup>
+import { inject ,getDialogScrollHeight} from "@/plugin";
+
+
+const options = {
+    fields: [
+        { fieldname: "name", label: "Name" },
+        { fieldname: "posting_date", label: "Posting Date" },
+        { fieldname: "shift_name", label: "Shift Name" },
+        { fieldname: "total_opening_amount", label: "Open Amount" },
+        { fieldname: "is_closed", label: "Status" },
+        { fieldname: "modified_by", label: "Modified By" },
+        { fieldname: "modified", label: "Last Modified" },
+    ],
+    filterOptions: [
+        { fieldname: "shift_name" },
+        { fieldname: "posting_date" },
+
+    ],
+    filters:[['is_edoor_shift','=',1]],
+    searchFields:"name,shift_name"
+    
+}
+
+
+function onRowDoubleClick(event) {
+    onOpenLink("view_cashier_shift_detail", event.name)
+}
+
+function onOpenLink(action, name) {
+    window.postMessage(action + '|' + name, '*')
+}
+
+</script>
+
+
+
+
+
+
+<!-- <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
@@ -433,4 +496,4 @@ onUnmounted(() => {
  
 </script>
 
- 
+  -->

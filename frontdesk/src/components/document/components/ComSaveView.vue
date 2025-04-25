@@ -72,6 +72,7 @@ async function onOk() {
             reference_doctype: data.value.doctype,
             filters: JSON.stringify(data.value.filters),
             custom_view_filters: JSON.stringify(data.value.view_filters),
+            custom_list_view_setting: dialogRef.value.data.list_view_setting,
             for_user: isPublic.value ? "" : window.user.name
         })
 
@@ -85,8 +86,10 @@ async function onOk() {
 }
 
 onMounted(() => {
+  
     data.value = dialogRef?.value?.data;
     if (data.value.current_view) {
+        
         viewName.value = data.value.current_view.filter_name
         isPublic.value = (data.value.current_view.for_user == "" ? 1 : 0);
     }

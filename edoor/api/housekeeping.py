@@ -83,9 +83,9 @@ def get_room_list(filter):
       sql = sql + " and r.housekeeper = %(housekeeper)s "
    if order_by:
       if order_by=="floor":
-         sql += " ORDER BY f.sort_order "
+         sql += " ORDER BY f.sort_order,r.sort_order,r.room_number "
       elif order_by == "room_type":
-         sql += " ORDER BY rt.sort_order "
+         sql += " ORDER BY rt.sort_order, r.sort_order,r.room_number "
    
       
 

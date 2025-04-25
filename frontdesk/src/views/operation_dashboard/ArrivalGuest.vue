@@ -1,6 +1,5 @@
 <template>
     
-    {{ op.all_reservation_data?.data.length }}
  
         <div class="card">
             <DataTable 

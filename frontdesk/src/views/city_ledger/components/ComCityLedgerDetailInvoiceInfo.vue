@@ -1,7 +1,7 @@
 <template>
 <div>           
     <div class="mt-1 mb-2">
-        <b>transaction during  - {{ working_day.date_working_day }}</b>
+        <b>Transaction Duration  - {{ working_day.date_working_day }}</b>
        
     </div>
     <div class="grid ">

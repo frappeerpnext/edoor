@@ -74,7 +74,8 @@
    "fieldtype": "Link",
    "label": "Room Type Group",
    "options": "Room Type Group",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "default": "#FFFFFF",
@@ -91,7 +92,7 @@
    "link_fieldname": "room_type_id"
   }
  ],
- "modified": "2024-09-10 10:08:38.702027",
+ "modified": "2025-04-18 15:53:29.567385",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",

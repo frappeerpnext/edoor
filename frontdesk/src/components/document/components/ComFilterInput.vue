@@ -12,9 +12,10 @@
         </Button>
 
         <OverlayPanel ref="op"  @show="onShow" class="filter_overlay_panel_custom">
-            <Stack>
+            <Stack class="scroll-content">
                 <h1 class="font-bold">{{ option.label }}</h1>
-                <ComSelect :options="operatorOptions"  optionLabel="label" optionValue="value" 
+              
+                <ComSelect v-if="!option.hideOperator" :options="operatorOptions"  optionLabel="label" optionValue="value" 
                   v-model="operator"
                   @onSelected="onOperatorChanged"
                   :clear="false"

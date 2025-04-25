@@ -1999,10 +1999,10 @@ background-color: rgb(255, 234, 234);
 .filter_content_custom .p-listbox-item:nth-child(even) {
     background-color: #fff;
 }
-.filter_overlay_panel_custom {
+.filter_overlay_panel_custom .scroll-content {
     max-width: 50rem;
     max-height: 40rem;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 .side_bar_01 { 
     position: fixed;
@@ -2014,3 +2014,6 @@ background-color: rgb(255, 234, 234);
     top: -6px;
     right: -5px;
 }
+/* .operation_data_dashboard .p-rowgroup-header {
+    font-weight: bold;
+} */

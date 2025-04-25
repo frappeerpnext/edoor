@@ -235,6 +235,7 @@ onMounted(async () => {
     }
     await loadData()
     window.addEventListener('message', actionRefreshData, false);
+    window.cityLedgerDetailDialogRef = dialogRef
 })
 
 const onClose = () => {
@@ -243,5 +244,6 @@ const onClose = () => {
 
 onUnmounted(() => {
     window.removeEventListener('message', actionRefreshData, false);
+    window.cityLedgerDetailDialogRef = null
 })
 </script>

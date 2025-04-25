@@ -9,6 +9,8 @@ import FrontdeskMapView from "@/views/map_view/FrontdeskMapView.vue"
 
 import ReservationList from "../views/frontdesk/ReservationList.vue";
 import ReservationStayList from "@/views/frontdesk/ReservationStayList.vue";
+import ReservationPickup from "@/views/frontdesk/ReservationPickup.vue";
+import ReservationStayUnAssignRoomList from "@/views/frontdesk/ReservationStayUnAssignRoomList.vue";
 import Housekeeping from "../views/housekeeping/Housekeeping.vue";
 import ReservationStayDetail from "../views/reservation/ReservationStayDetail.vue";
 import ReservationDetail from "../views/reservation/ReservationDetail.vue";
@@ -52,6 +54,7 @@ import AllReservation from "@/views/operation_dashboard/AllReservation.vue";
 import ArrivalGuest from "@/views/operation_dashboard/ArrivalGuest.vue";
 import StayOverGuest from "@/views/operation_dashboard/StayOverGuest.vue";
 import DepartureGuest from "@/views/operation_dashboard/DepartureGuest.vue";
+import OperationDashboardGuestLedger from "@/views/operation_dashboard/GuestLedger.vue";
 
 import Test from "@/views/test.vue";
 
@@ -73,6 +76,8 @@ let routes = [
   { path: "/frontdesk/folio-transaction", name: "FolioTransaction", component: FolioTransaction, meta: { layout: 'main_layout', title: 'Folio Transaction List' } },
 
   { path: "/frontdesk/reservation-stay", name: "ReservationStayList", component: ReservationStayList, meta: { layout: 'main_layout', title: 'Reservation Stay List' } },
+  { path: "/frontdesk/reservation-pickup", name: "ReservationPickup", component:ReservationPickup, meta: { layout: 'main_layout', title: 'Reservation Pickup' } },
+  { path: "/reservation/unassign-room", name: "UnAssignRoomList", component: ReservationStayUnAssignRoomList, meta: { layout: 'main_layout', title: 'Unassign Room List' } },
   { path: "/frontdesk/desk-folio", name: "DeskFolio", component: DeskFolio, meta: { layout: 'main_layout', title: 'Desk Folio' } },
   { path: "/frontdesk/no-permission", name: "NoPermission", component:NoPermission, meta: { layout: 'main_layout', title: 'Access Denied' } },
   { path: "/frontdesk/note", name: "Note", component: Note, meta: { layout: 'main_layout', title: 'Note' } },
@@ -116,6 +121,9 @@ let routes = [
   { path: "/frontdesk/operation-dashboard/arrival-guest", name: "ArrivalGuest", component:ArrivalGuest, meta: { layout: 'main_layout',title:"Arrival Guest", nested_layout:"OperationDasboardLayout" } },
   { path: "/frontdesk/operation-dashboard/stay-over-guest", name: "StayOverGuest", component:StayOverGuest, meta: { layout: 'main_layout',title:"Stay Over Guest", nested_layout:"OperationDasboardLayout" } },
   { path: "/frontdesk/operation-dashboard/departure-guest", name: "DepartureGuest", component:DepartureGuest, meta: { layout: 'main_layout',title:"Departure Guest", nested_layout:"OperationDasboardLayout" } },
+  { path: "/frontdesk/operation-dashboard/guest-ledger", name: "OperationDashboardGuestLedger",
+    component: OperationDashboardGuestLedger
+    , meta: { layout: 'main_layout',title:"Guest Ledger", nested_layout:"OperationDasboardLayout" } },
   
   { path: "/frontdesk/test", name: "Test", component:Test, meta: { layout: 'main_layout',title:"Test" } },
  

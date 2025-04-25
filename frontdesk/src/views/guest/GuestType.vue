@@ -14,7 +14,7 @@
  
  
         <template #action="{ item }" >
-                <div class="flex gap-2 justify-start">
+                <div class="flex gap-2 justify-end">
                     <Button
                     @click="onEdit(item)"
                     icon="pi pi-pencil text-sm"
@@ -54,10 +54,10 @@ const confirm = useConfirm()
             {fieldname: "name", is_hide:true},
             {fieldname: "name as customer_group_en", label: "Guest Type"},
             {fieldname: "note"},
-            {fieldname: "modified", label: "Modified", fieldtype:"Date"},
+            {fieldname: "modified", label: "Modified", fieldtype:"Datetime"},
             {fieldname: "modified_by", label: "Modified By"},
 
-            {fieldname: "name as action", label:"Action" },
+            {fieldname: "name as action", label:"Action",custom_class:"text-right" },
         ]
     })
 

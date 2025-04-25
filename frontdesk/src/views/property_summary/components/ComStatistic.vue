@@ -63,6 +63,7 @@ const props = defineProps({
 onMounted(()=>{
     loading.value = true 
     setTimeout(function(){
+       
         getApi("frontdesk.get_dashboard_data",{
         property:props.property,
         date:props.date,

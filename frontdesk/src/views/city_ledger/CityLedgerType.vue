@@ -1,125 +1,62 @@
 <template>
- 
-        <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
-            <template #start>
-                <div class="text-xl md:text-2xl">{{ $t('City Ledger Account Type') }} </div>
-            </template>
-            <template #end>
-                <Button class="border-none" :label="isMobile ? $t('Add New') : $t('Add New City Ledger Account Type')" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
-            </template>
-        </ComHeader>
-        <div class="mb-3 w-20rem">
-            <div class="flex w-full flex-wrap gap-2">
-                <div class="p-input-icon-left w-full">
-                    <i class="pi pi-search" />
-                    <InputText class="w-full" v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
+    <ComDocumentList
+    doctype="City Ledger Type"
+    list_view_setting="City_Ledger_Type"
+    router_name="CityLedgerType"
+    title="City Ledger Type" 
+    :options="options"  
+    >
+    <template #action-button>
+        <Button class="border-none" :label="isMobile ? $t('Add New') : $t('Add New City Ledger Account Type')" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
+    </template>
+
+    <template #action="{ item }" >
+                <div class="flex gap-2 justify-end">
+                    <Button
+                    @click="onEdit(item)"
+                    icon="pi pi-pencil text-sm"
+                    class="h-2rem border-none"
+                    :label="$t('Edit')"
+                    rounded
+                    />
+                    <Button
+                    @click="onDelete(item.name)"
+                    severity="danger"
+                    icon="pi pi-trash text-sm"
+                    class="h-2rem border-none"
+                    :label="$t('Delete')"
+                    rounded
+                    />
                 </div>
-            </div>
-        </div>
-        <div>
-            <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
-                <DataTable  showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
-                    <Column :headerClass="'white-space-nowrap'" field="city_ledger_type" :header="$t('City Ledger Type') " ></Column>
-                    <Column :header="$t('Owner')">
-                        <template #body="slotProps">
-                            <div v-if="slotProps?.data && slotProps?.data?.owner">
-                                <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
-                                    <span>{{ item }}</span>
-                                </template>
-                            </div>  
-                        </template>
-                    </Column>
-                    <Column field="note" class="w-6" :header=" $t('Note') "></Column>
-                    <Column :header="$t('Action')" class="text-center w-10rem">
-                        <template #body="slotProps">
-                            <div class="flex gap-2 justify-center">
-                            <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" :label="$t('Edit')" rounded />
-                            <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" :label="$t('Delete') " rounded />
-                            </div>
-                        </template>
-                    </Column>
-                </DataTable>
-            </ComPlaceholder>
-        </div>
-       
+    </template>
+    
+    </ComDocumentList>
 </template>
+
 <script setup>
-import { inject, ref, getDocList, onMounted,deleteDoc,useConfirm,useDialog,onUnmounted } from '@/plugin'
-import ComAddCityLedgerType from "@/views/city_ledger/components/ComAddCityLedgerType.vue"
-import {i18n} from '@/i18n';
-const { t: $t } = i18n.global;
-const gv = inject("$gv")
-const data = ref([])
-const filter = ref({})
-const isMobile = ref(window.isMobile) 
-const confirm = useConfirm()
-const dialog = useDialog()
- 
+    import { ref,useDialog,inject,useConfirm,deleteDoc } from '@/plugin'
+    import ComDocumentList from "@/components/document/ComDocumentList.vue";
+    import ComAddCityLedgerType from "@/views/city_ledger/components/ComAddCityLedgerType.vue"
+    import {i18n} from '@/i18n';
 
-function onEdit (selected){ 
- dialog.open(ComAddCityLedgerType, {
-    props: {
-        header: $t(`Edit City Ledger Type`),
-        style: {
-            width: '50vw',
-        },
-        modal: true,
-        closeOnEscape: false,
-        position: 'top',
-        breakpoints:{
-                '960px': '50vw',
-                '640px': '100vw'
-            },
-    },
-    data:selected,
-    onClose:(options) => {
-        const data = options.data;
-        if(data){
-            loadData()
-        }
-    }
-});  
-}
+    const { t: $t } = i18n.global;
+    const dialog = useDialog()
+    const gv = inject("$gv")
+    const isMobile = ref(window.isMobile) 
+    const confirm = useConfirm()
 
-function onDelete (name){ 
-        confirm.require({
-        message: 'Are you sure you want to delete guest?',
-        header: $t('Confirmation'),
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-            // loading.value = false
-            deleteDoc('City Ledger Type',name)
-            .then(() =>{
-                loadData()
-                loading.value = false
-            }).catch((err)=>{
-                loading.value = false
-            })         
-        },
-    });
-}
-
-function loadData() {
-    gv.loading = true
-    getDocList('City Ledger Type', {
-        fields: ['name','city_ledger_type', 'note','owner'],
-        limit: 10000,
+    const options = ref({
+        fields: [
+            { fieldname: "name", is_hide:true},
+            { fieldname: "name as city_ledger_type", label: "Name" },
+            { fieldname: "note", label: "Note" },
+            { fieldname: "modified", label: "Modified", fieldtype:"Datetime"},
+            { fieldname: "modified_by", label: "Modified By" },
+            { fieldname: "name as action", label: "Action", custom_class:"text-right" }
+        ]
     })
-    .then((doc) => {
-        data.value = doc
-        gv.loading = false
-    })
-    .catch((error) => {
-        gv.loading = false
-        
-    });
-}
 
-function onAddCityLedgerAccountType(){
+    function onAddCityLedgerAccountType(){ 
     if(!gv.cashier_shift?.name){
         gv.toast('error', 'Please Open Cashier Shift.')
         return
@@ -138,51 +75,63 @@ function onAddCityLedgerAccountType(){
                 '640px': '100vw'
             },
         },
-        onClose:(options) => {
-            const data = options.data;
-            if(data){
-				loadData()
-			}
+        onClose:(options) => {  
+            const result = options.data;
+            if (result) {  
+                        window.postMessage({action:"ComDocumentList"},"*") 
+            }
         }
     });  
 }
-const Refresh = debouncer(() => {
-    loadData();
-}, 500);
-function debouncer(fn, delay) {
-    var timeoutID = null;
-    return function () {
-        clearTimeout(timeoutID);
-        var args = arguments;
-        var that = this;
-        timeoutID = setTimeout(function () {
-            fn.apply(that, args);
-        }, delay);
-    };
-}
-
-const actionRefreshData = async function (e) {
-    if (e.isTrusted && typeof (e.data) != 'string') {
-        if(e.data.action=="CityLedgerType"){
-            setTimeout(()=>{
-                loadData()
-            },1000*3) 
-        }
-    };
-}
-
-onMounted(() => {
-    if(window.isMobile){
-        let elem = document.querySelectorAll(".p-dialog");
-        if (elem){
-            elem = elem[elem.length-1]
-            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+ 
+function onEdit (edit){ 
+    console.log("edit",edit);
+    
+ dialog.open(ComAddCityLedgerType, {
+    props: {
+        header: $t(`Edit City Ledger Type: ${edit.name}` ),
+        style: {
+            width: '50vw',
+        },
+        modal: true,
+        closeOnEscape: false,
+        position: 'top',
+        breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+    },
+    data:edit, 
+    onClose:(options) => {
+        const result = options.data;
+        if(result){
+            window.postMessage({action:"ComDocumentList"},"*") 
         }
     }
-    window.addEventListener('message', actionRefreshData, false)
-    loadData()
-})
-onUnmounted(() => {
-    window.removeEventListener('message', actionRefreshData, false)
-})
+    
+});  
+}
+
+function onDelete (name){ 
+        confirm.require({
+        message: 'Are you sure you want to delete guest?',
+        header: $t('Confirmation'),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            // loading.value = false
+            deleteDoc('City Ledger Type',name)
+            .then(() =>{
+                window.postMessage({action:"ComDocumentList"},"*") 
+                loading.value = false
+            }).catch((err)=>{
+                loading.value = false
+            })         
+        },
+    });
+}
+
 </script>

@@ -1,5 +1,4 @@
 <template> 
-    
     <template v-if="hasProperty">
         <ComIsTrainingMessage />
         <main-layout v-if="$route.meta.layout!='blank_layout'" :nested_layout="$route.meta.nested_layout" />
@@ -58,12 +57,15 @@ import NewReservation from "@/views/reservation/NewReservation.vue"
 import ComLostAndFoundDetail from "@/views/lost_and_found/components/ComLostAndFoundDetail.vue"
 import ComCityLedgerInvoiceDetail from "@/views/city_ledger_invoice/components/ComCityLedgerInvoiceDetail.vue"
 
+
+
 const urlParams = new URLSearchParams(window.location.search);
 const route = useRoute();
 import {i18n} from '@/i18n';
+import { useApp } from "./hooks/useApp";
 const { t: $t } = i18n.global;
 const ui = ref(urlParams.get('layout') || "main_layout")
-
+const {getSummaryData} = useApp();
 window.isMobile = (/mobile/i.test(navigator.userAgent));
 
  
@@ -220,7 +222,7 @@ onUnmounted(() => {
     window.socket.off("UpdateCashierShift")
     window.socket.off("RunNightAudit")
 })
-onMounted(() => { 
+onMounted(async () => { 
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){
@@ -284,6 +286,10 @@ onMounted(() => {
     } else {
         gv.cashier_shift = working_day.cashier_shift
     }
+
+    await getSummaryData(window.current_working_date);
+
+
 })
 
 function showBusinessSourceDetail(name){
@@ -495,7 +501,6 @@ function showCityInvoiceDetail(name) {
     
 }
 function showReservationStayDetail(name) {
-    console.log(window.reservation_stay)
     if (!window.reservation_stay){
     const dialogRef = dialog.open(ReservationStayDetail, {
         data: {
@@ -562,7 +567,9 @@ function showFolioTransactionDetail(name) {
 }
 
 function showCityLedgerDetail(name) {
-
+    if( window.cityLedgerDetailDialogRef){
+        window.cityLedgerDetailDialogRef.value.close();
+    }
     const dialogRef = dialog.open(ComCityLedgerDetail, {
         data: {
             name: name

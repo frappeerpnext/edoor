@@ -1,19 +1,16 @@
 <template>
-    <div>{{ moment(data?.arrival_date).format("DD-MM-YYYY") }} &#8594; {{ moment(data?.departure_date).format("DD-MM-YYYY") }}</div>
-    
+    <div><span>Res. Date:</span> <span class="font-semibold">{{ moment(data?.reservation_date).format("DD-MM-YYYY") }}</span></div>
+    <div><span>From:</span> <span class="font-semibold">{{ moment(data?.arrival_date).format("DD-MM-YYYY") }} &#8594; {{ moment(data?.departure_date).format("DD-MM-YYYY") }}</span></div>
+    <!-- {{ data }} -->
     <div class="flex gap-2">
-        <div class="flex gap-2 bg-purple-200 border-round py-1 px-2 align-items-center" style="width:fit-content"> 
-            <div>{{ data?.room_nights }}</div>
-            <div><ComIcon icon="moonIcon" style="width:16px"/></div>
-        </div>
-        <div class="flex gap-2 bg-purple-200 border-round py-1 px-2 align-items-center" style="width:fit-content"> 
-            <div>{{ data?.adult }}</div>
-            <div><ComIcon icon="adultIcon" style="width:16px"/></div>
-        </div>
-        <div class="flex gap-2 bg-purple-200 border-round py-1 px-2 align-items-center" style="width:fit-content"> 
-            <div>{{ data?.child }}</div>
-            <div><ComIcon icon="childIcon" style="width:16px"/></div>
-        </div>
+        <template v-for="(m, index) in stayInfoItem" :key="index">
+            <tippy :content="$t(m.title)" placement="bottom">
+                <div class="flex gap-2 border-round py-1 px-2 align-items-center" style="width:fit-content"> 
+                    <div>{{ m.field }}</div>
+                    <div><ComIcon :icon="m.icon" style="width:16px"/></div>
+                </div> 
+            </tippy>
+        </template>
     </div>
 </template>
 <script setup> 
@@ -22,4 +19,24 @@ const moment = inject("$moment")
 const props = defineProps({
     data:Object
 })
+
+// console.log(props.data.room_nights)
+
+const stayInfoItem = [
+    {
+        field: props.data.room_nights,
+        icon: 'moonIcon',
+        title: 'Nights'
+    },
+    {
+        field: props.data.adult,
+        icon: 'adultIcon',
+        title: 'Adult(s)'
+    },
+    {
+        field: props.data.child,
+        icon: 'childIcon',
+        title: 'Child(s)'
+    },
+]
 </script>

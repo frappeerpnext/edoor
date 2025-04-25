@@ -7,6 +7,7 @@
        :operatorOptions="operatorOptions"
        v-model:selected="selected"
        :hasFilter="selected!=''"
+       
        >
        {{option.label }}
 
@@ -17,10 +18,12 @@
             <Listbox 
                 v-model="selected"
                 :options="options"
+                optionLabel="label"
+                optionValue="value"
                  @change="onSearch"
                  class="w-full md:w-56">
                     <template #option="slotProps">
-                        <span>{{ slotProps.option }}</span>
+                        <span>{{ slotProps.option.label }}</span>
                     </template>
                 </Listbox>
         
@@ -35,7 +38,7 @@
 <script setup>
 import {ref,watch} from "@/plugin"
 import ComFilterInput from "@/components/document/components/ComFilterInput.vue"
-import { computed } from "vue"
+import { computed, onMounted } from "vue"
 const props = defineProps({
     option:Object,
     defaultValue:Object//[key,"operator","value"]
@@ -56,7 +59,17 @@ watch(() => props.defaultValue, (newVal, oldVal) => {
 });
 
 const options = computed(()=>{
-    return props.option.options.split(/\r?\n/).filter(line => line.trim() !== "");
+ if((typeof props.option.options) =="string"){
+    return props.option.options.split(/\r?\n/).filter(line => line.trim() !== "").map(r=>{
+        return {
+            label:r,
+            value:r
+        }
+    });
+ }else {
+    return props.option.options
+ }
+    
 })
 
 const operatorOptions = [
@@ -75,6 +88,14 @@ function onClearFilter(){
     selected.value = "";
     emit("onFilter",[props.option.fieldname,operator.value,""] )
 }
+
+
+onMounted(()=>{
+    if(props.defaultValue){
+        operator.value = props.defaultValue[1]
+        selected.value = props.defaultValue[2]
+    }
+})
 
 
 

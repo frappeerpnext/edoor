@@ -36,33 +36,24 @@
             </div>
             <div class="relative chart-show-summary bg-white border-round-xl p-3" aria-haspopup="true" aria-controls="overlay_menu">
                 <div>
-                    {{data}}
+                 
                        
                     <div class="flex gap-2">
                         <!-- nav kpi -->
-                        {{op.current_route}}
-                        <ComOperationDashboardButton title="All Reservation" routeName="AllReservation" :currentRoute="op.current_route" :dataLength="data?.total_room_occupy" @onOpenRoute="openRoute('AllReservation')" />
-                        <ComOperationDashboardButton title="Arrival Guest" routeName="ArrivalGuest" :currentRoute="op.current_route" :dataLength="data?.arrival - data?.arrival_remaining + '/' + data?.arrival" @onOpenRoute="openRoute('ArrivalGuest')" />
-                        <ComOperationDashboardButton title="Stay Over" routeName="StayOverGuest" :currentRoute="op.current_route" :dataLength="data?.stay_over" @onOpenRoute="openRoute('StayOverGuest')" />
-                        <ComOperationDashboardButton title="In-House" routeName="InHouse" :currentRoute="op.current_route" :dataLength="data?.in_house" @onOpenRoute="openRoute('InHouse')" />
-                        <ComOperationDashboardButton title="Departure" routeName="DepartureGuest" :currentRoute="op.current_route" :dataLength="data?.departure" @onOpenRoute="openRoute('DepartureGuest')" />
-                        <ComOperationDashboardButton title="Reservation" routeName="Reservation" :currentRoute="op.current_route" :dataLength="data?.daily_reservation + '/' + data?.daily_reservation_stay" @onOpenRoute="openRoute('Reservation')" />
-                        <ComOperationDashboardButton title="Guest Folio" routeName="GuestFolio" :currentRoute="op.current_route" :dataLength="2" @onOpenRoute="openRoute('GuestFolio')" />
+                   
+                        <ComOperationDashboardButton title="All Reservation" routeName="AllReservation" :currentRoute="op.current_route" :dataLength="data?.total_room_occupy" @onOpenRoute="openRoute('AllReservation')" icon="iconAllReservation"/>
+                        <ComOperationDashboardButton title="Arrival Guest" routeName="ArrivalGuest" :currentRoute="op.current_route" :dataLength="data?.arrival - data?.arrival_remaining + '/' + data?.arrival" @onOpenRoute="openRoute('ArrivalGuest')" icon="iconArrivalGuest"/>
+                        <ComOperationDashboardButton title="Stay Over" routeName="StayOverGuest" :currentRoute="op.current_route" :dataLength="data?.stay_over" @onOpenRoute="openRoute('StayOverGuest')" icon="iconStayOverGuest"/>
+                        <ComOperationDashboardButton title="In-House" routeName="InHouse" :currentRoute="op.current_route" :dataLength="data?.in_house" @onOpenRoute="openRoute('InHouse')" icon="iconInHouse"/>
+                        <ComOperationDashboardButton title="Departure" routeName="DepartureGuest" :currentRoute="op.current_route" :dataLength="data?.departure" @onOpenRoute="openRoute('DepartureGuest')" icon="iconDepartureGuest"/>
+                        <ComOperationDashboardButton title="Reservation" routeName="Reservation" :currentRoute="op.current_route" :dataLength="data?.daily_reservation + '/' + data?.daily_reservation_stay" @onOpenRoute="openRoute('Reservation')" icon="iconReservation"/>
+                        <ComOperationDashboardButton title="Guest Folio" routeName="OperationDashboardGuestLedger" :currentRoute="op.current_route" :dataLength="2" @onOpenRoute="openRoute('OperationDashboardGuestLedger')" icon="iconGuestFolio"/>
                         
-                        <!-- <Button class="content_btn_b adjBtnRefresh" @click = "openRoute('DepartureGuest')">In-House</Button>
-                        <Button class="content_btn_b adjBtnRefresh" @click = "openRoute('DepartureGuest')">Departure</Button>
-                        <Button class="content_btn_b adjBtnRefresh" @click = "openRoute('Reservation')">Reservation</Button>
-                        <Button class="content_btn_b adjBtnRefresh" @click = "openRoute('DepartureGuest')">Guest Folio</Button>
-                        <Button class="content_btn_b adjBtnRefresh" @click = "openRoute('NoShowReservation')">NoShow</Button>
-                        <Button class="content_btn_b adjBtnRefresh" @click = "openRoute('CancelReservation')">Cancel</Button>
-                        <Button class="content_btn_b adjBtnRefresh" @click = "openRoute('VoidReservation')">Void</Button>
-                        <Button class="content_btn_b adjBtnRefresh" @click = "openRoute('RoomBlock')">Room Block</Button> -->
                         
                     </div>
-                    <div>
+                    <div class="mt-5">
                         <slot/>
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -85,6 +76,8 @@ const op = inject("$operation_dashboard")
 const working_day = window.working_day
 op.current_date = working_day.date_working_day
 op.current_route = route.name
+
+
 
 op.display_date = working_day.date_working_day
 const data = ref([])

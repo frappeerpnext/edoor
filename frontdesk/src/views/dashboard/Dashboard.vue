@@ -221,7 +221,7 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 const tomorrow = ref('')
-
+ 
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const statusColor = computed(() => {
@@ -428,6 +428,7 @@ function getData(loading = true) {
         date: selected_date.value
     })
         .then((result) => {
+             
             data.value = result.message
             chartOccupancy.value = []
             const documentStyle = getComputedStyle(document.body);

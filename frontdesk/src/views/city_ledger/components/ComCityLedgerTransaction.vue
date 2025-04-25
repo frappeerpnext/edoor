@@ -5,6 +5,7 @@
       list_view_setting="city_ledger_detail_city_ledger_transaction_list"
       :options="options"
       @row-dblclick="onRowDoubleClick"
+      wrap-class="surface-50 "
     >
       <template #action-button>
         <ComFolioActionButton @onClick="AddTransaction" :data="folio_operation"/> 
@@ -14,14 +15,19 @@
       <template #account_name="{ item, index }">
         {{ item.account_code }} - {{ item.account_name }}
       </template>
+
+      <template #source_transaction_number="{item, index}"> 
+        <Button v-if="item.source_transaction_number" class="link_line_action1" @click="onOpenLink('view_folio_detail',item.source_transaction_number)" link>{{ item.source_transaction_number }} </Button>
+      </template>
+
       <template #reservation="{ item, index }">
-       <Stack gap="0px">
+       <Stack gap="0px" class="flex stack-horizontal">
         <Button v-if="item.reservation" class="link_line_action1" @click="onOpenLink('view_reservation_detail',item.reservation)" link>
-          Res.  {{ item.reservation }}
+          {{ item.reservation }}
         </Button>
-        
-        <Button v-if="item.reservation_stay" class="link_line_action1" @click="onOpenLink('view_reservation_stay_detail',item.reservation)" link>
-           Stay. {{ item.reservation_stay }}
+        <span v-if="item.reservation">|</span>
+        <Button v-if="item.reservation_stay" class="link_line_action1" @click="onOpenLink('view_reservation_stay_detail',item.reservation_stay)" link>
+          {{ item.reservation_stay }}
         </Button>
 
         
@@ -98,7 +104,7 @@ const { t: $t } = i18n.global;
       {fieldname:"payment_status"}
    ],
     // filters:[["property","=",window.property_name],["transaction_number","=",props.city_ledger]],
-    hideSaveView:true,
+    hideSaveView:false,
     scrollHeight: getDialogScrollHeight(-235)
   };
   
@@ -112,7 +118,7 @@ const { t: $t } = i18n.global;
   }
 
 function AddTransaction(account_code) { 
-    alert("dont forget city ledter balance")
+    // alert("dont forget city ledter balance")
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
             new_doc: {

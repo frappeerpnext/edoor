@@ -193,6 +193,9 @@
                 </div>
               </div>
             </div>
+            <div>
+              {{ item.invoice_description }}
+            </div>
           </template>
           <template #posting_date="{ item, index }"> </template>
           <template #room="{ item, index }">
@@ -230,13 +233,10 @@ function onClose() {
 
 const dialogRef = inject("dialogRef");
 const loading = ref(true);
-const balance_doc = ref();
-const dialog = useDialog();
+const balance_doc = ref(); 
 const moment = inject("$moment");
 const name = ref("");
-const doc = ref({});
-const show_detail = ref(false);
-const property = JSON.parse(localStorage.getItem("edoor_property"));
+const doc = ref({}); 
 const { t: $t } = i18n.global;
 const newDoc = ref();
 const selectedfolioTransactions = ref([]);

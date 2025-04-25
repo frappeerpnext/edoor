@@ -1,4 +1,95 @@
+<template>
+    <ComDocumentList
+      doctype="Payable Ledger"
+      list_view_setting="payable_ledger_list"
+      :options="options"
+      @row-dblclick="onRowDoubleClick"
+    > 
+    <template #action-button>
+        <Button class="border-none" :label="isMobile ? $t('Add New') : $t(' Add New Payable Ledger')" icon="pi pi-plus" @click="onAddPayableLedger()" />
+    </template>
  
+        <template #vendor="{ item, index }">
+            <Button class="link_line_action1" @click="onOpenLink('view_vendor_detail', item.vendor)" link>
+                {{ item.vendor }} - {{ item.vendor_name }}
+            </Button>
+        </template>
+        <template #status="{ item, index }">
+            <ComOpenStatus :status="item.status" />
+        </template>
+    </ComDocumentList>
+</template>
+<script setup>
+import {useDialog} from "@/plugin"
+import ComAddPayableLedger from '@/views/payable_ledger/components/ComAddPayableLedger.vue';
+const dialog = useDialog()
+
+    const options = {
+        fields: [
+            { fieldname: "name", label: "Payable Ledger",action:"view_payable_ledger_detail" },   
+            { fieldname: "posting_date", label: "Post Date" },   
+            { fieldname: "vendor", label:"Vendor"},
+            { fieldname: "vendor_name", is_hide:true},
+            { fieldname: "room_number", label: "Room", custom_class:"text-center" },   
+            { fieldname: "room_type", label: "Room Type" },   
+            { fieldname: "total_debit", label: "Debit" },   
+            { fieldname: "total_credit", label: "Credit" },   
+            { fieldname: "balance", label: "balance" },   
+            { fieldname: "cashier_shift", label: "Shift" },   
+            { fieldname: "owner", label: "Created By" },   
+            { fieldname: "creation", label: "Creation", fieldtype:"Datetime" },   
+            { fieldname: "status", label: "Status"},   
+        ],   
+        filterOptions:[
+            {fieldname:"posting_date"},
+            {fieldname:"vendor"},
+            {fieldname:"status"},
+            {fieldname:"room_type"},
+            {fieldname:"room_number"},
+        ],
+    } 
+
+    function onOpenLink(action, name) {
+        window.postMessage(action + '|' + name, '*')
+    }
+
+    function onRowDoubleClick(event) {
+        onOpenLink("view_payable_ledger_detail", event.name)
+    }
+
+    function onAddPayableLedger(data) {
+        dialog.open(ComAddPayableLedger, {
+            data: { data },
+            props: {
+                header: `Add New Payable ledger`,
+                style: {
+                    width: '50vw',
+                },
+            
+                modal: true,
+                closeOnEscape: false,
+                position: 'top',
+                breakpoints:{
+                    '960px': '50vw',
+                    '640px': '100vw'
+                },
+            },
+            onClose: (options) => {
+                const result = options.data;
+                if (result) {
+                    loadData()
+                    window.postMessage("view_payable_ledger_detail|" + result.name, "*")
+                }
+            }
+        });
+    }
+</script>
+
+
+
+
+
+<!--   
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
@@ -140,7 +231,6 @@
                     :filters="{ property: property.name }"></ComSelect>
                                 <div class="col-6" >
                     <div class="flex relative">
-                     <!-- <lable for="filter_date">Filter Date</lable> -->
                     <Calendar class="w-full" inputClass="pl-6" :disabled="!filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
                 @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" placeholder="Select Date Range"/>
                 <div v-tippy="'Filter By Date'" class="check-box-filter">
@@ -473,4 +563,4 @@ function onAddPayableLedger(data) {
 }
 </script>
 
- 
+  -->

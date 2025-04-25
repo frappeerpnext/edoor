@@ -7,6 +7,8 @@ const isCityLedgerInvoiceDetailOpen = ref(false)
 const dialogBoxRef= ref()
 const metas = ref([])
 const listViewSettings = ref([])
+const todaySummary =ref()
+
 
 export function useApp() {
 
@@ -83,11 +85,25 @@ export function useApp() {
     window.postMessage(action + '|' + name, '*')
 }
 
+  async function getSummaryData(date){
+    
+  const res = await getData("frontdesk.get_dashboard_data",{
+    property:window.property_name,
+    date:date
+  })
+  if(res.data){
+    
+    todaySummary.value = res.data
+  }
+}
+
   return { 
     isCityLedgerInvoiceDetailOpen,
+    todaySummary,
     getMeta,
     getDoctypeDefaultFields,
     getListViewSetting,
-    onOpenLink
+    onOpenLink,
+    getSummaryData
 };
 }

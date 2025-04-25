@@ -257,7 +257,15 @@
                     </div>
                     <!-- / System Transfer  -->
 
-                   
+                    <!-- City Ledger Invoice -->
+                        <div v-if="account_code.allow_enter_city_ledger_invoice" class="col-12 ">
+                            <span> City Ledger Invoice </span>                      
+                            <ComAutoComplete v-model="doc.city_ledger_invoice" :placeholder="''"
+                                                                    doctype="City Ledger Invoice"
+                                                                    :filters="{ city_ledger:doc.target_transaction_number }"
+                                                                    class="auto__Com_Cus w-full" />
+                        </div>
+                    <!-- City Ledger Invoice -->
           
                 </div>
             </div>
@@ -716,7 +724,7 @@ function onSelectProduct(data,index){
     
 }
 function onSelectTargetTransactionNumber(data){
-     
+        doc.value.city_ledger_invoice = ''
         doc.value.selected_target_transaction_data=data
   
   
@@ -778,6 +786,11 @@ function onSave(){
     if(!gv.cashier_shift?.name){
         isSaving.value = false;
         gv.toast('error', 'Please Open Cashier Shift.')
+        return
+        
+    }
+    if(account_code.value.allow_enter_city_ledger_invoice && !data.city_ledger_invoice){
+        gv.toast('warn', 'Please Select City Ledger Invoice.')
         return
         
     }

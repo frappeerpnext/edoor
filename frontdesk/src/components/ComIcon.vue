@@ -62,6 +62,12 @@
     <img v-else-if="icon == 'iconDepartureGuest'" :style="{'height' : height}" :class="class" :src="iconDepartureGuest"/>
     <img v-else-if="icon == 'iconStayOverGuest'" :style="{'height' : height}" :class="class" :src="iconStayOverGuest"/>
     <img v-else-if="icon == 'iconSetting'" :style="{'height' : height}" :class="class" :src="iconSetting"/>
+    <img v-else-if="icon == 'iconUnassignRoom'" :style="{'height' : height}" :class="class" :src="iconUnassignRoom"/>
+    <img v-else-if="icon == 'iconAllReservation'" :style="{'height' : height}" :class="class" :src="iconAllReservation"/>
+    <img v-else-if="icon == 'iconStayOver'" :style="{'height' : height}" :class="class" :src="iconStayOver"/>
+    <img v-else-if="icon == 'iconInHouse'" :style="{'height' : height}" :class="class" :src="iconInHouse"/>
+    <img v-else-if="icon == 'iconReservation'" :style="{'height' : height}" :class="class" :src="iconReservation"/>
+    <img v-else-if="icon == 'iconGuestFolio'" :style="{'height' : height}" :class="class" :src="iconGuestFolio"/>
 
 
     
@@ -144,6 +150,12 @@ import iconArrivalGuest from '@/assets/svg/icon-arrival-guest.svg'
 import iconDepartureGuest from '@/assets/svg/icon-departure-guest.svg'
 import iconStayOverGuest from '@/assets/svg/icon-stay-over-guest.svg'
 import iconSetting from '@/assets/svg/icon-settings.svg'
+import iconUnassignRoom from '@/assets/svg/icon-unassign-room.svg'
+import iconAllReservation from '@/assets/svg/icon-all-reservations.svg'
+import iconStayOver from '@/assets/svg/icon-stay-over.svg'
+import iconInHouse from '@/assets/svg/icon-in-house.svg'
+import iconReservation from '@/assets/svg/icon-reservations.svg'
+import iconGuestFolio from '@/assets/svg/icon-guest-folio.svg'
 
 </script>
  

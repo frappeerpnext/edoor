@@ -405,6 +405,24 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
     # Return the generated dates.
     return dates
 
+
+def get_month_days(month, year):
+    days_list = []
+    # Get the number of days in the given month/year
+    num_days = calendar.monthrange(year, month)[1]
+
+    for day in range(1, num_days + 1):
+        current_date = date(year, month, day)
+        day_name = current_date.strftime("%a")  # e.g., Mon, Tue, etc.
+        is_weekend = current_date.weekday() >= 5  # 5 = Saturday, 6 = Sunday
+        days_list.append({
+            "day": day,
+            "day_name": day_name,
+            "is_weekend": is_weekend
+        })
+
+    return days_list
+
 @frappe.whitelist()
 def update_reservation(name=None,doc=None, run_commit = True,ignore_validate=False):
     if name or doc:
@@ -2313,3 +2331,9 @@ def getChildrenOf(doctype,parent,include_parent=False):
     if include_parent:
         descendants.append(parent)
     return descendants
+
+
+def convert_array_filter_to_dict(fitler):
+    if isinstance(fitler, dict):
+        return fitler
+    return {field: value for field, operator, value in fitler if operator == "="}

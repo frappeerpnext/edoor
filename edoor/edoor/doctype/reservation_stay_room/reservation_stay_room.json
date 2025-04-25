@@ -98,7 +98,8 @@
    "fieldname": "property",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Property"
+   "label": "Property",
+   "search_index": 1
   },
   {
    "fieldname": "room_id",
@@ -114,7 +115,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Room Type ID",
-   "options": "Room Type"
+   "options": "Room Type",
+   "search_index": 1
   },
   {
    "fetch_from": "room_type_id.room_type",
@@ -180,7 +182,8 @@
    "default": "0",
    "fieldname": "show_in_room_chart",
    "fieldtype": "Check",
-   "label": "Show In Room Chart"
+   "label": "Show In Room Chart",
+   "search_index": 1
   },
   {
    "fetch_from": "room_id.room_number",
@@ -555,7 +558,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-23 10:44:44.081845",
+ "modified": "2025-04-18 15:51:59.640906",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

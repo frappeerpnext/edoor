@@ -163,7 +163,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-20 16:28:20.983709",
+ "modified": "2025-04-18 14:42:07.993957",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger Invoice",
@@ -183,6 +183,7 @@
    "write": 1
   }
  ],
+ "search_fields": "city_ledger_name,payment_status",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

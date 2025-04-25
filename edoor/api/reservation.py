@@ -8,7 +8,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import    update_rese
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_stay,update_reservation,add_room_charge_to_folio, update_reservation_stay_and_reservation, validate_backdate_permission, validate_role,add_package_inclusion_charge_to_folio,get_breakdown_package_charge_code
+from edoor.api.utils import get_month_days, convert_array_filter_to_dict, check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_stay,update_reservation,add_room_charge_to_folio, update_reservation_stay_and_reservation, validate_backdate_permission, validate_role,add_package_inclusion_charge_to_folio,get_breakdown_package_charge_code
 import frappe
 import time
 import uuid  
@@ -2357,8 +2357,9 @@ def get_folio_transaction_with_package_breakdown(transaction_type="", transactio
          
         balance = balance + (amount * (1 if d.type=="Debit" else -1))        
         folio_transactions.append({ 
-                "source_transaction_number":d["source_transaction_number"],
+            "source_transaction_number":d["source_transaction_number"],
             "source_transaction_type":d["source_transaction_type"],
+            "invoice_description":d["invoice_description"],
             "reservation":d["reservation"],
             "reservation_stay":d["reservation_stay"],
             "name":"" if d.is_package_charge==1 else d["name"],
@@ -2418,6 +2419,7 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
           
             folio_transactions.append({ 
                 "reservation":d["reservation"],
+                "invoice_description":d["invoice_description"],
                  "reservation_stay":d["reservation_stay"],
                 "name":d["name"],
                 "room_number":d.room_number,
@@ -2448,6 +2450,7 @@ def get_folio_transaction_with_breakdown_account_code(transaction_type="", trans
 
 
         folio_transactions.append({ 
+             "invoice_description":d["invoice_description"],
             "reservation":d["reservation"],
             "reservation_stay":d["reservation_stay"],
             "guest_name":d["guest_name"],
@@ -2568,6 +2571,7 @@ def get_folio_transaction_without_breakdown_account_code(transaction_type="", tr
         folio_transactions.append({ 
             "source_transaction_number":d["source_transaction_number"],
             "source_transaction_type":d["source_transaction_type"],
+             "invoice_description":d["invoice_description"],
             "reservation":d["reservation"],
             "reservation_stay":d["reservation_stay"],
             "guest_name":d["guest_name"],
@@ -4506,3 +4510,30 @@ def get_guest_folio_list(reservation="", reservation_stay=""):
     for d in data:
         d["show_room_rate_in_guest_folio_invoice"] = show_room_rate_in_guest_folio_invoice
     return data
+@frappe.whitelist()
+def get_reservation_pickup(params):
+    params = convert_array_filter_to_dict(params)
+    sql = "select name as row_group from `tabBusiness Source`"
+    data = frappe.db.sql(sql,params,as_dict = 1)
+    sql = """
+        select 
+            day(reservation_date) as day,
+            business_source as row_group,
+            sum(room_nights) as total
+        from `tabReservation Stay` where
+        month(reservation_date) = %(month)s  and 
+        year(reservation_date) = %(year)s and 
+        is_active_reservation = 1 and 
+        property = %(property)s
+        group by 
+            day(reservation_date),
+            business_source
+        """
+    occupy_data = frappe.db.sql(sql,params,as_dict=1)
+ 
+    for s in data:
+        for x in [y for y in  occupy_data if y.get("row_group") == s.get("row_group")]:
+            s[x.get("day")] = x.get("total")
+
+    return data
+

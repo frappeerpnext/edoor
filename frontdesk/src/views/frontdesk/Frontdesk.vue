@@ -266,7 +266,7 @@ const calendarOptions = reactive({
         "hours": 24
     },
     resourceClick: function (info) {
-        alert(11)
+        // alert(11)
     },
 
     slotLabelFormat: function (date) {

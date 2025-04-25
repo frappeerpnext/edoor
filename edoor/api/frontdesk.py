@@ -406,6 +406,44 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     }
 
 @frappe.whitelist()
+def get_sidebar_kpi(property,date):
+    sql="""
+        select 
+            count(*) as total_stay,
+            sum(a.is_arrival) as total_arrival,
+            sum(a.is_departure) as total_departure,
+            sum(a.is_stay_over) as total_stay_over
+        from `tabRoom Occupy` a
+        where
+            a.property = %(property)s and 
+            a.date = %(date)s and 
+            a.is_active_reservation = 1 and 
+            a.type = 'Reservation'
+    """
+    data = frappe.db.sql(sql, {"property":property, "date":date},as_dict = 1)
+    
+    data [0]["total_unassign_room"] = get_total_unassign_room(property,date) 
+    return data[0]
+
+def get_total_unassign_room(property,date):
+    
+    total_unassign_room = frappe.db.sql("""
+            SELECT 
+              count(distinct  reservation_stay) as total
+            FROM `tabRoom Occupy` 
+            WHERE 
+                is_active= 1 and  
+                `date` >= %(date)s AND 
+                property = %(property)s and 
+                type='Reservation' and 
+                coalesce(room_id,'') = ''
+        """,{"property":property,"date":date}, as_dict =1)
+    if total_unassign_room:
+        return total_unassign_room[0]["total"]
+    return 0
+    
+    
+@frappe.whitelist()
 def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 

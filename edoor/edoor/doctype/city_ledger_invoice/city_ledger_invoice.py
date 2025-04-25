@@ -118,11 +118,13 @@ def remove_folio_transaction_from_invoice(city_ledger_invoice, data):
         update_city_ledger_invoice_balance(city_ledger_invoice)
         return frappe.get_doc("City Ledger Invoice", city_ledger_invoice)
 @frappe.whitelist(methods="POST")
-def add_city_ledger_transaction_invoice(city_ledger_invoice, data ):
+def add_city_ledger_transaction_invoice(city_ledger_invoice, data , old_city_ledger_invoice = ''):
     if data:
         sql = "update `tabFolio Transaction` set  city_ledger_invoice = %(city_ledger_invoice)s Where name in %(names)s"
         frappe.db.sql(sql, {"city_ledger_invoice":city_ledger_invoice,"names":data})
         frappe.db.commit()
+        if old_city_ledger_invoice:
+            update_city_ledger_invoice_balance(old_city_ledger_invoice)
         update_city_ledger_invoice_balance(city_ledger_invoice)
         return frappe.get_doc("City Ledger Invoice", city_ledger_invoice)    
     

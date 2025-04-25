@@ -435,12 +435,10 @@
 </template>
 <script setup>
 import { ref, onMounted, getApi, inject, useDialog, updateData, postData, useToast, onUnmounted } from "@/plugin"
-import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
-import ComIFrameModal from "@/components/ComIFrameModal.vue";
+import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue'; 
 import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
-import Calendar from 'primevue/calendar';
-import BtnCloseIcon from '@/assets/svg/icon-close.svg' 
+import Calendar from 'primevue/calendar';  
 import {i18n} from '@/i18n';
  
 import {useApp} from "@/hooks/useApp"
@@ -448,10 +446,7 @@ const {isCityLedgerInvoiceDetailOpen} = useApp()
 
 
 const gv = inject('$gv');
-const toast = useToast();
-const frappe = inject("$frappe")
-const call = frappe.call()
-const db = frappe.db()
+const toast = useToast(); 
 
 
 const loading = ref(true)
