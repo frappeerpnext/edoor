@@ -60,6 +60,9 @@
 
                                             <span class="line-height-2 ms-2 text-sm folio-remark me-1 overflow-hidden text-overflow-ellipsis"
                                                 :class="d.status == 'Open' ? '' : 'closed'">{{ d.status }}</span>
+                                            <span v-if="d.mark_as_verified == 1" class="text-blue-500 mt-1">
+                                                <i class="pi pi-verified"></i>
+                                            </span>
                                         </div>
                                         <div class="flex mt-1">
                                             <div v-tippy="d.guest_name.length > 25 ? d.guest_name : ''" class="white-space-nowrap text-gray-600 line-height-1 py-1 

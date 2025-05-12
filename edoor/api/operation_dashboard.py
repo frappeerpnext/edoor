@@ -4,17 +4,25 @@ import frappe
 @frappe.whitelist()
 def get_summary(property,date):
     from edoor.api.frontdesk import get_dashboard_data
-    data = get_dashboard_data(property=property, date =date)
+    data = get_dashboard_data(property=property, date=date)
     return data
 
 @frappe.whitelist(methods="POST")
-def get_all_guest(param):
+def get_all_guest(param): 
+     
     filter = {
         "type":"Reservation",
         "is_active_reservation":1,
         "property":param.get("property"),
         "date":param.get("date")
     }
+    
+    if param.get("is_arrival"):
+        filter["is_arrival"] = 1
+    if param.get("is_stay_over"):
+        filter["is_stay_over"] = 1
+    if param.get("is_departure"):
+        filter["is_departure"] = 1
     
     if param.get("business_source"):
         filter["business_source"] = param.get("business_source")
@@ -32,13 +40,18 @@ def get_all_guest(param):
             "room_number":["like","%{}%".format(param.get("keyword"))],
             
         }
-    
-    # frappe.throw(str(orFilters))
- 
-    occupy_data = frappe.db.get_all("Room Occupy",fields=["reservation_stay","is_arrival","is_stay_over","is_departure","room_type","room_type_id"],filters=filter,
-                                    or_filters=orFilters,page_length=100000)
-    
-    
+     
+    occupy_data = frappe.db.get_all(
+        "Room Occupy",
+        fields=[
+            "reservation_stay",
+            "is_arrival",
+            "is_stay_over",
+            "is_departure",
+            "room_type",
+            "room_type_id"
+        ],filters=filter, or_filters=orFilters,page_length=100000)
+     
     filter = {
         "is_active_reservation":1,
         "property":param.get("property"),
@@ -62,11 +75,34 @@ def get_all_guest(param):
         
     data = frappe.db.get_all(
         "Reservation Stay",
-        fields=["name", "reservation", "arrival_date", "departure_date", "guest", "guest_name", "reservation_color", "reservation_color_code", "'' as photo", "guest_email", "guest_phone_number", "room_type_alias", "room_types", "arrival_date", "departure_date", "room_nights", "adult", "child", "status_color", "business_source", "reservation_status", "reservation_type", "reference_number", "reservation_date", "rooms"],
-        filters=filter,
-        or_filters=orFilters,
-        page_length=10000
-    )
+        fields=[
+            "name", 
+            "reservation", 
+            "arrival_date", 
+            "departure_date", 
+            "guest", 
+            "guest_name", 
+            "reservation_color", 
+            "reservation_color_code", 
+            "'' as photo", 
+            "guest_email", 
+            "guest_phone_number", 
+            "room_type_alias", 
+            "room_types", 
+            "arrival_date", 
+            "departure_date", 
+            "room_nights", 
+            "adult", 
+            "child", 
+            "status_color", 
+            "business_source", 
+            "reservation_status", 
+            "reservation_type", 
+            "reference_number", 
+            "reservation_date", 
+            "rooms", 
+            "rooms_data"
+        ], filters=filter, or_filters=orFilters, page_length=10000)
     
 
     # update group by arrival stay over departure 
@@ -93,9 +129,16 @@ def get_all_guest(param):
            
         param["group_by_field"] = "sort_order"
  
+ 
+    # First, sort by group field
+    if param["group_by_field"]:
+        data = sorted(data, key=lambda x: x.get(param["group_by_field"]) or "")
+
+    # Then, sort by order field with ascending or descending logic
+    if param["order_by_field"]:
+        data = sorted(data, key=lambda x: x.get(param["order_by_field"]) or "", reverse=(param["sort_type"] == "desc"))
         
-        
-    data = sorted(data, key=lambda x: (x[param["group_by_field"]],  x[param["order_by_field"]] if param["sort_type"] == 'asc' else -x[param["order_by_field"]]  ))
+    # data = sorted(data, key=lambda x: (x[param["group_by_field"]], x[param["order_by_field"]] if param["sort_type"] == 'asc' else -x[param["order_by_field"]]))
     
     return data
 
@@ -103,12 +146,32 @@ def get_all_guest(param):
 def get_arrival_guest(filter):
     sql = """
         select
-            name,
+            name, 
             reservation,
             arrival_date,
             departure_date,
             guest,
-            guest_name
+            guest_name,
+            reservation_color,
+            reservation_color_code,
+            '' as photo,
+            guest_email,
+            guest_phone_number,
+            room_type_alias,
+            room_types,
+            arrival_date,
+            departure_date,
+            room_nights,
+            adult,
+            child,
+            status_color,
+            business_source,
+            reservation_status,
+            reservation_type,
+            reference_number, 
+            reservation_date,
+            rooms,
+            rooms_data
             
         from `tabReservation Stay`
         where
@@ -125,8 +188,9 @@ def get_arrival_guest(filter):
                     type = 'Reservation' and 
                     is_arrival = 1
             ) 
-        order by %(order_by_field)s %(sort_type)s
+        
     """
+    # order by %(order_by_field)s %(sort_type)s
     data = frappe.db.sql(sql,filter,as_dict=1)
     
     return data

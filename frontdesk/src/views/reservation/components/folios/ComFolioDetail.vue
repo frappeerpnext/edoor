@@ -7,7 +7,6 @@
                     <ComFolioAction @onRefresh="onRefresh" :folio="doc"
                         :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio == 1)"
                         :accountCodeFilter="{ is_guest_folio_account: 1 }" />
-                     
                         <div class="grid">
                         <div class="col">
                             <table class="mb-4">
@@ -18,6 +17,10 @@
                                         <span class="ms-2 px-2 rounded-lg me-2 text-white p-1px"
                                             :style="{ backgroundColor: doc.reservation_status_color }">
                                             {{ $t(doc.reservation_status)  }}</span>
+                                        <span v-if="doc.mark_as_verified==1" class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-teal-400">
+                                            <i class="pi pi-verified"></i>
+                                            {{ $t('Verified') }}
+                                        </span>
                                     </th>
                                 </tr>
                                 <ComStayInfoNoBox label="Guest">

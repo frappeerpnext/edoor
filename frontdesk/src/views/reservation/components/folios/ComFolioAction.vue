@@ -55,6 +55,11 @@
                             <i class="pi pi-times-circle" />
                             <span class="ml-2"> {{ $t('Delete Folio') }} </span>
                         </button>
+                        <button @click="onVerifyFolio"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-verified" />
+                            <span class="ml-2"> {{ $t('Verify Folio') }} </span>
+                        </button>
                         <button v-if="displayViewFolio == 0" @click="savedisplayView(1)"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-eye" />
@@ -70,7 +75,6 @@
                             <i class="pi pi-history" />
                             <span class="ml-2"> {{ $t('Audit Trail') }} </span>
                         </button>
-
                     </template>
                 </Menu>
             </div>
@@ -120,6 +124,7 @@ import ComGenerateTaxInvoice from "@/views/reservation/components/ComGenerateTax
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComWarningPrintRoomRate from '@/views/reservation/components/ComWarningPrintRoomRate.vue';
 import ComFolioActionButton from '@/views/reservation/components/ComFolioActionButton.vue'
+import ComFolioVerify from '@/views/reservation/components/reservation_stay_folio/ComFolioVerify.vue'
  
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global; 
@@ -334,6 +339,43 @@ print_menus.value.push({
 
 
 //folio detail report
+
+print_menus.value.push({
+    label: $t("Folio Split Amount"),
+    icon: 'pi pi-print',
+    command: () => {
+        if(setting.server_report_url){
+ 
+ dialog.open(ComReportServerModal, {
+     data: {
+         report_path: "/Front Desk/rptShareAmountFolioReservation",
+         params:[
+                 {name: 'reservation_folio', values: [selectedFolio.value.name] },
+                 {name: 'reservation_stay', values: [selectedFolio.value.reservation_stay] },
+                 {name: 'reservation', values: [selectedFolio.value.reservation] }
+         ]
+         
+         
+     },
+     props: {
+         header: $t("Folio Summary Report"),
+         style: {
+             width: '80vw',
+         },
+         position: "top",
+         modal: true,
+         maximizable: true,
+         closeOnEscape: false,
+         breakpoints:{
+             '960px': '80vw',
+             '640px': '100vw'
+         },
+
+     },
+ });
+}
+    }
+})
 
 print_menus.value.push({
     label: $t("Folio Detail Report"),
@@ -686,6 +728,42 @@ function EditFolio() {
             let data = options.data;
             if (data != undefined) {
           
+                window.postMessage({action:"load_reservation_folio_list"},"*")
+                window.postMessage({action:"load_reservation_stay_folio_list"},"*")
+                window.postMessage({action:"ReservationDetail"},"*")
+
+            }
+        }
+    })
+}
+
+function onVerifyFolio() {  
+    const dialogRef = dialog.open(ComFolioVerify, {
+        data: {
+            property: window.property_name,
+            name: selectedFolio.value.name,
+            mark_as_verified: selectedFolio.value.mark_as_verified,
+            verified_date: selectedFolio.value.verified_date,
+            verified_amount: selectedFolio.value.verified_amount,
+            verified_note: selectedFolio.value.verified_note,
+        },
+        props: {
+            header: $t('Verify Folio') + ' ' + selectedFolio.value.name,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+            let data = options.data;
+            if (data != undefined) {
+        
                 window.postMessage({action:"load_reservation_folio_list"},"*")
                 window.postMessage({action:"load_reservation_stay_folio_list"},"*")
                 window.postMessage({action:"ReservationDetail"},"*")

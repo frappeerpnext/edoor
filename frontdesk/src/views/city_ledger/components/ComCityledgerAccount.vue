@@ -31,7 +31,8 @@
     hideFilter:true,
     hideHeader:true,
     hidePager:true,
-    hidesavefilter:true
+    hidesavefilter:true,
+    hideSaveView:true
   };
   
   function onOpenLink(view, name) {

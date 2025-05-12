@@ -10,7 +10,7 @@
             <slot name="end"></slot>
             <div v-if="isRefresh" class="border-left-1 border-primary-100"></div>
             <Button v-if="isRefresh && !isMobile" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
-           <template v-if="isSetting && settingMenus.length>0"> 
+           <template v-if="isSetting && settingMenus?.length>0"> 
             <div   class="border-left-1 border-primary-100"></div>
            
            <Button  :class="fillClass ? fillClass : 'content_btn_b'"  type="button" icon="pi pi-ellipsis-v" @click="onToggleSetting" aria-haspopup="true" aria-controls="overlay_menu" />

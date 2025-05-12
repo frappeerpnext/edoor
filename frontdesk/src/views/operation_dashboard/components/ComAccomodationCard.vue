@@ -2,7 +2,7 @@
     <div>Room Type: <span class="font-semibold">{{ data?.room_type_alias }} - {{ data.room_types }}</span></div>
     <div>
         <span class="me-2">Room #:</span><span v-if="data?.rooms"><span class="font-semibold">{{data?.rooms}}</span></span>
-        <span @click="onAssignRoom(item.rooms_data,item.name)" class="link_line_action w-auto" v-else>
+        <span @click="onAssignRoom(data?.rooms_data,data?.name)" class="link_line_action w-auto" v-else>
                 <i class="pi pi-pencil"></i>
                 {{ $t('Assign Room') }}
 
@@ -18,4 +18,8 @@
 const props = defineProps({
     data:Object
 })
+
+function onAssignRoom(room_name, reservation_stay){
+    window.postMessage('assign_room|' + reservation_stay + '|' + JSON.parse(room_name)[0].name, '*')
+}
 </script>

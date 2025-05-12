@@ -498,7 +498,6 @@ def add_folio_transaction_record(data, breakdown_data,working_day,old_doc=None):
             product_description = ", ".join(["{}{} - {}".format("" if  d.quantity ==0 else str(d.quantity) + " x ", d.product_name, frappe.format(d.total_amount,{"fieldtype":"Currency"}) ) for d in base_doc.items])
             base_doc.report_description = "{} {}".format( base_doc.account_name,"({})".format(product_description)) 
         city_ledger_invoice = base_doc.city_ledger_invoice
-        base_doc.city_ledger_invoice = ""
         base_doc.insert()
     
  

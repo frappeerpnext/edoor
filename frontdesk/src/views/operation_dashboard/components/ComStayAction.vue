@@ -1,23 +1,8 @@
 <template>
-    {{ data.name }}
     <Button class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded :aria-controls="data.name.replaceAll(' ', '')" icon="pi pi-ellipsis-v" @click="toggle"></Button>
     <Menu ref="show" :model="menus" :id="data.name.replaceAll(' ', '')" :popup="true" style="min-width: 180px;">
         <template #end> 
-            <ComReservationStayMoreOptions @onDupicateReservation="onDupicateReservation" @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" >
-                <!-- <template #default> 
-                    <Button v-if="rs.canCheckIn() && rs.reservationStay?.reservation_status != 'In-house'" @click="onCheckIn"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-0 bg-transparent">
-                        <ComIcon icon="checkin-black" style="height: 18px;" class="me-2" />
-                        {{ $t('Check In') }}
-                    </Button>
-                    <Button
-                        v-if="rs.reservationStay?.reservation_status === 'In-house' && (moment(working_day.date_working_day) >= moment(rs.reservationStay.departure_date).add(-1, 'day'))"
-                        @click="onCheckOut" class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <ComIcon icon="checkoutBlack" style="height: 18px;" class="me-2" />
-                        {{ $t('Check Out') }}
-                    </Button>
-                </template> -->
-            </ComReservationStayMoreOptions>
+            <ComReservationStayMoreOptions @onDupicateReservation="onDupicateReservation" @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" ></ComReservationStayMoreOptions>
         </template>
     </Menu>
 </template>

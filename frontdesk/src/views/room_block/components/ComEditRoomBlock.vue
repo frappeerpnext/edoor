@@ -103,22 +103,21 @@ function onClose() {
 
 onMounted(() => {
     if(window.isMobile){
-    const elem = document.querySelector(".p-dialog");
-		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
-
- }
-    if (dialogRef.value.data.name) {
+        const elem = document.querySelector(".p-dialog");
+        elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+    }
+    if (dialogRef.value.data.name) { 
         data.value = JSON.parse(JSON.stringify(dialogRef.value.data))
         data.value.start_date = moment(data.value.start_date).toDate()
         data.value.end_date = moment(data.value.end_date).toDate()
         data.value.block_date = moment(data.value.block_date).toDate()
         data.value.total_night = moment(data.value.end_date).diff(moment(data.value.start_date), 'days')
 
-    } else {
+    } else { 
         data.value.block_date = moment(window.current_working_date).toDate()
         data.value.room_id = dialogRef.value.data.room_id
-        if (dialogRef.value.data.date){
-            data.value.start_date = dialogRef.value.data.date
+        if (dialogRef.value.data.date){ 
+            data.value.start_date = moment(dialogRef.value.data.date).toDate()
         }else {
             data.value.start_date = moment(window.current_working_date).toDate()
         }

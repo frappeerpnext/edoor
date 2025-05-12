@@ -2,35 +2,37 @@
     <div class="grid">
         <div class="grid col-12 pr-0 justify-content-between ">
             <div class="col-12 py-0 pr-0 lg:col grid">
-                        <div class="col-12 lg:col-fixed w-full lg:w-auto ">
-            <InputText  class="w-full" v-model="filters.keyword" :placeholder="$t('Search')" v-debounce="onSearch" />
-            </div>    
-            <div class="col-6 lg:col-fixed lg:w-auto">
-                <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filters.date" @date-select="onDateChange"
-                    dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear" />
-            </div>    
-            <div class="col-6 lg:col-fixed lg:w-auto">
-                <ComSelect v-if="buildings.length > 1" :filters="[['property', '=', property_name]]"
-                    :placeholder="$t('Building')" v-model="filters.building" doctype="Building" optionLabel="name"
-                    optionValue="name" class="w-full overflow-x-auto" :clear="false"></ComSelect>
+                <div class="col-12 lg:col-fixed w-full lg:w-auto ">
+                    <InputText  class="w-full" v-model="filters.keyword" :placeholder="$t('Search')" v-debounce="onSearch" />
+                </div>    
+                <div class="col-6 lg:col-fixed lg:w-auto">
+                    <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filters.date" @date-select="onDateChange"
+                        dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear" />
+                </div>    
+                <div class="col-6 lg:col-fixed lg:w-auto">
+                    <ComSelect v-if="buildings.length > 1" :filters="[['property', '=', property_name]]"
+                        :placeholder="$t('Building')" v-model="filters.building" doctype="Building" optionLabel="name"
+                        optionValue="name" class="w-full overflow-x-auto" :clear="false"></ComSelect>
 
+                </div>
+                <div class="col-6 lg:col-fixed lg:w-auto" v-if="floors"> 
+                    <Button class="border-0" @click="toggle">{{$t('Floor Options')}}</Button>
+                    <Menu ref="show" :model="menus" :popup="true" style="min-width: 180px;">
+                        <template #end> 
+                            <Button class="bg-transparent border-0 w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround" :class="{ 'active_btn': filters.floor === b.name }" @click="onFloorClick(b,index)" v-for="(b, index) in floors.filter(r => r.building == filters.building)"
+                                :key="index">
+                                {{ b.name }}
+                            </Button>
+                        </template>
+                    </Menu>
+                </div> 
             </div>
+            <div style="height: 35px;" class="col-12 flex justify-content-end flex-wrap lg:col-fixed lg:w-auto  py-0">
+                <Button  @click="onNextPrevDate(-1)" icon="pi pi-angle-double-left" v-tippy="$t('View Previous Day')" class="border-noround-right border-y-none border-left-none"></Button>
+                <Button @click="onNextPrevDate(0)"  v-tippy ="$t('View Today')"  class="border-noround border-none">Today</Button>
+                <Button @click="onNextPrevDate(1)"  v-tippy ="$t('View Next Day')" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button> 
             </div>
-            <div style="    height: 35px;" class="col-12 flex justify-content-end flex-wrap lg:col-fixed lg:w-auto  py-0">
-    <Button  @click="onNextPrevDate(-1)" icon="pi pi-angle-double-left" v-tippy="$t('View Previous Day')" class="border-noround-right border-y-none border-left-none"></Button>
-    <Button @click="onNextPrevDate(0)"  v-tippy ="$t('View Today')"  class="border-noround border-none">Today</Button>
-    <Button @click="onNextPrevDate(1)"  v-tippy ="$t('View Next Day')" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button> 
-    </div>
-        </div>
-<div class="col-12 flex justify-content-between overflow-auto">
-        <div class="flex gap-2 " v-if="floors">
-            <Button class="conten-btn white-space-nowrap" :class="{ 'active_btn': filters.floor === b.name }" @click="onFloorClick(b,index)" v-for="(b, index) in floors.filter(r => r.building == filters.building)"
-                :key="index">
-                {{ b.name }}
-            </Button>
-        </div> 
-</div>   
-
+        </div>    
     </div>
 
    
@@ -46,6 +48,10 @@ const emit = defineEmits(["onFilter","onSearch"])
 
 const property_name = window.property_name
 
+const show = ref()
+const toggle = (event) => {
+    show.value.toggle(event); 
+}; 
 
 const filters = ref({ date: moment.utc(moment(window.current_working_date).format("YYYY-MM-DD")).toDate() })
 

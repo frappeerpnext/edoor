@@ -237,6 +237,7 @@
     }
     
     function onSave(){ 
+        console.log(selectedStay.value)
         //if(!selectedStay.value.room_id){
        //     gv.toast('warn','Please select  room number.')
        //     return

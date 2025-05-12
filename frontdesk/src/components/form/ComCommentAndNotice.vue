@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="mb-4" v-if="create.custom_audit_trail_type=='Reminder'">
-                    <label>Team</label>
+                    <label>{{ $t('Teams/User') }}</label>
                     <ComAutoComplete doctype="Teams" v-model="create.custom_team" />
                 </div>
             </div>

@@ -2017,3 +2017,44 @@ background-color: rgb(255, 234, 234);
 /* .operation_data_dashboard .p-rowgroup-header {
     font-weight: bold;
 } */
+
+
+.dropdown-01 {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-01 .dropdown-toggle { 
+    color: white; 
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    width: 20px;
+}
+
+.dropdown-01 .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 150px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+    margin-top: 2px;
+    right: -27px;
+}
+
+.dropdown-01 .dropdown-menu a {
+    color: black;
+    padding: 10px 12px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-01:focus-within .dropdown-menu {
+    display: block;
+}
+
+.dropdown-01 .dropdown-menu a:hover {
+    background-color: #f1f1f1;
+}

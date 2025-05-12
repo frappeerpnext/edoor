@@ -55,6 +55,7 @@ import ArrivalGuest from "@/views/operation_dashboard/ArrivalGuest.vue";
 import StayOverGuest from "@/views/operation_dashboard/StayOverGuest.vue";
 import DepartureGuest from "@/views/operation_dashboard/DepartureGuest.vue";
 import OperationDashboardGuestLedger from "@/views/operation_dashboard/GuestLedger.vue";
+import DailyReservation from "@/views/operation_dashboard/DailyReservation.vue";
 
 import Test from "@/views/test.vue";
 
@@ -121,9 +122,8 @@ let routes = [
   { path: "/frontdesk/operation-dashboard/arrival-guest", name: "ArrivalGuest", component:ArrivalGuest, meta: { layout: 'main_layout',title:"Arrival Guest", nested_layout:"OperationDasboardLayout" } },
   { path: "/frontdesk/operation-dashboard/stay-over-guest", name: "StayOverGuest", component:StayOverGuest, meta: { layout: 'main_layout',title:"Stay Over Guest", nested_layout:"OperationDasboardLayout" } },
   { path: "/frontdesk/operation-dashboard/departure-guest", name: "DepartureGuest", component:DepartureGuest, meta: { layout: 'main_layout',title:"Departure Guest", nested_layout:"OperationDasboardLayout" } },
-  { path: "/frontdesk/operation-dashboard/guest-ledger", name: "OperationDashboardGuestLedger",
-    component: OperationDashboardGuestLedger
-    , meta: { layout: 'main_layout',title:"Guest Ledger", nested_layout:"OperationDasboardLayout" } },
+  { path: "/frontdesk/operation-dashboard/guest-ledger", name: "OperationDashboardGuestLedger",component: OperationDashboardGuestLedger, meta: { layout: 'main_layout',title:"Guest Ledger", nested_layout:"OperationDasboardLayout" } },
+  { path: "/frontdesk/operation-dashboard/daily-reservation", name: "DailyReservation",component: DailyReservation, meta: { layout: 'main_layout',title:"Daily Reservation", nested_layout:"OperationDasboardLayout" } },
   
   { path: "/frontdesk/test", name: "Test", component:Test, meta: { layout: 'main_layout',title:"Test" } },
  

@@ -92,7 +92,8 @@ def get_reservation_folio_list(reservation):
                 business_source,
                 folio_type,
                 folio_type_color,
-                show_in_pos_transfer 
+                show_in_pos_transfer,
+                mark_as_verified
             from `tabReservation Folio` 
             where reservation='{}'
             """.format(reservation)
@@ -3589,7 +3590,10 @@ def assign_room(data):
     
     doc = frappe.get_doc('Reservation Stay', data['reservation_stay'])
     old_status = doc.reservation_status
-    doc.reservation_status = 'Reserved'
+    if data.get("room_id") != None:
+        doc.reservation_status = 'Reserved'
+    else:
+        doc.reservation_status = 'Confirmed'
 
     for s in doc.stays:
           
@@ -4493,7 +4497,8 @@ def get_guest_folio_list(reservation="", reservation_stay=""):
                             rf.tax_invoice_number,
                             rf.folio_type,
                             rf.folio_type_color,
-                            st.is_master as is_master_stay
+                            st.is_master as is_master_stay,
+                            rf.mark_as_verified
                          from `tabReservation Folio` rf 
                             inner join `tabReservation Stay` st on st.name = rf.reservation_stay
                          where

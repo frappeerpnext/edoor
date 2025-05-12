@@ -1058,16 +1058,15 @@ onMounted(() => {
             getRoomType()
             getRooms()
         } else {
-            if (dialogRef.value.data?.arrival_date) {
-                doc.value.reservation.arrival_date = dialogRef.value.data.arrival_date
-                doc.value.reservation.departure_date = dialogRef.value.data.departure_date
+            if (dialogRef.value.data?.arrival_date) { 
+                doc.value.reservation.arrival_date = moment(dialogRef.value.data.arrival_date).toDate()
+                doc.value.reservation.departure_date = moment(dialogRef.value.data.departure_date).toDate()
                 doc.value.reservation_stay[0].room_type_id = dialogRef.value.data.room_type_id
                 doc.value.reservation_stay[0].room_id = dialogRef.value.data.room_id
 
             } else {
                 doc.value.reservation.arrival_date = moment(working_day.value.date_working_day).toDate()
                 doc.value.reservation.departure_date = moment(working_day.value.date_working_day).add(1, 'days').toDate()
-
             }
 
             getRoomType()

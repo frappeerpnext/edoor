@@ -56,6 +56,7 @@ import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySu
 import NewReservation from "@/views/reservation/NewReservation.vue"
 import ComLostAndFoundDetail from "@/views/lost_and_found/components/ComLostAndFoundDetail.vue"
 import ComCityLedgerInvoiceDetail from "@/views/city_ledger_invoice/components/ComCityLedgerInvoiceDetail.vue"
+import ComEditRoomBlock from "@/views/room_block/components/ComEditRoomBlock.vue";
 
 
 
@@ -176,10 +177,8 @@ const actionClickHandler = async function (e) {
             else if (data[0] == "get_workingday") {
                 getWorkingDay();
             }
-            else if (data[0] == "view_city_ledger_invoice_detail") {
-               
+            else if (data[0] == "view_city_ledger_invoice_detail") {  
                 showCityInvoiceDetail(data[1])
-
             }
         }
 
@@ -201,8 +200,9 @@ const actionClickHandler = async function (e) {
         if(e.data.action=="view_property_data_sumary_by_date"){ 
             onViewDailySummary(e.data.date,e.data.room_type_id, e.data.room_type)
         }else if(e.data.action=="new_fit_reservation"){
-           
             addNewFITReservation(e.data.data)
+        }else if(e.data.action=="new_room_block"){
+            addNewRoomBlock(e.data.data)
         }
     }
 };
@@ -862,6 +862,38 @@ function addNewFITReservation(data) {
         }
       });
 }
+function addNewRoomBlock(data) {
+    if (!gv.cashier_shift?.name) {
+      gv.toast('error', 'Please Open Cashier Shift.')
+      return
+    }
+    dialog.open(ComEditRoomBlock, {
+      data: data,
+      props: {
+        header: 'Add New Room Block ',
+        style: {
+          width: '50vw',
+        },
+        modal: true,
+        position: 'top',
+        closeOnEscape: false,
+        breakpoints: {
+          '960px': '50vw',
+          '640px': '100vw'
+        },
+      },
+      onClose: (options) => {
+        const result = options.data;
+        if (result) {
+          window.postMessage({ "action": "FloorPlanView" }, "*")
+          window.postMessage("view_room_block_detail|" + result.name, "*")
+        }
+      }
+    })
+}
+
+
+
 function LostAndFoundDetail(data) {
     dialog.open(ComLostAndFoundDetail, {
         data: data,
@@ -901,7 +933,8 @@ function onViewVacantData(selected_date, room_type) {
             view: "ui",
             extra_params: [
                 { key: 'date', value: moment(selected_date).format("YYYY-MM-DD") }, 
-                { key: 'room_type', value:room_type}
+                { key: 'room_type', value:room_type},
+                { key: 'current_working_date', value: window.current_working_date}
             ],
             filter_options: ['keyword', 'building', 'floor', 'room_type', 'housekeeping_status'],
             fullheight: true

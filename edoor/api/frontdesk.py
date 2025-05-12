@@ -114,6 +114,7 @@ def get_dashboard_data_by_timespan(property,timespan="today"):
 # Get the current date
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None,room_type_id=None,include_reservation_by_business_source=0,include_reservation_by_room_type=0):
+    working_day = get_working_day(property)
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
     working_date =  frappe.utils.today() 
 
@@ -203,11 +204,23 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     
     
     stay = frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)
+
+    #get total no show yesterday
+    stay_sql = """SELECT
+                    SUM(reservation_status = 'No Show' and is_active=1 and is_active_reservation=0) AS `total_no_show`
+                FROM `tabRoom Occupy` 
+                WHERE  
+                    date = %(date)s and     
+                    property = %(property)s  and 
+                     (room_type_id = '{0}' OR '{0}' = '')
+        """.format(room_type_id or '')
+
+    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":add_to_date(getdate(working_day['date_working_day']),days=-1)}, as_dict=1)[0]]
+
     
     #get data from occupy data 
     stay_sql = """SELECT
-
-                    SUM(reservation_status = 'No Show' and is_active=1 and is_active_reservation=0) AS `total_no_show`, 
+ 
                     SUM( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_status in ('Reserved','Confirmed')) AS `arrival_remaining`,
                     sum( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1) AS `total_arrival`,
                     sum( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='GIT') AS `total_git_stay_arrival`,
@@ -227,11 +240,23 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         """.format(room_type_id or '')
 
     stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)[0]]
+
+    # get yesterday no show by cancel date
+    stay_sql = """SELECT 
+                    SUM(if(a.reservation_status = 'No Show',1,0)) AS `today_no_show`
+                FROM `tabReservation Stay` a
+                    inner join `tabReservation Stay Room` b on b.parent = a.name
+                    
+                WHERE  
+                     (b.room_type_id = '{0}' OR '{0}' = '') and 
+                    a.cancelled_date = %(date)s and 
+                    a.property = %(property)s;""".format( room_type_id or '')
     
+    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":add_to_date(getdate(working_day['date_working_day']),days=-1)}, as_dict=1)[0]]
+
     # get today cancell by cannel date
 
-    stay_sql = """SELECT 
-                    SUM(if(a.reservation_status = 'No Show',1,0)) AS `today_no_show`, 
+    stay_sql = """SELECT  
                     SUM(if(a.reservation_status = 'Cancelled',1,0)) AS `today_cancelled`, 
                     SUM(if(a.reservation_status = 'Void',1,0)) AS `today_void`
                 FROM `tabReservation Stay` a
@@ -241,8 +266,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                      (b.room_type_id = '{0}' OR '{0}' = '') and 
                     a.cancelled_date = %(date)s and 
                     a.property = %(property)s;""".format( room_type_id or '')
-    
-    
+
     stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)[0]]
 
     #filter base on departure date

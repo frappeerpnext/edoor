@@ -49,7 +49,8 @@
         hideFilter:true,
         hideHeader:true,
         hidePager:true,
-        hidesavefilter:true
+        hidesavefilter:true,
+        hideSaveView:true
     }
     function onOpenLink(action, name) {
         window.postMessage(action + '|' + name, '*')

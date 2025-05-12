@@ -13,12 +13,7 @@
         <!-- <div style="height: 30px !important;">
             <ComFilterInputSelect v-if="f.fieldtype=='Select'" :option="f"  @onFilter="onFilter" :defaultValue="filter[f.fieldname]"  />
         </div> -->
-        
         <Button class="border-none content_btn_b h-full px-2 py-1" label="Clear Filter" @click="onClearFilter" style="height: 30px !important;" severity="warning"></Button>
-
- 
-        
-
     </Stack>
    
 </template>

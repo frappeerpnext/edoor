@@ -375,7 +375,7 @@ if (setting) {
 	window.can_view_rate = setting.user.can_view_rate
 	 
 	let whitelist_route = ["OwnerDashboard","NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder","AccountCategorySortOrder","RoomSortOrder",
-		"AllReservation","ArrivalGuest","StayOverGuest","DepartureGuest","OperationDashboardGuestLedger"
+		"AllReservation","ArrivalGuest","StayOverGuest","DepartureGuest","OperationDashboardGuestLedger","DailyReservation"
 	]
 	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]
 	const router = getRoutes(whitelist_route, setting.edoor_setting.edoor_menu)

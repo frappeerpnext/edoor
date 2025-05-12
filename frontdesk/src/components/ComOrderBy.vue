@@ -1,5 +1,5 @@
 <template> 
-<div class="flex gap-2 h-full">
+<div class="flex gap-2 h-full" :class="wrapperClass">
     <ComSelect d-class="reservation-detail-order" d-height="30px" width="100%" optionLabel="label" optionValue="fieldname"
       placeholder="Sort By" v-model="data.order_by" :clear="false" @onSelected="onSelectOrderBy"
     :options="sortOptions" />
@@ -22,6 +22,10 @@ import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({
     doctype:String, 
+    wrapperClass: {
+        type: String,
+        default: ""
+    }
     
 })
 const state = JSON.parse(localStorage.getItem("page_state_" + props.doctype.toLowerCase().replaceAll(" ","_")))
@@ -45,8 +49,8 @@ onMounted(async ()=>{
     loading.value = true
     const meta = await getMeta(props.doctype);
     meta.fields.filter(x=>x.in_list_view==1  || x.bold==1).forEach(r=>{
-            sortOptions.value.push({fieldname:r.fieldname, label:$t(r.label)})
-        })
+        sortOptions.value.push({fieldname:r.fieldname, label:$t(r.label)})
+    })
 })
 
 function onOrderTypeClick(){

@@ -1,7 +1,6 @@
 <template lang=""> 
     <div>
         <ComHeader isRefresh @onRefresh="onRefresh()">
-        
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
@@ -26,14 +25,13 @@
                     </Badge>
                     </Button>
                     <template v-if="isMobile">
-    <ComNewReservationMobileButton  />
-</template>  
-<template v-else>
-                    <NewFITReservationButton/>
-                    <NewGITReservationButton/>
-</template>
-                </div>
-
+                        <ComNewReservationMobileButton  />
+                    </template>  
+                    <template v-else>
+                        <NewFITReservationButton/>
+                        <NewGITReservationButton/>
+                    </template>
+                </div> 
             </template>
         </ComHeader>
         <div class="grid justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
