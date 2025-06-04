@@ -4542,3 +4542,66 @@ def get_reservation_pickup(params):
 
     return data
 
+@frappe.whitelist()
+def copy_reservation(reservation):
+    doc = frappe.get_cached_doc("Reservation", reservation)
+
+    stay_info  = frappe.db.sql("select reservation_color_code as name,reservation_color as color,rate_type, room_nights from `tabReservation Stay` where reservation = '{}' and is_master = 1  limit 1".format(reservation),as_dict=1)
+    group_color_code={}
+    if stay_info:
+        group_color_code = {
+            "color":stay_info[0]["color"], 
+            "name":stay_info[0]["name"]
+        }
+    
+
+
+
+    new_doc = {
+        "reference_number":doc.reference_number,
+        "internal_reference_number":doc.internal_reference_number,
+        "guest":doc.guest,
+        "reservation_type":doc.reservation_type,
+        "arrival_time":doc.arrival_time,
+        "departure_time":doc.departure_time,
+        "group_code":doc.group_code,
+        "group_name":doc.group_name,
+        "adult":doc.adult,
+        "child":doc.child,
+        "tax_1_rate":doc.tax_1_rate,
+        "tax_2_rate":doc.tax_2_rate,
+        "tax_3_rate":doc.tax_3_rate,
+        "rate_type": doc.rate_type if not stay_info else stay_info[0]["rate_type"],
+        "arrival_date":doc.arrival_date,
+        "departure_date":doc.departure_date,
+        "business_source_type_group":doc.business_source_type_group,
+        "business_source_type":doc.business_source_type,
+        "business_source":doc.business_source
+    }
+   
+
+    sql="""
+        select 
+            room_type_id,
+            count(distinct reservation_stay) as total_room,
+            max(input_rate) as room_rate,
+            max(adult) as adult,
+            max(child) as child
+        from `tabReservation Room Rate`
+    
+        where
+            reservation = %(reservation)s and 
+            is_active_reservation = 1 
+        group by 
+            room_type_id
+    """
+
+    room_types = frappe.db.sql(sql,{"reservation":reservation},as_dict=1)
+    if (room_types):
+        new_doc["adult"] = room_types[0]["adult"]
+        new_doc["child"] = room_types[0]["child"]
+
+    return {"reservation":new_doc,"room_types":room_types,"group_color_code":group_color_code}
+
+
+

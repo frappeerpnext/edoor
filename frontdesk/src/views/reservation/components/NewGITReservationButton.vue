@@ -40,7 +40,7 @@ function onClick() {
                   
                     onViewReservationDetail(data.reservation.name)
                 }else {
-                    onOpenGroupAssignRoom(data.reservation)
+                    app.openGroupAssignRoom(data.reservation)
 
                 }
                 
@@ -75,36 +75,4 @@ function onViewReservationDetail(name) {
         }
     });
 }
- 
-function onOpenGroupAssignRoom(reservation) {
-    const dialogRef = dialog.open(ComGroupAssignRoom, {
-        data: {
-            reservation: reservation
-        },
-        props: {
-            header: 'Group Assign Room - ' + reservation.name,
-            contentClass: 'ex-pedd',
-            style: {
-                width: '80vw',
-            },
-            position:"top",
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
-        },
-        onClose: (options)=>{
-            if(options.data){
-                if(options.data=="open_reservation_detail"){
-                    window.postMessage('view_reservation_detail|' + reservation.name , '*')
-                }
-            }
-        }
-    });
-}
-
-
 </script>

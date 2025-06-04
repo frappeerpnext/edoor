@@ -1,7 +1,15 @@
 <template>
-     
+        <div class="mt-2" v-if="isMobile">
+                <Button icon="pi pi-bars" @click="visible = true" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"/>
+        </div>
+         <template v-if="isMobile">
+                  <Sidebar class="sidebar-report" v-model:visible="visible" :header="$t('Reports List') ">
+              <ComReportTree :root_report="root_report"   @onSelectReport="onSelectReport" />
+         </Sidebar>
+            </template>
         <Splitter class="mb-5" style="height:calc(100vh - 110px) ;" state-key="report_spliter_state" state-storage="local">
-            <SplitterPanel :size="20" class="pa-4 left-side-panel overflow-y-auto">
+          
+            <SplitterPanel v-if="!isMobile" :size="20" class="pa-4 left-side-panel overflow-y-auto">
                 <ComReportTree :root_report="root_report"   @onSelectReport="onSelectReport" />
             </SplitterPanel>
 
@@ -16,7 +24,8 @@
 <script setup>
 import { ref, onMounted, inject,onUnmounted,useRouter,useRoute ,watch} from "@/plugin"
 import ComReportTree from "@/views/report/components/ComReportTree.vue"
- 
+const isMobile = ref(window.isMobile)  
+const visible = ref(false)
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
 import {i18n} from '@/i18n';

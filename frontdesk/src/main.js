@@ -20,7 +20,7 @@ import "./assets/css/style.css"
 //style Vue3DraggableResizable
 import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css'
 
- 
+import "@/utils/global-function.js"
 
 import { createApp, reactive } from "vue";
 

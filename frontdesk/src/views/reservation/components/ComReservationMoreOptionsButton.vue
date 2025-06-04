@@ -57,6 +57,11 @@
                     <i class="pi pi-undo" />
                     <span class="ml-2">{{$t('Group Undo Check Out')}}</span>
                 </button>
+                <button @click="onDuplicateGroup"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-copy" />
+                    <span class="ml-2">{{$t('Group Duplicate')}}</span>
+                </button>
                 <span>
 
                     <button @click="onMarkAsPaidbyMasterroom()"
@@ -136,6 +141,7 @@ import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import ComConfirmTransferStay from '@/views/reservation/components/ComConfirmTransferStay.vue'
 import ComResservationSetting from "@/views/frontdesk/components/ComResservationSetting.vue";
+import NewGroupBooking from '@/views/reservation/NewGroupBooking.vue';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const dialog = useDialog();
@@ -914,6 +920,47 @@ function onTransferStay() {
 
     });
 
+
+}
+
+
+async function onDuplicateGroup(){
+    const data = await app.getApi("reservation.copy_reservation",{reservation:rs.reservation.name})
+    if (data.data){
+        const dialogRef = dialog.open(NewGroupBooking, {
+        data:{
+            duplicated_data:data.data
+        },
+        props: {
+            header: $t('New Group Booking'),
+            style: {
+                width: '80vw',
+            }, 
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+        },
+        onClose: (options) => {
+             
+            const data = options.data;
+          
+            if (data != undefined) {
+                if(data.assign_room==false){
+                    app.viewReservationDetail(data.reservation.name)
+                }else {
+                    app.openGroupAssignRoom(data.reservation)
+                }
+                
+            }
+        }
+    });
+
+    }
 
 }
 

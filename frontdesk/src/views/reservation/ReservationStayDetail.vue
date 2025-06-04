@@ -486,14 +486,14 @@ const OnViewReservation = () => {
         if (window.reservation = rs.reservationStay.reservation) {
             dialogRef.value.close();
         } else {
-            window.postMessage('view_reservation_detail|' + rs.reservationStay.reservation, '*')
+            app.viewReservationDetail(rs.reservationStay.reservation)
         }
     } else {
         if (dialogRef?.value){
             dialogRef.value.close();
         }
         
-        window.postMessage('view_reservation_detail|' + rs.reservationStay.reservation, '*')
+        app.viewReservationDetail(rs.reservationStay.reservation)
     }
 }
 onUnmounted(() => {

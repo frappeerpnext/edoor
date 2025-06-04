@@ -1,6 +1,6 @@
 <template>
     
-    <div class="flex flex-col justify-content-between align-items-center h-full">
+    <div v-if="!isMobile" class="flex flex-col justify-content-between align-items-center h-full">
         <div>
             <div class="flex justify-content-center align-items-center flex-col py-3 px-2 gap-4 -ms-2">
                 <div  @click="onNavigate(m.router_name)" class="relative" v-for="(m, index) in sidebarItems" :key="index">
@@ -26,7 +26,7 @@
 <script setup>
 import { onMounted,useRouter,useRoute,getData,ref,onUnmounted } from '@/plugin';
 import ComIcon from '../../ComIcon.vue';
-
+const isMobile = ref(window.isMobile)  
 const route = useRoute()
 const router = useRouter()
 const data = ref() 

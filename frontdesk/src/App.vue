@@ -69,6 +69,7 @@ const ui = ref(urlParams.get('layout') || "main_layout")
 const {getSummaryData} = useApp();
 window.isMobile = (/mobile/i.test(navigator.userAgent));
 
+
  
 const layout = computed(()=>{
     if (route.query.layout){
@@ -84,6 +85,8 @@ const moment= inject("$moment")
 window.session_id = gv.generateGuid()
 const toast = useToast();
 const dialog = useDialog();
+window.dialog = dialog;
+
 const hasProperty = ref(false)
 if (localStorage.getItem("edoor_property") == null) {
     const user = JSON.parse(localStorage.getItem("edoor_user"))
@@ -386,31 +389,8 @@ const dialogRef = dialog.open(ComRoomDetail, {
 
 
 function showReservationDetail(name) {
-    
-    if (!window.has_reservation_detail_opened){
-        const dialogRef = dialog.open(ReservationDetail, {
-        data: {
-            name: name
-        },
-        props: {
-            header: $t('Reservation Detail'),
-            style: {
-                width: '80vw',
-            },
-            maximizable: true,
-            modal: true,
-            closeOnEscape: false,
-            position: "top",
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
-        }
-    });
-    }else {
-        window.open('/frontdesk/reservation-detail/' + name, '_blank')
-    }
-  
+ 
+    app.viewReservationDetail(name)
 }
 function onEditRoomRate(name) {
 

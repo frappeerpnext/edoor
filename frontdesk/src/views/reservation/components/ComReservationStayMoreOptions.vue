@@ -1,109 +1,105 @@
-<template> 
+<template>
     <button @click="onMarkAsMasterRoom()"
         v-if="rs.reservationStay.is_master == 0 && (rs.reservationStay.reservation_status == 'Reserved' || rs.reservationStay.reservation_status == 'In-house')"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <ComIcon icon="iconCrownBlack" style="height: 12px;" />
-        <span class="ml-2"> {{ $t('Mark as Master Room') }}  </span>
+        <span class="ml-2"> {{ $t('Mark as Master Room') }} </span>
     </button>
-    <button @click="onUndoCheckIn()"
-        v-if="canUndoCheckIn"
+    <button @click="onUndoCheckIn()" v-if="canUndoCheckIn"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-undo" />
         <span class="ml-2">{{ $t('Undo Check-In') }}</span>
     </button>
-    <button @click="OnUndoCheckOut()"
-        v-if="canUndoCheckOut"
+    <button @click="OnUndoCheckOut()" v-if="canUndoCheckOut"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-undo" />
         <span class="ml-2">{{ $t('Undo Check Out') }}</span>
     </button>
-    
+
     <button @click="onNoShowReservationStay()"
-        v-if="(rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved') && rs.reservationStay?.arrival_date == working_day?.date_working_day"
+        v-if="(rs.reservationStay?.reservation_status == 'Confirmed' || rs.reservationStay?.reservation_status == 'Reserved') && rs.reservationStay?.arrival_date == working_day?.date_working_day"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-eye-slash" />
         <span class="ml-2">{{ $t('No-Show') }}</span>
     </button>
-    
-    <button @click="onReservedRoom()"
-        v-if="rs.reservationStay?.reservation_status=='No Show' && 
-                moment(rs.reservationStay?.departure_date).toDate()> moment(working_day?.date_working_day).toDate() &&
-                rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length == 0
-                "
-        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+
+    <button @click="onReservedRoom()" v-if="rs.reservationStay?.reservation_status == 'No Show' &&
+        moment(rs.reservationStay?.departure_date).toDate() > moment(working_day?.date_working_day).toDate() &&
+        rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length == 0
+    " class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-calendar-plus" />
         <span class="ml-2">{{ $t('Reserve Room') }}</span>
     </button>
-    <button @click="onUnReservedRoom()"
-    v-if="rs.reservationStay?.reservation_status=='No Show' && 
-            moment(rs.reservationStay?.departure_date).toDate()> moment(working_day?.date_working_day).toDate() &&
-            rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length > 0
-            "
-        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+    <button @click="onUnReservedRoom()" v-if="rs.reservationStay?.reservation_status == 'No Show' &&
+        moment(rs.reservationStay?.departure_date).toDate() > moment(working_day?.date_working_day).toDate() &&
+        rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length > 0
+    " class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-calendar-times" />
         <span class="ml-2">{{ $t('Unreserve Room') }}</span>
     </button>
-    
+
     <button @click="onCancelReservationStay()"
-        v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
+        v-if="rs.reservationStay?.reservation_status == 'Confirmed' || rs.reservationStay?.reservation_status == 'Reserved'"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-user-minus" />
         <span class="ml-2">{{ $t('Cancel Reservation Stay') }}</span>
     </button>
     <button @click="onVoidReservationStay()"
-        v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
+        v-if="rs.reservationStay?.reservation_status == 'Confirmed' || rs.reservationStay?.reservation_status == 'Reserved'"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-file-excel" />
         <span class="ml-2">{{ $t('Void Reservation Stay') }} </span>
     </button>
-        <button v-if="rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master" @click="onUnmarkasPaidbyMasterRoom()"
-            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-            <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
-            <span class="ml-2">{{ $t('Unmark as Paid by Master Room') }}  </span>
-        </button>
-        <button @click="onMarkasPaidbyMasterRoom()" v-else-if="!rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master"
-            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-            <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
-            <span class="ml-2"> {{ $t('Mark as Paid by Master Room') }}  </span>
-        </button>
-        <div>
-        <button v-if="rs.reservationStay.allow_post_to_city_ledger" @click="onDisallowPosttoCityLedger()"
+    <button v-if="rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master"
+        @click="onUnmarkasPaidbyMasterRoom()"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-        <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
-        <span> {{ $t('Disallow Post to City Ledger') }} </span>
+        <ComIcon icon="BilltoMasterRoom" style="height:15px;"></ComIcon>
+        <span class="ml-2">{{ $t('Unmark as Paid by Master Room') }} </span>
+    </button>
+    <button @click="onMarkasPaidbyMasterRoom()"
+        v-else-if="!rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master"
+        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+        <ComIcon icon="BilltoMasterRoom" style="height:15px;"></ComIcon>
+        <span class="ml-2"> {{ $t('Mark as Paid by Master Room') }} </span>
+    </button>
+    <div>
+        <button v-if="rs.reservationStay.allow_post_to_city_ledger" @click="onDisallowPosttoCityLedger()"
+            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+            <ComIcon icon="IconBillToCompany" class="me-2" style="height:15px;"></ComIcon>
+            <span> {{ $t('Disallow Post to City Ledger') }} </span>
         </button>
         <button v-else @click="onAllowPosttoCityLedger()"
-        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-        <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
-        <span>{{ $t('Allow Post to City Ledger') }} </span>
+            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+            <ComIcon icon="IconBillToCompany" class="me-2" style="height:15px;"></ComIcon>
+            <span>{{ $t('Allow Post to City Ledger') }} </span>
         </button>
-        </div>
+    </div>
     <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
-        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">                   
+        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <ComIcon icon="userGif" style="height: 15px;" />
         <span class="ml-2">{{ $t('Mark as GIT Reservation') }}</span>
     </button>
 
     <button v-else @click="onMarkasFITReservation()"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-        
-        <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
+
+        <ComIcon icon="userProfile" style="height:15px;"></ComIcon>
         <span class="ml-2">{{ $t('Mark as FIT Reservation') }} </span>
     </button>
-    
-    <button  @click="onReinstate()" v-if="canReinstate==1"
+
+    <button @click="onReinstate()" v-if="canReinstate == 1"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-check" style="color: green"></i>
-        <span class="ml-2">{{ $t('Reinstate') }}  </span>
+        <span class="ml-2">{{ $t('Reinstate') }} </span>
 
     </button>
-    
+
     <button @click="onDuplication"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-copy" />
         <span class="ml-2">{{ $t('Duplicate Reservation Stay') }}</span>
     </button>
-    
+
     <button @click="onSetting"
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-cog" />
@@ -114,68 +110,68 @@
         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
         <i class="pi pi-history" />
         <span class="ml-2">{{ $t('Audit Trail') }}</span>
-    </button> 
+    </button>
 
-    <slot/>
-   
+    <slot />
+
 </template>
 <script setup>
-import { inject, ref, useConfirm, useToast, postApi,useDialog,computed,updateDoc } from "@/plugin";
+import { inject, ref, useConfirm, useToast, postApi, useDialog, computed, updateDoc } from "@/plugin";
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
 import ComReinstate from "@/views/frontdesk/components/ComReinstate.vue";
 import ComResservationSetting from "@/views/frontdesk/components/ComResservationSetting.vue";
 import NewReservation from "@/views/reservation/NewReservation.vue";
-import {i18n} from '@/i18n';
+import { i18n } from '@/i18n';
 const { t: $t } = i18n.global;
 
 const dialog = useDialog();
 const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast();
-const emit = defineEmits(['onAuditTrail', "onRefresh","onDupicateReservation"])
+const emit = defineEmits(['onAuditTrail', "onRefresh", "onDupicateReservation"])
 const items = ref([])
 const rs = inject("$reservation_stay")
-const working_day =  window.working_day
+const working_day = window.working_day
 const loading = ref(false)
 
 
-const canReinstate = computed(()=>{
+const canReinstate = computed(() => {
 
     const status = window.setting.reservation_status.find(
         r => r.name == rs.reservationStay.reservation_status
     );
     return status?.allow_reinstate ?? false;
 })
-const canUndoCheckOut = computed(()=>{
-    
-if (parseInt(window.setting.allow_user_to_add_back_date_transaction)==1){
-    return rs.reservationStay.reservation_status == 'Checked Out' 
-}else {
-    return rs.reservationStay.reservation_status == 'Checked Out' && rs.reservationStay?.departure_date >= window.current_working_date 
-}
+const canUndoCheckOut = computed(() => {
 
-    
+    if (parseInt(window.setting.allow_user_to_add_back_date_transaction) == 1) {
+        return rs.reservationStay.reservation_status == 'Checked Out'
+    } else {
+        return rs.reservationStay.reservation_status == 'Checked Out' && rs.reservationStay?.departure_date >= window.current_working_date
+    }
+
+
 })
 
-const canUndoCheckIn = computed(() =>{
-  
-    if (parseInt(window.setting.allow_user_to_add_back_date_transaction)==1){
-        return rs.reservationStay.reservation_status == 'In-house' 
+const canUndoCheckIn = computed(() => {
+
+    if (parseInt(window.setting.allow_user_to_add_back_date_transaction) == 1) {
+        return rs.reservationStay.reservation_status == 'In-house'
     }
     else {
-        
+
         return rs.reservationStay.reservation_status == 'In-house' && rs.reservationStay?.arrival_date == window.current_working_date
     }
 })
 
 
-function onReinstate(){
+function onReinstate() {
     dialog.open(ComReinstate, {
-        data:  {
+        data: {
             reservation_stay: rs.reservationStay.name,
             reservation: rs.reservationStay.reservation,
-            property:rs.reservationStay.property,
-            note:""
+            property: rs.reservationStay.property,
+            note: ""
         },
         props: {
             header: $t("Reinstate"),
@@ -186,30 +182,30 @@ function onReinstate(){
             maximizable: false,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
-            if (options.data){
+            if (options.data) {
                 setTimeout(() => {
                     emit('onRefresh')
                 }, 1000);
             }
-              
-         }
+
+        }
 
     });
 }
 
-function onSetting(){
+function onSetting() {
     dialog.open(ComResservationSetting, {
-        data:  {
+        data: {
             reservation_stay: rs.reservationStay.name,
             reservation: rs.reservationStay.reservation,
-            property:rs.reservationStay.property,
-            show_room_rate_in_guest_folio_invoice:rs.reservation.show_room_rate_in_guest_folio_invoice
+            property: rs.reservationStay.property,
+            show_room_rate_in_guest_folio_invoice: rs.reservation.show_room_rate_in_guest_folio_invoice
         },
         props: {
             header: $t("Setting"),
@@ -220,90 +216,89 @@ function onSetting(){
             maximizable: false,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
-            if (options.data){
+            if (options.data) {
                 setTimeout(() => {
                     emit('onRefresh')
                 }, 1000);
             }
-              
-         }
+
+        }
 
     });
 }
 
-function onDuplication(){
+function onDuplication() {
     const stay = rs.reservationStay.stays[0]
     let arrival_date = moment(rs.reservation.arrival_date).toDate()
     let departure_date = moment(rs.reservation.departure_date).toDate()
-    if (arrival_date<moment(window.working_day.date_working_day).toDate()){
+    if (arrival_date < moment(window.working_day.date_working_day).toDate()) {
         arrival_date = moment(window.working_day.date_working_day).toDate()
     }
 
-    if (departure_date <= moment(window.working_day.date_working_day).toDate()){
+    if (departure_date <= moment(window.working_day.date_working_day).toDate()) {
         departure_date = moment(arrival_date).add(1, "days").toDate();
     }
 
-let data = {    
-                reservation:{
-                    guest:rs.reservation.guest,
-                    reference_number:rs.reservationStay.reference_number,
-                    internal_reference_number:rs.reservationStay.internal_reference_number,
-                     business_source: rs.reservation.business_source,
-                     business_source_type_group:rs.reservation.business_source_type_group,
-                     business_source_type:rs.reservation.business_source_type,
-                     arrival_date: arrival_date,
-                     departure_date: departure_date,
-                     reservation_color_code:rs.reservationStay.reservation_color_code,
-                     rate_type:rs.reservationStay.rate_type,
-                     allow_post_to_city_ledger:rs.reservationStay.allow_post_to_city_ledger,
-                     paid_by_master_room:rs.reservationStay.paid_by_master_room,
-                     note:rs.reservationStay.note
-                    
-                },
-                reservation_stay:[ { 
-                    "adult": stay.adult,
-                    "child": stay.child, 
-                    "is_manual_rate": stay.is_manual_rate,
-                     "is_master": stay.is_master, 
-                     "room_type_id": stay.room_type_id, 
-                     room_id: stay.room_id,
-                     input_rate:stay.input_rate
-                 } ],
-                guest:rs.reservationStay.guest,
-                reservation_color_code:{
-                    name:rs.reservationStay.reservation_color_code,
-                    color:rs.reservationStay.reservation_color,
+    let data = {
+        reservation: {
+            guest: rs.reservation.guest,
+            reference_number: rs.reservationStay.reference_number,
+            internal_reference_number: rs.reservationStay.internal_reference_number,
+            business_source: rs.reservation.business_source,
+            business_source_type_group: rs.reservation.business_source_type_group,
+            business_source_type: rs.reservation.business_source_type,
+            arrival_date: arrival_date,
+            departure_date: departure_date,
+            reservation_color_code: rs.reservationStay.reservation_color_code,
+            rate_type: rs.reservationStay.rate_type,
+            allow_post_to_city_ledger: rs.reservationStay.allow_post_to_city_ledger,
+            paid_by_master_room: rs.reservationStay.paid_by_master_room,
+            note: rs.reservationStay.note
+
+        },
+        reservation_stay: [{
+            "adult": stay.adult,
+            "child": stay.child,
+            "is_manual_rate": stay.is_manual_rate,
+            "is_master": stay.is_master,
+            "room_type_id": stay.room_type_id,
+            room_id: stay.room_id,
+            input_rate: stay.input_rate
+        }],
+        guest: rs.reservationStay.guest,
+        reservation_color_code: {
+            name: rs.reservationStay.reservation_color_code,
+            color: rs.reservationStay.reservation_color,
 
 
-                }
-            }
- 
-const dialogRef =  dialog.open(NewReservation, {
-        data:{
-            duplicated_data:data
+        }
+    } 
+    const dialogRef = dialog.open(NewReservation, {
+        data: {
+            duplicated_data: data
         },
         props: {
             header: $t('New FIT Reservation'),
             style: {
                 width: '80vw',
-            }, 
+            },
             modal: true,
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '80vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
-           
+
             const data = options.data;
             if (data != undefined) {
                 window.postMessage('view_reservation_detail|' + data.name, '*')
@@ -359,10 +354,10 @@ function onMarkAsMasterRoom() {
             }).then((doc) => {
                 rs.loading = false
                 rs.reservationStay = doc.message
-                window.postMessage({action:"ReservationStayList"},"*")
-                window.postMessage({action:"ReservationStayDetail"},"*")
-                window.postMessage({action:"ReservationDetail"},"*")
-              
+                window.postMessage({ action: "ReservationStayList" }, "*")
+                window.postMessage({ action: "ReservationStayDetail" }, "*")
+                window.postMessage({ action: "ReservationDetail" }, "*")
+
 
             })
 
@@ -372,16 +367,16 @@ function onMarkAsMasterRoom() {
 }
 
 function onUndoCheckIn() {
-    
-        const dialogRef = dialog.open(ComDialogNote, {
-        data:  {
+
+    const dialogRef = dialog.open(ComDialogNote, {
+        data: {
             api_url: "reservation.undo_check_in",
             method: "POST",
             confirm_message: "Are you sure you want to undo check in this reservation?",
             data: {
                 reservation_stay: rs.reservationStay.name,
                 reservation: rs.reservationStay.reservation,
-                property:window.property.name
+                property: window.property.name
             }
         },
         props: {
@@ -393,46 +388,46 @@ function onUndoCheckIn() {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
-            const data = options.data 
-            if (options.data){
+            const data = options.data
+            if (options.data) {
                 rs.loading = false
                 rs.reservationStay = data.data.message
-                window.postMessage({"action":"ComHousekeepingStatus"},"*")
-                window.postMessage({"action":"Dashboard"},"*")
-                window.postMessage({action:"ReservationList"},"*")
-                window.postMessage({action:"ReservationStayList"},"*")
-                window.postMessage({action:"ReservationDetail"},"*")  
-                window.postMessage({action:"GuestLedger"},"*")
-                window.postMessage({action:"Reports"},"*")
-                window.postMessage({action:"Housekeeping"},"*")
-                window.postMessage({action:"FolioTransactionList"},"*")
-                window.postMessage({action:"ComRoomAvailable"},"*")
+                window.postMessage({ "action": "ComHousekeepingStatus" }, "*")
+                window.postMessage({ "action": "Dashboard" }, "*")
+                window.postMessage({ action: "ReservationList" }, "*")
+                window.postMessage({ action: "ReservationStayList" }, "*")
+                window.postMessage({ action: "ReservationDetail" }, "*")
+                window.postMessage({ action: "GuestLedger" }, "*")
+                window.postMessage({ action: "Reports" }, "*")
+                window.postMessage({ action: "Housekeeping" }, "*")
+                window.postMessage({ action: "FolioTransactionList" }, "*")
+                window.postMessage({ action: "ComRoomAvailable" }, "*")
                 setTimeout(() => {
                     emit('onRefresh')
                 }, 1000);
             }
-              
-         }
+
+        }
 
     });
-    
+
 }
 
 function OnUndoCheckOut() {
     const dialogRef = dialog.open(ComDialogNote, {
-        data:  {
+        data: {
             api_url: "reservation.undo_check_out",
             method: "POST",
             confirm_message: "Are you sure you want to undo check out this reservation?",
             data: {
                 property: rs.reservationStay.property,
-                reservation_stays:[rs.reservationStay.name] 
+                reservation_stays: [rs.reservationStay.name]
             }
         },
         props: {
@@ -444,24 +439,24 @@ function OnUndoCheckOut() {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
-            const data = options.data 
-            if (options.data){
+            const data = options.data
+            if (options.data) {
                 rs.reservationStay = data.data.message
-                window.postMessage({"action":"ComHousekeepingStatus"},"*")
-                window.postMessage({"action":"Dashboard"},"*")
-                window.postMessage({action:"ReservationList"},"*")
-                window.postMessage({action:"ReservationStayList"},"*")
-                
-                window.postMessage({action:"ReservationDetail"},"*") 
-                window.postMessage({action:"GuestLedger"},"*")
-                window.postMessage({action:"Reports"},"*")
-                window.postMessage({action:"FolioTransactionList"},"*")
+                window.postMessage({ "action": "ComHousekeepingStatus" }, "*")
+                window.postMessage({ "action": "Dashboard" }, "*")
+                window.postMessage({ action: "ReservationList" }, "*")
+                window.postMessage({ action: "ReservationStayList" }, "*")
+
+                window.postMessage({ action: "ReservationDetail" }, "*")
+                window.postMessage({ action: "GuestLedger" }, "*")
+                window.postMessage({ action: "Reports" }, "*")
+                window.postMessage({ action: "FolioTransactionList" }, "*")
 
                 rs.loading = false
 
@@ -469,8 +464,8 @@ function OnUndoCheckOut() {
                     emit('onRefresh')
                 }, 1000);
             }
-              
-         }
+
+        }
 
     });
 }
@@ -486,7 +481,7 @@ function onCancelReservationStay() {
                 reservation: rs.reservationStay.reservation,
                 reserved_room: false,
                 status: "Cancelled",
-                show_reserved_room:false,
+                show_reserved_room: false,
                 stays: [{
                     name: rs.reservationStay.name,
                     reservation_status: rs.reservationStay.reservation_status
@@ -499,7 +494,7 @@ function onCancelReservationStay() {
 }
 
 
-function onUpdateReservationStatus(header="Confirm Note",data){
+function onUpdateReservationStatus(header = "Confirm Note", data) {
     const dialogRef = dialog.open(ComDialogNote, {
         data: data,
         props: {
@@ -511,18 +506,18 @@ function onUpdateReservationStatus(header="Confirm Note",data){
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
+            breakpoints: {
                 '960px': '50vw',
                 '640px': '100vw'
             },
         },
         onClose: (options) => {
-             const data = options.data;
-             if (data) {
+            const data = options.data;
+            if (data) {
                 rs.getReservationDetail(rs.reservationStay.name)
 
-             }
-         }
+            }
+        }
 
     });
 
@@ -539,7 +534,7 @@ function onVoidReservationStay() {
             data: {
                 reservation: rs.reservationStay.reservation,
                 reserved_room: false,
-                show_reserved_room:false,
+                show_reserved_room: false,
                 status: "Void",
                 stays: [{
                     name: rs.reservationStay.name,
@@ -549,7 +544,7 @@ function onVoidReservationStay() {
         }
     )
 
- 
+
 }
 
 function onNoShowReservationStay() {
@@ -558,11 +553,11 @@ function onNoShowReservationStay() {
         {
             api_url: "reservation.update_reservation_status",
             method: "POST",
-            confirm_message:"You are about to mark this reservation as No Show.<br/> If you have a No Show charge, please update the folio transaction first. <br/> If you want to sell this room, please untick on check box <strong>Reserved room for this reservation</strong>",
+            confirm_message: "You are about to mark this reservation as No Show.<br/> If you have a No Show charge, please update the folio transaction first. <br/> If you want to sell this room, please untick on check box <strong>Reserved room for this reservation</strong>",
             data: {
                 reservation: rs.reservationStay.reservation,
                 reserved_room: false,
-                show_reserved_room:true,
+                show_reserved_room: true,
                 status: "No Show",
                 stays: [{
                     name: rs.reservationStay.name,
@@ -572,13 +567,13 @@ function onNoShowReservationStay() {
         }
     )
 
- 
+
 }
 
- 
- 
+
+
 function onReservedRoom() {
- 
+
     confirm.require({
         message: $t('Are you sure you want to reserve room for this reservation?'),
         header: $t('Confirmation'),
@@ -588,23 +583,23 @@ function onReservedRoom() {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: $t('Ok'),
         accept: () => {
-            postApi("reservation.reserved_room",{
+            postApi("reservation.reserved_room", {
                 property: rs.reservation.property,
                 reservation_stay: rs.reservationStay.name
-            }).then((resul)=>{
+            }).then((resul) => {
                 loading.value = false
                 rs.getReservationDetail(rs.reservationStay.name);
-                window.postMessage({action:"ReservationList"},"*")
-                window.postMessage({action:"ReservationStayList"},"*")
-                window.postMessage({action:"ReservationStayDetail"},"*")
-                window.postMessage({"action":"Frontdesk"},"*")
-                window.postMessage({action:"GuestLedger"},"*")
-                window.postMessage({action:"Reports"},"*")
-                window.postMessage({action:"FolioTransactionList"},"*")
+                window.postMessage({ action: "ReservationList" }, "*")
+                window.postMessage({ action: "ReservationStayList" }, "*")
+                window.postMessage({ action: "ReservationStayDetail" }, "*")
+                window.postMessage({ "action": "Frontdesk" }, "*")
+                window.postMessage({ action: "GuestLedger" }, "*")
+                window.postMessage({ action: "Reports" }, "*")
+                window.postMessage({ action: "FolioTransactionList" }, "*")
 
-                
 
-            })  
+
+            })
         },
 
     });
@@ -612,7 +607,7 @@ function onReservedRoom() {
 }
 
 function onUnReservedRoom() {
- 
+
     confirm.require({
         message: $t('Are you sure you want to unreserve room for this reservation?'),
         header: $t('Confirmation'),
@@ -622,21 +617,21 @@ function onUnReservedRoom() {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: $t('Ok'),
         accept: () => {
-            postApi("reservation.unreserved_room",{
+            postApi("reservation.unreserved_room", {
                 property: rs.reservation.property,
                 reservation_stay: rs.reservationStay.name
-            }).then((resul)=>{
+            }).then((resul) => {
                 loading.value = false
-                window.postMessage({action:"ReservationList"},"*")
-                window.postMessage({action:"ReservationStayList"},"*")
-                window.postMessage({action:"ReservationStayDetail"},"*")
-                window.postMessage({"action":"Frontdesk"},"*")
-                window.postMessage({action:"GuestLedger"},"*")
-                window.postMessage({action:"Reports"},"*")
-                window.postMessage({action:"FolioTransactionList"},"*")
+                window.postMessage({ action: "ReservationList" }, "*")
+                window.postMessage({ action: "ReservationStayList" }, "*")
+                window.postMessage({ action: "ReservationStayDetail" }, "*")
+                window.postMessage({ "action": "Frontdesk" }, "*")
+                window.postMessage({ action: "GuestLedger" }, "*")
+                window.postMessage({ action: "Reports" }, "*")
+                window.postMessage({ action: "FolioTransactionList" }, "*")
 
-            
-            })  
+
+            })
         },
 
     });
@@ -644,7 +639,7 @@ function onUnReservedRoom() {
 }
 
 function onMarkasPaidbyMasterRoom() {
-    if(rs.reservationStay.allow_user_to_edit_information){
+    if (rs.reservationStay.allow_user_to_edit_information) {
         confirm.require({
             message: $t('Are you sure you want to Mark as Piad by Master Room?'),
             header: $t('Confirmation'),
@@ -656,71 +651,71 @@ function onMarkasPaidbyMasterRoom() {
             accept: () => {
                 rs.loading = true
                 postApi("reservation.update_mark_as_paid_by_master_room", {
-                    reservation:rs.reservation.name,
+                    reservation: rs.reservation.name,
                     stays: [rs.reservationStay.name],
                     paid_by_master_room: 1
                 }).then((result) => {
                     if (result) {
                         rs.loading = false
-                        rs.reservationStay.paid_by_master_room = doc.paid_by_master_room; 
-                        window.postMessage({action:"ReservationStayList"},"*")
-                        window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.postMessage({action:"ReservationDetail"},"*")
+                        rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
+                        window.postMessage({ action: "ReservationStayList" }, "*")
+                        window.postMessage({ action: "ReservationStayDetail" }, "*")
+                        window.postMessage({ action: "ReservationDetail" }, "*")
                     }
                 })
                     .catch((err) => {
                         rs.loading = false
                     })
-                    
-               
+
+
             },
 
         });
-    }else{
+    } else {
         toast.add({
-                severity: 'warn', summary: 'Mark as Paid by Master Room',
-                detail: `${rs.reservationStay.reservation_status} reservation can not change information`, life: 3000
-            });
+            severity: 'warn', summary: 'Mark as Paid by Master Room',
+            detail: `${rs.reservationStay.reservation_status} reservation can not change information`, life: 3000
+        });
     }
 }
 function onUnmarkasPaidbyMasterRoom() {
 
-    if(rs.reservationStay.allow_user_to_edit_information){
+    if (rs.reservationStay.allow_user_to_edit_information) {
         confirm.require({
-        message: $t('Are you sure you want to Unmark as Paid by Master Room?'),
-        header: $t('Confirmation'),
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: $t('Ok'),
-        accept: () => {
-            updateDoc('Reservation Stay', rs.reservationStay.name, {
-                paid_by_master_room: 0,
-            })
-                .then((doc) => {
-                    loading.value = false;
-                    rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
-                    window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-                    window.postMessage({action:"ReservationStayList"},"*")
-                    window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.postMessage({action:"ReservationDetail"},"*")
-
+            message: $t('Are you sure you want to Unmark as Paid by Master Room?'),
+            header: $t('Confirmation'),
+            icon: 'pi pi-exclamation-triangle',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptIcon: 'pi pi-check-circle',
+            acceptLabel: $t('Ok'),
+            accept: () => {
+                updateDoc('Reservation Stay', rs.reservationStay.name, {
+                    paid_by_master_room: 0,
                 })
-        },
+                    .then((doc) => {
+                        loading.value = false;
+                        rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
+                        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                        window.postMessage({ action: "ReservationStayList" }, "*")
+                        window.postMessage({ action: "ReservationStayDetail" }, "*")
+                        window.postMessage({ action: "ReservationDetail" }, "*")
 
-    });
+                    })
+            },
+
+        });
     }
-    else{
+    else {
         toast.add({
-                severity: 'warn', summary: 'Unmark as Paid by Master Room',
-                detail: `${rs.reservationStay.reservation_status} reservation can not change information`, life: 3000
-            });
+            severity: 'warn', summary: 'Unmark as Paid by Master Room',
+            detail: `${rs.reservationStay.reservation_status} reservation can not change information`, life: 3000
+        });
     }
 
 }
-function onDisallowPosttoCityLedger(){ 
-    if(rs.reservationStay.is_active_reservation){
+function onDisallowPosttoCityLedger() {
+    if (rs.reservationStay.is_active_reservation) {
         confirm.require({
             message: $t('Are you sure you want to Disallow Post to City Ledger?'),
             header: $t('Confirmation'),
@@ -732,55 +727,55 @@ function onDisallowPosttoCityLedger(){
             accept: () => {
                 updateDoc('Reservation Stay', rs.reservationStay.name, {
                     allow_post_to_city_ledger: 0,
-                    },
+                },
                     "Disallow Post to City Ledger Successfully"
                 )
                     .then((doc) => {
-                        rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;  
-                        window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.postMessage({action:"ReservationDetail"},"*")
+                        rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
+                        window.postMessage({ action: "ReservationStayDetail" }, "*")
+                        window.postMessage({ action: "ReservationDetail" }, "*")
                     })
             },
 
         });
-    }else{
+    } else {
         toast.add({
             severity: 'warn', summary: 'Disallow Post to City Ledger',
             detail: `${rs.reservationStay.reservation_status} reservation is not Disallow to change information`, life: 3000
         });
     }
 }
-function onAllowPosttoCityLedger(){
-    if(rs.reservationStay.is_active_reservation){
+function onAllowPosttoCityLedger() {
+    if (rs.reservationStay.is_active_reservation) {
         confirm.require({
-        message: $t('Are you sure you want to Allow Post to City Ledger?'),
-        header: $t('Confirmation'),
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: $t('Ok'),
-        accept: () => {
-            updateDoc('Reservation Stay', rs.reservationStay.name, {
-                allow_post_to_city_ledger: 1,
+            message: $t('Are you sure you want to Allow Post to City Ledger?'),
+            header: $t('Confirmation'),
+            icon: 'pi pi-exclamation-triangle',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptIcon: 'pi pi-check-circle',
+            acceptLabel: $t('Ok'),
+            accept: () => {
+                updateDoc('Reservation Stay', rs.reservationStay.name, {
+                    allow_post_to_city_ledger: 1,
                 },
-                "Allow Post to City Ledger Successfully"
-            )
-                .then((doc) => {
-                    rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger; 
-                    window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.postMessage({action:"ReservationDetail"},"*")
-                })
-        },
+                    "Allow Post to City Ledger Successfully"
+                )
+                    .then((doc) => {
+                        rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
+                        window.postMessage({ action: "ReservationStayDetail" }, "*")
+                        window.postMessage({ action: "ReservationDetail" }, "*")
+                    })
+            },
 
-    });
-    }else{
+        });
+    } else {
         toast.add({
             severity: 'warn', summary: 'Allow Post to City Ledger',
             detail: `${rs.reservationStay.reservation_status} reservation is not allow to change information`, life: 3000
         });
     }
-    
+
 }
 
 function onMarkasGITReservation() {
@@ -798,14 +793,14 @@ function onMarkasGITReservation() {
             })
                 .then((doc) => {
                     rs.reservationStay.reservation_type = doc.reservation_type,
-                        window.postMessage({action:"ReservationList"},"*")
-                        window.postMessage({action:"ReservationStayList"},"*")
-                        window.postMessage({"action":"Dashboard"},"*")
+                        window.postMessage({ action: "ReservationList" }, "*")
+                    window.postMessage({ action: "ReservationStayList" }, "*")
+                    window.postMessage({ "action": "Dashboard" }, "*")
 
-                        window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.postMessage({action:"ReservationDetail"},"*")
-                        window.postMessage({"action":"Frontdesk"},"*")
-                        window.postMessage({action:"Reports"},"*")
+                    window.postMessage({ action: "ReservationStayDetail" }, "*")
+                    window.postMessage({ action: "ReservationDetail" }, "*")
+                    window.postMessage({ "action": "Frontdesk" }, "*")
+                    window.postMessage({ action: "Reports" }, "*")
                 })
         },
 
@@ -829,13 +824,13 @@ function onMarkasFITReservation() {
                 .then((doc) => {
                     rs.reservationStay.reservation_type = doc.reservation_type,
 
-                        window.postMessage({action:"ReservationList"},"*")
-                        window.postMessage({action:"ReservationStayList"},"*")
-                        window.postMessage({"action":"Dashboard"},"*")
+                        window.postMessage({ action: "ReservationList" }, "*")
+                    window.postMessage({ action: "ReservationStayList" }, "*")
+                    window.postMessage({ "action": "Dashboard" }, "*")
 
-                        window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.postMessage({action:"ReservationDetail"},"*")
-                        window.postMessage({action:"Reports"},"*")
+                    window.postMessage({ action: "ReservationStayDetail" }, "*")
+                    window.postMessage({ action: "ReservationDetail" }, "*")
+                    window.postMessage({ action: "Reports" }, "*")
 
                 })
         },
@@ -846,5 +841,5 @@ function onMarkasFITReservation() {
 function onAuditTrail() {
     emit('onAuditTrail')
 }
- 
+
 </script>

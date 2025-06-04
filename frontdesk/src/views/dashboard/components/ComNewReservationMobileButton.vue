@@ -113,7 +113,7 @@ items_add_new.value.push({
                   
                     onViewReservationDetail(data.reservation.name)
                 }else {
-                    onOpenGroupAssignRoom(data.reservation)
+                    app.openGroupAssignRoom(data.reservation)
 
                 }
                 

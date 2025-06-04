@@ -103,10 +103,10 @@
         <div>
             <div class="wrap-page-content -mb-2 px-2">
                 <div class="flex w-full">
-                    <div class="-ms-1 bg-white side_bar_01"> 
+                    <div v-if="!isMobile" class="-ms-1 bg-white side_bar_01"> 
                         <ComTodayInfoSideBar/> 
                     </div>
-                    <div style="margin-left: 5.3rem;" class="w-full">
+                    <div :style="{marginLeft:isMobile ? '0' : '5.3rem'}" class="w-full">
                         <template v-if="nested_layout=='OperationDasboardLayout'">
                             <ComOperationDashboard >
                                 <router-view />
