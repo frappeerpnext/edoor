@@ -41,6 +41,7 @@ function onSave(){
         unblock_date: gv.dateApiFormat(data.value.unblock_date),
         unblock_housekeeping_status_code: data.value.unblock_housekeeping_status_code,
         unblock_note: data.value.unblock_note,
+        end_date: gv.dateApiFormat(window.current_working_date),
         is_unblock: 1
     }
     updateDoc('Room Block', data.value.name, savedData).then((r) => {

@@ -145,6 +145,7 @@ frappe.query_reports["Reservation Forecast"] = {
 
 	],
 	onload: function (report) {
+
 		report.page.add_inner_button("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
@@ -155,8 +156,7 @@ frappe.query_reports["Reservation Forecast"] = {
 			property.refresh();
 			setLinkField(report);
 		})
-	
-		
+		frappe.call("edoor.api.report.update_prepared_report");
 	},
 	"formatter": function (value, row, column, data, default_formatter) {
 		const origninal_value = value || 0

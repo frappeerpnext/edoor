@@ -101,7 +101,8 @@ def get_all_guest(param):
             "reference_number", 
             "reservation_date", 
             "rooms", 
-            "rooms_data"
+            "rooms_data",
+            "is_reserved_room",
         ], filters=filter, or_filters=orFilters, page_length=10000)
     
 
