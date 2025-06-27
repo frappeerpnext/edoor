@@ -1,4 +1,5 @@
 <template>
+ 
   <ComFrontDeskLayout
     :showRefreshButton="true"
     :showSetting="true"
@@ -140,12 +141,12 @@ function getFloorPlanData(f) {
       property: property_name,
       floor: f.floor,
       date: moment(f.date).format("YYYY-MM-DD"),
-      floor_changed: f.floor != filters.value.floor,
+      floor_changed: (f.floor != filters.value.floor) || (f.building != filters.value.building),
       building: f.building,
     },
   })
     .then((result) => {
-      if (f.floor != filters.value.floor) {
+      if ((f.floor != filters.value.floor) || (f.building != filters.value.building)) {
         room_list.value = result.message.floor_data.rooms;
         // we use --background-img for floor plan background url
         document.documentElement.style.setProperty('--background-img', `url('${result.message.floor_data.background}')`);
@@ -425,6 +426,8 @@ const resizeObserver = new ResizeObserver(entries => {
 
 
 onMounted(() => {
+ 
+   document.documentElement.style.setProperty('--container-height', `${window.setting.floor_plan_view_height}px`);
   window.addEventListener("message", actionRefreshData, false);
   if (!window.isMobile) {
     const divElement = document.querySelector('.container');

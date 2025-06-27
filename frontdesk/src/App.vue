@@ -293,6 +293,14 @@ onMounted(async () => {
     await getSummaryData(window.current_working_date);
 
 
+ 
+ 
+  
+  
+  
+ 
+
+
 })
 
 function showBusinessSourceDetail(name){

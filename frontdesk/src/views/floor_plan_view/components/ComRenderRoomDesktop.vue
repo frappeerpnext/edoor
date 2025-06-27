@@ -7,6 +7,7 @@
 :grid="editMode?[10, 10]:[0,0]"
 :show-grid="editMode"
 class="container"
+
 @contextmenu="onOpenMenu"   
 >
 
@@ -49,6 +50,7 @@ import ComRoom from "@/views/floor_plan_view/components/ComRoom.vue";
 import DraggableResizableVue from "draggable-resizable-vue3";
 import ComRoomArrangeLayout from "@/views/floor_plan_view/components/ComRoomArrangeLayout.vue"
 import ContextMenu from 'primevue/contextmenu';
+import { onUnmounted } from "vue";
 
 const emit = defineEmits(["onAddElement"])
 
@@ -69,7 +71,7 @@ const contextMenuItems = ref([
     {
       label:"Set Container Height",
       command:function(){
-        alert(123)
+        
       }
     }
 ]);
@@ -80,16 +82,17 @@ const onOpenMenu = (event) => {
   }
   
 };
-
-
  
+
+
+
 </script>
 
 <style scoped>
 .container {
 border: none;
 width: 100%;
-height:100vh ;
+ height: var(--container-height);
 min-height: 768px;
 min-width: 1024px;
 max-width: 100%;

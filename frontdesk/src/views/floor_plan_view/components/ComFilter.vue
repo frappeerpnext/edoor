@@ -11,15 +11,16 @@
                 </div>    
                 <div class="col-6 lg:col-fixed lg:w-auto">
                     <ComSelect v-if="buildings.length > 1" :filters="[['property', '=', property_name]]"
-                        :placeholder="$t('Building')" v-model="filters.building" doctype="Building" optionLabel="name"
-                        optionValue="name" class="w-full overflow-x-auto" :clear="false"></ComSelect>
+                        :placeholder="$t('All Building')" v-model="filters.building" doctype="Building" optionLabel="name"
+                        optionValue="name" class="w-full overflow-x-auto" :clear="true" @onSelected="onSelectBuilding"></ComSelect>
 
+                         
                 </div>
                 <div class="col-6 lg:col-fixed lg:w-auto" v-if="floors"> 
-                    <Button class="border-0" @click="toggle">{{$t('Floor Options')}}</Button>
+                    <Button class="border-0" @click="toggle">{{filters.floor || $t('Select Floor')}}</Button>   
                     <Menu ref="show" :model="menus" :popup="true" style="min-width: 180px;">
                         <template #end> 
-                            <Button class="bg-transparent border-0 w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround" :class="{ 'active_btn': filters.floor === b.name }" @click="onFloorClick(b,index)" v-for="(b, index) in floors.filter(r => r.building == filters.building)"
+                            <Button class="bg-transparent border-0 w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround" :class="{ 'active_btn': filters.floor === b.name }" @click="onFloorClick(b)" v-for="(b, index) in floors"
                                 :key="index">
                                 {{ b.name }}
                             </Button>
@@ -82,9 +83,13 @@ const onFilter = async () => {
 
 const onFilterDebounce = debounce(onFilter, 500);
  
-function onFloorClick(floor,index) {
+function onFloorClick(floor) {
     filters.value.floor = floor.name
     onFilterDebounce()
+}
+
+function onSelectBuilding(event){
+     onFilterDebounce()
 }
 
 function onNextPrevDate(n) {
@@ -106,9 +111,9 @@ function getBulding() {
             fitlers: { property: property_name }
         }).then(result => {
             buildings.value = result
-            if (!filters.value.building) {
-                filters.value.building = result[0].name
-            }
+            // if (!filters.value.building) {
+            //     filters.value.building = result[0].name
+            // }
             resolve(result.message)
         }).catch(error=>{
             reject(error)
@@ -132,8 +137,8 @@ function getFloor() {
             floors.value = result
 
             if (!floors.value.floor) {
-
-                filters.value.floor = result.filter(r=>r.building == filters.value.building)[0].name
+               
+                filters.value.floor = result[0].name
             }
             resolve(result.message)
 

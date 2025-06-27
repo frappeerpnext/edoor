@@ -465,6 +465,7 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 		gv.setting = data.edoor_setting
 		window.setting = data.edoor_setting
 
+		
 		if (r.message.property == "Invalid Property") {
 			localStorage.removeItem("edoor_property")
 		}

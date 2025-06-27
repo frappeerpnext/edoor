@@ -35,8 +35,7 @@
    "fieldname": "building",
    "fieldtype": "Link",
    "label": "Building",
-   "options": "Building",
-   "reqd": 1
+   "options": "Building"
   },
   {
    "fieldname": "room_position",
@@ -65,7 +64,7 @@
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-20 13:51:02.692383",
+ "modified": "2025-06-27 09:04:19.404674",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Floor",

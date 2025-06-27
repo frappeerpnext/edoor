@@ -2269,6 +2269,7 @@ def get_edoor_setting(property = None):
         "sever_report_folder":edoor_setting_doc.sever_report_folder,
         "report_service_url":edoor_setting_doc.report_service_url,
         "embed_code":edoor_setting_doc.server_report_token,
+        "floor_plan_view_height":edoor_setting_doc.floor_plan_view_height,
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -3689,6 +3690,8 @@ def get_arrival_stay_over_departure_backend():
 @frappe.whitelist()
 def get_floor_plan_data(filters):
     filters = json.loads(filters)
+    filters["building"] =  (filters.get("building") or "")
+    
     room_list = []
     reservation_stays  = get_reservation_stay_for_floor_plan(json.dumps(filters))
     reservation_stays =reservation_stays + get_room_block_for_floor_plan(json.dumps(filters))
@@ -3741,19 +3744,21 @@ def get_reservation_stay_for_floor_plan(filters):
         where
             a.date = %(date)s and 
             a.property = %(property)s and
-            a.building = %(building)s and 
+            a.building =  if(%(building)s ='',a.building, %(building)s) and 
             a.floor = %(floor)s and 
             a.is_active_reservation = 1 and 
             b.reservation_status in ('Reserved','In-house') and 
             a.type = 'Reservation'
 
     """
+    
     data = frappe.db.sql(sql, filters, as_dict=1)
     return data
 
 
 def get_room_block_for_floor_plan(filters):
     filters = json.loads(filters)
+  
     sql ="""
         select 
             a.room_id,
@@ -3772,7 +3777,7 @@ def get_room_block_for_floor_plan(filters):
         where
             a.date = %(date)s and 
             a.property = %(property)s and
-            a.building = %(building)s and 
+            a.building = if(%(building)s ='',a.building, %(building)s) and 
             a.floor = %(floor)s and 
             a.type = 'Block'
 
@@ -3784,7 +3789,7 @@ def get_room_block_for_floor_plan(filters):
 @frappe.whitelist()
 def get_room_for_floor_plan_arrangement(filters):
     filters = json.loads(filters)
-    sql = "select name,room_number, status_color,housekeeping_status_code,room_type_alias, room_type,room_type_id from `tabRoom` where property=%(property)s and floor=%(floor)s and building=%(building)s"
+    sql = "select name,room_number, status_color,housekeeping_status_code,room_type_alias, room_type,room_type_id from `tabRoom` where property=%(property)s and floor=%(floor)s and building=if(%(building)s='',building,%(building)s)"
     data = frappe.db.sql(sql,filters,as_dict=1)
     positions =  frappe.db.get_value("Floor",filters["floor"],"room_position")
     rooms = []
