@@ -63,7 +63,7 @@ import ComSummaryKPI from "@/views/map_view/components/ComSummaryKPI.vue";
 
 import { i18n } from "@/i18n";
 import { useDialog } from "primevue/usedialog";
-import { collapseTransitionProps } from "@varlet/ui";
+
 const { t: $t } = i18n.global;
 const dialog = useDialog();
 const tabTableViewLoaded = ref(false);

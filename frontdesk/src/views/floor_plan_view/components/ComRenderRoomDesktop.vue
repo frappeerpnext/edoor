@@ -14,8 +14,8 @@ class="container"
   <draggable-resizable-vue v-for="(room, index) in roomList.filter(r=>(r.is_deleted || 0)==0)" :key="index"
     v-model:x="room.x" v-model:y="room.y" v-model:h="room.height"
   v-model:w="room.width" v-model:active="room.isActive" :draggable="editMode" :resizable="editMode" :z="room.z_index"
-   :min-width="room.element?50:180"
-   :min-height="room.element?50:120"
+   :min-width="room.element?10:10"
+   :min-height="room.element?20:20"
   >   
   <ComRoomArrangeLayout   :room="room"  />
   </draggable-resizable-vue>

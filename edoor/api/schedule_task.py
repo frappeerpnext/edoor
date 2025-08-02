@@ -101,13 +101,15 @@ def re_run_fail_jobs():
         "edoor.api.reservation.verify_reservation_stay",
         "edoor.api.folio_transaction.update_reservation_folios"
     ]
+    
     # append unwanted queue job from system
     job_names.append("frappe.model.delete_doc.delete_dynamic_links")
     job_names.append("build_index_for_all_routes")
 
     job_names.append("upload_to_ftp")
     job_names.append("edoor.api.schedule_task.re_run_fail_jobs")
-    job_names.append("erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.evaluate_alert_queue")
+    if 'erpnext_telegram_integration' in frappe.get_installed_apps():
+        job_names.append("erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.evaluate_alert_queue")
     
     args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 
             'filters': [['RQ Job', 'status', '=', 'failed']], 

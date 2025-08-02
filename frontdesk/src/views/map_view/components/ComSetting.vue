@@ -71,7 +71,7 @@
 <script setup>
     import {ref,inject,onMounted,getApi} from "@/plugin"
     import BlockUI from 'primevue/blockui';
-import { Loading, resultProps } from "@varlet/ui";
+
 const loading = ref(false) 
     const dialogRef = inject("dialogRef");
     const reportConfig = ref({})

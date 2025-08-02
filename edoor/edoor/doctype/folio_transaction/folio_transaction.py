@@ -139,9 +139,10 @@ class FolioTransaction(Document):
 				
 				
 
-		#use for validate record prevent user to delete record
-
-		#frappe.throw("You cannot delete me")
+		# check if have product
+		if self.items:
+			sql = "update `tabInventory Transaction` set transaction_number = concat(transaction_number,'-deleted') where transaction_type = 'Folio Transaction' and transaction_number = %(folio_number)s"
+			frappe.db.sql(sql,{"folio_number":self.name})
 	
 	def after_delete(self):
 		reservation_names=[]
@@ -219,6 +220,11 @@ class FolioTransaction(Document):
 			update_reservation_stay_and_reservation(reservation_stay=reservation_stay_names,reservation=reservation_names)
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
+
+
+		# update inventory if folio transaction have inventory product
+		if self.items:
+			update_inventory_after_delete(self)
 
 	@frappe.whitelist()
 	def get_package_data(self):
@@ -430,8 +436,11 @@ def update_inventory(self):
 						in_quantity = abs(quantity)
 					else:
 						out_quantity = abs(quantity)
-						
-				
+				note = ""		
+				if self.flags.old_doc:
+					note =  f'Folio transaction updated. Account Code: {self.account_code}-{self.account_name}'
+				else:
+					note = f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}'
 				add_to_inventory_transaction({
 					'doctype': 'Inventory Transaction',
 					'transaction_type':"Folio Transaction",
@@ -444,8 +453,46 @@ def update_inventory(self):
 					'out_quantity': out_quantity,
 					'in_quantity': in_quantity,
 					"uom_conversion":1,
-					'note': f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}',
+					'note':note,
 					'action': 'Submit'
+				})
+def update_inventory_after_delete(self):
+	products = []
+	working_day = get_working_day(self.property)
+	products = [{"product_code":d.product_code, "quantity":d.quantity*-1} for d in self.items]
+	for product_code in set([d["product_code"] for d in products]):
+		quantity = sum([d["quantity"] for d in products if d["product_code"] == product_code])
+		if quantity!=0:
+			is_inventory_product,unit = frappe.get_cached_value("Product",product_code,['is_inventory_product','unit'])
+			if is_inventory_product==1:
+				in_quantity = 0
+				out_quantity = 0
+				if quantity>0 :
+					if self.type=='Debit':
+						out_quantity = quantity
+					else:
+						in_quantity = quantity
+				else:
+					if self.type=='Debit':
+						in_quantity = abs(quantity)
+					else:
+						out_quantity = abs(quantity)
+						
+				
+				add_to_inventory_transaction({
+					'doctype': 'Inventory Transaction',
+					'transaction_type':"Folio Transaction",
+					'transaction_date':self.posting_date,
+					'transaction_number':self.name + "-deleted",
+					'product_code': product_code,
+					'portion':"",
+					'unit':unit,
+					'stock_location':working_day["stock_location"],
+					'out_quantity': out_quantity,
+					'in_quantity': in_quantity,
+					"uom_conversion":1,
+					'note': f'Item charge deleted from folio transaction. Account Code: {self.account_code}-{self.account_name}',
+					'action': 'Delete'
 				})
 
 				

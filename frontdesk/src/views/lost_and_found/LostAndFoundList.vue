@@ -54,7 +54,7 @@ const options = {
   filterOptions: [
     { fieldname: "status" },
     { fieldname: "location" },
-    { fieldname: "posting_date" },
+    { fieldname: "posting_date" }, 
     { fieldname: "taken_date" },
   ],
 };

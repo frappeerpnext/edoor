@@ -269,7 +269,7 @@ function onDuplication() {
             "is_master": stay.is_master,
             "room_type_id": stay.room_type_id,
             room_id: stay.room_id,
-            input_rate: stay.input_rate
+            rate: stay.input_rate
         }],
         guest: rs.reservationStay.guest,
         reservation_color_code: {

@@ -435,7 +435,6 @@
 
                             <td class="p-2 w-8rem">
                                 <div class="box-input-detail text-center">
-                                    {{ doc.reservation.room_night }}
                                 </div>
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-10rem">
@@ -604,8 +603,8 @@ const doc = ref({
 const business_source_filter = computed(() => {
     let filter = { property: property.name }
 
-    if (doc.value.reservation.business_source_group) {
-        filter.business_source_group = doc.value.reservation.business_source_group
+    if (doc.value.reservation.business_source_type_group) {
+        filter.business_source_group = doc.value.reservation.business_source_type_group
     }
 
     if (doc.value.reservation.business_source_type) {
@@ -620,8 +619,8 @@ const business_source_filter = computed(() => {
 
 })
 const business_source_type_filter = computed(() => {
-    if (doc.value.reservation.business_source_group) {
-        return { business_source_group: doc.value.reservation.business_source_group }
+    if (doc.value.reservation.business_source_type_group) {
+        return { business_source_group: doc.value.reservation.business_source_type_group }
     }
     return {}
 

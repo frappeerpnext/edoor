@@ -781,7 +781,6 @@
   {
    "fieldname": "business_source_type_group",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Business Source Type Group",
    "options": "Business Source Type Group"
   },
@@ -795,7 +794,7 @@
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-27 16:03:56.800270",
+ "modified": "2025-07-10 14:50:36.099985",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
