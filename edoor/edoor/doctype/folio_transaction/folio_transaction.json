@@ -1032,7 +1032,8 @@
    "fetch_from": "account_code.flash_report_revenue_group",
    "fieldname": "flash_report_revenue_group",
    "fieldtype": "Data",
-   "label": "Flash Report Revenue Group"
+   "label": "Flash Report Revenue Group",
+   "search_index": 1
   },
   {
    "default": "0",
@@ -1189,7 +1190,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-04 10:52:09.975330",
+ "modified": "2025-08-08 11:37:57.070352",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",
