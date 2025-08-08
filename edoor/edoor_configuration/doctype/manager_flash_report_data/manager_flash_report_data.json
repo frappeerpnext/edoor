@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "posting_date",
+  "property",
   "title",
   "today_total",
   "mtd_total",
@@ -36,11 +37,16 @@
    "fieldname": "ytd_total",
    "fieldtype": "Float",
    "label": "YTD Total"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Data",
+   "label": "Property"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-08 15:50:28.783464",
+ "modified": "2025-08-08 16:57:30.685181",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Manager Flash Report Data",
