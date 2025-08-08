@@ -6,8 +6,10 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "group",
   "title",
-  "description"
+  "description",
+  "sort_order"
  ],
  "fields": [
   {
@@ -20,11 +22,21 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order"
+  },
+  {
+   "fieldname": "group",
+   "fieldtype": "Data",
+   "label": "Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-07 10:17:10.273930",
+ "modified": "2025-08-08 10:26:10.011001",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Flash Report Key",
