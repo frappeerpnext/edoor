@@ -7,6 +7,7 @@
  "field_order": [
   "posting_date",
   "property",
+  "group",
   "title",
   "today_total",
   "mtd_total",
@@ -42,11 +43,16 @@
    "fieldname": "property",
    "fieldtype": "Data",
    "label": "Property"
+  },
+  {
+   "fieldname": "group",
+   "fieldtype": "Data",
+   "label": "Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-08 16:57:30.685181",
+ "modified": "2025-08-08 17:33:56.832461",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Manager Flash Report Data",
