@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "parent_group",
   "group",
   "title",
   "description",
@@ -26,17 +27,25 @@
   {
    "fieldname": "sort_order",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Sort Order"
   },
   {
    "fieldname": "group",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Group"
+  },
+  {
+   "fieldname": "parent_group",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Parent Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-08 10:26:10.011001",
+ "modified": "2025-08-09 16:01:09.150757",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Flash Report Key",
