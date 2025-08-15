@@ -340,42 +340,42 @@ print_menus.value.push({
 
 //folio detail report
 
-print_menus.value.push({
-    label: $t("Folio Split Amount"),
-    icon: 'pi pi-print',
-    command: () => {
-        if(setting.server_report_url){
+// print_menus.value.push({
+//     label: $t("Folio Split Amount"),
+//     icon: 'pi pi-print',
+//     command: () => {
+//         if(setting.server_report_url){
  
- dialog.open(ComReportServerModal, {
-     data: {
-         report_path: "/Front Desk/rptShareAmountFolioReservation",
-         params:[
-                 {name: 'reservation_folio', values: [selectedFolio.value.name] },
-                 {name: 'reservation_stay', values: [selectedFolio.value.reservation_stay] },
-                 {name: 'reservation', values: [selectedFolio.value.reservation] }
-         ]
+//  dialog.open(ComReportServerModal, {
+//      data: {
+//          report_path: "/Front Desk/rptShareAmountFolioReservation",
+//          params:[
+//                  {name: 'reservation_folio', values: [selectedFolio.value.name] },
+//                  {name: 'reservation_stay', values: [selectedFolio.value.reservation_stay] },
+//                  {name: 'reservation', values: [selectedFolio.value.reservation] }
+//          ]
          
          
-     },
-     props: {
-         header: $t("Folio Summary Report"),
-         style: {
-             width: '80vw',
-         },
-         position: "top",
-         modal: true,
-         maximizable: true,
-         closeOnEscape: false,
-         breakpoints:{
-             '960px': '80vw',
-             '640px': '100vw'
-         },
+//      },
+//      props: {
+//          header: $t("Folio Summary Report"),
+//          style: {
+//              width: '80vw',
+//          },
+//          position: "top",
+//          modal: true,
+//          maximizable: true,
+//          closeOnEscape: false,
+//          breakpoints:{
+//              '960px': '80vw',
+//              '640px': '100vw'
+//          },
 
-     },
- });
-}
-    }
-})
+//      },
+//  });
+// }
+//     }
+// })
 
 print_menus.value.push({
     label: $t("Folio Detail Report"),

@@ -62,6 +62,11 @@
                     <i class="pi pi-copy" />
                     <span class="ml-2">{{$t('Group Duplicate')}}</span>
                 </button>
+                <button @click="onDuplicateFIT"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-copy" />
+                    <span class="ml-2">{{$t('onDuplicate FIT')}}</span>
+                </button>
                 <span>
 
                     <button @click="onMarkAsPaidbyMasterroom()"
@@ -963,5 +968,92 @@ async function onDuplicateGroup(){
     }
 
 }
+import NewReservation from "@/views/reservation/NewReservation.vue";
+async function onDuplicateFIT() {
+  const reservation_stay_data = rs.reservationStays; // assumed to be an array
+  const reservation_data = rs.reservation;
+  let arrival_date = moment(reservation_data?.arrival_date).toDate();
+  let departure_date = moment(reservation_data?.departure_date).toDate();
+
+  const working_day_date = moment(window.working_day.date_working_day).toDate();
+
+  if (arrival_date < working_day_date) {
+    arrival_date = working_day_date;
+  }
+
+  if (departure_date <= working_day_date) {
+    departure_date = moment(arrival_date).add(1, "days").toDate();
+  }
+
+
+const stays_data = await Promise.all(
+  reservation_stay_data.map(async (stay) => {
+    const response = await app.getApi("reservation.get_reservation_stay_detail", { name: stay.name });
+    const stay_value = response?.data?.reservation_stay?.stays || [];
+    const firstStay = stay_value[0] || {};
+    return {
+      adult: firstStay.adult ?? 0,
+      child: firstStay.child ?? 0,
+      is_manual_rate: 1,
+      is_master: firstStay.is_master ?? 0,
+      room_type_id: firstStay.room_type_id ?? "",
+      room_id:null,
+      rate: firstStay.input_rate ?? 0,
+    };
+  })
+);
+
+
+console.log("HIII " + JSON.stringify(stays_data, null, 2));
+
+  let data = {
+    reservation: {
+      guest: reservation_data.guest,
+      reference_number: reservation_data.reference_number,
+      internal_reference_number: reservation_data.internal_reference_number,
+      business_source: reservation_data.business_source,
+      business_source_type_group: reservation_data.business_source_type_group,
+      business_source_type: reservation_data.business_source_type,
+      arrival_date,
+      departure_date,
+      reservation_color_code: reservation_data.reservation_color_code,
+      rate_type: reservation_data.rate_type,
+      allow_post_to_city_ledger: reservation_data.allow_post_to_city_ledger,
+      paid_by_master_room: reservation_data.paid_by_master_room,
+      note: reservation_data.note,
+    },
+    reservation_stay: stays_data,
+    guest: reservation_data.guest,
+    reservation_color_code: {
+      name: reservation_data.reservation_color_code,
+      color: reservation_data.reservation_color,
+    },
+  };
+
+  const dialogRef = dialog.open(NewReservation, {
+    data: { duplicated_data: data },
+    props: {
+      header: $t("New FIT Reservation"),
+      style: { width: "80vw" },
+      modal: true,
+      maximizable: true,
+      closeOnEscape: false,
+      position: "top",
+      breakpoints: {
+        "960px": "80vw",
+        "640px": "100vw",
+      },
+    },
+    onClose: (options) => {
+      const data = options.data;
+      if (data !== undefined) {
+        window.postMessage("view_reservation_detail|" + data.name, "*");
+      }
+    },
+  });
+
+  emit("onDupicateReservation");
+}
+
 
 </script>

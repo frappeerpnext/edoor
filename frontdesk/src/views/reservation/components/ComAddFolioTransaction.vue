@@ -775,6 +775,7 @@ async function onRateCalculation(newValue){
 
 
 function onSave(){
+    console.log(doc.value.discount)
     const data = JSON.parse(JSON.stringify(doc.value))
     data.input_amount = data.input_amount || 0
     // will change this later

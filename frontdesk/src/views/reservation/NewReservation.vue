@@ -435,6 +435,7 @@
 
                             <td class="p-2 w-8rem">
                                 <div class="box-input-detail text-center">
+                                    {{ doc.reservation.room_night }}
                                 </div>
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-10rem">
@@ -762,33 +763,36 @@ const warningMessage = computed(() => {
 })
 
 
-const getRoomType = () => {
-
-    getApi("reservation.check_room_type_availability", {
+const getRoomType = async () => {
+   
+    const res = await  app.getApi("reservation.check_room_type_availability", {
         property: property.name,
         start_date: moment(doc.value.reservation.arrival_date).format("yyyy-MM-DD"),
         end_date: moment(doc.value.reservation.departure_date).format("yyyy-MM-DD"),
         rate_type: doc.value.reservation.rate_type,
         business_source: doc.value.reservation.business_source
 
-    })
-        .then((result) => {
-            room_types.value = result.message;
-            updateRate()
-        })
+    }) ;
+    console.log("get room type",res)
+    if (res.data){
+        room_types.value = res.data
+        updateRate()
+    }
+
 }
 
-const getRooms = () => {
+const getRooms = async () => {
 
-    getApi("reservation.check_room_availability", {
+    const res = await app.getApi("reservation.check_room_availability", {
         property: property.name,
         start_date: moment(doc.value.reservation.arrival_date).format("yyyy-MM-DD"),
         end_date: moment(doc.value.reservation.departure_date).format("yyyy-MM-DD")
     })
-        .then((result) => {
-            rooms.value = result.message;
-            OnSelectRoom()
-        })
+        
+    if(res.data){
+        rooms.value = res.data
+        OnSelectRoom()
+    }
 }
 
 function onSelectedCustomer(event) {
@@ -1045,6 +1049,7 @@ function getMeta() {
 }
 
 onMounted(() => {
+
     getMeta()
 
     getDocList("Reservation Color Code", {
@@ -1060,12 +1065,13 @@ onMounted(() => {
             elem?.classList.add("p-dialog-maximized"); // adds the maximized class
         }
     }
+
     doc.value.guest_info.expired_date = moment().toDate()
 
     getApi("frontdesk.get_working_day", {
         property: property.name
 
-    }).then((result) => {
+    }).then(async (result) => {
         working_day.value = (result.message)
         minDate.value = window.setting.allow_user_to_add_back_date_transaction == 1 ? moment().add(-50, 'years').toDate() : moment(working_day.value.date_working_day).toDate()
 
@@ -1077,6 +1083,7 @@ onMounted(() => {
             getRoomType()
             getRooms()
         } else {
+           
             if (dialogRef.value.data?.arrival_date) {
                 doc.value.reservation.arrival_date = moment(dialogRef.value.data.arrival_date).toDate()
                 doc.value.reservation.departure_date = moment(dialogRef.value.data.departure_date).toDate()
@@ -1088,8 +1095,8 @@ onMounted(() => {
                 doc.value.reservation.departure_date = moment(working_day.value.date_working_day).add(1, 'days').toDate()
             }
 
-            getRoomType()
-            getRooms()
+            await getRoomType()
+            await getRooms()
         }
 
 
@@ -1098,15 +1105,23 @@ onMounted(() => {
 
         // if duplcate change default value 
 
-        if (dialogRef.value.data.duplicated_data) {
+        if (dialogRef?.value?.data?.duplicated_data) {
+      
+       
             doc.value.reservation_stay = dialogRef.value.data.duplicated_data.reservation_stay
-
+            
             doc.value.reservation = { ...doc.value.reservation, ...dialogRef.value.data.duplicated_data.reservation }
             getGuestInfo(dialogRef.value.data.duplicated_data.guest)
             itemscolorreservation_select.value = dialogRef.value.data.duplicated_data.reservation_color_code
-            setTimeout(() => {
-                onRateTypeChange(dialogRef.value.data.duplicated_data.reservation.rate_type)
-            }, 1000);
+            
+  
+                await onRateTypeChange(dialogRef.value.data.duplicated_data.reservation.rate_type)
+               for (const stay of dialogRef.value.data.duplicated_data.reservation_stay) {
+   await get_room_rate_breakdown(stay);
+}
+
+              
+            
         }
     })
 });
@@ -1139,6 +1154,7 @@ const onDeleteStay = (index) => {
 
 const updateRate = (stay = null) => {
     if (!stay) {
+      
         doc.value.reservation_stay.forEach(s => {
             const room_type = room_types.value.find(r => r.name == s.room_type_id)
             if (room_type) {
@@ -1153,7 +1169,7 @@ const updateRate = (stay = null) => {
 
                     }
                 }
-
+                
                 get_room_rate_breakdown(s)
             }
 
@@ -1205,16 +1221,16 @@ const onBusinessSourceTypeGroupChange = (business_source_type) => {
 }
 
 
-const onRateTypeChange = (rate_type) => {
-
-
+const onRateTypeChange = async  (rate_type) => {
+ 
+ 
     if (rate_type) {
-        getApi("utils.get_rate_type_info", { name: rate_type })
-            .then((result) => {
-
-                //check if rate type change then resert room revenue code and tax
-                doc.value.reservation.tax_rule = (result.message?.tax_rule?.name || "")
-                const tax_rule = result.message.tax_rule
+        const res = await app.getApi("utils.get_rate_type_info", { name: rate_type });
+        if(res.data){
+            
+                    //check if rate type change then resert room revenue code and tax
+                doc.value.reservation.tax_rule = (res.data?.tax_rule?.name || "")
+                const tax_rule = res.data.tax_rule
                 doc.value.tax_rule = {
                     rate_include_tax: tax_rule?.is_rate_include_tax ? "Yes" : "No",
                     tax_1_rate: tax_rule?.tax_1_rate || 0,
@@ -1228,18 +1244,20 @@ const onRateTypeChange = (rate_type) => {
                 useTax.value.use_tax_2 = tax_rule?.tax_2_rate > 0
                 useTax.value.use_tax_3 = tax_rule?.tax_3_rate > 0
                 doc.value.reservation.rate_type = rate_type
-                doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
-                doc.value.is_package = result.message.is_package || 0
-                doc.value.package_charge_data = result.message.package_charge_data
-                doc.value.is_house_use = result.message.is_house_use
-                doc.value.is_complimentary = result.message.is_complimentary
-
+                doc.value.allow_user_to_edit_rate = res.data.allow_user_to_edit_rate
+                doc.value.is_package = res.data.is_package || 0
+                doc.value.package_charge_data = res.data.package_charge_data
+                doc.value.is_house_use = res.data.is_house_use
+                doc.value.is_complimentary = res.data.is_complimentary
+ 
+             
                 //check if stay have not manully rate update
+              
                 if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {
-                    getRoomType()
+                    await getRoomType()
                 }
-
-            })
+        }
+        
     }
 }
 
@@ -1260,7 +1278,7 @@ const onUseRatePlan = () => {
 
 
 function get_room_rate_breakdown(stay) {
-
+   console.log("get breakdown",stay)
     if ((stay?.loading || false) == true) {
         return
     }
@@ -1287,7 +1305,7 @@ function get_room_rate_breakdown(stay) {
         is_package: doc.value.is_package,
         package_charge_data: doc.value.package_charge_data || "[]"
     }
-
+    
     postApi("generate_room_rate.get_room_rate_calculation", { room_rate_data: room_rate_data }, "", false)
         .then(result => {
 

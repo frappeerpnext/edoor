@@ -28,6 +28,7 @@
   "room_chart_calendear_slot_duration",
   "auto_post_room_charge_folio_on_current_audit_date",
   "floor_plan_view_height",
+  "floor_plan_template",
   "section_break_8",
   "guest_ledger_report_name",
   "guest_ledger_transaction_report",
@@ -484,12 +485,18 @@
    "fieldname": "floor_plan_view_height",
    "fieldtype": "Int",
    "label": "Floor Plan View Height"
+  },
+  {
+   "default": "1025",
+   "fieldname": "floor_plan_template",
+   "fieldtype": "JSON",
+   "label": "floor plan template"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-27 09:11:57.858291",
+ "modified": "2025-08-15 09:45:36.813870",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

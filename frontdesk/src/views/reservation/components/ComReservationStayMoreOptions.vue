@@ -265,10 +265,10 @@ function onDuplication() {
         reservation_stay: [{
             "adult": stay.adult,
             "child": stay.child,
-            "is_manual_rate": stay.is_manual_rate,
+            is_manual_rate: stay.input_rate > 0 ? 1 : 0,
             "is_master": stay.is_master,
             "room_type_id": stay.room_type_id,
-            room_id: stay.room_id,
+            room_id:null,
             rate: stay.input_rate
         }],
         guest: rs.reservationStay.guest,
@@ -298,7 +298,6 @@ function onDuplication() {
             },
         },
         onClose: (options) => {
-
             const data = options.data;
             if (data != undefined) {
                 window.postMessage('view_reservation_detail|' + data.name, '*')

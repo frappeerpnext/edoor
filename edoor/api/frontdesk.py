@@ -2270,6 +2270,7 @@ def get_edoor_setting(property = None):
         "report_service_url":edoor_setting_doc.report_service_url,
         "embed_code":edoor_setting_doc.server_report_token,
         "floor_plan_view_height":edoor_setting_doc.floor_plan_view_height,
+        "floor_plan_template":edoor_setting_doc.floor_plan_template,
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -3920,12 +3921,12 @@ def get_room_occupy(property,date,keyword='',business_source = "",room_type="",r
 @frappe.whitelist()
 def get_ledger_balance(property,start_date,end_date,ledger_type):
     # get opening
-    sql = "select sum(total_amount * if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where transaction_type=%(ledger_type)s and property = %(property)s and posting_date<%(date)s"
+    sql = "select sum(transaction_amount * if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where is_base_transaction = 1 and   transaction_type=%(ledger_type)s and property = %(property)s and posting_date<%(date)s"
     data = frappe.db.sql(sql,{"property":property,"date":start_date,"ledger_type":ledger_type},as_dict =1)
     opening  = 0 if not data else data[0]["amount"]
     
     # get debit,credit
-    sql = "select sum(total_amount * if(type='Debit',1,0)) as debit, sum(total_amount * if(type='Debit',0,1)) as credit   from  `tabFolio Transaction` where transaction_type=%(ledger_type)s and property = %(property)s and posting_date between %(start_date)s and %(end_date)s"
+    sql = "select sum(transaction_amount * if(type='Debit',1,0)) as debit, sum(transaction_amount * if(type='Debit',0,1)) as credit   from  `tabFolio Transaction` where is_base_transaction = 1 and  transaction_type=%(ledger_type)s and property = %(property)s and posting_date between %(start_date)s and %(end_date)s"
     data = frappe.db.sql(sql,{"property":property,"start_date":start_date,"end_date":end_date,"ledger_type":ledger_type},as_dict =1)
     debit  = 0 if not data else data[0]["debit"]
     credit  = 0 if not data else data[0]["credit"]

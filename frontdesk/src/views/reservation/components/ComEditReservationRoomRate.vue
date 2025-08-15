@@ -619,7 +619,7 @@ function onUseManualRate() {
 }
 
 function onSave() {
-
+    
     //prepare room rate name send to api
     let room_rate_names = []
     let reservation_stay_names = []
