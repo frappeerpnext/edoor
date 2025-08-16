@@ -2337,3 +2337,6 @@ def convert_array_filter_to_dict(fitler):
     if isinstance(fitler, dict):
         return fitler
     return {field: value for field, operator, value in fitler if operator == "="}
+
+
+    

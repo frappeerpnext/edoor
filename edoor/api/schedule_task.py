@@ -758,3 +758,11 @@ def update_desk_folio_balance():
         frappe.db.commit()
         return "done"
     
+@frappe.whitelist()
+def generate_flash_report_data(property,date):
+    # current
+    frappe.db.sql("call sp_generate_flash_manager_report(%(property)s,%(date)s)",{"property":property,"date":date})
+    
+    # last year
+
+    frappe.db.sql("call sp_generate_flash_manager_report(%(property)s,%(date)s)",{"property":property,"date":frappe.utils.add_to_date(date,years=-1)})
