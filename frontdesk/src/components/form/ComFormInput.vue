@@ -3,7 +3,7 @@
     <div v-if="field.fieldtype=='Check'">
         <div class="flex item-center gap-2">
             <label class="cursor-pointer" :for="field.fieldname">
-               {{ field.label }} 
+               {{ $t(field.label) }} 
             </label>
              
         <Checkbox :inputId="field.fieldname"
@@ -13,7 +13,7 @@
         </div>
     </div>
     <div v-else-if="field.fieldtype=='Small Text'">
-        {{ field.label }}
+        {{ $t(field.label) }}
         <Textarea v-model="model[field.fieldname]" rows="5" :placeholder="$t(field.label)" cols="30"
         class="w-full border-round-xl" />
     </div>

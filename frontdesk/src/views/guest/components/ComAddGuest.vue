@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>{{ $t('Province') }} </label><br />
-                        <ComAutoComplete v-model="guest.province" class="w-full" :placeholder="$t('province')" doctype="Province" />
+                        <ComAutoComplete v-model="guest.province" class="w-full" :placeholder="$t('Province')" doctype="Province" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>{{ $t('Gender') }} </label><br />
@@ -98,7 +98,7 @@
                 </div>
             </template>
         </ComReservationStayPanel>
-        <ComReservationStayPanel title="Address & Note">
+        <ComReservationStayPanel :title="$t('Address & Note')">
             <template #content>
                 <div class="grid">
                     <div class="col-12 lg:col-6 pt-1">
@@ -115,7 +115,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc } from '@/plugin'
+import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc,computed } from '@/plugin'
 import ComDialogContent from '@/components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import Calendar from 'primevue/calendar';
@@ -154,7 +154,7 @@ function getMeta() {
     }).then((r) => {
         if (r.message) {
             const options = r.message.fields.find((r) => r.fieldname == 'gender')
-            optionGender.value = options.options.split('\n')
+            optionGender.value = options.options.split('\n').map(r => $t(r)) 
             guest.value.gender = options.default
         }
     })
@@ -162,11 +162,11 @@ function getMeta() {
 
 function onOK() {
     if (!guest.value.customer_name_en) {
-        gv.toast('warn', 'Guest name is required.')
+        gv.toast('warn', `${$t('Guest name is required')}. `)
         return
     }
     else if (!guest.value.customer_group) {
-        gv.toast('warn', 'Guest type is required.')
+        gv.toast('warn', `${$t('Guest type is required')}. `)
         return
     }
     loading.value = true

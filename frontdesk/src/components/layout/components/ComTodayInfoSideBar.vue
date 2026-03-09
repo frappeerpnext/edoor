@@ -9,7 +9,7 @@
                             <ComIcon :icon="m.icon" height="30px"/>
                         </Button>
                         <div class="absolute badge-today-info" v-if="m.badge_field">
-                            <Badge  class="flex justify-content-center" :value="data?.[m.badge_field]" severity="info"></Badge>
+                            <Badge  class="flex justify-content-center" :value="data?.[m.badge_field] || 0" severity="info"></Badge>
                         </div>
                     </tippy>
                 </div>

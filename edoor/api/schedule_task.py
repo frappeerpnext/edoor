@@ -759,9 +759,11 @@ def update_desk_folio_balance():
         return "done"
     
 @frappe.whitelist()
-def generate_flash_report_data(property,date):
-    # current
-    frappe.db.sql("call sp_generate_flash_manager_report(%(property)s,%(date)s)",{"property":property,"date":date})
+def generate_flash_report_data(property="ESTC HOTEL", date="2025-08-07"):
+    frappe.db.sql(
+         "CALL sp_generate_flash_manager_report(%s, %s)",
+        (property, date),
+    )
     
     # last year
 

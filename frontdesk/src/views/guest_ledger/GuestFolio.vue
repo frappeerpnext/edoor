@@ -35,6 +35,7 @@ const options = {
         { fieldname: "modified_by",label:"Modified By" },
         { fieldname: "modified", fieldtype: "Datetime",label:"Last Modified" },
         { fieldname: "status" },
+        { fieldname: "mark_as_verified"},
     ],
     filterOptions:[
         {fieldname:"posting_date"},
@@ -45,6 +46,7 @@ const options = {
         { fieldname: "reservation_stay"},
         { fieldname: "business_source"},
         { fieldname: "status"},
+        { fieldname: "mark_as_verified"},
     ]
 }
 

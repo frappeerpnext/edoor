@@ -72,7 +72,7 @@ def get_report_data(filters,report_config):
     
     
     # get revenue forecast to show with revenue
-    revenue_forcast_data = get_forecast_revenue(filters)
+    revenue_forcast_data =[]# get_forecast_revenue(filters)
     
     for rf in revenue_forcast_data:
         existing_transaction = [d  for d in  folio_transaction_data if d.get("row_group") == rf.get("row_group")]

@@ -500,7 +500,7 @@ const calendarOptions = reactive({
 
 
         } else {
-
+           
             const dialogRef = dialog.open(ComConfirmChangeStay, {
                 data: {
                     event: $event.event,
@@ -526,6 +526,9 @@ const calendarOptions = reactive({
                     const data = options.data;
                     if (!data) {
                         $event.revert()
+                    }else{
+                       
+                        getEvent()
                     }
                 }
             });

@@ -1,6 +1,6 @@
 <template>
   <div class="col-12 p-0 lg:p-2" v-if="rs.reservationStay.require_pickup || rs.reservationStay.require_drop_off">
-    <ComReservationStayPanel title="Arrival & Departure Mode">
+    <ComReservationStayPanel :title="$t('Arrival & Departure Mode')">
       <template #btn>
         <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" aria-haspopup="true"
           aria-controls="manu_arriaval_departure" text rounded @click="onMenuArriavalDeparture" />
@@ -12,35 +12,35 @@
             <TabPanel :header="$t('Arrival')">
               <div v-if="rs.reservationStay.require_pickup" class="">
                 <div class="flex mt-4 gap-2">
-                  <ComBoxStayInformation title="Arrival Mode" :value="rs.reservationStay?.arrival_mode"
+                  <ComBoxStayInformation :title="$t('Arrival Mode')" :value="rs.reservationStay?.arrival_mode"
                     valueClass="col-7 " titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Flight No" :value="rs.reservationStay?.arrival_flight_number"
+                  <ComBoxStayInformation :title="$t('Flight No')" :value="rs.reservationStay?.arrival_flight_number"
                     valueClass="col-7 " titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Location" :value="rs.reservationStay?.pickup_location" valueClass="col-7"
+                  <ComBoxStayInformation :title="$t('Location')" :value="rs.reservationStay?.pickup_location" valueClass="col-7"
                     titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Pickup Time"
+                  <ComBoxStayInformation :title="$t('Pickup Time')"
                     :value="moment(rs.reservationStay?.pickup_time, 'HH:mm:ss').format('h:mm a')" valueClass="col-7"
                     titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">                 
-                  <ComBoxStayInformation @onClick="onEditDriver(rs.reservationStay?.pickup_driver)" title="Driver"
+                  <ComBoxStayInformation @onClick="onEditDriver(rs.reservationStay?.pickup_driver)" :title="$t('Driver')"
                     :isAction="rs.reservationStay?.pickup_driver" :value="rs.reservationStay?.pickup_driver_name" valueClass="col-7" titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Phone Number" :value="rs.reservationStay?.pickup_driver_phone_number"
+                  <ComBoxStayInformation :title="$t('Phone Number')" :value="rs.reservationStay?.pickup_driver_phone_number"
                     valueClass="col-7" titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex flex-col mt-2 gap-2">
-                  <div>Note</div>
+                  <div>{{ $t('Note') }}</div>
                   <div class="w-full overflow-y-auto h-min-note bg-white rounded-xl p-3 break-words whitespace-break-spaces">
                     {{ rs.reservationStay?.pickup_note }}
                   </div>
@@ -57,31 +57,31 @@
             <TabPanel :header="$t('Departure')">
               <div v-if="rs.reservationStay.require_drop_off">
                 <div class="flex mt-4 gap-2">
-                  <ComBoxStayInformation title="Departure Mode" :value="rs.reservationStay?.departure_mode"
+                  <ComBoxStayInformation :title="$t('Departure Mode')" :value="rs.reservationStay?.departure_mode"
                     valueClass="col-7 " titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Flight No" :value="rs.reservationStay?.departure_flight_number"
+                  <ComBoxStayInformation :title="$t('Flight No')" :value="rs.reservationStay?.departure_flight_number"
                     valueClass="col-7 " titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Location" :value="rs.reservationStay?.drop_off_location"
+                  <ComBoxStayInformation :title="$t('Location')" :value="rs.reservationStay?.drop_off_location"
                     valueClass="col-7" titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Drop Off Time"
+                  <ComBoxStayInformation :title="$t('Drop Off Time')"
                     :value="moment(rs.reservationStay?.drop_off_time, 'HH:mm:ss').format('h:mm a')" valueClass="col-7"
                     titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation @onClick="onEditDriver(rs.reservationStay?.drop_off_driver)" title="Driver"
+                  <ComBoxStayInformation @onClick="onEditDriver(rs.reservationStay?.drop_off_driver)" :title="$t('Driver')"
                     :isAction="rs.reservationStay?.drop_off_driver" :value="rs.reservationStay?.drop_off_driver_name" valueClass="col-7" titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Phone number" :value="rs.reservationStay?.drop_off_driver_phone_number"
+                  <ComBoxStayInformation :title="$t('Phone number')" :value="rs.reservationStay?.drop_off_driver_phone_number"
                     valueClass="col-7" titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex flex-col mt-2 gap-2">

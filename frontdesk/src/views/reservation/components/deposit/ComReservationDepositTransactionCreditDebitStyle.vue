@@ -1,6 +1,6 @@
 <template>
     
-    <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.depositTransactions.length > 0">
+    <ComPlaceholder :text="$t('There is no Folio transactions')" :loading="loading" :isNotEmpty="rs.depositTransactions.length > 0">
     <DataTable v-model:selection="rs.selectedDepositTransactions" @row-dblclick="onViewFolioDetail"  
     :value="rs.depositTransactions" tableStyle="min-width: 50rem" 
     :rowClass="rowStyleClass"

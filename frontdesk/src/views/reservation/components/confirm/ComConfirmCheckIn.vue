@@ -30,7 +30,7 @@
     
         </template>
 <div class="flex-auto mb-1">
-            <label for="calendar-12h" class=" block"> Check In Time </label>
+            <label for="calendar-12h" class=" block"> {{ $t('Check In Time')}} </label>
             <Calendar  id="calendar-12h" class="w-full" @blur="onchangetime" v-model="checkInTime" showTime  hourFormat="12" timeOnly  />
         </div>
         <label for="reason-text" class="mb-1 font-medium block">{{ $t('Note') }} </label>
@@ -78,7 +78,7 @@ function onOk() {
     if(reservationStays?.length==0 && rs.room_rates[0].total_rate==0){
         confirm.require({
         message: 'Are you sure you want to proceed Check In with rate 0?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
             dialogRef.value.close({"note":note.value,"checked_in_date":CheckInTimeOnly.value});

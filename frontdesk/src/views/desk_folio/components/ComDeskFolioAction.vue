@@ -78,7 +78,7 @@
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc, watch, onMounted, getDoc,getApi } from '@/plugin';
+import { inject, ref, useToast, updateDoc, watch, onMounted, getDoc, getApi } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
@@ -220,34 +220,34 @@ print_menus.value.push({
     icon: 'pi pi-print',
     command: () => {
         if (window.setting.server_report_url) {
-                    
-                    OpenServerReport("/Front Desk/rptDeskFolioDetail", "Desk Folio Detail Invoice")
 
-                }
-                else {
-        dialog.open(ComIFrameModal, {
-            data: {
-                doctype: "Desk%20Folio",
-                name: selectedFolio.value.name,
-                report_name: gv.getCustomPrintFormat("eDoor Desk Folio Invoice Detail"),
-                show_letter_head: true,
-                filter_options: ["show_summary", 'invoice_style']
-            },
-            props: {
-                header: "Desk Folio Invoice Detail",
-                style: {
-                    width: '80vw',
+            OpenServerReport("/Front Desk/rptDeskFolioDetail", "Desk Folio Detail Invoice")
+
+        }
+        else {
+            dialog.open(ComIFrameModal, {
+                data: {
+                    doctype: "Desk%20Folio",
+                    name: selectedFolio.value.name,
+                    report_name: gv.getCustomPrintFormat("eDoor Desk Folio Invoice Detail"),
+                    show_letter_head: true,
+                    filter_options: ["show_summary", 'invoice_style']
                 },
-                position: "top",
-                modal: true,
-                maximizable: true,
-                breakpoints: {
-                    '960px': '80vw',
-                    '640px': '100vw'
+                props: {
+                    header: "Desk Folio Invoice Detail",
+                    style: {
+                        width: '80vw',
+                    },
+                    position: "top",
+                    modal: true,
+                    maximizable: true,
+                    breakpoints: {
+                        '960px': '80vw',
+                        '640px': '100vw'
+                    },
                 },
-            },
-        });
-    }
+            });
+        }
     }
 })
 
@@ -264,14 +264,14 @@ if (selectedFolio?.value?.tax_invoice_number) {
 
 
 //General Journal
-if(window.setting.server_report_url){
-print_menus.value.push({
-    label: "General Journal",
-    icon: 'pi pi-print',
-    command: () => {
-        OpenServerReport("/Front Desk/rptGeneralJournalTransactionForDeskFolio","General Journal by Desk Folio")
-    }
-})
+if (window.setting.server_report_url) {
+    print_menus.value.push({
+        label: "General Journal",
+        icon: 'pi pi-print',
+        command: () => {
+            OpenServerReport("/Front Desk/rptGeneralJournalTransactionForDeskFolio", "General Journal by Desk Folio")
+        }
+    })
 }
 
 
@@ -386,18 +386,46 @@ function showPrintPreview(data) {
 
 function viewfoliotaxinvoicedetail() {
     getDoc("Tax Invoice", selectedFolio.value.tax_invoice_number).then(r => {
-        if(setting.server_report_url){
+        if (setting.server_report_url) {
             // get tax invoice data first before show report
-            getApi("utils.get_tax_invoice_data",{folio_number:selectedFolio.value.name, document_type:"Desk Folio",generate_temp_tax_data:1}).then(result=>{
+            getApi("utils.get_tax_invoice_data", { folio_number: selectedFolio.value.name, document_type: "Desk Folio", generate_temp_tax_data: 1 }).then(result => {
                 dialog.open(ComReportServerModal, {
+                    data: {
+                        report_path: "/Front Desk/rptDeskFolioTaxInvoice",
+                        params: [
+                            { name: 'desk_folio', values: [selectedFolio.value.name] },
+                        ]
+                    },
+                    props: {
+                        header: $t("Desk Folio Tax Invoice"),
+                        style: {
+                            width: '80vw',
+                        },
+                        position: "top",
+                        modal: true,
+                        maximizable: true,
+                        closeOnEscape: false,
+                        breakpoints: {
+                            '960px': '80vw',
+                            '640px': '100vw'
+                        },
+
+                    },
+                });
+
+            })
+        }
+        else {
+            dialog.open(ComIFrameModal, {
                 data: {
-                    report_path: "/Front Desk/rptDeskFolioTaxInvoice",
-                    params:[
-                              {name: 'desk_folio', values: [selectedFolio.value.name] },
-                    ]
+                    doctype: "Tax Invoice",
+                    name: selectedFolio.value.tax_invoice_number,
+                    report_name: r.default_print_format ? gv.getCustomPrintFormat(r.default_print_format) : gv.getCustomPrintFormat("Invoice"),
+                    letterhead: r.default_letterhead || "Tax Letterhead",
+                    filter_options: ["show_vattin", "show_rate_type", "show_business_source"]
                 },
                 props: {
-                    header: $t("Desk Folio Tax Invoice"),
+                    header: $t("Print Tax Invoice"),
                     style: {
                         width: '80vw',
                     },
@@ -405,40 +433,12 @@ function viewfoliotaxinvoicedetail() {
                     modal: true,
                     maximizable: true,
                     closeOnEscape: false,
-                    breakpoints:{
+                    breakpoints: {
                         '960px': '80vw',
                         '640px': '100vw'
                     },
-
                 },
             });
-   
-            })
-        }
-        else { 
-        dialog.open(ComIFrameModal, {
-            data: {
-                doctype: "Tax Invoice",
-                name: selectedFolio.value.tax_invoice_number,
-                report_name: r.default_print_format ? gv.getCustomPrintFormat(r.default_print_format) : gv.getCustomPrintFormat("Invoice"),
-                letterhead: r.default_letterhead || "Tax Letterhead",
-                filter_options: ["show_vattin", "show_rate_type", "show_business_source"]
-            },
-            props: {
-                header: $t("Print Tax Invoice"),
-                style: {
-                    width: '80vw',
-                },
-                position: "top",
-                modal: true,
-                maximizable: true,
-                closeOnEscape: false,
-                breakpoints: {
-                    '960px': '80vw',
-                    '640px': '100vw'
-                },
-            },
-        });
         }
     })
 

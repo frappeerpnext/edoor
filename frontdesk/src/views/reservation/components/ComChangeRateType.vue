@@ -12,7 +12,7 @@
                     </span>
                     </label>
                 </div>
-                <Message severity="warn" v-if="rate_type_data?.allow_user_to_edit_rate==0">{{ $t('This rate this is not allow to change rate. Room rate will be set to') }}  <CurrencyFormat :value="0" /> </Message>
+                <Message severity="warn" v-if="rate_type_data?.allow_user_to_edit_rate==0">{{ $t('This room this is not allow to change rate. Room rate will be set to') }}  <CurrencyFormat :value="0" /> </Message>
 
                 <div class="flex gap-2" v-if="rate_type_data?.allow_user_to_edit_rate==1">
                     <Checkbox inputId="apply-all-stay" v-model="regenerateNewRate" :binary="true" />

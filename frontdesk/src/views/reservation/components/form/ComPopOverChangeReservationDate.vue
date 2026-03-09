@@ -1,7 +1,7 @@
 <template> 
     <ComOverlayPanelContent :style="{width: isMobile ? '100%' : '40rem'}" :loading="loading" @onSave="onSave" @onCancel="onClose">
         <div :class="loading ? 'pointer-events-none opacity-90' : ''">
-            <h1> {{ $t('Group Change Stay') }} </h1>
+            <h1 class="font-semibold text-lg"> {{ $t('Group Change Stay') }} </h1>
             <Message>{{ $t('Group change stay is affect only active reservation.') }} </Message>
             <div class="grid py-2 wp-number-cus">
                 <div class="col-6">

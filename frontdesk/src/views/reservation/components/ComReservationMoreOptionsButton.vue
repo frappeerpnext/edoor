@@ -60,12 +60,12 @@
                 <button @click="onDuplicateGroup"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-copy" />
-                    <span class="ml-2">{{$t('Group Duplicate')}}</span>
+                    <span class="ml-2">{{$t('Duplicate Group')}}</span>
                 </button>
                 <button @click="onDuplicateFIT"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-copy" />
-                    <span class="ml-2">{{$t('onDuplicate FIT')}}</span>
+                    <span class="ml-2">{{$t('Duplicate Individual Stay')}}</span>
                 </button>
                 <span>
 
@@ -995,7 +995,7 @@ const stays_data = await Promise.all(
       adult: firstStay.adult ?? 0,
       child: firstStay.child ?? 0,
       is_manual_rate: 1,
-      is_master: firstStay.is_master ?? 0,
+      is_master: 0,
       room_type_id: firstStay.room_type_id ?? "",
       room_id:null,
       rate: firstStay.input_rate ?? 0,
@@ -1003,31 +1003,30 @@ const stays_data = await Promise.all(
   })
 );
 
-
-console.log("HIII " + JSON.stringify(stays_data, null, 2));
-
   let data = {
     reservation: {
       guest: reservation_data.guest,
-      reference_number: reservation_data.reference_number,
-      internal_reference_number: reservation_data.internal_reference_number,
+      reference_number: reservation_data?.reference_number,
+      internal_reference_number: reservation_data?.internal_reference_number,
       business_source: reservation_data.business_source,
       business_source_type_group: reservation_data.business_source_type_group,
       business_source_type: reservation_data.business_source_type,
       arrival_date,
       departure_date,
-      reservation_color_code: reservation_data.reservation_color_code,
+      reservation_color_code: reservation_data?.reservation_color_code ?? "" ,
       rate_type: reservation_data.rate_type,
-      allow_post_to_city_ledger: reservation_data.allow_post_to_city_ledger,
-      paid_by_master_room: reservation_data.paid_by_master_room,
-      note: reservation_data.note,
+      allow_post_to_city_ledger: reservation_data?.allow_post_to_city_ledger ?? 0,
+      paid_by_master_room: reservation_data?.paid_by_master_room ?? 0,
+      note: reservation_data?.note,
     },
     reservation_stay: stays_data,
     guest: reservation_data.guest,
+
     reservation_color_code: {
-      name: reservation_data.reservation_color_code,
-      color: reservation_data.reservation_color,
-    },
+  name: reservation_data?.reservation_color_code ?? "",
+  color: reservation_data?.reservation_color ?? "",
+},
+
   };
 
   const dialogRef = dialog.open(NewReservation, {

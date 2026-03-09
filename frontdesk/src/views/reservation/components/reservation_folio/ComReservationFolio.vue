@@ -26,7 +26,7 @@
 </div>
 <div v-else class="min-h-folio-cus flex flex-column justify-content-center"> 
     <div class="text-center mb-3">
-        <Button class="conten-btn" label="Create a Master Folio" icon="pi pi-folder-open"  @click="onCreateMasterFolio"></Button>
+        <Button class="conten-btn" :label="$t('Create a Master Folio')" icon="pi pi-folder-open"  @click="onCreateMasterFolio"></Button>
     </div>
     <div class="text-center text-600">{{ $t('Create a Folio to post transactions.') }} </div>
 </div>
@@ -104,15 +104,15 @@ const { t: $t } = i18n.global;
 
     function onCreateMasterFolio(){
         if (rs.roomList.filter(r => r.is_master == 1 ).length == 0) {
-            toast.add({ severity: 'warn', detail: "Cannot Create Folio With No Reservation Stay" ,  life: 3000 })
+            toast.add({ severity: 'warn', detail: $t('Cannot Create Folio With No Reservation Stay') ,  life: 3000 })
             return
         }
         loading.value = true
         confirm.require({
-            message: 'Are you sure you want to create master folio?',
-            header: 'Confirmation',
+            message: $t('Are you sure you want to create master folio?'),
+            header: $t('Confirmation'),
             icon: 'pi pi-info-circle',
-            acceptLabel: 'Create',
+            acceptLabel: $t('Create'),
             acceptIcon: 'pi pi-check-circle',
             acceptClass: 'border-none btn-ok_ss',
             rejectClass: 'hidden',

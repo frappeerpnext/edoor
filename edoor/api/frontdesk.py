@@ -1,6 +1,6 @@
 import secrets
 import time
- 
+
 from edoor.api.folio_transaction import get_master_folio, post_charge_to_folio_afer_after_run_night_audit
 from edoor.api.utils import get_date_range,add_room_charge_to_folio, get_months, validate_role,get_breakdown_package_charge_code,add_package_inclusion_charge_to_folio
 
@@ -75,7 +75,6 @@ def search(doctypes=None, txt="" ,filters=None):
                 # sql = "select '{0}' as doctype, {1} from `tab{0}` where modified>=(NOW() - INTERVAL 1 HOUR)  {3} order by modified desc limit {2}".format(t.table_name,return_fields,t.limit_result,default_condition)
 
     return results
-
 
 
 @frappe.whitelist(allow_guest=True)
@@ -215,7 +214,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                      (room_type_id = '{0}' OR '{0}' = '')
         """.format(room_type_id or '')
 
-    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":add_to_date(getdate(working_day['date_working_day']),days=-1)}, as_dict=1)[0]]
+    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)[0]]
 
     
     #get data from occupy data 
@@ -252,7 +251,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                     a.cancelled_date = %(date)s and 
                     a.property = %(property)s;""".format( room_type_id or '')
     
-    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":add_to_date(getdate(working_day['date_working_day']),days=-1)}, as_dict=1)[0]]
+    stay =[stay[0] | frappe.db.sql(stay_sql,{"property":property,"date":date}, as_dict=1)[0]]
 
     # get today cancell by cannel date
 
@@ -465,8 +464,8 @@ def get_total_unassign_room(property,date):
     if total_unassign_room:
         return total_unassign_room[0]["total"]
     return 0
-    
-    
+
+
 @frappe.whitelist()
 def get_owner_dashboard_current_revenue_data(property = None,end_date = None):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = %(property)s limit 1",{"property":property},as_dict=1)
@@ -1706,8 +1705,6 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
     return data
 
 
-
-
 @frappe.whitelist()
 def get_daily_property_summary():
     property = frappe.defaults.get_user_default("business_branch")
@@ -1737,8 +1734,6 @@ def get_daily_property_summary():
 
 
     return {}
-            
-
 
 
 @frappe.whitelist()
@@ -1995,7 +1990,6 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
     return data
 
 
-
 @frappe.whitelist()
 def get_house_keeping_status(property, working_day):
     #get house keeping status
@@ -2124,7 +2118,7 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
            
         else:
             
-            occupancy =round( occupancy /   (total_rooms - (block or 0))  * 100,2)
+            occupancy =round( occupancy /   max((total_rooms - (block or 0)),1)  * 100,2)
         
         occupancy_data.append(occupancy or 0.00)
  
@@ -2207,7 +2201,6 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
     })
   
     return chart_data
-   
 
 
 @frappe.whitelist(allow_guest=True)
@@ -2413,7 +2406,6 @@ def get_working_day(property = ''):
     }
 
 
-
 @frappe.whitelist()
 def get_room_chart_resource_and_event(property, start=None,end=None, keyword=None,view_type=None,business_source="",room_type="",room_type_group=None,room_number=None,floor=None,building=None):
     events = get_room_chart_calendar_event(
@@ -2573,15 +2565,17 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         "sort_order":99999999
     })
     return resources
- 
 
 
 @frappe.whitelist()
-def get_room_inventory_resource(property = ''):
+def get_room_inventory_resource(property = '',room_types=[]):
     
     resources = []
+    if not room_types:
+        resources = frappe.db.sql("select name as id,room_type as title,alias,(select count(name) from `tabRoom` where room_type_id=t.name and coalesce(disabled,0) = 0) as total_room ,sort_order from `tabRoom Type` t where property=%(property)s order by sort_order",{'property':property},as_dict=1)
+    else:
+        resources = frappe.db.sql("select name as id,room_type as title,alias,(select count(name) from `tabRoom` where room_type_id=t.name and coalesce(disabled,0) = 0) as total_room ,sort_order from `tabRoom Type` t where property=%(property)s and name in %(room_types)s order by sort_order",{'property':property,"room_types":room_types},as_dict=1)
 
-    resources = frappe.db.sql("select name as id,room_type as title,alias,(select count(name) from `tabRoom` where room_type_id=t.name and coalesce(disabled,0) = 0) as total_room ,sort_order from `tabRoom Type` t where property=%(property)s order by sort_order",{'property':property},as_dict=1)
     
     resources.append({
         "id": "vacant_room",
@@ -2637,12 +2631,13 @@ def get_room_inventory_resource(property = ''):
 
 
     return resources
- 
+
 
 @frappe.whitelist()
 def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,view_type=None,business_source="",room_type="",room_type_group=None,room_number=None,floor=None,building=None):
-    slot_duration = frappe.db.get_single_value("eDoor Setting","room_chart_calendear_slot_duration")
-    
+    slot_duration = frappe.get_cached_value("eDoor Setting",None,"room_chart_calendear_slot_duration")
+    # if(DATEDIFF(end_date,start_date)=0,concat(DATE_ADD(start_date, INTERVAL -1 DAY),'T','{0}'), concat(start_date,'T','{0}')) as start ,
+
     events = []   
     sql = """
         select 
@@ -2653,7 +2648,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             room_type,
             room_type_alias,
             room_number,
-            concat(start_date,'T','{0}') as start ,
+            if(DATEDIFF(end_date,start_date)=0,concat(DATE_ADD(start_date, INTERVAL -1 DAY),'T','{0}'), concat(start_date,'T','{0}')) as start ,
             concat(end_date,'T','{1}') as end,
             guest_name as title,
             additional_guest_name,
@@ -2762,8 +2757,10 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
 
 
 @frappe.whitelist()
-def get_room_inventory_calendar_event(property, start=None,end=None, keyword=None):
- 
+def get_room_inventory_calendar_event(property, start=None,end=None, keyword=None,room_types=[]):
+    if not room_types:
+        room_types = frappe.db.get_list('Room Type',   page_length=100,pluck='name')
+        
     sql = """
         select 
             room_type_id, 
@@ -2779,16 +2776,17 @@ def get_room_inventory_calendar_event(property, start=None,end=None, keyword=Non
         from `tabRoom Occupy` 
         where 
             property=%(property)s and 
-            date between %(start)s and %(end)s  
+            date between %(start)s and %(end)s  and 
+            room_type_id in %(room_types)s
         group by 
             room_type_id, 
             date
         """
     data = {
-        "room_occupy": frappe.db.sql(sql,{'property':property,'start':start,'end':end},as_dict=1)
+        "room_occupy": frappe.db.sql(sql,{'property':property,'start':start,'end':end,"room_types":room_types},as_dict=1)
     }
     return data
-   
+
 
 @frappe.whitelist()
 def get_occupy_data(view_type, filter):
@@ -2887,7 +2885,7 @@ def get_room_block_event(start,end,property):
     
     return data
 
- 
+
 @frappe.whitelist(methods="POST")
 def validate_run_night_audit(property,step):
     working_day = get_working_day(property)
@@ -3042,7 +3040,6 @@ def run_night_audit(property, working_day):
     return working_day
 
 
-
 @frappe.whitelist()
 def update_room_status(working_day=None,working_day_name=None):
     if not working_day:
@@ -3111,7 +3108,7 @@ def update_room_status(working_day=None,working_day_name=None):
         room_doc.room_status = "Room Block"
         room_doc.save()
     frappe.db.commit()
-    
+
 @frappe.whitelist()
 def update_daily_property_data(property, working_date):
 
@@ -3238,7 +3235,6 @@ def post_room_change_to_folio(working_day):
     if folio_names:  
         frappe.enqueue("edoor.api.reservation.update_sub_package_charge_to_folio_transaction",queue="short",reservation_folios = folio_names)           
     frappe.enqueue("edoor.api.frontdesk.update_transaction_balance_after_run_night_audit", queue='long', working_day=working_day)
-    
 
 
 @frappe.whitelist()
@@ -3284,7 +3280,7 @@ def update_ledger_balance_after_run_night_audit(ledger_type, names):
             ))
         frappe.db.commit()
 
- 
+
 @frappe.whitelist()
 def update_reservation_credit_debit_balance(names):
     if names:
@@ -3311,7 +3307,7 @@ def update_reservation_credit_debit_balance(names):
                 d["reservation"],
             ))
         frappe.db.commit()
- 
+
 @frappe.whitelist()
 def update_reservation_stay_credit_debit_balance(names):
     if names:
@@ -3344,10 +3340,6 @@ def update_reservation_stay_credit_debit_balance(names):
                 d["reservation_stay"],
             ))
         frappe.db.commit()
-
-
-
-
 
 
 @frappe.whitelist()
@@ -3610,8 +3602,6 @@ def get_house_keeping_status_backend():
     return []
 
 
-
-
 @frappe.whitelist()
 def get_arrival_stay_over_departure_backend():
     property = frappe.defaults.get_user_default("business_branch")
@@ -3704,7 +3694,7 @@ def get_floor_plan_data(filters):
         "floor_data":room_list,
         "reservation_stays":reservation_stays
     }
-    
+
 def get_reservation_stay_for_floor_plan(filters):
     filters = json.loads(filters)
     sql ="""
@@ -3924,16 +3914,14 @@ def get_ledger_balance(property,start_date,end_date,ledger_type):
     sql = "select sum(transaction_amount * if(type='Debit',1,-1)) as amount from `tabFolio Transaction` where is_base_transaction = 1 and   transaction_type=%(ledger_type)s and property = %(property)s and posting_date<%(date)s"
     data = frappe.db.sql(sql,{"property":property,"date":start_date,"ledger_type":ledger_type},as_dict =1)
     opening  = 0 if not data else data[0]["amount"]
-    
+
     # get debit,credit
     sql = "select sum(transaction_amount * if(type='Debit',1,0)) as debit, sum(transaction_amount * if(type='Debit',0,1)) as credit   from  `tabFolio Transaction` where is_base_transaction = 1 and  transaction_type=%(ledger_type)s and property = %(property)s and posting_date between %(start_date)s and %(end_date)s"
     data = frappe.db.sql(sql,{"property":property,"start_date":start_date,"end_date":end_date,"ledger_type":ledger_type},as_dict =1)
     debit  = 0 if not data else data[0]["debit"]
     credit  = 0 if not data else data[0]["credit"]
     balance = (opening or 0)  +((debit or 0) - (credit or 0) )
-    
-    
-    
+
     return [
             {
                 "label": "Opening Balance",
@@ -3956,4 +3944,42 @@ def get_ledger_balance(property,start_date,end_date,ledger_type):
                 "indicator": "green"
             }
         ]
-        
+
+
+@frappe.whitelist()
+def create_custom_list_filter(filter_name,reference_doctype,filters,custom_view_filters,custom_list_view_setting,for_user=None):
+    doc = frappe.get_doc(
+        {
+            "doctype": "List Filter",
+            "filter_name": filter_name,
+            "reference_doctype": reference_doctype,
+            "filters": filters,
+            "custom_view_filters": custom_view_filters,
+            "custom_list_view_setting": custom_list_view_setting,
+            "for_user": for_user,
+        }
+    )
+
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit() 
+
+    return doc
+ 
+
+@frappe.whitelist()
+def update_list_filter(name, filter_name, filters, custom_view_filters, for_user=None):
+    # Load the document
+    doc = frappe.get_doc("List Filter", name)
+
+    # Update fields
+    doc.filter_name = filter_name
+    doc.filters = filters
+    doc.custom_view_filters = custom_view_filters
+    doc.for_user = for_user or ""
+
+    doc.flags.ignore_permissions = True
+
+    doc.save()
+    frappe.db.commit() 
+
+    return doc

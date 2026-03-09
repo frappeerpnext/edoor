@@ -18,7 +18,7 @@
         <ComTodaySummarySep dialogKey="stay_over" title="Stay Over">{{ data?.stay_over }}</ComTodaySummarySep>
         <ComTodaySummarySep dialogKey="in_house" title="In-house">{{ data?.in_house }}</ComTodaySummarySep>
     <tippy :content="`${$t('Today you have')} ${data?.unassign_room} ${$t('unassign room reservation')} & ${$t('total all unassign room')} is ${data?.total_unassign_room}`">
-        <ComTodaySummarySep dialogKey="unassign_room"  title="Unassign Room (Today/All)">{{ data?.unassign_room }} / {{ data?.total_unassign_room || 0 }}</ComTodaySummarySep>
+        <ComTodaySummarySep dialogKey="unassign_room"  :title="$t('Unassign Room (Today/All)')">{{ data?.unassign_room }} / {{ data?.total_unassign_room || 0 }}</ComTodaySummarySep>
     </tippy>
         <tippy :content="$t('FIT (Free Independent Traveler) Total') + ' ' + data.fit_reservation_arrival + ' & ' + $t('Total Stay') + data.fit_stay_arrival">
             <ComTodaySummarySep   dialogKey="fit_arrival" title="FIT Arrival">{{(data.fit_reservation_arrival + ' / ' + data.fit_stay_arrival)}}</ComTodaySummarySep>

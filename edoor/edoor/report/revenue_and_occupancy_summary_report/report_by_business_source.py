@@ -40,6 +40,7 @@ def get_report_data(filters,report_config):
         parent_row_group_data = get_parent_group_row_from_result_data(data, folio_transaction_data)
     
     report_group_data = get_row_group_from_result_data(data, folio_transaction_data)
+ 
     room_available_datas= get_room_available(filters)
 
    
@@ -120,7 +121,10 @@ def get_report_data(filters,report_config):
                                 if calculate_room_occupancy_include_room_block==1:
                                     row["occupancy"] = (row["occupy"] or 0) / (1 if row["room_available"] <=0 else row["room_available"]) 
                                 else:
-                                    row["occupancy"] = (row["occupy"] or 0) / (1 if (row["room_available"]  - row["room_block"])<=0 else (row["room_available"]  - row["room_block"]))
+                                    
+                                    row["occupancy"] = (row["occupy"] or 0) / max(((row["room_available"] or 0)  - (row["room_block"] or 0)),1)
+                                   
+
                                 row["occupancy"] = row["occupancy"] * 100
                             elif f.fieldname == "night_percent":
                                 row["night_percent"] = (row["occupy"] /total_occupy_room ) * 100
@@ -356,12 +360,12 @@ def get_room_block_data(filters):
 
 
 def get_folio_transaction_data(filters, report_config ):
-    sql = "select business_source  as row_group,"
+    sql = "select coalesce(business_source,'Not Set')  as row_group,"
     sql = "{} {} as parent_row_group,".format(sql,get_folio_transaction_group_by_field(filters))
         
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Folio Transaction' and d.sql_expression]) )
     #filter
-    sql = sql+ " from `tabFolio Transaction` a where transaction_type='Reservation Folio' "
+    sql = sql+ " from `tabFolio Transaction` a where 1=1 "
    
     sql = "{} {}".format(sql, get_folio_transaction_filters(filters))
 
@@ -372,7 +376,7 @@ def get_folio_transaction_data(filters, report_config ):
     if filters.parent_row_group:
         sql = "{}, {}".format(sql, get_folio_transaction_group_by_field(filters)) 
 
-
+    
     data = frappe.db.sql(sql,filters,as_dict = 1)
 
  

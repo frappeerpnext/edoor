@@ -218,7 +218,7 @@ dialogConfirm.require({
     acceptClass: 'border-none crfm-dialog',
     rejectClass: 'hidden',
     acceptIcon: 'pi pi-check-circle',
-    acceptLabel: 'Ok',
+    acceptLabel: $t('Ok'),
     accept: () => {
         deleteDoc('File', name).then((doc) => {
             loadData()

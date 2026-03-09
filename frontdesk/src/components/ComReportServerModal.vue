@@ -1,6 +1,7 @@
 <template>
     <ComDialogContent :hideButtonClose="true" :hideButtonOK="true">
         <template v-if="data">
+        
             <ComServerReportViewer 
         :report_name="data?.report_path" 
         :params ="data?.params" 

@@ -76,7 +76,7 @@ function onDelete(name) {
 function onEdit(edit) {
     dialog.open(ComAddGuestType, {
         props: {
-            header: `Edit Guest Type: ${edit.name}`,
+            header: `${$t('Edit Guest Type')}: ${edit.name}`,
             style: {
                 width: '50vw',
             },

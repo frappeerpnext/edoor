@@ -1,5 +1,4 @@
 <template>
-
   <div :class="editMode == 1 ? 'edit' : 'floor-plan-item'">
 
 <template v-if="editMode">
@@ -25,11 +24,69 @@ class="container"
 </template>
 <template v-else>
 <div class="container">
+ 
   <div v-for="(room, index) in roomList.filter(r=>(r.is_deleted || 0)==0)" :key="index"
   :class="room.element?'':'drv'"
   :style="{position:'absolute',left:room.x+'px',top:room.y+'px',height:room.height+ 'px',width:room.width+'px',zIndex:room.z_index}"
   >   
+    <div v-if="room.element == 'Floor Info' ">
+ 
+<div class="grid font-bold border-bottom-1 surface-border">
+  <div class="col text-center p-1">Room Type</div>
+  <div class="col text-center p-1">Total Rooms</div>
+  <div class="col text-center p-1">Availability</div>
+</div>
 
+<!-- Rows -->
+<div 
+  class="grid border-bottom-1 surface-border" 
+  v-for="roomType in [...new Set(roomList.filter(r => r.room_type).map(r => r.room_type))]" 
+  :key="roomType"
+>
+  <!-- Room Type -->
+  <div class="col text-center p-1">
+    {{ roomType }}
+  </div>
+
+  <!-- Total Rooms -->
+  <div class="col text-center p-1">
+    {{ roomList.filter(r => r.room_type === roomType).length }}
+  </div>
+
+  <!-- Availability -->
+  <div class="col text-center p-1">
+    {{ roomList.filter(r => r.room_type === roomType && (!r.stay || r.stay.length === 0)).length }}
+  </div>
+</div>
+<div class="grid font-bold">
+  <div class="col-4 text-center p-1">Total</div>
+  <div class="col-4 text-center p-1">
+    {{ roomList.filter(r => r.room_type ).length }}
+  </div>
+  <div class="col-4 text-center p-1">
+   {{ roomList.filter(r => r.room_type && (!r.stay || r.stay.length === 0)).length }}
+  </div>
+  <div class="col-6 text-center p-1">
+    Arrival
+  </div>
+  <div class="col-6 text-center p-1">
+    {{ roomList.reduce((sum, r) => sum + (r.stay?.filter(s => s.is_arrival === 1).length || 0), 0) }}
+  </div>
+   <div class="col-6 text-center p-1">
+    Stay Over
+  </div>
+  <div class="col-6 text-center p-1">
+    {{ roomList.reduce((sum, r) => sum + (r.stay?.filter(s => s.is_stay_over === 1).length || 0), 0) }}
+  </div>
+   <div class="col-6 text-center p-1">
+   Departure
+  </div>
+  <div class="col-6 text-center p-1">
+     {{ roomList.reduce((sum, r) => sum + (r.stay?.filter(s => s.is_departure === 1).length || 0), 0) }}
+  </div>
+</div>
+
+    </div>
     <ComRoom   :room="room" :editMode="editMode" :filters="filters"/>
 </div>
 
@@ -112,5 +169,9 @@ border: dashed 1px #0056ff;
 
 .drv {
 border: none
+}
+.custom-table  tr  td {
+  border: none !important;
+  background: none !important;
 }
 </style>

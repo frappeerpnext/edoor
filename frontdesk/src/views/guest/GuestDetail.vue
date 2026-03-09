@@ -113,7 +113,7 @@ function onEditGuest() {
     }
     dialog.open(ComAddGuest, {
         props: {
-            header: `Edit Guest`,
+            header: $t('Edit Guest'),
             style: {
                 width: '50vw',
             },
@@ -137,8 +137,8 @@ function onDeleteGuest (name){
         return
     }
     confirm.require({
-        message: 'Are you sure you want to delete guest?',
-        header: 'Confirmation',
+        message: `${$t('Are you sure you want to delete guest')}?`,
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',

@@ -11,7 +11,7 @@
                             
                         </button> 
                         <button  v-if="data?.room_id"  @click="onUnassignRoom(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                           {{ $t('Unassign room') }} 
+                           {{ $t('Unassign Room') }} 
                         </button>
                         <button @click="onOpenDeleted(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                            {{ $t('Delete') }}
@@ -150,13 +150,13 @@ function onUnassignRoom(data){
 
     
     dialogConfirm.require({
-        message: 'Are you sure to unassign room?',
-        header: 'Unassign Confirmation',
+        message: $t('Are you sure to unassign room?'),
+        header: $t('Unassign Confirmation'),
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('Ok'),
         accept: () => {
             loading.value = true
             postApi("reservation.unassign_room",{reservation_stay: rs.reservationStay.name, room_stay: props.data.name}).then((r)=>{

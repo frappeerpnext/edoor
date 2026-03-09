@@ -4,7 +4,7 @@
             <slot name="button"></slot>
             <div class="gap-1 flex">
                 <ComFolioActionButton @onClick="onAddFolioTransaction" :data="folio_operation.charge_payment_transfer_section"/>
-                <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
+                <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" :label="$t('Folio Options')"
                     @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
                 <Menu ref="folio_menu" id="folio_menu" :popup="true">
                     <template #end> 
@@ -63,7 +63,7 @@
                         <button v-if="displayViewFolio == 0" @click="savedisplayView(1)"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-eye" />
-                            <span class="ml-2"> {{ $t('Show Package Package') }} </span>
+                            <span class="ml-2"> {{ $t('Show Breakdown Package') }} </span>
                         </button>
                         <button v-if="displayViewFolio == 1" @click="savedisplayView(0)"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
@@ -90,12 +90,12 @@
         <Message  v-if="selectedFolio?.tax_invoice_number"  severity="info">
                     <div class="flex justify-content-between align-items-center w-full">
                         <div>
-                             This Folio has Generate {{selectedFolio.tax_invoice_type}} - {{ selectedFolio?.tax_invoice_number }}
+                             {{$t("This Folio has Generate")}} {{selectedFolio.tax_invoice_type}} - {{ selectedFolio?.tax_invoice_number }}
                         </div>
                         <div class="ms-5">
                             <Button class="conten-btn" style="background: transparent;" @click="viewfoliotaxinvoicedetail">
 <i class="pi pi-print me-2" />
-                            Print Tax Invoice
+                            {{$t("Print Tax Invoice")}}
                             </Button>   
                         </div>
                     </div>
@@ -568,7 +568,7 @@ function onAddFolioTransaction(account_code) {
     }
     if (account_code.is_city_ledger_account==1){
         if(selectedFolio.value.allow_post_to_city_ledger==0){
-            toast.add({ severity: 'warn', summary: "", detail: "This reservation is not allow to post charge to city ledger.", life: 5000 })
+            toast.add({ severity: 'warn', summary: "", detail: `${$t('This reservation is not allow to post charge to city ledger') }.`, life: 5000 })
             return
         }
     }
@@ -625,7 +625,7 @@ function onAddFolioTransaction(account_code) {
         })
 
     } else {
-        toast.add({ severity: 'warn', summary: "", detail: "Folio is already closed.", life: 3000 })
+        toast.add({ severity: 'warn', summary: "", detail: `${$t('Folio is already closed')}.`, life: 3000 })
     }
 
 }
@@ -1012,7 +1012,7 @@ function savedisplayView(value) {
 
 
 
-onMounted(()=>{
+onMounted(() => { 
     
     const saveDisplayViewFolioTransaction = localStorage.getItem('displayViewFolioTransaction');
     if (saveDisplayViewFolioTransaction) {

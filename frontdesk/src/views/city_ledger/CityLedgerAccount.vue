@@ -47,7 +47,8 @@ const dialog = useDialog()
         filterOptions:[
             {fieldname:"city_ledger_type"},
             {fieldname:"business_source"},
-            {fieldname:"status"}
+            {fieldname:"status"},
+            {fieldname:"balance"}
         ],
         filters:[["property","=",window.property_name]]
     }

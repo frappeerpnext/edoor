@@ -78,7 +78,7 @@ function onEdit(edit) {
 function onDelete(name) {
     confirm.require({
         message: 'Are you sure you want to delete business source type?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',

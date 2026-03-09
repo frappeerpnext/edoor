@@ -7,7 +7,7 @@
                     <div class="flex justify-between">
                         <div class="flex align-items-center">
                             <div class="flex">
-                                <ComTagReservation title="RS#:" :value="rs.reservation?.name" class="bg-card-info p-1px">
+                                <ComTagReservation :title="$t('RS #') + ':'" :value="rs.reservation?.name" class="bg-card-info p-1px">
                                     <span class="res__bagde ml-1">
                                         {{ rs.reservationStays.length }}
                                     </span>

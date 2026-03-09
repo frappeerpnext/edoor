@@ -13,7 +13,7 @@
 
         <OverlayPanel ref="op"  @show="onShow" class="filter_overlay_panel_custom">
             <Stack class="scroll-content">
-                <h1 class="font-bold">{{ option.label }}</h1>
+                <h1 class="font-bold">{{ $t(option.label)  }}</h1>
               
                 <ComSelect v-if="!option.hideOperator" :options="operatorOptions"  optionLabel="label" optionValue="value" 
                   v-model="operator"
@@ -27,7 +27,7 @@
 
                  ref="searchInput"
                 v-model="keyword"
-                :placeholder="'Search ' + option.label" class="w-full"
+                :placeholder="$t('Search') + $t(option.label)" class="w-full"
                  v-debounce="onSearch"
                  v-if="operator!='is'"
                  ></InputText>

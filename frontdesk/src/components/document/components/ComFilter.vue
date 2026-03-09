@@ -1,7 +1,7 @@
 <template>
     <Stack row gap="4px">
  
-        <InputText v-if="!hideSearchField" class="px-2 py-1" v-model="filter.keyword" variant="filled" placeholder="Search" size="small" v-debounce="onSearch" style="height: 30px !important;"/>
+        <InputText v-if="!hideSearchField" class="px-2 py-1" v-model="filter.keyword" variant="filled" :placeholder="$t('Search')" size="small" v-debounce="onSearch" style="height: 30px !important;"/>
         <template v-for="(f, index) in filters" :key="index">
             <ComFilterInputData v-if="f.fieldtype=='Data'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]"/>
             <ComFilterInputLink v-if="f.fieldtype=='Link'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]" :operator="f.operator" :optionValue="f.optionValue"/> 
@@ -13,7 +13,7 @@
         <!-- <div style="height: 30px !important;">
             <ComFilterInputSelect v-if="f.fieldtype=='Select'" :option="f"  @onFilter="onFilter" :defaultValue="filter[f.fieldname]"  />
         </div> -->
-        <Button class="border-none content_btn_b h-full px-2 py-1" label="Clear Filter" @click="onClearFilter" style="height: 30px !important;" severity="warning"></Button>
+        <Button class="border-none content_btn_b h-full px-2 py-1" :label="$t('Clear Filter')" @click="onClearFilter" style="height: 30px !important;" severity="warning"></Button>
     </Stack>
    
 </template>
@@ -102,12 +102,14 @@ function onClearFilter(){
     
     emit("onSearch", f);
     const url =window.location;
-const parsedUrl = new URL(url);
+    const parsedUrl = new URL(url);
 
-// Extract path from the URL
-const path = parsedUrl.pathname;
- 
-router.push(path);
+    // Extract path from the URL
+    const path = parsedUrl.pathname;
+    
+    router.push(path);
+
+    localStorage.removeItem('saved_filter_name');
 }
 
 </script>

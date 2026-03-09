@@ -250,7 +250,7 @@ function onOpenCashCount() {
 function onClearCashCount() {
     confirm.require({
         message: 'Are you sure you want clear  cash count?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
 
@@ -337,7 +337,7 @@ function onCloseShift() {
   
     confirm.require({
         message: 'Are you sure you can to close this shift?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',

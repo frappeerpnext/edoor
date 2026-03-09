@@ -80,6 +80,8 @@ def get_parent_group_row_from_result_data(occupy_data, folio_transaction_data):
 	return sorted(row_group, key=lambda k: k['parent_row_group'])
 
 def get_row_group_from_result_data(occupy_data, folio_transaction_data):
+	
+
 	row_group = [{"row_group":d["row_group"] or "Not Set", "parent_row_group":d["parent_row_group"]} for d in occupy_data]
 	row_group = row_group +  [{"row_group":d["row_group"] or "Not Set", "parent_row_group":d["parent_row_group"]} for d in folio_transaction_data]
 	row_group =list(set(frozenset(d.items()) for d in row_group))

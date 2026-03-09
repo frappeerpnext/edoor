@@ -39,12 +39,15 @@
             </Column>
 
         </DataTable>
-
-        <strong>Add new field</strong>
-       
-        <ComSelect :isFilter="true" v-if="meta" v-model="selectedField" :options="getOptionFields()" optionLabel="label"  placeholder="Select Field" />
-
-        <Button label="Add Field" @click="onAddField"/>
+        <strong>{{$t("Add new field")}}</strong>
+        <div class="flex w-100 justify-between gap-2">
+            <div style="width:-webkit-fill-available">
+                <ComSelect :isFilter="true" v-if="meta" v-model="selectedField" :options="getOptionFields()" optionLabel="label"  placeholder="Select Field" />
+            </div>
+            <div>
+                <Button class="w-max border-none" label="Add Field" @click="onAddField"/>
+            </div>
+        </div>
         
     </ComDialogContent>
 

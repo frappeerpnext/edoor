@@ -4,7 +4,7 @@
         :hasFilter="selected || selectedMultiple || selectedTimespan || startDate || endDate"
         :operatorOptions="operatorOptions">
 
-        {{ option.label }}
+        {{ $t(option.label) }}
         <template v-slot:filter-template>
             <template v-if="['=', '>=', '!=', '>', '<', '<='].includes(operator)">
 
@@ -12,7 +12,7 @@
                 <Calendar v-model="selected" :selectOtherMonths="true" @date-select="onSearch" :manualInput="false"
                     inline />
 
-                <Button @click="onClearSelection" :disabled="!selected" label="Clear Filter" severity="warning"
+                <Button @click="onClearSelection" :disabled="!selected" :label="$t('Clear Filter')" severity="warning"
                     class="w-full mt-2" />
 
             </template>
@@ -20,22 +20,22 @@
                 <Calendar v-model="selectedMultiple" :selectOtherMonths="true" inline selectionMode="multiple"
                     :manualInput="false" @date-select="onSearchDateMultiple" />
 
-                <Button @click="onClearSelection" :disabled="!selectedMultiple" label="Clear Filter" severity="warning"
+                <Button @click="onClearSelection" :disabled="!selectedMultiple" :label="$t('Clear Filter')" severity="warning"
                     class="w-full mt-2" />
 
             </template>
             <template v-else-if="operator == 'Between'">
                 <Stack row>
                     <Calendar v-model="startDate" dateFormat="dd-mm-yy" :selectOtherMonths="true" :manualInput="true"
-                        placeholder="Start Date" />
+                        :placeholder="$t('Start Date')" />
                     <Calendar v-model="endDate" dateFormat="dd-mm-yy" :selectOtherMonths="true" :manualInput="true"
-                        placeholder="End Date" />
+                        :placeholder="$t('End Date')" />
                 </Stack>
                 <Stack row>
 
-                    <Button label="Search" @click="onSearchBetween" class="w-full border-none"></Button>
+                    <Button :label="$t('Search')" @click="onSearchBetween" class="w-full border-none"></Button>
 
-                    <Button label="Clear Filter" severity="warning" class="w-full border-none" @click="onClearSelection"
+                    <Button :label="$t('Clear Filter')" severity="warning" class="w-full border-none" @click="onClearSelection"
                         :disabled="!startDate && !endDate"></Button>
 
 
@@ -73,38 +73,39 @@ const operator = ref("Between")
 const selected = ref()
 const selectedTimespan = ref()
 const selectedMultiple = ref()
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const operatorOptions = [
-    { label: "Equal", value: '=', },
-    { label: "Not Equal", value: '!=' },
-    { label: "In", value: 'in' },
-    { label: "Not In", value: 'not in' },
-    { label: "Is", value: 'is' },
+    { label: $t("Equal"), value: '=', },
+    { label: $t("Not Equal"), value: '!=' },
+    { label: $t("In"), value: 'in' },
+    { label: $t("Not In"), value: 'not in' },
+    { label: $t("Is"), value: 'is' },
     { label: ">", value: '>' },
     { label: "<", value: '<' },
     { label: ">=", value: '>=' },
     { label: "<=", value: '<=' },
-    { label: "Between", value: 'Between' },
-    { label: "Timpspan", value: 'timespan' },
+    { label: $t("Between"), value: 'Between' },
+    { label: $t("Timpspan"), value: 'timespan' },
 ]
 const timespanOptions = [
-    { "label": "Last Week", "value": "last week" },
-    { "label": "Last Month", "value": "last month" },
-    { "label": "Last Quarter", "value": "last quarter" },
-    { "label": "Last 6 Months", "value": "last 6 months" },
-    { "label": "Last Year", "value": "last year" },
-    { "label": "Yesterday", "value": "yesterday" },
-    { "label": "Today", "value": "today" },
-    { "label": "Tomorrow", "value": "tomorrow" },
-    { "label": "This Week", "value": "this week" },
-    { "label": "This Month", "value": "this month" },
-    { "label": "This Quarter", "value": "this quarter" },
-    { "label": "This Year", "value": "this year" },
-    { "label": "Next Week", "value": "next week" },
-    { "label": "Next Month", "value": "next month" },
-    { "label": "Next Quarter", "value": "next quarter" },
-    { "label": "Next 6 Months", "value": "next 6 months" },
-    { "label": "Next Year", "value": "next year" }
+    { "label": $t("Last Week"), "value": "last week" },
+    { "label": $t("Last Month"), "value": "last month" },
+    { "label": $t("Last Quarter"), "value": "last quarter" },
+    { "label": $t("Last 6 Months"), "value": "last 6 months" },
+    { "label": $t("Last Year"), "value": "last year" },
+    { "label": $t("Yesterday"), "value": "yesterday" },
+    { "label": $t("Today"), "value": "today" },
+    { "label": $t("Tomorrow"), "value": "tomorrow" },
+    { "label": $t("This Week"), "value": "this week" },
+    { "label": $t("This Month"), "value": "this month" },
+    { "label": $t("This Quarter"), "value": "this quarter" },
+    { "label": $t("This Year"), "value": "this year" },
+    { "label": $t("Next Week"), "value": "next week" },
+    { "label": $t("Next Month"), "value": "next month" },
+    { "label": $t("Next Quarter"), "value": "next quarter" },
+    { "label": $t("Next 6 Months"), "value": "next 6 months" },
+    { "label": $t("Next Year"), "value": "next year" }
 ]
 
 watch(() => props.defaultValue, (newVal, oldVal) => {

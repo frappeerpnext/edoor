@@ -114,6 +114,11 @@ function onSelectReport(p) {
         
 
     }
+    let exportSettings = { exportOptions:ej.ReportViewer.ExportOptions.All}
+    if (window.user?.roles?.filter(r=>r=="Export Excel").length == 0){
+        exportSettings = { exportOptions:ej.ReportViewer.ExportOptions.All & ~ej.ReportViewer.ExportOptions.Excel }
+    }
+
  
     $("#main_server_report_viewer").boldReportViewer({
         reportServerUrl:window.setting.server_report_url,
@@ -124,8 +129,9 @@ function onSelectReport(p) {
         printMode:true,
         zoomFactor: 1.25,
         enableViewState: true,  // Enables the Save View feature
+         exportSettings: exportSettings,
     toolbarSettings: {
-        items: ej.ReportViewer.ToolbarItems.All,
+        items:ej.ReportViewer.ToolbarItems.All,
         showSaveView: true,  // Shows Save View button on the toolbar
         showViewList: true,  // Enables selecting a saved view
     },

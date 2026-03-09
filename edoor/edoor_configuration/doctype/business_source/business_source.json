@@ -30,7 +30,8 @@
   "bank_name",
   "credit_card_number",
   "card_holder_name",
-  "keyword"
+  "keyword",
+  "hidden"
  ],
  "fields": [
   {
@@ -173,12 +174,18 @@
    "fieldname": "position",
    "fieldtype": "Data",
    "label": "Position"
+  },
+  {
+   "default": "0",
+   "fieldname": "hidden",
+   "fieldtype": "Check",
+   "label": "Hidden"
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-12 15:35:55.765925",
+ "modified": "2026-01-06 15:44:51.543367",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

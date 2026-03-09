@@ -27,7 +27,7 @@
         </div>
         <div class="col flex gap-3">
             <Checkbox input-id="res_change_color" v-model="checked" :binary="true" :trueValue="1" :falseValue="0" />
-            <label for="res_change_color">Apply to all reservation</label>
+            <label for="res_change_color">{{$t('Apply to all reservation')}}</label>
         </div>
 
     </ComOverlayPanelContent>

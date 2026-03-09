@@ -93,13 +93,13 @@ const onMenuAdditionalGuest = ($event, name) => {
 
 function onDeleteAdditionalGuest(){
     dialogConfirm.require({
-        message: 'Do you want to delete this record?',
-        header: 'Delete Confirmation',
+        message: $t('Do you want to delete this record?'),
+        header: $t('Delete Confirmation'),
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('Ok'),
         accept: () => {
             const additionalGuests = rs.reservationStay.additional_guests.filter(r=>r.name != menuAdditionalGuest.value.additional_guest_name)
             const reservationStayData = JSON.parse(JSON.stringify(rs.reservationStay))

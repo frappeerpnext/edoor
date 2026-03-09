@@ -1,6 +1,7 @@
 <template>
-    <ComDialogContent :titleButtonOK="shift.name?'Save':'Open'" titleButtonClose="Cancel" @onClose="dialogRef.close()" @onOK="onOpen" :loading="loading">
- 
+    <ComDialogContent :titleButtonOK="shift.name ? 'Save' : 'Open'" titleButtonClose="Cancel" @onClose="dialogRef.close()"
+        @onOK="onOpen" :loading="loading">
+
         <ComSelect v-model="shift.shift_name" :clear="false" @onSelected="onSelectShift" doctype="Shift Type"
             placeholder="Shift Name" optionLabel="shift_name" optionValue="name" extraFields="start_time,end_time" />
         <div class="bg-card-info border-round-xl p-3 h-full mt-3">
@@ -58,23 +59,25 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, onMounted,getDoc,createUpdateDoc } from "@/plugin"
+import { ref, inject, onMounted, getDoc, createUpdateDoc } from "@/plugin"
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import ComDialogContent from '@/components/form/ComDialogContent.vue'
 import ComOpenShiftExchangeRate from "./components/ComOpenShiftExchangeRate.vue";
+import { i18n } from '@/i18n';
+const { t: $t } = i18n.global;
 const confirm = useConfirm();
 const dialogRef = inject("dialogRef");
- 
+
 const gv = inject("$gv")
- 
+
 const toast = useToast();
 const selectedShift = ref({})
-const setting = window.setting 
+const setting = window.setting
 
 const payment_types = setting?.payment_type.filter(r => r.allow_cash_float == 1)
 const loading = ref(false)
- 
+
 const shift = ref({
     working_day: window.working_day.name,
     pos_profile: setting.pos_profile.name,
@@ -99,72 +102,74 @@ const onOpen = () => {
         toast.add({ severity: 'warn', summary: 'Open Shift', detail: "Please select shift name", life: 3000 })
         return
     }
-    if(!shift.value.name){
+    if (!shift.value.name) {
         const total = shift.value.cash_float.reduce((n, d) => n + ((d.input_amount / d.exchange_rate) || 0), 0)
-    
-    
-    confirm.require({
-        message: 'Are you sure you want to open shift with amount ' + gv.currencyFormat(total || 0) + "?",
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-          saveData()
-        },
-    });
-    }else {
+
+
+        confirm.require({
+            message: 'Are you sure you want to open shift with amount ' + gv.currencyFormat(total || 0) + "?",
+            header: $t('Confirmation'),
+            icon: 'pi pi-exclamation-triangle',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptIcon: 'pi pi-check-circle',
+            acceptLabel: 'Ok',
+            accept: () => {
+                saveData()
+            },
+        });
+    } else {
         saveData()
     }
-    
+
 }
 
-function saveData(){
- 
+function saveData() {
+
     loading.value = true
- 
-    createUpdateDoc("Cashier Shift", shift.value,shift.value.name?"Save data successfully":"Open cashier shift successuflly")
-                .then((doc) => {
-                    gv.cashier_shift = doc
 
-                    window.working_day.cashier_shift = {
-                        creation:doc.creation,
-                        name:doc.name,
-                        shift_name:doc.shift_name
-                    }
-                    localStorage.setItem("edoor_working_day",JSON.stringify(window.working_day))
+    createUpdateDoc("Cashier Shift", shift.value, shift.value.name ? "Save data successfully" : "Open cashier shift successuflly")
+        .then((doc) => {
+            gv.cashier_shift = doc
+
+            window.working_day.cashier_shift = {
+                creation: doc.creation,
+                name: doc.name,
+                shift_name: doc.shift_name
+            }
+            localStorage.setItem("edoor_working_day", JSON.stringify(window.working_day))
 
 
-                    window.socket.emit("UpdateCashierShift", doc);
-                    loading.value = false
-                    dialogRef.value.close(doc);
-                }).catch((e)=>{
-                    loading.value = false
-                })
+            window.socket.emit("UpdateCashierShift", doc);
+            loading.value = false
+            dialogRef.value.close(doc);
+        }).catch((e) => {
+            loading.value = false
+        })
 }
 
 onMounted(() => {
-    if(window.isMobile){
+    if (window.isMobile) {
         let elem = document.querySelectorAll(".p-dialog");
-        if (elem){
-            elem = elem[elem.length-1]
+        if (elem) {
+            elem = elem[elem.length - 1]
             elem?.classList.add("p-dialog-maximized"); // adds the maximized class
         }
     }
-    if ( dialogRef.value.data?.name){
+    if (dialogRef.value.data?.name) {
         getDoc("Cashier Shift", dialogRef.value.data.name).then((result) => {
             shift.value = result
-    })
-}
- 
-    
+        })
+    }
+
+
 
 })
 
 
 </script>
-<style scoped>table {
+<style scoped>
+table {
     width: 100%;
-}</style>
+}
+</style>

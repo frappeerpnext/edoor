@@ -132,7 +132,7 @@ function onDeletecityLedger() {
     }
     confirm.require({
         message: 'Are you sure you want to delete city ledger account?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',

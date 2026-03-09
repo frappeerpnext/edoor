@@ -5,16 +5,16 @@
             <label for="text--note" class="text-lg line-height-1 font-bold">{{$t(create?.custom_audit_trail_type || "")}}</label><br/>
             
             <div v-if="create.custom_audit_trail_type =='Note'">
-            <label>Note Date</label>
+            <label>{{$t('Note Date')}}</label>
                     <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
-                                 placeholder="Note Date"
+                                 :placeholder="$t('Note Date')"
                                  v-model="create.custom_note_date"
                                   dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" />
             </div>
 
             <div class="flex gap-2 mt-3">
                 <div v-if="create.custom_audit_trail_type =='Reminder'">
-                    <label>Remind At</label>
+                    <label>{{$t('Remind At')}}</label>
                     <Calendar  showTime  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
                                         placeholder="Note Date"
                                         v-model="create.custom_remind_at"
@@ -30,7 +30,7 @@
             </div>
             <div class="h-6rem mb-4">
 
-                <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" :placeholder="`Enter ${create.custom_audit_trail_type}`" />
+                <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" :placeholder="$t(`Enter ${create.custom_audit_trail_type}`)" />
             </div>
             <div class="flex gap-2 justify-end items-center mt-1"> 
              <div class="flex gap-3 -mt-2">   
@@ -59,7 +59,7 @@
         <ComHeader v-tippy="$t('Refresh')" wrClass="py-1" fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
     </div>
     </div>
-        <ComPlaceholder text="No Comment or Notice yet" :loading="loading" :is-not-empty="list.length > 0">
+        <ComPlaceholder :text="$t('No Comment or Notice yet')" :loading="loading" :is-not-empty="list.length > 0">
     <div v-for="(i, index) in list" :key="index" class="mb-3 p-3 rounded-xl shadow-card-edoor" :class="(i.comment_type == 'Notice') ? 'bg-yellow-notice-bg text-yellow-700' : 'bg-commnet-cart' ">
  
         <div class="flex justify-between">
@@ -102,11 +102,11 @@
     <span class="font-semibold text-lg mb-3" for="textnote">{{ $t(edit.custom_audit_trail_type)}}</span>
     <div class="mb-2" v-if="edit.custom_audit_trail_type == 'Note'">
 
-    <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl" panelClass="no-btn-clear" placeholder="Note Date" v-model="edit.custom_note_date" dateFormat="dd-mm-yy" showIcon showButtonBar />
+    <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl" panelClass="no-btn-clear" :placeholder="$t('Note Date')" v-model="edit.custom_note_date" dateFormat="dd-mm-yy" showIcon showButtonBar />
     </div>
     <div class="mb-2" v-if="edit.custom_audit_trail_type == 'Reminder'">
         <Calendar  showTime  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
-                                        placeholder="Note Date"
+                                        :placeholder="$t('Note Date')"
                                         v-model="create.custom_remind_at"
                                         dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" />
 </div>
@@ -324,13 +324,13 @@ function onSaveNote(doctype, data) {
 }
 function onRemove(selected) {
     dialogConfirm.require({
-        message: 'Do you want to delete this record?',
-        header: 'Delete Confirmation',
+        message: $t('Do you want to delete this record?'),
+        header: $t('Delete Confirmation'),
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('Ok'),
         accept: () => {
             deleting.value = true
             deleteDoc('Comment', selected.name).then((doc) => {

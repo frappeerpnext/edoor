@@ -33,7 +33,7 @@
                                 <img class="pi pi-check-circle mr-2" v-else-if="!loading && !hideIcon && titleButtonOK == 'Save'" :src="BtnOkIcon" style="height: 13px;"/>
                                 {{ $t(titleButtonOK ?? '') }}
                             </span>
-                            <span v-else><i class="pi pi-spin pi-spinner mr-2"></i> {{ $t(titleButtonOK ?? '') }}</span>
+                            <span v-else><i class="pi pi-spin pi-spinner mr-2" ></i> {{ $t(titleButtonOK ?? '') }}</span>
                         </Button>
                     </div>
                 </div>

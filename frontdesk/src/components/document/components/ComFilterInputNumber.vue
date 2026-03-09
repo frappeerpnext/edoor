@@ -2,7 +2,7 @@
 
     <ComFilterInput :option="option" @onSearch="onSearch" v-model:operator="operator" v-model:keyword="selected"
         :operatorOptions="operatorOptions" :hasFilter="selected!=null || startNumber!=null || endNumber!=null">
-        {{ option.label }} 
+        {{$t(option.label) }} 
         
 
         <template v-slot:filter-template>
@@ -19,9 +19,9 @@
                 </Stack>
                 <Stack row>
                     
-                        <Button label="Search" @click="onSearchBetween" class="w-full"></Button>
+                        <Button :label="$t('Search')" @click="onSearchBetween" class="w-full"></Button>
                         
-                        <Button label="Clear Filter" class="w-full" @click="onClearSelection"  severity="warning"
+                        <Button :label="$t('Clear Filter')" class="w-full" @click="onClearSelection"  severity="warning"
                             ></Button>
                         
 
@@ -50,17 +50,18 @@ const endNumber = ref(null)
 const emit = defineEmits()
 const operator = ref("=")
 const selected = ref(null)
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
  
 const operatorOptions = [
-    { label: "Equal", value: '=', },
-    { label: "Not Equal", value: '!=' },
-    { label: "Is", value: 'is' },
+    { label: $t("Equal"), value: '=', },
+    { label: $t("Not Equal"), value: '!=' },
+    { label: $t("Is"), value: 'is' },
     { label: ">", value: '>' },
     { label: "<", value: '<' },
     { label: ">=", value: '>=' },
     { label: "<=", value: '<=' },
-    { label: "Between", value: 'Between' }
+    { label: $t("Between"), value: 'Between' }
 ]
 
 watch(() => props.defaultValue, (newVal, oldVal) => {

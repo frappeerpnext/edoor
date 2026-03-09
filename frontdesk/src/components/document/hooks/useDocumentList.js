@@ -41,7 +41,7 @@ export function useDocumentList(props, emit, dialog = null) {
     const settingMenus = ref([])
     if (!options.hideSaveView && props.doctype) {
         settingMenus.value.push({
-            label: 'Save this view',
+            label: $t('Save this view'),
             icon: 'pi pi-plus',
             command: () => {
                 onCreateNewView()
@@ -51,15 +51,15 @@ export function useDocumentList(props, emit, dialog = null) {
     if(props.doctype){
     settingMenus.value = settingMenus.value.concat([
         {
-            label: 'View Setting',
+            label: $t('View Setting'),
             icon: 'pi pi-cog',
             command: () => {
                 onOpenListViewSetting();
             }
         },
         {
-            label: 'Reset View',
-            icon: 'pi pi-cog',
+            label: $t('Reset View'),
+            icon: 'pi pi-refresh',
             command: async () => {
                 const res = await deleteDocument("App List View Setting", props.list_view_setting, {
                     hide_error_message: true

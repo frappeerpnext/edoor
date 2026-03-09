@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
+         
     <div class="wp-number-cus">
         <ComReservationStayPanel class="mb-4" :title="$t('Last Stay in') + ' ' + lastStay?.room_type">
             <template #content>
@@ -36,7 +37,10 @@
                                 </div> 
                             </td>
                             <td class="px-2 w-14rem"> 
-                                <Calendar showButtonBar panelClass="no-btn-clear" class="w-14rem" selectOtherMonths showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
+                                
+                                <Calendar showButtonBar panelClass="no-btn-clear" class="w-14rem" selectOtherMonths showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy" 
+                          
+                                />
                             </td>
                             <td class="px-2 text-left">
                                 <div class="box-input-detail flex"><span v-tippy="lastStay?.room_type ? lastStay.room_type : ''">{{ lastStay?.room_type_alias }}</span>/<span  v-tippy="lastStay?.room_number ? lastStay.room_number : ''">{{ lastStay?.room_number ? lastStay.room_number : 'Room No (Unassign)' }}</span></div>
@@ -100,7 +104,9 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(lastStay.end_date))}}</span>
                             </td>
                             <td class="px-2 w-14rem">
-                                <Calendar inputClass="w-10rem lg:w-full" showButtonBar panelClass="no-btn-clear" showIcon selectOtherMonths v-model="newRoom.end_date"     :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                                <Calendar inputClass="w-10rem lg:w-full" showButtonBar panelClass="no-btn-clear" showIcon selectOtherMonths v-model="newRoom.end_date"     :min-date="new Date(moment(newRoom.start_date).add(minEndDate,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"
+                                      @date-select="onChangeEndDate"
+                                />
                             </td>
 
                             <td class="px-2 w-16rem"> 
@@ -155,7 +161,7 @@
 </ComDialogContent>
 </template>
 <script setup>
-    import {inject,ref, getApi, onMounted,postApi,watch} from '@/plugin'
+    import {inject,ref, getApi, onMounted,postApi,watch,computed} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
     import Enumerable from 'linq'
     import {i18n} from '@/i18n';
@@ -182,6 +188,9 @@
         rate: 0,
         room_type_id: lastStay.value?.room_type_id,
         room_id:''
+    })
+    const minEndDate = computed(()=>{
+        return working_day.value.date_working_day == moment(newRoom.value.start_date).format("YYYY-MM-DD")?0:1
     })
 
     watch(lastStay.value,(newValue)=>{
@@ -214,8 +223,8 @@
   
   getApi("reservation.check_room_availability", {
           property: window.property_name,
-          start_date: newRoom.value.start_date, 
-          end_date:  newRoom.value.end_date
+          start_date: moment(newRoom.value.start_date).format("YYYY-MM-DD"), 
+          end_date:   moment(newRoom.value.end_date).format("YYYY-MM-DD")
       })
           .then((result) => {
               
@@ -294,6 +303,11 @@
 
 
             }
+
+    function onChangeEndDate(){
+          getRoomType()
+        getRoom()
+    }
 
     function onSave(){
         loading.value = true

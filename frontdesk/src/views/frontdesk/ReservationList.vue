@@ -48,7 +48,8 @@ import ComDocumentList from "@/components/document/ComDocumentList.vue"
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import ComReservationListContextMenuHeader from "@/views/frontdesk/components/ComReservationListContextMenuHeader.vue"
-
+import { i18n } from '@/i18n';
+const { t: $t } = i18n.global;
 const reservationList = ref(null)
 const selectedRow = ref()
 
@@ -88,12 +89,12 @@ const options = ref({
     contextMenuOptions: [
         {label: 'General Info', is_header:true,header_component:ComReservationListContextMenuHeader,header_prop:selectedRow.value },
         {
-            label: 'View Reservation Detail', icon: 'pi pi-calendar', command: () => {
+            label: $t('View Reservation Detail'), icon: 'pi pi-calendar', command: () => {
                 window.onOpenLink("view_reservation_detail", selectedRow.value.name);
             }
         },
         {
-            label: 'View Guest Detail', icon: 'pi pi-id-card', command: () => {
+            label: $t('View Guest Detail'), icon: 'pi pi-id-card', command: () => {
                 window.onOpenLink("view_guest_detail", selectedRow.value.guest);
             }
         },

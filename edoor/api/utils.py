@@ -218,7 +218,7 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
             
             if hasattr(ref_doc,"transaction_type"):
                 update_files.append("custom_folio_transaction_type='{}'".format(ref_doc.transaction_type or ""))
-                update_files.append("custom_folio_number='{}'".format(ref_doc.transaction_number or ""))
+                update_files.append("custom_folio_number='{}'".format(ref_doc.get("transaction_number") or ""))
         
             if hasattr(ref_doc,"guest"):
                 update_files.append("custom_guest='{}'".format(ref_doc.guest or ""))
@@ -913,6 +913,7 @@ def reset_edoor_naming_series():
 #         frappe.db.sql("delete from `tabGeneral Ledger`")
 #         frappe.db.sql("delete from `tabAccess Log`")
 #         frappe.db.sql("delete from `tabRoute History`")
+#         frappe.db.sql("delete from `tabCity Ledger Invoice`")
 
 #         frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
 #         frappe.db.sql("delete from `tabComment` where custom_is_note=1")
@@ -2337,6 +2338,27 @@ def convert_array_filter_to_dict(fitler):
     if isinstance(fitler, dict):
         return fitler
     return {field: value for field, operator, value in fitler if operator == "="}
+@frappe.whitelist()
+def generate_flash_report_data(property, date=None):
+    if not date:
+        date = frappe.utils.today()
 
+    # Run current year
+    frappe.db.sql("CALL sp_generate_flash_manager_report(%s, %s)", (property, date))
+    frappe.db.commit()
+
+    # Run last year
+    last_year_date = frappe.utils.add_to_date(date, years=-1)
+    frappe.db.sql("CALL sp_generate_flash_manager_report(%s, %s)", (property, last_year_date))
+    frappe.db.commit()
+
+    # ✅ Check that records exist (example: tabFlash Report Manager table)
+    res = frappe.db.sql("""
+        SELECT COUNT(*) AS cnt
+        FROM `tabManager Flash Report Data`
+        WHERE property = %s 
+    """, (property), as_dict=True)
+
+    return {"rows_inserted": res[0].cnt}
 
     

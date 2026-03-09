@@ -3,7 +3,7 @@
     <ComFilterInput :option="option" v-model:operator="operator" :hasFilter="selected"
         :operatorOptions="operatorOptions" v-model:listData="listData" @onLoadOptionData="getParentAccountCode">
        
-        {{ option.label }}
+        {{ $t(option.label) }}
         <template v-slot:filter-template>
         
             <InputText ref="searchInput" v-model="keyword" :placeholder="'Search ' + option.label" class="w-full"
@@ -46,9 +46,11 @@ const operator = ref("in")
 const selected = ref()
 const loading = ref(false)
 const keyword = ref("")
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const operatorOptions = [
-    { label: "Equal", value: 'in', },
-    { label: "Not Equal", value: 'not in' }
+    { label: $t("Equal"), value: 'in', },
+    { label: $t("Not Equal"), value: 'not in' }
 ]
 const data = ref([])
 const listData = ref([])

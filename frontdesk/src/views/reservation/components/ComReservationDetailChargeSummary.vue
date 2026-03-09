@@ -1,7 +1,7 @@
 <template lang="">
     <div class="col-12">
  
-        <ComReservationStayPanel title="Charge Summary ">
+        <ComReservationStayPanel :title="$t('Charge Summary')">
             <template #content>
                 <div class="flex mb-2 mt-2 gap-2 text-right">
                     <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
@@ -78,7 +78,7 @@
                         </OverlayPanel>
                     </div>
                     <div class="flex mt-2 gap-2">
-                        <ComBoxStayInformation isCurrency title="Total Room Charge" :value="rs?.reservation?.total_amount" valueClass="grow text-right font-semibold" titleClass="col-4 font-semibold" ></ComBoxStayInformation>
+                        <ComBoxStayInformation isCurrency :title="$t('Total Room Charge')" :value="rs?.reservation?.total_amount" valueClass="grow text-right font-semibold" titleClass="col-4 font-semibold" ></ComBoxStayInformation>
                     </div>
                 </div>
                 <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">

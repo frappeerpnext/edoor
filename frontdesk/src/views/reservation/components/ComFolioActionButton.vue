@@ -1,5 +1,4 @@
 <template> 
-
     <template
         v-for="(d, index) in data" :key="index">
         <Button v-if="!d.sub_account" @click="onClick(d)" class="conten-btn mr-1">
@@ -15,7 +14,10 @@
 </template> 
                 
 <script setup>
- 
+import { i18n } from '@/i18n';
+
+
+    const { t: $t } = i18n.global; 
     const emit = defineEmits(['onClick'])
     const props = defineProps({
         data: Object,
@@ -24,7 +26,7 @@
     props.data.filter(x=>x.sub_account).forEach(r=>{
      
         r.sub_account.filter(y=>!y.separator).forEach(s=>{
-            
+            s.label = $t(s.label)
             s.command =   () => {
                 
                 emit('onClick', s)

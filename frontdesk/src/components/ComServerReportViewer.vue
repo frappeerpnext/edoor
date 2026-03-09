@@ -29,7 +29,7 @@ onMounted(() => {
         parameters: report_params,
         zoomFactor: 1.25,
         toolbarSettings: {
-                        items: ej.ReportViewer.ToolbarItems.All
+                        exportOptions:ej.ReportViewer.ExportOptions.All & ~ej.ReportViewer.ExportOptions.Html 
         }
     });
 });

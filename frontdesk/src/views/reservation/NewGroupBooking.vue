@@ -362,8 +362,8 @@
             <div class="n__re-custom">
                 <div class="w-full flex justify-end mt-2">
                     <label for="auto_assign_room" class="mr-3 cursor-pointer"
-                        v-tippy="$t('When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.')">Automatically
-                        {{ $t('assign room') }}</label>
+                        v-tippy="$t('When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.')">
+                        {{ $t('Automatically Assign Room') }}</label>
                     <Checkbox
                         v-tippy="$t('When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.')"
                         inputId="auto_assign_room" v-model="doc.auto_assign_room" :binary="true" />

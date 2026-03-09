@@ -6,6 +6,7 @@
                 <template #content>
 <div>
     <table>
+    <tbody>
     <tr>
         <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
             <b>
@@ -22,6 +23,7 @@
     <ComStayInfoNoBox label="Contact Name" :value="doc?.contact_name" />
     <ComStayInfoNoBox label="Phone number" :value="doc?.phone_number" />
     <ComStayInfoNoBox label="Email" :value="doc?.email_address" />
+    </tbody>
     </table>
     
 </div>

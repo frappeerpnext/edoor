@@ -162,7 +162,6 @@ items.value.push({
                 toast.add({ severity: 'warn', summary: 'Folio Detail Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
             } else {
                 if (window.setting.server_report_url) {
-                    alert(result.message[0].reservation_stay)
                     const params = [
                         { name: 'reservation', values: [result.message[0].reservation] },
                         { name: 'reservation_stay', values: [result.message[0].reservation_stay] },
@@ -212,10 +211,10 @@ items.value.push({
 
         if (window.setting.server_report_url) {
 
-            OpenServerReport("/Front Desk/rptReservationStayFolioSummaryByReservatinStay", "Folio Summary by Reservation")
+            OpenServerReport("/Front Desk/rptReservationStayFolioSummaryByReservatinStay", "Folio Summary by Reservation Stay")
 
         }
-        else {
+        else { 
             dialog.open(ComIFrameModal, {
                 data: {
                     "doctype": "Reservation%20Stay",

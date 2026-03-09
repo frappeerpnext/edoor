@@ -552,7 +552,7 @@ const viewSummary = (name) => {
             'Business%20Branch',
             // "eDoor%20Dashboard%20Stay%20Over%20Guest",
             gv.getCustomPrintFormat("eDoor Dashboard Daily Reservation"),
-            'Daily Reservation For '+ moment(selected_date.value).format("DD-MM-YYYY"),
+            $t("Daily Reservation For") + " " + moment(selected_date.value).format("DD-MM-YYYY"),
             [{ key: "date", value: selected_date.value }],
             ['keyword', 'room_type', 'reservation_status', 'business_source']
         )
@@ -566,7 +566,7 @@ const viewUnassignRoom = ()=>{
             date:selected_date.value
         },
         props: {
-            header: $t("View unassign room"),
+            header: $t("View Unassign Room"),
             style: {
                 width: '90vw',
             },

@@ -28,8 +28,10 @@ const dialogRef = inject('dialogRef');
 const avatar_letter = ref('')
 const doc = ref({})
 
-function onViewDetail(){
+const frappe = inject("$frappe")
+const call = frappe.call()
 
+function onViewDetail(){
    window.postMessage(`view_${doc.value.document_type.toLowerCase().replaceAll(" ","_")}_detail|${doc.value.document_name}`,"*")
 }
 onMounted(()=>{
@@ -37,9 +39,7 @@ onMounted(()=>{
     avatar_letter.value = doc.value.modified_by.charAt(0).toUpperCase()
   
 
-        updateDoc("Notification Log",doc.value.name,{read:1},"",false)
-   
+    // updateDoc("Notification Log",doc.value.name,{read:1},"",false)
 
-    
 })
 </script>

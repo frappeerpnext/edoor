@@ -84,7 +84,7 @@ if (dialogRef.value.data.name) {
 
             confirm.require({
                 message: "You do not select any transaction for this city ledger invoice. Do you want to continue?",
-                header: "Confirmation",
+                header: $t('Confirmation'),
                 accept: () => resolve(true),
                 reject: () => resolve(false),
             });

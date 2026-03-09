@@ -43,7 +43,7 @@
                 <div class="flex items-center">
                     <Checkbox inputId="apply-all-stay" v-model="apply_all_stay" :binary="true" />
                     <label for="apply-all-stay" class="cursor-pointer m-auto ps-2">
-                        {{$t(' Apply to all active stays')}}
+                        {{$t('Apply to all active stays')}}
                        </label>
                 </div>
             </div>

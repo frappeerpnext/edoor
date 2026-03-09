@@ -28,9 +28,12 @@
 
 </template>
 <script setup>
-import { ref, inject, useDialog, createDocument, updateData } from "@/plugin"
+import { ref, inject, useDialog, createDocument, updateData,useToast } from "@/plugin"
 import { i18n } from '@/i18n';
 import { onMounted } from "vue";
+
+const frappe = inject('$frappe')
+const call = frappe.call();
 const { t: $t } = i18n.global;
 const dialog = useDialog();
 const dialogRef = inject("dialogRef");
@@ -40,6 +43,7 @@ const isPublic = ref(1)
 const gv = inject("$gv")
 const data = ref()
 const overrideView = ref(1)
+const toast = useToast();
 
 async function onOk() {
     loading.value = true;
@@ -52,35 +56,69 @@ async function onOk() {
 
     let res = null
     if (data.value.current_view && overrideView.value==1) {
-        res = await updateData(
-            {
-                doctype: "List Filter",
-                name: data.value.current_view.name,
-                data: {
-                    filter_name: viewName.value,
-                    filters: JSON.stringify(data.value.filters),
-                    custom_view_filters: JSON.stringify(data.value.view_filters),
-                    for_user: isPublic.value ? "" : window.user.name
-                }
-            }
+        // res = await updateData(
+        //     {
+        //         doctype: "List Filter",
+        //         name: data.value.current_view.name,
+        //         data: {
+        //             filter_name: viewName.value,
+        //             filters: JSON.stringify(data.value.filters),
+        //             custom_view_filters: JSON.stringify(data.value.view_filters),
+        //             for_user: isPublic.value ? "" : window.user.name
+        //         }
+        //     }
 
-        )
+        // )
+
+        await call.get("edoor.api.frontdesk.update_list_filter",{
+            name: data.value.current_view.name,
+            filter_name: viewName.value,
+            filters: JSON.stringify(data.value.filters),
+            custom_view_filters: JSON.stringify(data.value.view_filters),
+            for_user: isPublic.value ? "" : window.user.name
+        }).then((r) => {
+            res = r.message
+            loading.value = false;
+            toast.add({ severity: 'success', summary: "Update Successfully", detail: '', life: 5000 })
+            window.postMessage({ "action": "SaveViewList " }, "*")
+            window.location.reload()
+        }).catch((error) => { 
+            loading.value = false;
+        });
+
 
     } else {
-        res = await createDocument("List Filter", {
+        // res = await createDocument("List Filter", {
+        //     filter_name: viewName.value,
+        //     reference_doctype: data.value.doctype,
+        //     filters: JSON.stringify(data.value.filters),
+        //     custom_view_filters: JSON.stringify(data.value.view_filters),
+        //     custom_list_view_setting: dialogRef.value.data.list_view_setting,
+        //     for_user: isPublic.value ? "" : window.user.name
+        // }) 
+
+        await call.get("edoor.api.frontdesk.create_custom_list_filter", {
+            doctype: "List Filter",
             filter_name: viewName.value,
             reference_doctype: data.value.doctype,
             filters: JSON.stringify(data.value.filters),
             custom_view_filters: JSON.stringify(data.value.view_filters),
             custom_list_view_setting: dialogRef.value.data.list_view_setting,
-            for_user: isPublic.value ? "" : window.user.name
-        })
-
+            for_user: isPublic.value ? "" : frappe.session.user
+        }).then((r) => {
+            res = r.message
+            loading.value = false;
+            toast.add({ severity: 'success', summary: "Update Successfully", detail: '', life: 5000 })
+            window.postMessage({ "action": "SaveViewList " }, "*")
+            window.location.reload()
+        }).catch((error) => { 
+            loading.value = false;
+        });
     }
 
     loading.value = false;
 
-    if (res.data) {
+    if (res || res.data) {
         dialogRef.value.close(res.data)
     }
 }

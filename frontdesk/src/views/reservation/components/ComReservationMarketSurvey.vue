@@ -2,7 +2,7 @@
 
 <BlockUI :blocked="loading">
     <div class="card">
-        <Fieldset  v-for="(s, index) in formModel.filter(item => !item.hidden)" :key="index" :legend="s.label" :toggleable="true" >
+        <Fieldset  v-for="(s, index) in formModel.filter(item => !item.hidden)" :key="index" :legend="$t(s.label)" :toggleable="true" >
             <div class="grid">
                <div class="col-fixed mx-2" v-for="(c, col_index) in s.columns" :key="col_index">
             <div class="field" v-for="(f, f_index) in c.fields" :key="f_index" >
@@ -17,7 +17,7 @@
   <hr class="my-3" />
   
   <div v-if="!hideSave" class="flex justify-content-end mb-3">
-<Button type="button" label="Save" icon="pi pi-save" :loading="loading" @click="onSave" />
+<Button type="button" :label="$t('Save')" icon="pi pi-save" :loading="loading" @click="onSave" />
   </div>
   
 </template>

@@ -20,7 +20,7 @@
         ><br />
         <ComAutoComplete
           v-model="doc.folio_type"
-          placeholder="Select Folio Type"
+          :placeholder="$t('Select Folio Type')"
           doctype="Folio Type"
           class="auto__Com_Cus w-full"
         />
@@ -43,7 +43,7 @@
           <label
             class="white-space-nowrap ms-2 cursor-pointer"
             for="show_in_pos_transfer"
-            >Show In Pos Transfer</label
+            >{{$t("Show In Pos Transfer")}}</label
           >
         </div>
       </div>

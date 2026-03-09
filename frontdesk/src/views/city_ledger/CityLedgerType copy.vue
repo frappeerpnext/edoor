@@ -18,7 +18,7 @@
         </div>
         <div>
             <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
-                <DataTable  showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
+                <DataTable  showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem">
                     <Column :headerClass="'white-space-nowrap'" field="city_ledger_type" :header="$t('City Ledger Type') " ></Column>
                     <Column :header="$t('Owner')">
                         <template #body="slotProps">
@@ -83,7 +83,7 @@ function onEdit (selected){
 
 function onDelete (name){ 
         confirm.require({
-        message: 'Are you sure you want to delete guest?',
+        message: `${$t('Are you sure you want to delete guest')}?`,
         header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',

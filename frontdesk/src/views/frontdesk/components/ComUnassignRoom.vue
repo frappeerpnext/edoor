@@ -21,7 +21,7 @@
 
                     <div    class="flex ml-2">
                         <tippy content="Arrival Date">
-                        <Calendar   :selectOtherMonths="true" placeholder="Arrival Date" class="w-full" v-model="filter.arrival_date" @clear-click="onRefresh" @date-select="onRefresh" dateFormat="dd-mm-yy" showButtonBar showIcon/>
+                        <Calendar   :selectOtherMonths="true" :placeholder="$t('Arrival Date')" class="w-full" v-model="filter.arrival_date" @clear-click="onRefresh" @date-select="onRefresh" dateFormat="dd-mm-yy" showButtonBar showIcon/>
                     </tippy>
                     </div>
 
@@ -94,7 +94,7 @@
                             </span>
                             <span v-else-if="c.fieldname == 'reservation_type'"
                                 v-tippy="slotProps.data[c.fieldname] == 'FIT' ? 'Free Independent Traveler' : 'Group Inclusive Tour'">
-                                {{ slotProps.data[c.fieldname] }}
+                                {{ $t(slotProps.data[c.fieldname]) }}
                             </span>
                             <span v-else>
                                 {{ slotProps.data[c.fieldname] }}

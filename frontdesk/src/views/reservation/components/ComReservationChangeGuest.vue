@@ -4,7 +4,7 @@
             <div class="flex flex-col items-center mb-2">
                 <div class="col-12">
                     <ComAutoComplete doctype="Customer" @onSelected="onSelected" isFull isIconSearch
-                        placeholder="Search guest" />
+                        :placeholder="$t('Search guest')" />
                 </div>
                 <div class="col-12" v-if="!dialogRef.data.is_change_additional_guest">
                     <div class="flex">

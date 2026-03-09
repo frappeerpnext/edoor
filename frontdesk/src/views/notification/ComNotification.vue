@@ -57,6 +57,9 @@
 import { ref,getDocList,getCount,onMounted ,useDialog, inject} from "@/plugin"
 import ComNotificationDetail from "@/views/notification/ComNotificationDetail.vue"
 import ComNotificationList from "@/views/notification/ComNotificationList.vue"
+import { i18n } from '@/i18n';
+
+const { t: $t } = i18n.global;
 const moment= inject("$moment")
 const dialog = useDialog()
 const op = ref();
@@ -72,7 +75,6 @@ const toggle = (event) => {
 }
 
 function getData(){
-  
     getDocList("Notification Log",{
         fields:["*"],
         filters:[["for_user","=",window.user.name]]
@@ -94,19 +96,21 @@ function getCountData(){
     })
 }
 
-function onViewNotificationDetail(data){
-    dialog.open(ComNotificationDetail, {
+function onViewNotificationDetail(data) {
+    const dialogRef = dialog.open(ComNotificationDetail, {
     data:data,
     props: {
-      header: 'Notification Detail',
+        header: $t('Notification Detail'),
+      contentClass: 'ex-pedd',
       style: {
-        width: '30vw',
-      },
+        width: '80vw',
+          },
+    maximizable: true,
       modal: true,
       position: 'top',
       closeOnEscape: false,
       breakpoints:{
-                '960px': '50vw',
+                '960px': '90vw',
                 '640px': '100vw'
             },
     },

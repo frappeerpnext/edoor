@@ -29,10 +29,11 @@ def update_all_reservation_stays():
     
  
 def update_reservation_stay(stay_names,run_commit=True):
+
     #1 update stay_room rate information like rate, tax, discount...
     sql = """
         UPDATE `tabReservation Stay Room` sr
-        JOIN 
+        LEFT JOIN 
             (
             select 
                 stay_room_id,
@@ -285,7 +286,6 @@ def update_reservation_stay(stay_names,run_commit=True):
             a.start_time = b.arrival_time,
             a.end_time= b.departure_time,
             a.is_active_reservation = b.is_active_reservation,
-            a.total_tax = b.total_tax,
             a.balance = b.balance,
             a.total_credit = b.total_credit,
             a.total_debit = b.total_debit,

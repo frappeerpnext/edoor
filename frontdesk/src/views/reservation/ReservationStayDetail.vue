@@ -280,7 +280,7 @@ function loadData(show_loading=true,delay_load_reservation_stay=0){
 function onUnreservedRoom() {
     confirm.require({
         message: 'Are you sure you want to unreserve room for this reservation?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
@@ -317,7 +317,7 @@ function debouncer(fn, delay) {
 function onReservedRoom() {
     confirm.require({
         message: 'Are you sure you want to reserve room for this reservation?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
@@ -339,7 +339,7 @@ function onReservedRoom() {
     });
 }
 onMounted(() => {
-
+    
    
 
     if (!dialogRef) {
@@ -443,7 +443,7 @@ const onCheckIn = () => {
 const onCheckOut = () => {
     confirm.require({
         message: 'Are you sure you want to check out this room?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         acceptLabel: 'OK',
         rejectVisible: true,
         rejectClass: 'hidden',

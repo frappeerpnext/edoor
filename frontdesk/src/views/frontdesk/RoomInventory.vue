@@ -37,10 +37,14 @@
         <div class="grid justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
             <div  class="col flex gap-2">
                 <div> 
-                    <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
+                    <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear" />
+                    
                 </div>
+                
+                <ComSelect isMultipleSelect placeholder="Room Type" doctype="Room Type" :filters="[['sort_order', '>=', 0]]" optionValue="name" optionLabel="room_type" v-model="selectedRoomTypes" @onSelected="onSelectRoomType"/>
             </div>
             <div class="col flex justify-content-end">
+            
                 <ComRoomChartFilter :hideRefresh="true" :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)"/>
                 <Button type="button" icon="pi pi-ellipsis-v" @click="onToggleSettingMenu" aria-haspopup="true" aria-controls="overlay_menu" />
         <Menu ref="setting_menu" id="setting_overlay_menu" :model="settingMenu" :popup="true" />
@@ -104,7 +108,7 @@
     </div>
     </template>
 <script setup>
-import { h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
+import { h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi,postApi, getCount, provide, computed, getDocList } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import { useTippy } from 'vue-tippy'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -132,6 +136,7 @@ const { t: $t } = i18n.global;
 const resources = ref([])
 const events = ref([])
 const moment = inject('$moment')
+const selectedRoomTypes = ref([])
 const filter = ref({
     view_type: 'room',
     date: moment().toDate(),
@@ -466,7 +471,11 @@ function debouncer(fn, delay) {
 
  
 function getResources() {
-    getApi('frontdesk.get_room_inventory_resource', { property: window.property_name }).then((result) => {
+    postApi('frontdesk.get_room_inventory_resource',
+         { property: window.property_name,room_types:selectedRoomTypes.value },
+         "",
+         false
+         ).then((result) => {
         resources.value = result.message
  
         getEvents()
@@ -478,11 +487,15 @@ function getEvents(date_range=null) {
     const start= date_range?moment(date_range.start).format("YYYY-MM-DD"):moment(cal.view.currentStart).format("YYYY-MM-DD")
     const end= moment(filter.value.end_date).format("YYYY-MM-DD")
     
-    getApi('frontdesk.get_room_inventory_calendar_event', {
+    postApi('frontdesk.get_room_inventory_calendar_event', {
         start: start,
         end: end,
-        property: window.property_name
-    }).then((result) => {
+        property: window.property_name,
+        room_types:selectedRoomTypes.value
+    },
+    "",
+    false
+    ).then((result) => {
         removeDOM()
         //1 create room type event
        events.value = []
@@ -671,6 +684,16 @@ const handleScroll = (event) => {
         sticky.classList.remove("front_desk_sicky_bar");
     }
 };
+
+
+async function onSelectRoomType(data){
+    await getResources();
+   // get resource 
+
+   // get event
+
+
+}
 
 onMounted(() => {
     

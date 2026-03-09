@@ -54,6 +54,9 @@ const filter = ref({
     period: "15_days"
 })
 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
+
 const gv = inject("$gv")
 const onClose = () => {
     dialogRef.value.close()
@@ -232,10 +235,10 @@ function resourceColumn() {
                             if (arg.resource._resource.extendedProps.alias){
                                 el.innerHTML = arg.resource._resource.extendedProps.alias;
                             } else {
-                                el.innerHTML = arg.resource._resource.title;
+                                el.innerHTML = $t(arg.resource._resource.title);
                             }
                         } else {
-                            el.innerHTML = arg.resource._resource.title;
+                            el.innerHTML = $t(arg.resource._resource.title);
                         } 
                     let dom = [el.innerHTML]
                     return { html: dom }

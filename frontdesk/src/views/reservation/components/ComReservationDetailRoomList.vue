@@ -4,13 +4,13 @@
 <Panel toggleable >
     <template #header>
         <div class="flex items-center gap-2">
-            <span class="font-bold">Summary By Room Type</span>
+            <span class="font-bold">{{$t('Summary By Room Type')}}</span>
         </div>
     </template>
    <div style="margin:-1rem !important;">
     <DataTable :value="rs?.roomtypelist" tableStyle="min-width: 50rem">
-    <Column field="room_type" header="Room Type"></Column>
-    <Column field="rooms" bodyClass="text-center p-0" headerClass="text-center p-0" header="No of Room"></Column>
+    <Column field="room_type" :header="$t('Room Type')"></Column>
+    <Column field="rooms" bodyClass="text-center p-0" headerClass="text-center p-0" :header="$t('No of Room')"></Column>
     <Column bodyClass="text-center p-0" headerClass="text-center p-0" :header="$t('Pax(A/C)')">
     <template #body="slotProps">
         <span v-tippy="$t('Adults')">{{slotProps.data.adult}}</span>/<span v-tippy ="$t('Children')">{{slotProps.data.child}}</span>
@@ -43,13 +43,12 @@
                             <div class="filtr-rmm-list flex gap-2">
                                 <ComSelect :maxSelectedLabels="10" mClass="max-w-35rem" maxWidth="35rem" placeholder="Filter by Status" v-model="rs.filterStatusRooms" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus">
                                 </ComSelect>
-                                <Button v-if="canUnassignRoom" @click="onUnassignRoom">Group Unassign Room</Button>
+                                <Button v-if="canUnassignRoom" @click="onUnassignRoom">{{$t('Group Unassign Room')}}</Button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
-               
                     <DataTable 
                     :scrollable="rs.roomList.length>10" 
                     :scrollHeight="(rs.roomList.length>10?'400px':'auto')" 
@@ -57,7 +56,7 @@
                     :rowClass="rowClass" 
                     class="p-datatable-sm" 
                     v-model:selection="rs.selecteds" 
-                    sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
+                    sortField="rooms" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column  field="is_package"  bodyClass="text-center p-0" headerClass="text-center p-0">
         <template #body="slotProps">

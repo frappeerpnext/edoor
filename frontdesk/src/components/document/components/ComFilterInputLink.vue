@@ -9,12 +9,9 @@
         @onFilter="onFilter"
         :hasFilter="selected" 
         :optionValue="optionValue">
-        {{ option.label }}
-
-
-
+        {{ $t(option.label) }}
         <template #bottom>
-            <Button @click="onClearFilter" :disabled="!selected" label="Clear Filter" severity="warning"
+            <Button @click="onClearFilter" :disabled="!selected" :label="$t('Clear Filter')" severity="warning"
                 class="w-full mt-4" />
         </template>
     </ComFilterInput>
@@ -37,16 +34,18 @@ const props = defineProps({
 
     }
 })
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const emit = defineEmits()
 const operator = ref(props.operator)
 const keyword = ref("")
 const operatorOptions = [
-    { label: "Equal", value: '=', },
-    { label: "Contain", value: 'like', prefix: '%', sufix: '%' },
-    { label: "Not Equal", value: '!=' },
-    { label: "In", value: 'in' },
-    { label: "Not In", value: 'not in' },
-    { label: "Is", value: 'is' },
+    { label: $t("Equal"), value: '=', },
+    { label: $t("Contain"), value: 'like', prefix: '%', sufix: '%' },
+    { label: $t("Not Equal"), value: '!=' },
+    { label: $t("In"), value: 'in' },
+    { label: $t("Not In"), value: 'not in' },
+    { label: $t("Is"), value: 'is' },
 ]
 const selected = ref()
 const listData = ref([])

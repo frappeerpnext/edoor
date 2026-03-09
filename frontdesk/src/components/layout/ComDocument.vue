@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div >
-                <ComPlaceholder v-if="showDoc" text="No Documents" :loading="loading" :isNotEmpty="data.length > 0">
+                <ComPlaceholder v-if="showDoc" :text="$t('No Documents')" :loading="loading" :isNotEmpty="data.length > 0">
                     <template #default>
 
                         <div class="wrap-file-list">
@@ -32,7 +32,7 @@
                                     </template>
                                 </Column>
                                 <Column field="custom_title" :header="$t('Title')"></Column>
-                                <Column v-if="showAttach" field="attached_to_name" header="Attach Name" headerClass="white-space-nowrap">
+                                <Column v-if="showAttach" field="attached_to_name" :header="$t('Attach Name')" headerClass="white-space-nowrap">
                                     <template #body="slotProps">
                                         <Button v-if="doctype != slotProps.data.attached_to_doctype"
                                             @click="onDetail(slotProps.data)" :label="slotProps.data.attached_to_name" link
@@ -64,12 +64,12 @@
                                 </Column>
                             </DataTable>
                             <div>
-                                <template v-if="isMobile"><strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords}}</span></strong></template>
+                                <template v-if="isMobile"><strong>{{$('Total Records')}}: <span class="ttl-column_re">{{ pageState.totalRecords}}</span></strong></template>
                                 <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                                     :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
                                     @page="pageChange">
                                     <template #start="slotProps" v-if="!isMobile">
-                                        <span><strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords
+                                        <span><strong>{{ $t('Total Records')}}: <span class="ttl-column_re">{{ pageState.totalRecords
                                         }}</span></strong></span>
                                     </template>
                                 </Paginator>
@@ -183,7 +183,7 @@ function onModalWebcam(open) {
                 docname: props.docname
             },
             props: {
-                header: 'Upload Photo by Webcam',
+                header: $t('Upload Photo by Webcam'),
                 style: {
                     width: '80vw',
                 },
@@ -304,7 +304,7 @@ function onRemove(selected) {
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('Ok'),
         accept: () => {
             deleting.value = true
             deleteDoc('File', selected.name).then((doc) => {

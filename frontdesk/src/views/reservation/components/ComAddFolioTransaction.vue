@@ -597,7 +597,6 @@ const min_date = computed(() => {
  
  
 function onSelectAccountCode(data) {
-
     if (data.value) {
         getDoc('Account Code', data.value)
             .then((d) => {
@@ -753,33 +752,32 @@ function onFolioFilterTypeChange(d){
     doc.value.target_transaction_number = ""
 }
 
-async function onRateCalculation(newValue){
-    await nextTick();
-    
-    if (doc.value.account_code && doc.value.input_amount){
-        const send_doc = JSON.parse(JSON.stringify(doc.value))
+async function onRateCalculation() {
+    await nextTick()
+
+    if (doc.value.account_code && doc.value.input_amount) {
+        const send_doc = JSON.parse(JSON.stringify(doc.value))  
         send_doc.discount_amount = 0
-        postApi("add_folio_transaction.get_folio_transaction_calculation",
-        {
-            folio_transaction_data:send_doc 
-        },
-        "",
-        false
-).then(result=>{
-        data.value = result.message
-        
-    })
-    }
+
+        const result = await postApi(
+            "add_folio_transaction.get_folio_transaction_calculation",
+            { folio_transaction_data: send_doc },
+            "",
+            false
+        )
+
+        data.value = result.message  
+    } 
 }
 
 
 
-function onSave(){
-    console.log(doc.value.discount)
+
+async function onSave() {  
     const data = JSON.parse(JSON.stringify(doc.value))
     data.input_amount = data.input_amount || 0
     // will change this later
-
+    
 
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
     if (data.credit_expired_date) data.credit_expired_date = moment(data.credit_expired_date).format("yyyy-MM-DD")

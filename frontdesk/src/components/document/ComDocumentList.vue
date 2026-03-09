@@ -26,10 +26,12 @@
     </template>
     <div class="grid gap-2">
         <template v-if="!options.hideSaveView && doctype">
-            <div v-if="showSummary" class="col-2 pr-0 py-0 rounded-xl" style="width: 280px;">
+            <div id="save_filter_wrapper" v-if="showSummary" class="col-2 pr-0 py-0 rounded-xl overflow-y-hidden" style="width: 280px;">
                 <div :class="wrapClass" class="w-full h-full p-3 rounded-xl border-1">
-                    <h1 class="font-bold">Saved Filter</h1>  
-                    <ComSaveViewList :doctype="doctype" :list_view_setting="list_view_setting" v-model:items="viewList" ref="saveViewList" /> 
+                    <h1 class="font-bold">{{ $t('Saved Filter') }}</h1> 
+                    <div id="save_view_list" class="overflow-y-auto mb-4" style="height: -webkit-fill-available;"> 
+                        <ComSaveViewList :doctype="doctype" :list_view_setting="list_view_setting" v-model:items="viewList" ref="saveViewList" /> 
+                    </div>
                 </div>
             </div>
         </template>
@@ -62,7 +64,7 @@
                             </li>
                             <a v-else v-ripple class="flex items-center" v-bind="props.action">
                                 <span :class="item.icon" />
-                                <span class="ml-2">{{ item.label }}</span>
+                                <span class="ml-2">  {{ item.label }}</span>
 
                                 <Badge v-if="item.badge" class="ml-auto" :value="item.badge" />
                                 <span v-if="item.shortcut"
@@ -82,7 +84,8 @@
                         
                         >
                         <template #empty> 
-                            No Record Found
+                            {{ $t('No Record Found') }}
+                            
                         </template>
                         <template v-if="$slots.default">
                             <slot />
@@ -96,7 +99,7 @@
                                 <!-- Header slot for custom header content -->
                                 <template #header="headerProps">
                                     <slot :name="'header_' + col.field" :column="col" :index="index">
-                                        <span>{{ col.header }}</span>
+                                        <span>{{ $t(col.header) }}</span>
                                     </slot>
                                 </template>
 
@@ -154,7 +157,7 @@
                                 @change="onLimitChanged" />
                         </div>
                         <div class="font-bold">
-                            Showing: {{ items.length }} of {{ totalRecord }}
+                            {{ $t('Showing')}}: {{ items.length }} of {{ totalRecord }}
                         </div>
                     </div>
                 </Stack>
@@ -204,6 +207,7 @@ const props = defineProps({
 const filter = defineModel("filter")
 const moment = inject("$moment")
 const selectedRow = defineModel("selectedRow")
+const filterHeight = ref(0)
 const { items, scrollHeight, onSearch, loading, columns,
     filterOptions,
     onOrderBy,
@@ -276,6 +280,20 @@ if (edoorReservationDetailSavedFilter) {
 
 function onBeforeShow() {
     emit("onBeforeContextMenuShow")
+}
+
+
+onMounted(() => {
+    filterScrollHeight()
+})
+
+const filterScrollHeight = () => {
+    const element = document.querySelector('#save_filter_wrapper');
+
+    const contentHeight = element?.scrollHeight;  
+    const windowHeight = window.innerHeight;   
+    const h = windowHeight - 163;    
+    if (element) element.style.height = `${h}px`; 
 }
 
 </script>

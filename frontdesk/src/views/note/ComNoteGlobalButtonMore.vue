@@ -49,7 +49,7 @@ const { t: $t } = i18n.global;
 	}
         confirm.require({
         message: 'Are you sure you want to delete reservation note?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',

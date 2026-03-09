@@ -38,9 +38,9 @@
                         <Textarea class="w-full" placeholder="Note" v-model="data.note" autoResize rows="2" />
                         <div class="mt-2">
                             <Checkbox  
-                                    v-model="data.change_room_number" :binary="true" :trueValue="1"
+                                    v-model="changeRoomCharge" :binary="true" :trueValue="1"
                                     inputId="change_room_number"
-                                    :falseValue="0" />
+                                    :falseValue="0" disabled/>
 
                         <label for="change_room_number" class="ml-2   font-medium cursor-pointer ">
                             Change Room Number to Room Number of the target folio
@@ -89,13 +89,14 @@ import { ref, onMounted, inject, useConfirm, postApi, useToast } from "@/plugin"
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject("dialogRef");
 const confirm = useConfirm()
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const data = ref({})
 const selectedFolio = ref({})
 const loading = ref(false)
 const toast = useToast()
-const folioNumberFilter = ref() 
-const disFirstbox = ref(false)
-const disSecondbox = ref(false)
+const folioNumberFilter = ref()  
+const changeRoomCharge = ref(1)
 
 function onSelectFolioNumber(data) {
     selectedFolio.value = data
@@ -137,7 +138,7 @@ function onOk() {
     }
     confirm.require({
         message: `Are you sure want to transfer these folio transaction to folio ` + selectedFolio.value.value,
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
@@ -155,7 +156,7 @@ function onOk() {
                     reservation_stay: data.value.reservation_stay,
                     property: window.property_name,
                     change_guest:data.value.change_guest || 0,
-                    change_room:data.value.change_room_number || 0,
+                    change_room:changeRoomCharge.value || 0,
                 }
 
             }).then((r) => {

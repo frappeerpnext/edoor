@@ -117,7 +117,7 @@ function Refresh() {
 function onSubmitRoomBlock() {
     confirm.require({
         message: 'Are you sure you want to block this room?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
@@ -145,7 +145,7 @@ function onSubmitRoomBlock() {
 function onDelete() {
     confirm.require({
         message: 'Are you sure you want to delete this room block?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',

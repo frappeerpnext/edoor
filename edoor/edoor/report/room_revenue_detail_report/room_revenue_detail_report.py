@@ -197,6 +197,7 @@ def get_summary(filters,data):
 		]
 
 def get_chart(filters,data):
+	chart_data = [d for d in data if d.get("room_number") != "Total"]
 	currency_precision = frappe.get_cached_value("System Settings",None,"currency_precision")
 
 	if not filters.chart_series:
@@ -217,28 +218,25 @@ def get_chart(filters,data):
 	
 	group_column = get_field(filters)
 	# frappe.throw(str( [d[group_column["data_field"]] for d in data if group_column["data_field"] in d]))
-	group_data = sorted(set([d[group_column["data_field"]] for d in data if group_column["data_field"] in d]))
+	group_data = sorted(set([d[group_column["data_field"]] for d in chart_data if group_column["data_field"] in d]))
 	
 	for d in chart_series:
 		field = [x for x in report_fields if x["label"] == d][0]
-	 
-
 		dataset_values = []
+		
 		for g in group_data: 
-			# frappe.throw(str(sum([d[field["data_field"]] for d in data if d.get(group_column["data_field"]) == g and d.get(field["data_field"]) is not None])))
-			amount = sum([d[field["data_field"]] for d in data if d.get(group_column["data_field"]) == g and d.get(field["data_field"]) is not None])
+			# 3. Use 'chart_data' here so the 'Total' row isn't added to the sum
+			amount = sum([
+				d[field["data_field"]] for d in chart_data 
+				if d.get(group_column["data_field"]) == g and d.get(field["data_field"]) is not None
+			])
 			
-			if field["fieldtype"]  =="Currency":
-				amount = round(amount,int(currency_precision))
-				
+			if field["fieldtype"] == "Currency":
+				amount = round(amount, int(currency_precision))
+			
+			dataset_values.append(amount)
 
-			dataset_values.append(
-				amount
-			)
-
-
-
-		dataset.append({'name':field["label"],'values':dataset_values})
+		dataset.append({'name': field["label"], 'values': dataset_values})
 		colors.append(field["chart_color"])
 
  

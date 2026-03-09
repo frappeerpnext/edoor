@@ -53,7 +53,7 @@ function onremove(){
     if (selections.value.length>0) {
         dialogConfirm.require({
             message: 'Do you want to Remove this record from this City Ledger Invoice',
-            header: 'Confirmation',
+            header: $t('Confirmation'),
             icon: 'pi pi-info-circle',
             acceptClass: 'border-none crfm-dialog',
             rejectClass: 'hidden',

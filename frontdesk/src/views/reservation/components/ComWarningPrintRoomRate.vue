@@ -1,9 +1,9 @@
 <template>
   
     <Message severity="warn" v-if="display!='toast'">
-        <h1>Attention!</h1>
+        <h1>{{$t("Attention")}}!</h1>
         <p>
-            This reservation has been mark room rate as hidden. Please ensure that this rate is not printed to the guest.
+            {{$t("This reservation has been mark room rate as hidden. Please ensure that this rate is not printed to the guest")}}.
         </p>
     </Message>
 

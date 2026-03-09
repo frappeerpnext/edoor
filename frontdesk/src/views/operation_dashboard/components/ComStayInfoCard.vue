@@ -1,6 +1,6 @@
 <template>
-    <div><span>Res. Date:</span> <span class="font-semibold">{{ moment(data?.reservation_date).format("DD-MM-YYYY") }}</span></div>
-    <div><span>From:</span> <span class="font-semibold">{{ moment(data?.arrival_date).format("DD-MM-YYYY") }} &#8594; {{ moment(data?.departure_date).format("DD-MM-YYYY") }}</span></div>
+    <div><span>{{$t('Res. Date')}}:</span> <span class="font-semibold">{{ moment(data?.reservation_date).format("DD-MM-YYYY") }}</span></div>
+    <div><span>{{$t('From')}}:</span> <span class="font-semibold">{{ moment(data?.arrival_date).format("DD-MM-YYYY") }} &#8594; {{ moment(data?.departure_date).format("DD-MM-YYYY") }}</span></div>
     <!-- {{ data }} -->
     <div class="flex gap-2">
         <template v-for="(m, index) in stayInfoItem" :key="index">

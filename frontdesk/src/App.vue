@@ -333,7 +333,7 @@ function showGuestDetail(name) {
             name: name
         },
         props: {
-            header: 'Guest Detail',
+            header: $t('Guest Detail'),
             style: {
                 width: '80vw',
             },
@@ -447,7 +447,7 @@ function onAssignRoom(reservation_stay_name, name) {
             reservation_stay_name: reservation_stay_name
         },
         props: {
-            header: `Assign Room`,
+            header: $t('Assign Room'),
             style: {
                 width: '80vw',
             },

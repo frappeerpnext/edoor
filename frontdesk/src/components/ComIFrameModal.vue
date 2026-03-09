@@ -1,6 +1,6 @@
 <template>
     <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
-      
+     xxx {{print_format}}
         <template v-if="print_format?.use_report_server==1">
             <ComServerReportViewer :report_name="print_format.server_report_name" :params ="server_report_params" />
         </template>

@@ -31,28 +31,28 @@
       tableClass="operation_data_dashboard"
       @rowContextmenu="onRowContextMenu" contextMenu
     >
-      <Column header="Guest">
+      <Column :header="$t('Guest')">
         <template #body="slotProps">
           <ComGuestCard :data="slotProps.data" />
         </template>
       </Column>
-      <Column header="Accomodation">
+      <Column :header="$t('Accomodation')">
         <template #body="slotProps">
           <ComAccomodationCard :data="slotProps.data" />
         </template>
       </Column>
 
-      <Column header="Stay Info">
+      <Column :header="$t('Stay Info')">
         <template #body="slotProps">
           <ComStayInfoCard :data="slotProps.data" />
         </template>
       </Column>
-      <Column header="Status">
+      <Column :header="$t('Status')">
         <template #body="slotProps">
           <ComReservationStayStatus :data="slotProps.data" />
         </template>
       </Column>
-      <Column header="Action">
+      <Column :header="$t('Action')">
         <template #body="slotProps">
           <ComStayAction
             :data="slotProps.data"
@@ -61,7 +61,7 @@
         </template>
       </Column>
       <template #expansion="slotProps">
-        <div class="p-3">Detail Action list here</div>
+        <div class="p-3">{{$t('Detail Action list here')}}</div>
       </template>
       <template #groupheader="slotProps">
         <!-- <ComGroupInfo :data="slotProps.data" group_by="guest_name"/> -->
@@ -70,7 +70,7 @@
             {{ slotProps.data.room_type }}
           </span>
           <span v-else>
-            {{ slotProps.data[filter.group_by[2]] }}
+            {{ $t(slotProps.data[filter.group_by[2]]) }}
           </span>
 
           <Badge

@@ -8,10 +8,10 @@
        :hasFilter="keyword!=''"
         v-model:selected ="selected"
        >
-       {{option.label }}
+       {{ $t(option.label) }}
 
        <template #bottom>
-        <Button @click="onClearFilter" :disabled="!keyword" label="Clear Filter" severity="warning" class="w-full mt-4" />
+        <Button @click="onClearFilter" :disabled="!keyword" :label='$t("Clear Filter")' severity="warning" class="w-full mt-4" />
        </template>
     </ComFilterInput>
 
@@ -27,14 +27,16 @@ const emit = defineEmits()
 const operator = ref("like")
 const keyword = ref("")
 const selected = ref("")
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const operatorOptions = [
-    {label:"Equal", value:'=',},
-    {label:"Not Equal", value:'!='},
-    {label:"Contain", value:'like',prefix:'%',sufix:'%'},
-    {label:"Not Contain", value:'not like',prefix:'%',sufix:'%'},
-    {label:"Start width", value:'like',sufix:'%'},
-    {label:"End width", value:'like',prefix:'%'},
-    {label:"Is", value:'is'},
+    {label:$t("Equal"), value:'=',},
+    {label:$t("Not Equal"), value:'!='},
+    {label:$t("Contain"), value:'like',prefix:'%',sufix:'%'},
+    {label:$t("Not Contain"), value:'not like',prefix:'%',sufix:'%'},
+    {label:$t("Start width"), value:'like',sufix:'%'},
+    {label:$t("End width"), value:'like',prefix:'%'},
+    {label:$t("Is"), value:'is'},
 ]
  
 

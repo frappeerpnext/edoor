@@ -1,7 +1,7 @@
 <template>
-    <div>Room Type: <span class="font-semibold">{{ data?.room_type_alias }} - {{ data.room_types }}</span></div>
+    <div>{{ $t('Room Type')}}: <span class="font-semibold">{{ data?.room_type_alias }} - {{ data.room_types }}</span></div>
     <div>
-        <span class="me-2">Room #:</span><span v-if="data?.rooms"><span class="font-semibold">{{data?.rooms}}</span></span>
+        <span class="me-2">{{ $t('Room #')}}:</span><span v-if="data?.rooms"><span class="font-semibold">{{data?.rooms}}</span></span>
         <span @click="onAssignRoom(data?.rooms_data,data?.name)" class="link_line_action w-auto" v-else>
                 <i class="pi pi-pencil"></i>
                 {{ $t('Assign Room') }}

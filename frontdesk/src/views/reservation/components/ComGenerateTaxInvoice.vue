@@ -44,7 +44,7 @@
          
         <div class="relative mt-2">
             <span class="absolute w-full"><Checkbox class="w-full" v-model="isConfirm" :binary="true" /></span>
-            <span class="pl-5">I am verify that all information is correct</span>
+            <span class="pl-5">{{$t('I am verify that all information is correct')}}</span>
         </div>
 
         <OverlayPanel ref="op">
@@ -99,7 +99,7 @@ function onSaveEdit(){
 function onSave() {
     confirm.require({
             message: $t('Are you sure you want to Generate Tax Invoice'),
-            header: 'Confirmation',
+            header: $t('Confirmation'),
             icon: 'pi pi-exclamation-triangle',
             acceptClass: 'border-none crfm-dialog',
             rejectClass: 'hidden',

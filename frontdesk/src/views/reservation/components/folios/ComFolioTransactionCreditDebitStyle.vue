@@ -1,5 +1,5 @@
 <template>
-    <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
+    <ComPlaceholder :text="$t('There is no Folio transactions')" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
 
         <DataTable :scrollable="folioTransactions.length > 10"
             :scrollHeight="(folioTransactions.length > 10 ? '500px' : 'auto')"

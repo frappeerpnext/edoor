@@ -358,7 +358,7 @@ function checkIn(data){
 function onCheckOut(data) {
     confirm.require({
         message: 'Are you sure you want to check out this room?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         acceptLabel: 'OK',
         rejectVisible: true,
         rejectClass: 'hidden',

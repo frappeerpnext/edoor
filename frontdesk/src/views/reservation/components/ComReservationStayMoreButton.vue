@@ -51,7 +51,7 @@
                             @click="onUnmarkasPaidbyMasterRoom()"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <ComIcon icon="BilltoMasterRoom" class="me-2" style="height:15px;"></ComIcon>
-                            {{ $t('unmark as Paid by Master Room') }}
+                            {{ $t('Unmark as Paid by Master Room') }}
                         </button>
                         <button v-else-if="!props.data.paid_by_master_room && !props.data.is_master "
                             @click="onMarkasPaidbyMasterRoom()"
@@ -373,7 +373,7 @@ function onUnallowPosttoCityLedger() {
 }
 function onMarkAsMasterRoom() {
     confirm.require({
-        message: 'Are you sure you want to mark this room as master room?',
+        message: $t('Are you sure you want to mark this room as master room?'),
         header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',

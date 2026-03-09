@@ -20,7 +20,7 @@ const props = defineProps({
 const gv = inject("$gv")
 const items = ref([
     {
-        label: $t("eDoor Group Registration Card"),
+        label: $t("Group Registration Card"),
         icon: 'pi pi-check-circle',
 
         command: () => {

@@ -339,7 +339,7 @@ items.value.push({
 
 function onMarkAsMasterRoom() {
     confirm.require({
-        message: 'Are you sure you want to mark this room as master room?',
+        message: $t('Are you sure you want to mark this room as master room?'),
         header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -471,11 +471,11 @@ function OnUndoCheckOut() {
 
 function onCancelReservationStay() {
     onUpdateReservationStatus(
-        "Cancel Reservation Stay # " + rs.reservationStay.name,
+        `${$t('Cancel Reservation Stay')} #`  + rs.reservationStay.name,
         {
             api_url: "reservation.update_reservation_status",
             method: "POST",
-            confirm_message: "You are about to cancel this reservation.<br/> Once the cancellation is complete, you will no longer be able to make any changes to the reservation. <br/> If you have a cancellation charge, please update the folio transaction first.",
+            confirm_message: `${$t('You are about to cancel this reservation.')}<br/> ${$t('Once the cancellation is complete, you will no longer be able to make any changes to the reservation.')} <br/> ${$t('If you have a cancellation charge, please update the folio transaction first.')}`,
             data: {
                 reservation: rs.reservationStay.reservation,
                 reserved_room: false,
@@ -525,7 +525,7 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
 
 function onVoidReservationStay() {
     onUpdateReservationStatus(
-        "Void Reservation Stay # " + rs.reservationStay.name,
+        `${$t('Void Reservation Stay')} # ` + rs.reservationStay.name,
         {
             api_url: "reservation.update_reservation_status",
             method: "POST",
@@ -548,11 +548,11 @@ function onVoidReservationStay() {
 
 function onNoShowReservationStay() {
     onUpdateReservationStatus(
-        "No Show Reservation Stay # " + rs.reservationStay.name,
+        $t("No Show Reservation Stay") + " # " + rs.reservationStay.name,
         {
             api_url: "reservation.update_reservation_status",
             method: "POST",
-            confirm_message: "You are about to mark this reservation as No Show.<br/> If you have a No Show charge, please update the folio transaction first. <br/> If you want to sell this room, please untick on check box <strong>Reserved room for this reservation</strong>",
+            confirm_message: `${$t('You are about to mark this reservation as No Show')}.<br/> ${$t('If you have a No Show charge, please update the folio transaction first')}. <br/> ${$t('If you want to sell this room, please untick on check box')} <strong>${$t('Reserved room for this reservation.')}</strong>`,
             data: {
                 reservation: rs.reservationStay.reservation,
                 reserved_room: false,

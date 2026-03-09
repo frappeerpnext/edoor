@@ -43,7 +43,7 @@ async function loadData() {
 }
 
 onMounted(async () => {
-    await loadData();;
+    await loadData();
 
 })
 </script>

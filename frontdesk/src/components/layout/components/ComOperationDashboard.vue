@@ -47,7 +47,7 @@
                         <!-- <ComOperationDashboardButton title="In-House" routeName="InHouse" :currentRoute="op.current_route" :dataLength="data?.in_house" @onOpenRoute="openRoute('InHouse')" icon="iconInHouse"/> -->
                         <ComOperationDashboardButton title="Departure" routeName="DepartureGuest" :currentRoute="op.current_route" :dataLength="data?.departure" @onOpenRoute="openRoute('DepartureGuest')" icon="iconDepartureGuest"/>
                         <ComOperationDashboardButton title="Daily Reservation" routeName="DailyReservation" :currentRoute="op.current_route" :dataLength="data?.daily_reservation + '/' + data?.daily_reservation_stay" @onOpenRoute="openRoute('DailyReservation')" icon="iconReservation"/>
-                        <ComOperationDashboardButton title="Guest Folio" routeName="OperationDashboardGuestLedger" :currentRoute="op.current_route" :dataLength="2" @onOpenRoute="openRoute('OperationDashboardGuestLedger')" icon="iconGuestFolio"/>
+                        <!-- <ComOperationDashboardButton title="Guest Folio" routeName="OperationDashboardGuestLedger" :currentRoute="op.current_route" :dataLength="2" @onOpenRoute="openRoute('OperationDashboardGuestLedger')" icon="iconGuestFolio"/> -->
                         
                         
                     </div>

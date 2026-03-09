@@ -213,7 +213,7 @@ const viewUnassignRoom = ()=>{
              date:working_day.date_working_day
          },
          props: {
-             header: $t("View unassign room"),
+             header: $t("View Unassign Room"),
              style: {
                  width: '90vw',
              },

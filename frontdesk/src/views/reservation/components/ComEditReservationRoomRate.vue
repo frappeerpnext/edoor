@@ -151,7 +151,7 @@
         <div class="relative mt-2 pt-0 col-12">
             <span class="absolute w-full"><Checkbox @update:modelValue="checkChangePax()"   class="w-full" v-model="doc.is_manual_change_pax" :binary="true" :trueValue="1"
               :falseValue="0" /></span>
-            <span class="pl-5">Manual Change Pax</span>
+            <span class="pl-5">{{ $t('Manual Change Pax') }}</span>
         </div> 
         </div>
                     <template v-if="doc.allow_discount==1">
@@ -219,7 +219,7 @@
 <div class="col-4" v-if="((doc.is_house_use +doc.is_complimentary )==0 &&  doc.tax_rule) || ((doc.is_house_use +doc.is_complimentary )==0 &&  doc.is_package)">
     <div class="card">
         <Accordion :activeIndex="0">
-            <AccordionTab header="Room Rate Breakdown">
+            <AccordionTab :header="$t('Room Rate Breakdown')">
                 <div class="grid p-2">
                     
                     <div class="col-12 pb-0">
@@ -619,7 +619,7 @@ function onUseManualRate() {
 }
 
 function onSave() {
-    
+
     //prepare room rate name send to api
     let room_rate_names = []
     let reservation_stay_names = []

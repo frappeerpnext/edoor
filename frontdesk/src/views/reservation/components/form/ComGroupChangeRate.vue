@@ -351,7 +351,7 @@ function onChangeNewRate() {
     if((data.value.new_rate || 0)==0){
         confirm.require({
         message: 'Are you sure you want to set room rate to 0?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none',
         rejectClass: 'hidden',

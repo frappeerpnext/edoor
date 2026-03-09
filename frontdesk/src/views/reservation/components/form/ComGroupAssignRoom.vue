@@ -1,6 +1,6 @@
 <template >
     <ComDialogContent :hideButtonOK="data?.length == 0 ? true : false" :hideButtonClose="data?.length == 0 ? true : false"  @onClose="onClose" @onOK="onSave" :loading="loading">
-    <ComReservationStayPanel title="Group Assign Room">
+    <ComReservationStayPanel :title="$t('Group Assign Room')">
         <template #content> 
     <div v-if="data?.length == 0"> {{ $t('No Reservation Stay to Assign Room') }} </div>
 
@@ -152,8 +152,8 @@ const get_rooms = ref((d) => {
         let rooms = []
         const roomNumbersToExclude = data.value.filter(r => r.room_id).map(r => r.room_id)
         rooms = room_data.value.find(r => r.start_date == d.start_date && r.end_date == d.end_date).rooms
-        // rooms =  rooms.filter(r => (r.room_type_id == d.new_room_type_id && !roomNumbersToExclude.includes(r.name)) || (r.name == d.room_id && r.room_type_id == d.new_room_type_id))
-        rooms =  rooms.filter(r =>   !roomNumbersToExclude.includes(r.name) || r.name == d.room_id)
+        rooms =  rooms.filter(r => (r.room_type_id == d.new_room_type_id && !roomNumbersToExclude.includes(r.name)) || (r.name == d.room_id && r.room_type_id == d.new_room_type_id))
+        rooms = rooms.filter(r => (!roomNumbersToExclude.includes(r.name) || r.name == d.room_id) && r.disabled!=1)
         return rooms
     } else {
         return []

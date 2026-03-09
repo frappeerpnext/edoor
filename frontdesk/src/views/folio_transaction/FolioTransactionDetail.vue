@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent hideButtonOK @onClose="onClose"  :hideIcon="false" :loading="loading" >
+      
     <div class="bg-card-info">
       <Message v-if="doc?.source_transaction_number">This transaction has been transferred from the <span>{{doc?.source_transaction_type}}</span>. View folio number
         <span class="link_line_action overflow-hidden w-min" @click="onOpenReservationFolioDetail(doc?.source_transaction_number)">{{doc?.source_transaction_number}}</span><br/>
@@ -604,6 +605,7 @@ const onViewCityLedgerInvoiceDetail = (id) => {
 
 
 function onPrintFolioTransaction() { 
+
   const dialogRef = dialog.open(ComReportServerModal, {
     data: {
       doctype: "Folio Transaction",

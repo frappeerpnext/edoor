@@ -163,13 +163,13 @@ const onMenuAdditionalGuest = ($event, name,guest_name) => {
 
 function onDeleteAdditionalGuest(){
     dialogConfirm.require({
-        message: 'Do you want to delete this record?',
-        header: 'Delete Confirmation',
+        message: $t('Do you want to delete this record?'),
+        header: $t('Delete Confirmation'),
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
+        acceptLabel: $t('Ok'),
         accept: () => {
             const additionalGuests = rs.reservationStay.additional_guests.filter(r=>r.name != menuAdditionalGuest.value.additional_guest_name)
             const reservationStayData = JSON.parse(JSON.stringify(rs.reservationStay))
@@ -190,7 +190,7 @@ function onAdvancedSearch(guest_type) {
     
     dialog.open(ComReservationChangeGuest, {
         props: {
-            header: `${guest_type == 'master_guest' ? 'Change Master Guest' : (guest_type == 'stay_guest' ? 'Add Stay Guest' : (guest_type == 'additional_guest' ? 'Add Additional Guest' : '')) }`,
+            header: `${guest_type == 'master_guest' ? $t('Change Master Guest') : (guest_type == 'stay_guest' ? $t('Add Stay Guest') : (guest_type == 'additional_guest' ? $t('Add Additional Guest') : '')) }`,
             keyword: '',
             doctype: 'Customer',
             style: {

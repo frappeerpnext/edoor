@@ -1,7 +1,7 @@
 <template>
      
     <ComDocumentList doctype="Reservation Stay" 
-    title="Unassign Rooms"
+    :title="$t('Unassign Rooms')"
     list_view_setting="reservation_stay_unassign_room_list"
         router_name="UnAssignRoomList" 
         :options="options" @row-dblclick="onRowDblclick"

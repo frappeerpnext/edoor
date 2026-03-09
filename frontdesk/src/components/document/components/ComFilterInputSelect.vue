@@ -9,7 +9,7 @@
        :hasFilter="selected!=''"
        
        >
-       {{option.label }}
+       {{$t(option.label) }}
 
 
       
@@ -30,7 +30,7 @@
       </template>
 
       <template #bottom>
-        <Button @click="onClearFilter" :disabled="!selected" label="Clear Filter" severity="warning" class="w-full mt-4" />
+        <Button @click="onClearFilter" :disabled="!selected" :label="$t('Clear Filter')" severity="warning" class="w-full mt-4" />
        </template>
 
        </ComFilterInput>
@@ -46,7 +46,8 @@ const props = defineProps({
 const emit = defineEmits()
 const operator = ref("=")
 const selected = ref("")
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 watch(() => props.defaultValue, (newVal, oldVal) => {
     if(props.defaultValue){  
     if(newVal){
@@ -73,11 +74,11 @@ const options = computed(()=>{
 })
 
 const operatorOptions = [
-    {label:"Equal", value:'=',},
-    {label:"Not Equal", value:'!='},
-    {label:"In", value:'in'},
-    {label:"Not In", value:'not in'},
-    {label:"Is", value:'is'},
+    {label:$t("Equal"), value:'=',},
+    {label:$t("Not Equal"), value:'!='},
+    {label:$t("In"), value:'in'},
+    {label:$t("Not In"), value:'not in'},
+    {label:$t("Is"), value:'is'},
 ]
  
 function onSearch(){

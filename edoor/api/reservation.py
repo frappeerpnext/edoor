@@ -253,13 +253,25 @@ def get_folio_detail(name):
 @frappe.whitelist()
 def check_room_availability(property,room_type_id=None,start_date=None,end_date=None,exception=None):
     working_day = get_working_day(property)
-    end_date = add_to_date(end_date,days=-1)
+    reservation_status  =  frappe.db.get_list('Reservation Status', pluck='name')
+    if start_date ==end_date:
+        reservation_status = ["In-house"]
+      
+    if start_date!=end_date:
+        end_date = add_to_date(end_date,days=-1)
+    if start_date ==end_date:
+        start_date = add_to_date(start_date,days=-1)
+
+    
+
     sql_except = ''
     if not room_type_id:
         room_type_id = ''
     if exception:
         exception = json.loads(exception)
         sql_except = "and {0} != '{1}'".format(exception['field'], exception['value'])
+ 
+    
 
     sql = """
         select 
@@ -268,19 +280,23 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
             room_type,
             room_type_alias,
             name,
-            room_number
+            room_number,
+            disabled
         from `tabRoom` 
         where 
             property = %(property)s and 
+            disabled = 0 and
             room_type_id = if(%(room_type_id)s='', room_type_id, %(room_type_id)s) and
             name not in (
                 select 
                     distinct
                     coalesce(room_id,'') 
-                from `tabTemp Room Occupy` 
+                from `tabTemp Room Occupy` t 
+                join `tabReservation Stay` st on st.name  = t.reservation_stay 
                 where
+                    st.reservation_status in %(reservation_status)s and 
                     is_departure = 0 and
-                    date between '{0}' and '{1}' {2}
+                    date between '{0}' and '{1}' {2} 
             )   
     """
     #check if arrival date is equal to current system date then check room availabityy is check with house keeping status
@@ -290,7 +306,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
    
     sql = sql.format(start_date, end_date,sql_except)
    
-    data = frappe.db.sql(sql,{"property":property,"room_type_id":room_type_id},as_dict=1)
+    data = frappe.db.sql(sql,{"property":property,"room_type_id":room_type_id,"reservation_status":reservation_status},as_dict=1)
     
     # get room amentity
     for d in data:
@@ -303,12 +319,24 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
 
 @frappe.whitelist()
 def check_room_type_availability(property,start_date=None,end_date=None,rate_type=None, business_source=None, room_type_id=None,exclude_stay_room_id=None):
+    reservation_status  =  frappe.db.get_list('Reservation Status', pluck='name')
+    if start_date ==end_date:
+        reservation_status = ["In-house"]
+      
+    if start_date!=end_date:
+        end_date = add_to_date(end_date,days=-1)
+    if start_date ==end_date:
+        start_date = add_to_date(start_date,days=-1)
+    else:
+        #check if start date < current working date then set start date to crrent working date because we check date only for future date
+        working_day = get_working_day(property=property)
+        if getdate(start_date)< getdate(working_day["date_working_day"]):
+            start_date = working_day["date_working_day"]
+
+
+ 
+
     
-    end_date = add_to_date(end_date,days=-1)
-    #check if start date < current working date then set start date to crrent working date because we check date only for future date
-    working_day = get_working_day(property=property)
-    if getdate(start_date)< getdate(working_day["date_working_day"]):
-        start_date = working_day["date_working_day"]
 
     #get all room type and total room 
     sql_room_type = "select a.room_type_id as name, a.room_type, count(a.name) as total_room, 0 as occupy, a.room_type_alias from `tabRoom` a inner join `tabRoom Type` rt on rt.name = a.room_type_id where a.disabled = 0 and a.property=%(property)s  group by a.room_type_id,a.room_type order by rt.sort_order"
@@ -320,14 +348,23 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
     for t in room_type:
         #get total room occupy from temp room occupy 
         #we count stay_room_id because some reervation stay is not yet assign room
-        sql = "select count(room_type_id) as total_room from `tabTemp Room Occupy` where is_departure = 0 and  room_type_id = '{}' and date between '{}' and '{}'".format(t["name"],start_date,end_date)
+        sql = """select 
+                count(*) as total_room 
+            from `tabTemp Room Occupy` t
+            join `tabReservation Stay` st on st.name = t.reservation_stay
+            where 
+                st.reservation_status in %(reservation_status)s and
+                t.room_type_id = '{}' 
+                and t.date between '{}' and '{}'
+        """.format(t["name"],start_date,end_date)
+        
         if exclude_stay_room_id:
             sql = sql + " and stay_room_id<>'{}'".format(exclude_stay_room_id) 
             
         sql= sql + " group by date order by count(room_type_id) desc limit 1"
        
-        room_type_occupy = frappe.db.sql(sql,as_dict=1)
-  
+        room_type_occupy = frappe.db.sql(sql,{"reservation_status":reservation_status},as_dict=1)
+       
         if room_type_occupy:
             t["occupy"] = room_type_occupy[0]["total_room"]
         else:
@@ -1002,10 +1039,22 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
         
 
         #delete auto post transaction
-        folio_numbers = frappe.db.sql("""select distinct transaction_number from `tabFolio Transaction` where reservation_stay = '{0}' and is_auto_post=1 and transaction_type='Reservation Folio' 
-                                      and 
-                                      reservation_room_rate in (select name from `tabReservation Room Rate` where reservation_stay='{0}')
-                                      """.format(s),as_dict=1)
+        folio_numbers = frappe.db.sql(
+            """
+            SELECT DISTINCT transaction_number
+            FROM `tabFolio Transaction`
+            WHERE reservation_stay = '{0}'
+            AND is_auto_post = 1
+            AND transaction_type = 'Reservation Folio'
+            AND reservation_room_rate IN (
+                SELECT name
+                FROM `tabReservation Room Rate`
+                WHERE reservation_stay = '{0}'
+            )
+            """.format(s),
+            as_dict=1
+        )
+
         
         frappe.db.sql("delete from `tabFolio Transaction` where is_auto_post=1 and reservation_room_rate in (select name from `tabReservation Room Rate` where reservation_stay='{}')".format(s))
 
@@ -1372,7 +1421,7 @@ def change_reservation_guest( guest, reservation='',reservation_stay='', is_appl
         reservation_stay_doc.guest = guest_info.name
         reservation_stay_doc.save()
     else:
-        reservation_stays = frappe.get_list('Reservation Stay',filters={"reservation":reservation})
+        reservation_stays = frappe.get_list('Reservation Stay',filters={"reservation":reservation,"is_active_reservation": 1})
         for s in reservation_stays:
             reservation_stay_doc = frappe.get_doc('Reservation Stay', s)
             reservation_stay_doc.guest = guest_info.name
@@ -1648,9 +1697,25 @@ def get_reservation_comment_note(doctype, docname,):
     data =  frappe.db.sql("SELECT `name`, creation ,custom_note_date, reference_doctype, reference_name,owner, comment_by as user_full_name,subject, content, comment_type, custom_icon,custom_is_note FROM `tabComment` WHERE comment_type in ('Comment','Info','Deleted','Attachment','Attachment Removed') AND reference_doctype ='{0}' AND reference_name = '{1}' and custom_is_audit_trail=1 order by modified desc limit 20".format(doctype, docname),as_dict=1)
     return data
 
+def validate_change_stay_room_occupy(room_id, start_date,end_date,skip_stay_room_id=None):
+    filter= {
+        "start_date":start_date,
+        "end_date":end_date,
+        "room_id":room_id,
+    }
+    sql="select name from `tabTemp Room Occupy` where room_id=%(room_id)s and date between %(start_date)s and %(end_date)s and is_active = 1 "
+    if skip_stay_room_id:
+        sql = sql + " and stay_room_id <> %(stay_room_id)s"
+        filter["stay_room_id"] = skip_stay_room_id
+ 
+ 
+    data = frappe.db.sql(sql,filter)
+ 
+    if data:
+        frappe.throw("This room number is already assign room.")
+
 @frappe.whitelist(methods="POST")
 def change_stay(data):
-
     working_day  =get_working_day(data["property"])
     if not working_day["cashier_shift"]:
         frappe.throw("There is no cashier open. Please open your cashier shift")
@@ -1663,10 +1728,15 @@ def change_stay(data):
     allow_back_date = frappe.get_cached_value("eDoor Setting",None,"allow_user_to_add_back_date_transaction")
 
     room_id = ""
-    
-    
-    if 'room_id' in data and data["room_id"]:
+
+    if data.get("room_id"):
         room_id = data["room_id"]
+        validate_change_stay_room_occupy(room_id = data.get("room_id"),
+            start_date = data.get("start_date"),
+            end_date =add_to_date(data.get("end_date"),days=-1),
+            skip_stay_room_id= data.get("name")
+        )
+
     if getdate(data["start_date"]) == getdate(data["end_date"]):
         frappe.throw("Arrival date cannot equal to departure date")
     
@@ -1784,16 +1854,22 @@ def change_stay(data):
             if (doc.reservation_status=='In-house' and room_id != stays[0].room_id) or (doc.reservation_status=='In-house' and getdate(stays[0].start_date)!=getdate(data["start_date"])):
                 frappe.throw("In-house reservation is not allow to change date or room number")
     
+    # check if old stay date range is 0 mean that guest change room on departure date 
+    # then we ignore validate start date and end of room stays
+    sql = "select start_date, end_date from `tabReservation Stay Room` where name = %(name)s"
+    data_stay = frappe.db.sql(sql,{"name":data.get("name")},as_dict=1)[0]
+    data["start_date"] = data_stay.get("start_date")
+    ignore_validate_reservation_stay_room_start_date = (data_stay.get("start_date") == data_stay.get("end_date") )
+
     for s in stays:
         if s.name == data['name']:
-           
+            
             if room_id: 
                 s.room_id=room_id 
             if "room_type_id" in data:
                 s.room_type_id= data["room_type_id"]
             if not s.room_type_id:
                 s.room_type_id = frappe.get_cached_value("Room", s.room_id, "room_type_id")
-            
             s.room_type = frappe.get_cached_value("Room", s.room_id, "room_type")
             s.room_type_alias = frappe.get_cached_value("Room", s.room_id, "room_type_alias")
             s.start_date = data['start_date']
@@ -1801,20 +1877,22 @@ def change_stay(data):
            
         # change last stay room for start date
         index = stays.index(s) + 1
-        if len(stays) > index and stays[index]:
-            stays[index].start_date = s.end_date
-            if datetime.strptime(str(stays[index].start_date), '%Y-%m-%d').date() >= datetime.strptime(str(stays[index].end_date), '%Y-%m-%d').date():
-                frappe.throw("Start date cannot greater than end date.{}".format(str(index)))
+        if not ignore_validate_reservation_stay_room_start_date:
+            if len(stays) > index and stays[index]:
+                stays[index].start_date = s.end_date
+                if datetime.strptime(str(stays[index].start_date), '%Y-%m-%d').date() >= datetime.strptime(str(stays[index].end_date), '%Y-%m-%d').date():
+                    frappe.throw("Start date cannot greater than end date  at row {}".format(str(index)))
 
     if hasattr(data,"note"):
         doc.change_stay_note = data["note"]  
 
     doc.save()
-
     if doc: 
         if data["is_move"]==0:
+            
             update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
         else:
+            
             update_reservation_stay_room_rate_after_move(data=data,stay_doc= doc)
             
         # update room_type and room type to reservatio reservation room rate
@@ -2064,6 +2142,7 @@ def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, de
 
 @frappe.whitelist(methods="DELETE")
 def delete_stay_room(parent,name, note):
+    
     stay = frappe.get_doc('Reservation Stay', parent)
     if stay.allow_user_to_edit_information==0:
         frappe.throw("This reservation stay is not allow user to edit information")
@@ -2081,6 +2160,22 @@ def delete_stay_room(parent,name, note):
 
         if getdate(stay_room.start_date ) < getdate(working_day["date_working_day"]):
             frappe.throw("You cannot delete this room stay because stay date is less then current working date.")
+
+    # validate user delete last stay that start date = end date (user change room on departure date)
+    # check if previouse stay room have other reservation that currently in-house then not allow user to delete 
+    stay_room = [d for d in stay.stays if d.name == name][0]
+    if stay_room.start_date == stay_room.end_date: 
+        prev_stay_room = stay.stays[(stay_room.idx-1) - 1]
+        if prev_stay_room.room_id:
+            check_in_house_data = frappe.db.sql("select count(*) as total from `tabRoom Occupy` where date = %(date)s and room_id=%(room_id)s and reservation_status ='In-house'",{
+                "date":stay_room.start_date,
+                "room_id":prev_stay_room.room_id
+            },as_dict = 1)
+            
+            if check_in_house_data[0].get("total")>0:
+                frappe.throw("You cannot delete this record because a previous stay in Room {} already has a guest checked in.".format(prev_stay_room.room_number))
+        
+
 
 
 
@@ -2319,10 +2414,22 @@ def update_master_room(reservation):
 @frappe.whitelist()
 def get_folio_transaction(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1", show_package_breakdown = 0 , city_ledger_invoice = ""):
     if cint(show_package_breakdown) ==1:
-        return get_folio_transaction_with_package_breakdown(transaction_type=transaction_type, transaction_number=transaction_number,reservation=reservation, reservation_stay=reservation_stay,show_account_code=show_account_code , city_ledger_invoice = city_ledger_invoice)
+        return get_folio_transaction_with_package_breakdown(
+            transaction_type=transaction_type, 
+            transaction_number=transaction_number,
+            reservation=reservation, 
+            reservation_stay=reservation_stay,
+            show_account_code=show_account_code , 
+            city_ledger_invoice = city_ledger_invoice)
         
     else:
-        return get_folio_transaction_without_breakdown_account_code(transaction_type=transaction_type, transaction_number=transaction_number,reservation=reservation, reservation_stay=reservation_stay,show_account_code=show_account_code , city_ledger_invoice = city_ledger_invoice)
+        return get_folio_transaction_without_breakdown_account_code(
+            transaction_type=transaction_type, 
+            transaction_number=transaction_number,
+            reservation=reservation, 
+            reservation_stay=reservation_stay,
+            show_account_code=show_account_code , 
+            city_ledger_invoice = city_ledger_invoice)
         
 @frappe.whitelist()
 def get_folio_transaction_with_package_breakdown(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1" , city_ledger_invoice = ""):
@@ -3161,6 +3268,7 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
     
     # check if room rate have only 1 rate type then update rate type to stay and stay room
     for s in reservation_stays:
+
         rate_type_data = frappe.db.sql("select distinct rate_type,tax_rule from `tabReservation Room Rate` where reservation_stay='{}'".format(s),as_dict =1)
         if len(rate_type_data)==1:
             if  rate_type_data[0]["tax_rule"]:
@@ -3378,7 +3486,8 @@ def upgrade_room(doc,regenerate_rate=False):
             last_rate =frappe.db.sql( "select rate_type,input_rate from `tabReservation Room Rate` where reservation_stay='{}'  order by date desc limit 1".format(doc["name"]),as_dict=1)[0]
             dc["rate_type"] = last_rate["rate_type"]
             dc["input_rate"] = last_rate["input_rate"]
-           
+            dc["total_tax"] = 0
+
             data.append('stays', dc) 
 
        

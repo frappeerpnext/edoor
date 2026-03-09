@@ -62,7 +62,7 @@
                             <div class="col-6">
                                 <label>{{ $t('Internal Ref. No') }}</label><br />
                                 <InputText type="text" class="p-inputtext-sm w-full"
-                                    :placeholder="$t('Internal Ref. Number')"
+                                    :placeholder="$t('Internal Ref. No')"
                                     v-model="doc.reservation.internal_reference_number" :maxlength="50" />
                             </div>
                         </div>
@@ -248,7 +248,7 @@
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label class="white-space-nowrap">{{ $t('ID/Passport Number') }}</label><br />
                                     <InputText type="text" class="p-inputtext-sm w-full"
-                                        placeholder="ID/Passport Number" v-model="doc.guest_info.id_card_number"
+                                        :placeholder="$t('ID/Passport Number')" v-model="doc.guest_info.id_card_number"
                                         :maxlength="50" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
@@ -377,7 +377,7 @@
                             <td class="p-2 min-w-5rem">
                                 <div class="flex gap-2">
                                     <Dropdown v-model="d.room_id"
-                                        :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0) || (r.room_type_id == d.room_type_id && r.name == d.room_id))"
+                                        :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0 && r.disabled!=1) || (r.room_type_id == d.room_type_id && r.name == d.room_id && r.disabled!=1))"
                                         optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
                                         :placeholder="$t('Select Room')" showClear filter class="w-full" />
 
@@ -485,8 +485,8 @@
                 <p v-html="m"></p>
             </Message>
 
-            <Message v-if="doc.reservation_stay.filter(r => !r.room_id).length > 0">{{ $t('You have') }} {{
-                doc.reservation_stay.filter(r => !r.room_id).length}}
+            <Message v-if="doc.reservation_stay.filter(r => !r.room_id).length > 0">{{ $t('You have') }} 
+                {{doc.reservation_stay.filter(r => !r.room_id).length}}
                 {{ $t('unassign room(s). You can assign room later in reservation detail.') }}
             </Message>
         </div>

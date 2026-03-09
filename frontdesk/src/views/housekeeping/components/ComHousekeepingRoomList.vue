@@ -238,7 +238,7 @@ function onViewCustomerDetail(name) {
             name: name
         },
         props: {
-            header: 'Guest Detail',
+            header: $t('Guest Detail'),
             style: {
                 width: '80vw',
             },
