@@ -27,6 +27,7 @@ from edoor.api.generate_room_rate import generate_forecast_revenue, generate_new
 
 @frappe.whitelist()
 def test():
+    print("test me")
     data = frappe.db.get_all("Account Code", filters={"parent_account_code":"1000"}, order_by='lft')
     return data 
 # get_summary_by room type
