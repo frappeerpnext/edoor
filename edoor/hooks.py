@@ -156,6 +156,9 @@ scheduler_events = {
 				"edoor.api.schedule_task.five_minute_job",
 				"edoor.api.schedule_task.re_run_fail_jobs",
 			],
+			"*/6 * * * *": [
+				"edoor.channel_managers.resync_data.re_sync_fail_job",
+			],
 			"*/10 * * * *": [
 				"edoor.api.schedule_task.ten_minute_job",
 			],

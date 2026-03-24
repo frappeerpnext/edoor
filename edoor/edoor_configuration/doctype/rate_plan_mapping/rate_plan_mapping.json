@@ -1,0 +1,55 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-11 16:39:54.089016",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "rate_plan_code",
+  "rate_plan_name",
+  "edoor_rate_plan",
+  "data"
+ ],
+ "fields": [
+  {
+   "fieldname": "rate_plan_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Rate Plan Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "edoor_rate_plan",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "eDoor Rate Plan",
+   "options": "Rate Type"
+  },
+  {
+   "fieldname": "data",
+   "fieldtype": "Data",
+   "label": "Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate_plan_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Rate Plan Code",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-21 08:17:04.768941",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Rate Plan Mapping",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

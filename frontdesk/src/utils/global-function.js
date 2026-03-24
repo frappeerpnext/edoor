@@ -1,7 +1,8 @@
 
+
 import {getDocument,createDocument,getData,getDocumentList ,postData } from "@/plugin/api.js";
 import * as reservation from "@/utils/global/reservation.js";
-
+ 
 globalThis.app = globalThis.app || {};
 
 
@@ -42,4 +43,5 @@ globalThis.app.viewReservationDetail =  async function (name) {
 globalThis.app.openGroupAssignRoom =  async function (name) {
   return await reservation.onOpenGroupAssignRoom(name)
 }
+
 

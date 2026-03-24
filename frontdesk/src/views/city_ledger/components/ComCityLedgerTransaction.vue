@@ -1,5 +1,4 @@
-<template>
-  {{ selectedFolio }}
+<template> 
   <ComDocumentList doctype="Folio Transaction" title="City Ledger Transaction"
     list_view_setting="city_ledger_detail_city_ledger_transaction_list" :options="options"
     @row-dblclick="onRowDoubleClick" wrap-class="surface-50 ">

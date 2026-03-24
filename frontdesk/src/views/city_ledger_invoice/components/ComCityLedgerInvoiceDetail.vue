@@ -4,9 +4,9 @@
     :hideIcon="false"
     @onClose="onClose"
     :loading="loading"
-  >
+  > 
     <div v-if="doc" class="mt-2">
-      <ComCityLedgerInvoiceAction :folio="doc" :newDoc="newDoc" />
+      <ComCityLedgerInvoiceAction :folio="doc" :newDoc="newDoc" :selectedTran="selectedfolioTransactions"/>
 
       <div class="grid" style="margin-top: 10px">
         <div class="col">
@@ -148,7 +148,7 @@
         <ComCityledgerInvoiceTransactionsAction
           :data="doc"
           v-model:selections="selectedfolioTransactions"
-        />
+        /> 
         <ComFolioTransactionCreditDebitStyle
           v-model:selectedfolioTransactions="selectedfolioTransactions"
           :cityLedgerInvoice="name"

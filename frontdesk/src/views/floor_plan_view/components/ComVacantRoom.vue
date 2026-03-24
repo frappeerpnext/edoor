@@ -3,10 +3,10 @@
 <div class="line-height-1">
   <div class="text-lg  font-medium">
     
-    <!-- {{ room?.room_type_alias }} -  -->
+    {{ room?.room_type_alias }} - 
     
     {{ room.room_number }}</div>
-<!-- <div class="w-full text-overflow-ellipsis">
+<div class="w-full text-overflow-ellipsis">
   {{$t('Vacant Room')}}
 </div>
 <div>
@@ -16,7 +16,7 @@
         <div class="flex gap-2">
             <ComChipIcon v-tippy="{ content: room?.housekeeping_status_code, placement: 'left' }" svgIcon="broom" iconHeight="12px" :bgColor="room?.status_color" /> 
         </div>
-</div> -->
+</div>
 </div> 
 <Dialog v-model:visible="showMenuOnMobile" modal :header="room?.room_type_alias + ' - ' + room?.room_number" :style="{ width: '25rem' }">
           <Menu :model="contextMenuItems" />  

@@ -49,6 +49,7 @@ import "vue3-openlayers/styles.css";
 
 import OpenLayersMap from "vue3-openlayers";
  
+import { setupLoading } from "@/plugin/loading.js"
 
 const app = createApp(App);
 
@@ -382,6 +383,7 @@ if (setting) {
 
 	app.use(router);
 	app.mount("#app");
+	setupLoading();
 
 
 	router.beforeEach(async (to, from, next) => {
@@ -404,7 +406,7 @@ if (setting) {
 						next({ name: 'NoPermission' });
 					}
 				}
-			}
+		}
 
 
 		} else {

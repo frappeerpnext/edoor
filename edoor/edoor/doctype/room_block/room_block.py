@@ -7,6 +7,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils.data import add_to_date, getdate, pretty_date,date_diff
 from edoor.api.frontdesk import get_working_day
+from edoor.api.room_availability import update_room_availability
 
 class RoomBlock(Document):
 	def validate(self):
@@ -46,6 +47,19 @@ class RoomBlock(Document):
 	def on_submit(self):
 		generate_block_date(self)
 		self.status = 'Blocked'
+		 
+		if not self.flags.ignore_update_room_availability:
+			# update room availability
+			update_room_availability(
+				filters={
+				"property": self.property,
+				"start_date": self.start_date,
+				"end_date": add_to_date(getdate(self.end_date),days=-1),
+				"room_type_id": [self.room_type_id]
+			},
+				run_commit=False
+			)
+
   
 		
 	def before_update_after_submit(self):
@@ -53,6 +67,11 @@ class RoomBlock(Document):
 			self.status = 'Unblocked'
 		else:
 			self.status = 'Blocked'
+		old_doc = self.get_doc_before_save()
+		# frappe.throw(str(old_doc.end_date))
+		if getdate(self.end_date)<getdate(self.start_date):
+			self.end_date = old_doc.end_date
+		
   
 		self.total_night_count = date_diff(self.end_date,self.start_date)
 		if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction") == 0:
@@ -64,6 +83,9 @@ class RoomBlock(Document):
 					frappe.throw("Cannot change room block to the past date")
 		else: 
 			check_user_permission("role_for_back_date_transaction")
+
+		
+		
 
 	def on_update_after_submit(self): 
 		
@@ -77,6 +99,19 @@ class RoomBlock(Document):
 			room_doc.save()
 			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s and date>=%(date)s ".format(self.name,self.room_id),{"property":self.property,"date":getdate(working_day["date_working_day"])})
 			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s and date>%(date)s ".format(self.name,self.room_id),{"property":self.property,"date":getdate(working_day["date_working_day"])}) 
+			
+			update_room_availability(
+				filters={
+				"property": self.property,
+				"start_date": self.start_date,
+				"end_date": add_to_date(getdate(self.end_date),days=-1),
+				"room_type_id": [self.room_type_id]
+			},
+				run_commit=False
+			)
+
+  
+
 			
 		else:
 		
@@ -122,6 +157,16 @@ class RoomBlock(Document):
 	def on_cancel(self):
 		frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
 		frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property=%(property)s".format(self.name,self.room_id),{"property":self.property})
+		update_room_availability(
+				filters={
+				"property": self.property,
+				"start_date": self.start_date,
+				"end_date": add_to_date(getdate(self.end_date),days=-1),
+				"room_type_id": [self.room_type_id]
+			},
+				run_commit=False
+		)
+
 
 	def on_trash(self):
 		working_day = get_working_day(self.property)
@@ -145,7 +190,7 @@ def generate_block_date(self):
 			"property":data.property,
 			"stay_room_id":data.name,
 			"is_active":1
-		}).insert()
+		}).insert(ignore_permissions=True)
 
 
 		#generate room to room occupy
@@ -158,7 +203,7 @@ def generate_block_date(self):
 			"property":data.property,
 			"stay_room_id":data.name,
 			"is_active":1
-		}).insert()
+		}).insert(ignore_permissions=True)
 	#check if block date is equal to current system date than change room status to block
 	working_day = get_working_day(data.property)
 	if getdate(working_day["date_working_day"])>=getdate(data.start_date) and getdate(working_day["date_working_day"])<=add_to_date(getdate(data.end_date),days=-1):

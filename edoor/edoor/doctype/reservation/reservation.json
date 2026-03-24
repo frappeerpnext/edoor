@@ -29,6 +29,7 @@
   "reservation_type",
   "reservation_color",
   "group_code",
+  "channel_manager_booking_id",
   "group_name",
   "group_color",
   "column_break_6",
@@ -789,12 +790,18 @@
    "fieldname": "show_room_rate_in_guest_folio_invoice",
    "fieldtype": "Check",
    "label": "Show Room Rate in Guest Folio Invoice"
+  },
+  {
+   "fieldname": "channel_manager_booking_id",
+   "fieldtype": "Data",
+   "label": "Channel Manager Booking ID",
+   "search_index": 1
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-10 14:50:36.099985",
+ "modified": "2026-03-14 11:29:58.998050",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

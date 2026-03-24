@@ -80,7 +80,3 @@ def update_housekeeping_note(self):
 	self.housekeeping_note_modified = now()
 	return self
 
-
-
-
-

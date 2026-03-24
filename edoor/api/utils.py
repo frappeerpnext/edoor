@@ -157,6 +157,12 @@ def update_fetch_from_field(doc, method=None, *args, **kwargs):
  
 
 
+def get_room_type_ids(property):
+    sql="select name from `tabRoom Type` where property = %(property)s"
+    data =  frappe.db.sql(sql,{"property":property}, as_dict=1)
+    return [d["name"] for d in data]
+    
+
     
     
 

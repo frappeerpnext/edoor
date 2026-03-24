@@ -6,15 +6,20 @@ from frappe.model.document import bulk_insert
 from frappe.utils import getdate
 
 @frappe.whitelist()
-def generate_room_occupies(stay_names,run_commit = True):
+def generate_room_occupies(stay_names,run_commit = True,sync_room_available_to_channel_manager = True):
+
     get_rate_type_doc.cache_clear()
     
     if not stay_names:
         return
     
+    # we get affected date for update room availability to channel manager
+    affected_data = get_affected_data(stay_names)
+    
+    
     frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay in %(stay_names)s",{"stay_names":stay_names})
     frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay in %(stay_names)s",{"stay_names":stay_names})
-   
+    
     sql = """select 
                 property, 
                 room_type_id,
@@ -36,6 +41,23 @@ def generate_room_occupies(stay_names,run_commit = True):
     stays_info = frappe.db.sql(sql, {"stay_names":stay_names}, as_dict=1)
  
     generate_temp_room_occupy(stays_info=stays_info)
+    affected_data = affected_data + get_affected_data(stay_names)
+
+    # update room availability
+    from edoor.api.room_availability import update_room_availability
+    update_room_availability(
+        filters={
+        "property": frappe.get_cached_value("Reservation Stay",stay_names[0],"property"),
+        "start_date": min([d["start_date"] for d in affected_data]),
+        "end_date": max([d["end_date"] for d in affected_data]),
+        "room_type_id": list(set([d["room_type_id"] for d in affected_data])),
+        "sync_room_available_to_channel_manager":sync_room_available_to_channel_manager
+     },
+     run_commit=False
+    )
+    
+
+
     generate_room_occupy(stays_info=stays_info)
     if run_commit:
         frappe.db.commit()
@@ -136,3 +158,7 @@ def get_temp_room_occupy_record(stays_info):
             doc.stay_room_id=stay["name"]
             doc.is_active=1
             yield doc
+
+def get_affected_data(stay_names):
+    sql="select min(date) as start_date,max(date) as end_date,room_type_id from `tabTemp Room Occupy` where reservation_stay in %(stay_names)s group by room_type_id"
+    return frappe.db.sql(sql,{"stay_names":stay_names},as_dict=1)

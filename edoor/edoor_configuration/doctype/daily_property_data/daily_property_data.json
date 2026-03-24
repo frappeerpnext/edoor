@@ -8,26 +8,37 @@
   "property",
   "date",
   "room_type_id",
-  "total_room"
+  "total_room",
+  "total_occupy",
+  "total_block",
+  "total_room_available",
+  "old_room_available",
+  "column_break_uzni",
+  "stop_sale",
+  "old_stop_sale"
  ],
  "fields": [
   {
    "fieldname": "date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Date"
+   "in_standard_filter": 1,
+   "label": "Date",
+   "search_index": 1
   },
   {
    "fieldname": "property",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Property",
-   "options": "Business Branch"
+   "options": "Business Branch",
+   "search_index": 1
   },
   {
    "fieldname": "total_room",
    "fieldtype": "Int",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Total Room"
   },
   {
@@ -35,12 +46,54 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Room Type ID",
-   "options": "Room Type"
+   "options": "Room Type",
+   "search_index": 1
+  },
+  {
+   "fieldname": "total_occupy",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Total Occupy"
+  },
+  {
+   "fieldname": "total_block",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Block"
+  },
+  {
+   "fieldname": "total_room_available",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Total Room Available"
+  },
+  {
+   "fieldname": "old_room_available",
+   "fieldtype": "Int",
+   "label": "Old Room Available"
+  },
+  {
+   "fieldname": "column_break_uzni",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "stop_sale",
+   "fieldtype": "Check",
+   "label": "Stop Sale"
+  },
+  {
+   "default": "0",
+   "fieldname": "old_stop_sale",
+   "fieldtype": "Check",
+   "label": "Old Stop Sale"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-14 12:51:23.471270",
+ "modified": "2026-03-23 10:45:20.998309",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Daily Property Data",

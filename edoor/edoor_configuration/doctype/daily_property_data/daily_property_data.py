@@ -20,7 +20,7 @@ def generate_property_data(property):
 	for d in data:
 
 		sql = """
-			insert into `tabDaily Property Data` (name,property,creation, owner, modified,modified_by, date, room_type_id, total_room)
+			insert into `tabDaily Property Data` (name,property,creation, owner, modified,modified_by, date, room_type_id, total_room,total_room_available)
 			select 
 				uuid(),
 				%(property)s,
@@ -30,6 +30,7 @@ def generate_property_data(property):
 				'Administrator',
 				date,
 				%(room_type_id)s,
+				%(total_room)s,
 				%(total_room)s
 				
 			from `tabDates` d 

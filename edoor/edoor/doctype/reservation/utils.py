@@ -26,28 +26,29 @@ def update_fetch_from_fields(self):
 def business_source_change(self):
 	data_for_updates = []
 	if self.has_value_changed("business_source"):
-		
+		business_source_value = frappe.db.escape(self.business_source)
+
 		business_source_type = frappe.db.get_value("Business Source",self.business_source, "business_source_type")
-		data_for_updates.append({"doctype":"Reservation Stay Room","update_field":"business_source='{}'".format(self.business_source)})
+		data_for_updates.append({"doctype": "Reservation Stay Room","update_field": f"business_source={business_source_value}"})
 		
-		data_for_updates.append({"doctype":"Reservation Stay","update_field":"business_source='{}'".format(self.business_source)})
+		data_for_updates.append({"doctype":"Reservation Stay","update_field":f"business_source={business_source_value}"})
 		data_for_updates.append({"doctype":"Reservation Stay","update_field":"business_source_type='{}'".format(self.business_source_type)})
 		
 		# folio transaction
-		data_for_updates.append({"doctype":"Folio Transaction","update_field":"business_source='{}'".format(self.business_source)})
+		data_for_updates.append({"doctype":"Folio Transaction","update_field":f"business_source={business_source_value}"})
 		data_for_updates.append({"doctype":"Folio Transaction","update_field":"business_source_type='{}'".format(self.business_source_type)})
 		
 		# reservation folio
-		data_for_updates.append({"doctype":"Reservation Folio","update_field":"business_source='{}'".format(self.business_source)})
+		data_for_updates.append({"doctype":"Reservation Folio","update_field":f"business_source={business_source_value}"})
 		
 		# reservation room rate
-		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"business_source='{}'".format(self.business_source)})
+		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":f"business_source={business_source_value}"})
 		data_for_updates.append({"doctype":"Reservation Room Rate","update_field":"business_source_type='{}'".format(self.business_source_type)})
 		# Room Occupy
-		data_for_updates.append({"doctype":"Room Occupy","update_field":"business_source='{}'".format(self.business_source)})
+		data_for_updates.append({"doctype":"Room Occupy","update_field":f"business_source={business_source_value}"})
 		data_for_updates.append({"doctype":"Room Occupy","update_field":"business_source_type='{}'".format(self.business_source_type)})
 		#Revenue Forecast Breakdown
-		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"business_source='{}'".format(self.business_source)})
+		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":f"business_source={business_source_value}"})
 		data_for_updates.append({"doctype":"Revenue Forecast Breakdown","update_field":"business_source_type='{}'".format(self.business_source_type)})
 
 	return data_for_updates 

@@ -112,6 +112,7 @@
                             <sapn>{{ gv.dateFormat(oldEvent?.end) }}</sapn>
                         </div>
                     </ComStayInfoNoBox>
+
                     <ComStayInfoNoBox label="Nights" :value="moment(oldEvent?.end).diff(oldEvent?.start, 'days')" />
                 </tbody>
                 </table>
@@ -164,7 +165,9 @@
                     </ComStayInfoNoBox>
                     <ComStayInfoNoBox titleClass="" label="Nights">
                         <div class="inline -ml-3 font-semibold">
-                            <sapn> {{ moment(data?.end).diff(data?.start, 'days') }} </sapn>
+                           
+                            <sapn> {{moment(data.end).startOf('day').diff(moment(data.start).startOf('day'), 'days')}} </sapn>
+                          
                             <span
                                 v-if="moment(data?.end).diff(data?.start, 'days') != moment(oldEvent?.end).diff(oldEvent?.start, 'days')"
                                 class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">{{$t('New')}}</span>

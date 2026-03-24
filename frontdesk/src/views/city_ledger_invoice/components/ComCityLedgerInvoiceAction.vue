@@ -1,4 +1,4 @@
-<template>
+<template> 
     <div
         class="flex pb-1 md:pb-0 overflow-auto justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
         <div class="flex gap-2">
@@ -89,7 +89,8 @@ const isMobile = ref(window.isMobile)
 const { t: $t } = i18n.global;
 const props = defineProps({
     folio: Object,
-    newDoc:Object
+    newDoc:Object,
+    selectedTran:Object
 })
 const items = [
     {
@@ -107,6 +108,43 @@ const items = [
            
         }
     },
+    {
+        label: $t('Print Selected Transaction'),
+        icon: 'pi pi-print',
+        command: () => {  
+            const selectedFolioTransactions = props.selectedTran 
+            if(selectedFolioTransactions.length==0){
+                toast.add({ severity: 'warn', summary: "", detail: "Please select folio transaction", life: 5000 })
+                return
+            }
+            if(setting.server_report_url){  
+                dialog.open(ComReportServerModal, {
+                    data: {
+                        report_path: "/Front Desk/rptCityLedgerInvoiceWithSelectedTransaction",
+                        params:[
+                                {name: 'city_ledger_invoice', values: [props.folio.name] },
+                                {name: 'folio_transactions', values: selectedFolioTransactions.map(d => d["name"])},
+                        ]
+                    },
+                    props: {
+                        header: $t("Folio Detail with Selected Transaction"),
+                        style: {
+                            width: '80vw',
+                        },
+                        position: "top",
+                        modal: true,
+                        maximizable: true,
+                        closeOnEscape: false,
+                        breakpoints:{
+                            '960px': '80vw',
+                            '640px': '100vw'
+                        },
+
+                    },
+                });
+            }
+        },
+    }
 ];
 const emit = defineEmits(["onClose"])
 const accountGroups = ref(window.setting.account_group.filter(r => r.show_in_desk_folio == 1))
@@ -576,7 +614,6 @@ function onDeleteFolio() {
 }
 
 function OpenServerReport(report_path, title, parameters = undefined) {
-
     let params = parameters;
     if (!parameters) {
 

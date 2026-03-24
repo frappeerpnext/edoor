@@ -56,6 +56,8 @@ import StayOverGuest from "@/views/operation_dashboard/StayOverGuest.vue";
 import DepartureGuest from "@/views/operation_dashboard/DepartureGuest.vue";
 import OperationDashboardGuestLedger from "@/views/operation_dashboard/GuestLedger.vue";
 import DailyReservation from "@/views/operation_dashboard/DailyReservation.vue";
+import ChannelManagerDashboard from "@/views/channel_managers/ChannelManagerDashboard.vue";
+import ChannelManagerAvailability from "@/views/channel_managers/availability/Availability.vue";
 
 import Test from "@/views/test.vue";
 
@@ -68,6 +70,7 @@ let routes = [
   { path: "/frontdesk/dashboard", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
   { path: "/frontdesk/owner-dashboard", name: "OwnerDashboard", component: OwnerDashboard, meta: { layout: 'main_layout',title: 'Owner Dashboard' } },
   { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Front Desk - Room Chart' } },
+  
   { path: "/frontdesk/floorplan", name: "FloorPlanView", component: FloorPlanView, meta: { layout: 'main_layout', title: 'Front Desk - Floor Plan' } },
   { path: "/frontdesk/map-view", name: "FrontdeskMapView", component:FrontdeskMapView, meta: { layout: 'main_layout', title: 'Front Desk - Map View' } },
   { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
@@ -126,6 +129,9 @@ let routes = [
   { path: "/frontdesk/operation-dashboard/daily-reservation", name: "DailyReservation",component: DailyReservation, meta: { layout: 'main_layout',title:"Daily Reservation", nested_layout:"OperationDasboardLayout" } },
   
   { path: "/frontdesk/test", name: "Test", component:Test, meta: { layout: 'main_layout',title:"Test" } },
+
+  { path: "/frontdesk/channel-manager", name: "ChannelManager", component: ChannelManagerDashboard, meta: { layout: 'main_layout', title: 'Channel Manager - Room Chart' } },
+  { path: "/frontdesk/channel-manager/availability", name: "ChannelManagerAvailability", component: ChannelManagerAvailability, meta: { layout: 'main_layout', title: 'Channel Manager - Availability' } },
  
   ...authRoutes,
 

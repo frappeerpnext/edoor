@@ -773,7 +773,7 @@ const getRoomType = async () => {
         business_source: doc.value.reservation.business_source
 
     }) ;
-    console.log("get room type",res)
+    
     if (res.data){
         room_types.value = res.data
         updateRate()
@@ -1278,7 +1278,7 @@ const onUseRatePlan = () => {
 
 
 function get_room_rate_breakdown(stay) {
-   console.log("get breakdown",stay)
+   
     if ((stay?.loading || false) == true) {
         return
     }

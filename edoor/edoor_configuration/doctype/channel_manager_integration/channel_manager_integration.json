@@ -1,0 +1,175 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:property",
+ "creation": "2026-03-21 09:35:59.281472",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enable",
+  "property",
+  "property_code",
+  "provider",
+  "api_url",
+  "column_break_ahnx",
+  "username",
+  "password",
+  "column_break_goez",
+  "rooms_availability",
+  "prices_for_accommodation",
+  "restrictions",
+  "prices_for_extra_services",
+  "room_type_mapping_section",
+  "room_types",
+  "rate_plan_mapping_section",
+  "rate_plans",
+  "payment_type_mapping_section",
+  "payment_types",
+  "service_mapping_section",
+  "services"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enable",
+   "fieldtype": "Check",
+   "label": "Enable"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Business Branch",
+   "unique": 1
+  },
+  {
+   "fieldname": "property_code",
+   "fieldtype": "Data",
+   "label": "Property Code"
+  },
+  {
+   "fieldname": "provider",
+   "fieldtype": "Select",
+   "label": "Provider",
+   "options": "Exely\nSite Minder"
+  },
+  {
+   "fieldname": "api_url",
+   "fieldtype": "Data",
+   "label": "Api URL"
+  },
+  {
+   "fieldname": "column_break_ahnx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "username",
+   "fieldtype": "Data",
+   "label": "Username"
+  },
+  {
+   "fieldname": "password",
+   "fieldtype": "Data",
+   "label": "Password"
+  },
+  {
+   "fieldname": "column_break_goez",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rooms_availability",
+   "fieldtype": "Select",
+   "label": "Rooms Availability",
+   "options": "Receive from PMS\nManage in CM"
+  },
+  {
+   "fieldname": "prices_for_accommodation",
+   "fieldtype": "Select",
+   "label": "Prices for accommodation",
+   "options": "Receive from PMS\nManage in CM"
+  },
+  {
+   "fieldname": "restrictions",
+   "fieldtype": "Select",
+   "label": "Restrictions",
+   "options": "Receive from PMS\nManage in CM"
+  },
+  {
+   "fieldname": "prices_for_extra_services",
+   "fieldtype": "Select",
+   "label": "Prices for extra services",
+   "options": "Receive from PMS\nManage in CM"
+  },
+  {
+   "fieldname": "room_type_mapping_section",
+   "fieldtype": "Section Break",
+   "label": "Room Type Mapping"
+  },
+  {
+   "fieldname": "room_types",
+   "fieldtype": "Table",
+   "label": "Room Types",
+   "options": "Room Type Mapping"
+  },
+  {
+   "fieldname": "rate_plan_mapping_section",
+   "fieldtype": "Section Break",
+   "label": "Rate Plan Mapping"
+  },
+  {
+   "fieldname": "rate_plans",
+   "fieldtype": "Table",
+   "label": "Rate Plans",
+   "options": "Rate Plan Mapping"
+  },
+  {
+   "fieldname": "payment_type_mapping_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Type Mapping"
+  },
+  {
+   "fieldname": "payment_types",
+   "fieldtype": "Table",
+   "label": "Payment Types",
+   "options": "Payment Type Mapping"
+  },
+  {
+   "fieldname": "service_mapping_section",
+   "fieldtype": "Section Break",
+   "label": "Service Mapping"
+  },
+  {
+   "fieldname": "services",
+   "fieldtype": "Table",
+   "label": "Services",
+   "options": "Service Mapping"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-24 11:56:36.851792",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Channel Manager Integration",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "property"
+}

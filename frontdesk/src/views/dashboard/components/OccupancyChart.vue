@@ -26,20 +26,20 @@ const view_chart_type = ref("line")
 const chartData = ref();
 const loading = ref(false)
 
-const datasets =  ref([
-      {
-        name: 'Traffic Sources',
-        type: 'bar', 
-        data: [335, 310, 234, 135, 1548], 
+// const datasets =  ref([
+//       {
+//         name: 'Traffic Sources',
+//         type: 'bar', 
+//         data: [335, 310, 234, 135, 1548], 
         
-      },
-      {
-        name: 'Occupancy',
-        type: 'line', 
-        data: [145, 548, 412, 200, 450], 
+//       },
+//       {
+//         name: 'Occupancy',
+//         type: 'line', 
+//         data: [145, 548, 412, 200, 450], 
         
-      }
-    ])
+//       }
+//     ])
 
 const items = [
     {

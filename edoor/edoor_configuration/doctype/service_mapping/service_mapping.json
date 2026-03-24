@@ -1,0 +1,48 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-11 17:05:29.423033",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "services_code",
+  "service_name",
+  "edoor_service_code"
+ ],
+ "fields": [
+  {
+   "fieldname": "service_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Service Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "edoor_service_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "eDoor Service Code",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "services_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Services Code",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-21 08:38:51.691960",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Service Mapping",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

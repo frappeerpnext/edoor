@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2026-03-14 16:15:33.937441",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "property",
+  "provider",
+  "title",
+  "request_type",
+  "is_synced",
+  "column_break_qytr",
+  "response_text",
+  "section_break_pcda",
+  "data",
+  "column_break_iyii",
+  "response"
+ ],
+ "fields": [
+  {
+   "fieldname": "provider",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Provider"
+  },
+  {
+   "fieldname": "request_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Request Type"
+  },
+  {
+   "fieldname": "data",
+   "fieldtype": "JSON",
+   "label": "Data"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_synced",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Synced"
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Text",
+   "label": "Response"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Data",
+   "label": "Property"
+  },
+  {
+   "fieldname": "column_break_qytr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_pcda",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_iyii",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "response_text",
+   "fieldtype": "Small Text",
+   "label": "Response Text"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-24 11:43:58.087530",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Channel Manager Sync Log",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

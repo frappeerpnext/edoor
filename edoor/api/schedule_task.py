@@ -27,6 +27,8 @@ from frappe.utils import (
 )
 from frappe.utils.background_jobs import get_queues, get_redis_conn
 
+
+
 QUEUES = ["default", "long", "short"]
 JOB_STATUSES = ["queued", "started", "failed", "finished", "deferred", "scheduled", "canceled"]
 
@@ -317,6 +319,8 @@ def clear_cache():
 def one_minute_job():
     generate_audit_trail_from_version()
     
+
+    
     
         
 @frappe.whitelist()
@@ -383,6 +387,9 @@ def five_minute_job():
 
     
     frappe.db.commit()
+        
+     
+
     return "done"
 
 
@@ -703,6 +710,7 @@ def validate_temp_room_occupy_that_do_not_have_room_number(run_commit =  True):
 def hourly_jobs():
     update_guest_ledger_balance()
     update_desk_folio_balance()
+    delete_unwanted_comment()
     
 def update_guest_ledger_balance():
     updated_data = frappe.db.sql("select distinct transaction_number from `tabFolio Transaction` where date(modified) = date(now()) and transaction_type='Reservation Folio'",as_dict=1)
@@ -768,3 +776,13 @@ def generate_flash_report_data(property="ESTC HOTEL", date="2025-08-07"):
     # last year
 
     frappe.db.sql("call sp_generate_flash_manager_report(%(property)s,%(date)s)",{"property":property,"date":frappe.utils.add_to_date(date,years=-1)})
+
+def delete_unwanted_comment():
+    filters = {
+        "doctypes" : ["Channel Manager Sync Log"],
+        "comment_types":["Deleted"]
+    }
+    
+    
+    frappe.db.sql("delete from `tabComment` where reference_doctype in %(doctypes)s and comment_type in %(comment_types)s",filters)
+    frappe.db.commit()
