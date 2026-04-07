@@ -56,8 +56,10 @@ import StayOverGuest from "@/views/operation_dashboard/StayOverGuest.vue";
 import DepartureGuest from "@/views/operation_dashboard/DepartureGuest.vue";
 import OperationDashboardGuestLedger from "@/views/operation_dashboard/GuestLedger.vue";
 import DailyReservation from "@/views/operation_dashboard/DailyReservation.vue";
-import ChannelManagerDashboard from "@/views/channel_managers/ChannelManagerDashboard.vue";
+
 import ChannelManagerAvailability from "@/views/channel_managers/availability/Availability.vue";
+import RatePlanList from "@/views/channel_managers/rate_plans/RatePlanList.vue";
+import RatePlan from "@/views/channel_managers/rate_plans/RatePlan.vue";
 
 import Test from "@/views/test.vue";
 
@@ -130,8 +132,10 @@ let routes = [
   
   { path: "/frontdesk/test", name: "Test", component:Test, meta: { layout: 'main_layout',title:"Test" } },
 
-  { path: "/frontdesk/channel-manager", name: "ChannelManager", component: ChannelManagerDashboard, meta: { layout: 'main_layout', title: 'Channel Manager - Room Chart' } },
+  { path: "/frontdesk/channel-manager", name: "ChannelManager",  component: () => import("@/views/channel_managers/channel_manager/ChannelManager.vue"), meta: { layout: 'main_layout', title: 'Channel Manager - Room Chart' } },
   { path: "/frontdesk/channel-manager/availability", name: "ChannelManagerAvailability", component: ChannelManagerAvailability, meta: { layout: 'main_layout', title: 'Channel Manager - Availability' } },
+  { path: "/frontdesk/channel-manager/rate-plan", name: "RatePlanList", component: RatePlanList, meta: { layout: 'main_layout', title: 'Channel Manager - Rate Plan' } },
+  { path: "/frontdesk/channel-manager/rate-plan/:name", name: "RatePlanDetail", component: RatePlan, meta: { layout: 'main_layout', title: 'Channel Manager - Rate Plan' } },
  
   ...authRoutes,
 

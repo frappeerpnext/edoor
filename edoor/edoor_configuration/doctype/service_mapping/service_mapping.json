@@ -15,8 +15,7 @@
    "fieldname": "service_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Service Name",
-   "read_only": 1
+   "label": "Service Name"
   },
   {
    "fieldname": "edoor_service_code",
@@ -29,14 +28,13 @@
    "fieldname": "services_code",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Services Code",
-   "read_only": 1
+   "label": "Services Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-21 08:38:51.691960",
+ "modified": "2026-03-28 14:02:33.626258",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Service Mapping",

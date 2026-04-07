@@ -11,6 +11,10 @@ class RoomType(Document):
 	def on_update(self):
 		if self.creation != self.modified:
 			update_fetch_from_fields(self)
+
+		# delete occopancy codes cache
+
+		frappe.cache.delete_value(f"{self.property}_occupancy_codes") 
    
 def update_fetch_from_fields(self):
 	data_for_updates = []

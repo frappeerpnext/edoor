@@ -7,9 +7,14 @@ from edoor.channel_managers.exely.property_info import send_property_info
 
 
 class ChannelManagerIntegration(Document):
+	
+	def on_update(self):
+		frappe.cache.delete_value(f"{self.name}_channel_manager_info") 
+
 	@frappe.whitelist()
 	def get_property_info(self):
-		data = send_property_info()
+		 
+		data = send_property_info(self.property)
 		
 		room_types = data.get("room_types", [])
 		rate_plans = data.get("rate_plans", [])
@@ -32,7 +37,8 @@ class ChannelManagerIntegration(Document):
 			if not any(d.rate_plan_code == rate_plan.get("rate_plan_code") for d in self.rate_plans):
 				self.append("rate_plans", {
 					"rate_plan_code": rate_plan.get("rate_plan_code"),
-					"rate_plan_name": rate_plan.get("rate_plan_name")
+					"rate_plan_name": rate_plan.get("rate_plan_name"),
+					"availability_block": rate_plan.get("availability_block"),
 				})
 
 		# assign payment types
@@ -43,7 +49,6 @@ class ChannelManagerIntegration(Document):
 					"payment_type_code": payment_type.get("payment_type_code"),
 					"payment_type_name": payment_type.get("payment_type_name"),
 					"payment_type_title": payment_type.get("payment_type_title")
-				
 				})
 
 		# assign services

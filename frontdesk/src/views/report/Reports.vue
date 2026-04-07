@@ -1,4 +1,5 @@
 <template>
+    {{serverUrl}}
     <div class="grid wrapper-report">
         <div class="col flex gap-2 mt-2">
             <div class="mt-2" v-if="isMobile">
@@ -59,6 +60,7 @@ import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
+
 
 const isMobile = ref(window.isMobile) 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))

@@ -1,17 +1,16 @@
 
 import email
-import email
 import json
 import frappe
 import xmltodict
-from datetime import datetime
+from datetime import datetime,timedelta
 from .soap_request import get_exely_config, send_soap_request
-from .utils import random_color,get_room_type_mapping,get_country,create_guest
+from .utils import random_color,get_room_type_mapping,get_country,create_guest,get_rate_type_mapping,get_service_mapping,parse_transfer,get_package_rule_mapping
 from edoor.api.reservation import add_new_reservation
 
 @frappe.whitelist()
-def get_hotel_bookings():
-    config = get_exely_config()
+def get_hotel_bookings(property):
+    config = get_exely_config(property)
     timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     body = f"""
             <OTA_ReadRQ xmlns="http://www.opentravel.org/OTA/2003/05"
@@ -24,10 +23,10 @@ def get_hotel_bookings():
                 </ReadRequests>
             </OTA_ReadRQ>
     """
-    data = send_soap_request("OTA_ReadRQ", body)
+    data = send_soap_request(property,"OTA_ReadRQ", body)
     return data
 @frappe.whitelist()
-def map_exely_to_reservation(exely_json):
+def map_exely_to_reservation(exely_json, property):
     exely_json = exely_json.get("data", {})
     res_body = exely_json.get("s:Envelope", {}).get("s:Body", {})
     ota_res = res_body.get("OTA_ResRetrieveRS", {})
@@ -37,13 +36,19 @@ def map_exely_to_reservation(exely_json):
     # ensure list
     if isinstance(hotel_res, dict):
         hotel_res = [hotel_res]
-    config = get_exely_config()
+    config = get_exely_config(property)
     property = config.get("property")
     edoor_setting = frappe.get_cached_doc("eDoor Setting")
     reservations = []
-
+    
     for res in hotel_res:
-
+        # --------------------------
+        # TimeSpan
+        # --------------------------
+        time_span = res.get("ResGlobalInfo", {}).get("TimeSpan", {})
+        arrival_date = time_span.get("@Start", "")
+        departure_date = time_span.get("@End", "")
+        room_night = time_span.get("@Duration", "")
         # --------------------------
         # Guest Info
         # --------------------------
@@ -67,7 +72,7 @@ def map_exely_to_reservation(exely_json):
             guest_full_name = " ".join(
     [x for x in [given, middle, surname] if x]
 )
-
+            
             phone = customer.get("Telephone", {}).get("@PhoneNumber", "")
             email = customer.get("Email", "")
 
@@ -88,8 +93,23 @@ def map_exely_to_reservation(exely_json):
             for g in res_guests
         }
         # --------------------------
+        # Service Info
+        # --------------------------
+        service_item = res.get("Services", {}).get("Service", [])
+        if isinstance(service_item, dict):
+            service_item = [service_item]
+        service_mapping = {
+            str(g.get("@ServiceRPH")): g
+            for g in service_item
+        }
+        # services with inventory code 'Transfer'
+        transfer_services = [
+            g for g in service_item if g.get("@ServiceInventoryCode") == "Transfer"
+        ]
+        # --------------------------
         # RoomStays
         # --------------------------
+        
         room_stays_raw = res.get("RoomStays", {}).get("RoomStay", [])
 
         if isinstance(room_stays_raw, dict):
@@ -101,8 +121,10 @@ def map_exely_to_reservation(exely_json):
         total_child = 0
         total_amount = 0
 
-        for rs in room_stays_raw:
-
+        for idx, rs in enumerate(room_stays_raw):
+            is_master = 0
+            paid_by_master_room = 1
+            pick_up_drop_off_info = []
             guest_counts = rs.get("GuestCounts", {}).get("GuestCount", [])
 
             if isinstance(guest_counts, dict):
@@ -141,47 +163,179 @@ def map_exely_to_reservation(exely_json):
                 elif g.get("@ResGuestRPH"):
                     additional_guest_docs.append(create_guest(guest_data))
 
-
+            
 
             total_child += child_count
             total_adult += adult_count
 
             total_rs_amount = float(rs.get("Total", {}).get("@AmountAfterTax", 0))
             total_amount += total_rs_amount
+            service_rphs = rs.get("ServiceRPHs", {}).get("ServiceRPH", [])
+            if isinstance(service_rphs, dict):
+                service_rphs = [service_rphs]
+            service_info = []
+            for s in service_rphs:
+                service_data = service_mapping.get(str(s.get("@RPH")), {})
+                
+                package = get_package_rule_mapping(str(service_data.get("@ServicePricingType")),property)
+                description = (
+                    (service_data.get("ServiceDetails") or {})
+                    .get("Comments", {})
+                    .get("Comment", {})
+                )
+                rate = (
+                        (service_data.get("ServiceDetails") or {})
+                        .get("Total", {})
+                        .get("@AmountBeforeTax", 0)
+                    )
+                
+                account_code = get_service_mapping(service_data.get("@ID"),property)
+                
+                if account_code:
+                    account_code = account_code.get("edoor_service_code")
+                service_info.append({
+                    "account_code":account_code  ,
+                    "charge_rule": package.get("edoor_charge_rule", "") if package else "",
+                    "posting_rule": package.get("edoor_posting_rule", "") if package else "",
+                    "is_inclusive": 1 if service_data.get("@Inclusive") == "true" else 0,
+                    "description":(description or {}).get("Text", ""),
+                    "rate":rate
+                
+                })
+            if idx == 0:
+                is_master = 1
+                paid_by_master_room = 1
+                if transfer_services:
+                    frappe.throw(str(transfer_services))
+                   
+                    # 2026-05-08
+                    # 2026-05-07
+                    for transfer in transfer_services:
+                        
+                        start_raw = (
+                            (transfer.get("ServiceDetails") or {})
+                            .get("TimeSpan", {})
+                            .get("@Start")
+                        )
 
+                        start_date = datetime.fromisoformat(start_raw).date() if start_raw else None
+                        arrival_date_only = datetime.fromisoformat(arrival_date).date() if arrival_date else None
+                        departure_date_only = datetime.fromisoformat(departure_date).date() if departure_date else None
+
+                        rate = (
+                            (transfer.get("ServiceDetails") or {})
+                            .get("Total", {})
+                            .get("@AmountBeforeTax", 0)
+                        )
+                        description = (
+                            (transfer.get("ServiceDetails") or {})
+                            .get("Comments", {})
+                            .get("Comment", {})
+                        )
+                        package = get_package_rule_mapping(str(transfer.get("@ServiceInventoryCode")),property)
+                        account_code = get_service_mapping(transfer.get("@ID"),property)
+                        if account_code:
+                            account_code = account_code.get("edoor_service_code")
+                        pick_up = {}
+                        drop_off = {}
+
+                        if start_date == arrival_date_only:
+                            pick_up_info = parse_transfer((description or {}).get("Text", ""))
+                            pick_up = {
+                                "require_pickup": 1,
+                                "pickup_time": pick_up_info.get("time"),
+                                "arrival_mode": pick_up_info.get("mode"),
+                                "arrival_flight_number": pick_up_info.get("flight_number"),
+                                "pickup_location": pick_up_info.get("route"),
+                                "pickup_note": (description or {}).get("Text", ""),
+                                "pickup_rate": pick_up_info.get("amount"),
+
+                            }
+                        elif start_date in [departure_date_only, departure_date_only + timedelta(days=1)]:
+                            drop_off_info = parse_transfer((description or {}).get("Text", ""))
+                            drop_off = {
+                                "require_drop_off": 1,
+                                "drop_off_time": drop_off_info.get("time"),
+                                "departure_mode": drop_off_info.get("mode"),
+                                "departure_flight_number": drop_off_info.get("flight_number"),
+                                "drop_off_location": drop_off_info.get("route"),
+                                "drop_off_note": (description or {}).get("Text", ""),
+                                "drop_off_rate": drop_off_info.get("amount"),
+
+
+                            }
+                            
+                        
+                        if pick_up:
+                            pick_up_drop_off_info.append(pick_up)
+                        if drop_off:
+                            pick_up_drop_off_info.append(drop_off)
+                        service_info.append({
+                        "account_code":account_code  ,
+                        "charge_rule": package.get("edoor_charge_rule", "") if package else "",
+                        "posting_rule": package.get("edoor_posting_rule", "") if package else "",
+                        "is_inclusive": 1 if transfer.get("@Inclusive") == "true" else 0,
+                        "description":(description or {}).get("Text", ""),
+                        "rate":rate
+                    
+                    })
+            #  room type mapping
             room_type_id = rs.get("RoomTypes", {}).get("RoomType", {}).get("@RoomTypeCode", "")
             room_type = get_room_type_mapping(room_type_id,property)
             if not room_type:
                 frappe.log_error(f"Room type with code {room_type_id} not found in mapping", "Exely Room Type Mapping")
                 return 
-            reservation_stays.append({
+            
+            room_rate_raw = rs.get("RoomRates", {}).get("RoomRate") or {}
+            if isinstance(room_rate_raw, dict):
+                room_rate_raw = [room_rate_raw]
+                
+            # room_rate_list = []
+            # for rate in room_rate_raw:
+            #     rate_type = get_rate_type_mapping(rate.get("@RatePlanCode"),property)
+            #     room_rate_list.append({
+            #         "rate_type": rate_type.get("edoor_rate_plan", "") if rate_type else "",
+            #         "input_rate": float(rate.get("Total", {}).get("@AmountBeforeTax", 0)),
+            #         "date": rate.get("@EffectiveDate")
+            #     })
+            # room rate and guest info for each stay
+            # frappe.throw(str(service_info))
+            stay_data = {
                 "rate": total_rs_amount,
                 "adult": adult_count,
                 "child": child_count,
                 "is_manual_rate": 0,
-                "is_master": 0,
-                "room_type_id":room_type.get("edoor_room_type", ""),
+                "is_master": is_master,
+                "room_type_id": room_type.get("edoor_room_type", ""),
                 "room_id": "",
-                "guest": stay_guest_docs[0].name or None,
-                "guest_name": stay_guest_docs[0].customer_name_en or None,
-                "guest_phone_number": stay_guest_docs[0].guest_phone_number or None,
-                "guest_email": stay_guest_docs[0].guest_email or None,
-                "nationality": stay_guest_docs[0].nationality or None,
-                "guest_type": stay_guest_docs[0].guest_type or None
-                
-            })
+                "paid_by_master_room":paid_by_master_room,
+                "guest": stay_guest_docs[0].name if stay_guest_docs else None,
+                "guest_name": stay_guest_docs[0].customer_name_en if stay_guest_docs else None,
+                "guest_phone_number": stay_guest_docs[0].guest_phone_number if stay_guest_docs else None,
+                "guest_email": stay_guest_docs[0].guest_email if stay_guest_docs else None,
+                "nationality": stay_guest_docs[0].nationality if stay_guest_docs else None,
+                "guest_type": stay_guest_docs[0].guest_type if stay_guest_docs else None,
+                "package_items": service_info,
+                "additional_guests": additional_guest_docs
+            }
+            merged_transfer = {}
+            if pick_up_drop_off_info:
+                for item in pick_up_drop_off_info:
+                    if isinstance(item, dict):
+                        merged_transfer.update(item)
+            
+                stay_data.update(merged_transfer)
+            
+            reservation_stays.append(stay_data)
+  
+           
 
 
 
-
-        # --------------------------
-        # TimeSpan
-        # --------------------------
-        time_span = res.get("ResGlobalInfo", {}).get("TimeSpan", {})
         
-        arrival_date = time_span.get("@Start", "")
-        departure_date = time_span.get("@End", "")
-        room_night = time_span.get("@Duration", "")
+
+        
+
 
         # --------------------------
         # Reservation Info
@@ -194,11 +348,10 @@ def map_exely_to_reservation(exely_json):
         modified = res.get("@ModifyDateTime", "")
         group_color = random_color()
         existing_guest = None
-        if email:
-            existing_guest = frappe.db.exists("Customer", {"email_address": email})
+        existing_guest = frappe.db.exists("Customer", {"email_address": email})
+        if existing_guest:
             master_guest_info = frappe.get_doc("Customer", existing_guest)
             master_guest_info.gender = gender
-            master_guest_info.customer_group = "General"
             master_guest_info.customer_name_en = guest_full_name
             master_guest_info.customer_name_kh = guest_full_name
             master_guest_info.phone_number = phone
@@ -213,9 +366,14 @@ def map_exely_to_reservation(exely_json):
                 "phone_number": phone,
                 "email_address": email
             }
-            
-            
-            
+        
+        # comment 
+        note = res.get("ResGlobalInfo", {}).get("Comments", {}).get("Comment", {}).get("Text", "")   
+        # room rate
+
+        # payment method
+        # 
+
         mapped = {
             "doc": {
                 "reservation": {
@@ -236,6 +394,7 @@ def map_exely_to_reservation(exely_json):
                     "reservation_color_code": "",
                     "group_color": group_color,
                     "allow_post_to_city_ledger": 1,
+                    "paid_by_master_room":1,
                     "reservation_date": reservation_date,
                     "arrival_date": arrival_date,
                     "departure_date": departure_date,
@@ -244,12 +403,12 @@ def map_exely_to_reservation(exely_json):
                     "business_source": "Test Source",
                     "business_source_type_group": "Direct",
                     "rate_type": "Daily Rate",
-                    "paid_by_master_room": 1,
                     "tax_1_rate": 5,
                     "tax_2_rate": 2,
                     "tax_3_rate": 10,
                     "rate_include_tax": "Yes",
-                    "guest":existing_guest or ""
+                    "guest":existing_guest or "",
+                    "note": note
                     
                 },
 
@@ -275,13 +434,13 @@ def map_exely_to_reservation(exely_json):
 
     return reservations
 
-def confirmation_message(data):
+def confirmation_message(data,property):
     reservation_xml_list = []
 
     now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    config = get_exely_config()
+    config = get_exely_config(property)
     hotel_code = config.get("hotel_code")
-
+   
     for d in data:
         unique_id = d.get("channel_manager_booking_id", "")
         pms_id = d.get("pms_id", "")
@@ -327,43 +486,42 @@ def confirmation_message(data):
     </NotifDetails>
 </OTA_NotifReportRQ>
 """.strip()
-    return send_soap_request("OTA_NotifReportRQ", main_body)
+    return send_soap_request("OTA_NotifReportRQ", main_body,property)
 # add new reservation from exely to edoor
 @frappe.whitelist()
-def add_new_exely_bookings():
-    # booking = get_hotel_bookings()
-    booking = {"status":0,"data":{"s:Envelope":{"@xmlns:s":"http://schemas.xmlsoap.org/soap/envelope/","s:Body":{"@xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","@xmlns:xsd":"http://www.w3.org/2001/XMLSchema","OTA_ResRetrieveRS":{"@Version":"1.17","@xmlns":"http://www.opentravel.org/OTA/2003/05","ReservationsList":{"HotelReservation":{"@CreateDateTime":"2026-03-11T07:50:43.433","@LastModifyDateTime":"2026-03-18T07:39:25.523","@ResStatus":"Confirmed","POS":{"Source":{"RequestorID":{"@Type":"22","@ID":"PMSConnect"},"BookingChannel":{"@Type":"7","TPA_Extensions":{"BookingWebSource":{"@Code":"","@Url":"https://booking.exely.com/qa/?hotel=501674"}}}}},"UniqueID":{"@Type":"14","@ID":"20260406-501674-1200385334"},"RoomStays":{"RoomStay":{"@IndexNumber":"0","RoomTypes":{"RoomType":{"@RoomTypeCode":"5001575","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":[{"@RatePlanID":"10003870"},{"@RatePlanID":"10003541"}]},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-06","@ExpireDate":"2026-04-06","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"230.0000","@AmountAfterTax":"230.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-07","@ExpireDate":"2026-04-07","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"230.0000","@AmountAfterTax":"230.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"1"},{"@AgeQualifyingCode":"AdultExtraBed","@Count":"1","@ResGuestRPH":"2"}]},"TimeSpan":{"@Start":"2026-04-06T14:00:00","@Duration":"2","@End":"2026-04-08T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-05T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"230"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"460.0000","@AmountAfterTax":"460.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}}},"ResGuests":{"ResGuest":[{"@ResGuestRPH":"1","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200431302","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Rathana","MiddleName":"","Surname":"Tes"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"2","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200431303","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Dara","MiddleName":"","Surname":"Tes"},"CitizenCountryName":{"@Code":"GBR"}}}}}}]},"ResGlobalInfo":{"TimeSpan":{"@Start":"2026-04-06T14:00:00","@Duration":"2","@End":"2026-04-08T12:00:00"},"Comments":{"Comment":{"Text":"Guest's comment: my requestr detail"}},"Guarantee":{"@GuaranteeCode":"None","Comments":{"Comment":[{"@Name":"PaymentMethodName","Text":"PayOnArrival"},{"@Name":"PaymentSystemName","Text":"AT_ARRIVAL"},{"@Name":"PaymentSystemCode","Text":"5003924"},{"@Name":"PaymentSystemTitle","Text":"At check-in"}]}},"Total":{"@AmountBeforeTax":"710.0000","@AmountAfterTax":"710.0000","@CurrencyCode":"USD"},"Profiles":{"ProfileInfo":{"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Lak","MiddleName":"","Surname":"Heng"},"Telephone":{"@PhoneNumber":"+85545879658"},"Email":"lakleabhengteasting@gamil.com"}}}}},"Services":{"Service":{"@ServicePricingType":"Per stay","@ServiceRPH":"1","@Inclusive":"false","@Quantity":"1","@ID":"5002979","ServiceDetails":{"TimeSpan":{"@Start":"2026-04-06T00:00:00","@Duration":"1"},"Comments":{"Comment":{"@Name":"Test Service","Text":"test services desition"}},"Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}}}}}},"Success":0}}}}}
-    data = map_exely_to_reservation(booking)
-    booking_confirmation = []
-    return booking
+def add_new_exely_bookings(property):
+    booking = get_hotel_bookings(property)
+    # booking = {"status":0,"data":{"s:Envelope":{"@xmlns:s":"http://schemas.xmlsoap.org/soap/envelope/","s:Body":{"@xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","@xmlns:xsd":"http://www.w3.org/2001/XMLSchema","OTA_ResRetrieveRS":{"@Version":"1.17","@xmlns":"http://www.opentravel.org/OTA/2003/05","ReservationsList":{"HotelReservation":{"@CreateDateTime":"2026-03-25T05:44:19.513","@LastModifyDateTime":"2026-03-27T05:15:25.147","@ResStatus":"Confirmed","POS":{"Source":{"RequestorID":{"@Type":"22","@ID":"PMSConnect"},"BookingChannel":{"@Type":"7","TPA_Extensions":{"BookingWebSource":{"@Code":"","@Url":"https://booking.exely.com/qa/?hotel=501674"}}}}},"UniqueID":{"@Type":"14","@ID":"20260414-501674-1200387942"},"RoomStays":{"RoomStay":[{"@IndexNumber":"0","RoomTypes":{"RoomType":{"@RoomTypeCode":"5001574","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":{"@RatePlanID":"10003870"}},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"100.0000","@AmountAfterTax":"100.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"100.0000","@AmountAfterTax":"100.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"100.0000","@AmountAfterTax":"100.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"100.0000","@AmountAfterTax":"100.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"1"},{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"2"},{"@AgeQualifyingCode":"ChildBandWithoutBed","@Age":"4","@Count":"1","@AgeBucket":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"100"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"},"ServiceRPHs":{"ServiceRPH":[{"@RPH":"2"},{"@RPH":"3"}]}},{"@IndexNumber":"1","RoomTypes":{"RoomType":{"@RoomTypeCode":"5001574","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":{"@RatePlanID":"10003870"}},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"160.0000","@AmountAfterTax":"160.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"160.0000","@AmountAfterTax":"160.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"160.0000","@AmountAfterTax":"160.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"160.0000","@AmountAfterTax":"160.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"3"},{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"4"},{"@AgeQualifyingCode":"ChildBandBed","@Age":"4","@Count":"1","@AgeBucket":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"160"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"640.0000","@AmountAfterTax":"640.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"},"ServiceRPHs":{"ServiceRPH":{"@RPH":"4"}}},{"@IndexNumber":"2","RoomTypes":{"RoomType":{"@RoomTypeCode":"5001574","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":{"@RatePlanID":"10003870"}},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"100.0000","@AmountAfterTax":"100.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"100.0000","@AmountAfterTax":"100.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"100.0000","@AmountAfterTax":"100.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"100.0000","@AmountAfterTax":"100.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"5"},{"@AgeQualifyingCode":"AdultBed","@Count":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"100"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}},{"@IndexNumber":"3","RoomTypes":{"RoomType":{"@RoomTypeCode":"5001576","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":[{"@RatePlanID":"10003870"},{"@RatePlanID":"10003541"}]},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"6"},{"@AgeQualifyingCode":"AdultBed","@Count":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"250"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"1000.0000","@AmountAfterTax":"1000.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}},{"@IndexNumber":"4","RoomTypes":{"RoomType":{"@RoomTypeCode":"5001576","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":[{"@RatePlanID":"10003870"},{"@RatePlanID":"10003541"}]},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"7"},{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"8"},{"@AgeQualifyingCode":"AdultBed","@Count":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"250"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"1000.0000","@AmountAfterTax":"1000.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}},{"@IndexNumber":"5","RoomTypes":{"RoomType":{"@RoomTypeCode":"5001576","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":{"@RatePlanID":"10003870"}},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"9"},{"@AgeQualifyingCode":"AdultBed","@Count":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"250"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"1000.0000","@AmountAfterTax":"1000.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}},{"@IndexNumber":"6","RoomTypes":{"RoomType":{"@RoomTypeCode":"5001576","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":{"@RatePlanID":"10003870"}},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"10"},{"@AgeQualifyingCode":"AdultBed","@Count":"2"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"250"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"1000.0000","@AmountAfterTax":"1000.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}},{"@IndexNumber":"7","RoomTypes":{"RoomType":{"@RoomTypeCode":"5003276","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":[{"@RatePlanID":"10003870"},{"@RatePlanID":"10003541"}]},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"350.0000","@AmountAfterTax":"350.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"350.0000","@AmountAfterTax":"350.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"350.0000","@AmountAfterTax":"350.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"350.0000","@AmountAfterTax":"350.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"11"},{"@AgeQualifyingCode":"AdultBed","@Count":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"350"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"1400.0000","@AmountAfterTax":"1400.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}},{"@IndexNumber":"8","RoomTypes":{"RoomType":{"@RoomTypeCode":"5003276","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":[{"@RatePlanID":"10003870"},{"@RatePlanID":"10003541"}]},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"12"},{"@AgeQualifyingCode":"AdultBed","@Count":"1"},{"@AgeQualifyingCode":"ChildBandBed","@Age":"4","@Count":"1","@AgeBucket":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"400"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"1600.0000","@AmountAfterTax":"1600.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}},{"@IndexNumber":"9","RoomTypes":{"RoomType":{"@RoomTypeCode":"5003276","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":{"@RatePlanID":"10003870"}},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"350.0000","@AmountAfterTax":"350.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"350.0000","@AmountAfterTax":"350.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"350.0000","@AmountAfterTax":"350.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"350.0000","@AmountAfterTax":"350.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"13"},{"@AgeQualifyingCode":"AdultBed","@Count":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"350"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"1400.0000","@AmountAfterTax":"1400.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}},{"@IndexNumber":"10","RoomTypes":{"RoomType":{"@RoomTypeCode":"5003276","@InvBlockCode":"5000456","@Quantity":"1"}},"RatePlans":{"RatePlan":{"@RatePlanID":"10003870"}},"RoomRates":{"RoomRate":[{"@EffectiveDate":"2026-04-14","@ExpireDate":"2026-04-14","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-15","@ExpireDate":"2026-04-15","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-16","@ExpireDate":"2026-04-16","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD"}},{"@EffectiveDate":"2026-04-17","@ExpireDate":"2026-04-17","@RatePlanCode":"10003870","Total":{"@AmountBeforeTax":"400.0000","@AmountAfterTax":"400.0000","@CurrencyCode":"USD"}}]},"GuestCounts":{"GuestCount":[{"@AgeQualifyingCode":"AdultBed","@Count":"1","@ResGuestRPH":"14"},{"@AgeQualifyingCode":"AdultBed","@Count":"1"},{"@AgeQualifyingCode":"ChildBandBed","@Age":"4","@Count":"1","@AgeBucket":"1"}]},"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"CancelPenalties":{"@CancelPolicyIndicator":"true","CancelPenalty":{"Deadline":{"@AbsoluteDeadline":"2026-04-13T07:00:00Z"},"AmountPercent":{"@NmbrOfNights":"1","@BasisType":"Nights","@CurrencyCode":"RUB","@Amount":"400"},"PenaltyDescription":{"Text":"In case of cancellation less than 24 hours before 14:00 arrival day you will be charged the cost of the first night"}}},"Total":{"@AmountBeforeTax":"1600.0000","@AmountAfterTax":"1600.0000","@CurrencyCode":"USD","@DecimalPlaces":"0"},"BasicPropertyInfo":{"@HotelCode":"501674"}}]},"ResGuests":{"ResGuest":[{"@ResGuestRPH":"1","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434118","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"GS","MiddleName":"","Surname":"O"},"CitizenCountryName":{"@Code":"KHM"}}}}}},{"@ResGuestRPH":"2","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434119","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"GS","MiddleName":"","Surname":"OO"},"CitizenCountryName":{"@Code":"KHM"}}}}}},{"@ResGuestRPH":"3","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434120","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"GS","MiddleName":"","Surname":"L"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"4","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434121","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"GS","MiddleName":"","Surname":"LL"},"CitizenCountryName":{"@Code":"KHM"}}}}}},{"@ResGuestRPH":"5","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434122","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Gs","MiddleName":"","Surname":"Q"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"6","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434123","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Gs","MiddleName":"","Surname":"Y"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"7","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434124","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Gs","MiddleName":"","Surname":"B"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"8","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434125","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Ges","MiddleName":"","Surname":"Bb"},"CitizenCountryName":{"@Code":"KHM"}}}}}},{"@ResGuestRPH":"9","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434126","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Geuest","MiddleName":"","Surname":"Test"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"10","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434127","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Gest","MiddleName":"","Surname":"Gt"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"11","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434128","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Room","MiddleName":"","Surname":"Sta"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"12","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434129","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Rom","MiddleName":"","Surname":"S"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"13","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434130","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Roommmm","MiddleName":"","Surname":"Ges"},"CitizenCountryName":{"@Code":"GBR"}}}}}},{"@ResGuestRPH":"14","Profiles":{"ProfileInfo":{"UniqueID":{"@Type":"21","@ID":"1200434131","@ID_Context":"PMSConnect"},"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Room","MiddleName":"","Surname":"Gses"},"CitizenCountryName":{"@Code":"GBR"}}}}}}]},"ResGlobalInfo":{"TimeSpan":{"@Start":"2026-04-14T14:00:00","@Duration":"4","@End":"2026-04-18T12:00:00"},"Comments":{"Comment":{"Text":"Guest's comment: Additional information Personal request"}},"Guarantee":{"@GuaranteeCode":"None","Comments":{"Comment":[{"@Name":"PaymentMethodName","Text":"PayOnArrival"},{"@Name":"PaymentSystemName","Text":"AT_ARRIVAL"},{"@Name":"PaymentSystemCode","Text":"5003924"},{"@Name":"PaymentSystemTitle","Text":"At check-in"}]}},"Total":{"@AmountBeforeTax":"11739.0000","@AmountAfterTax":"11739.0000","@CurrencyCode":"USD"},"Profiles":{"ProfileInfo":{"Profile":{"Customer":{"@Gender":"Unknown","PersonName":{"GivenName":"Heng","MiddleName":"","Surname":"Guest"},"Telephone":{"@PhoneNumber":"+855715194987"},"Email":"lakleabheng@gmail.com"}}}}},"Services":{"Service":[{"@ServicePricingType":"Per stay","@ServiceRPH":"1","@Inclusive":"false","@Quantity":"1","@ID":"5002979","ServiceDetails":{"TimeSpan":{"@Start":"2026-04-14T00:00:00","@Duration":"1"},"Comments":{"Comment":{"@Name":"Test Service","Text":"test services desition"}},"Total":{"@AmountBeforeTax":"250.0000","@AmountAfterTax":"250.0000","@CurrencyCode":"USD"}}},{"@ServicePricingType":"Per stay","@ServiceRPH":"2","@Inclusive":"false","@Quantity":"1","@ID":"5002999","ServiceDetails":{"TimeSpan":{"@Start":"2026-04-14T00:00:00","@Duration":"1"},"Comments":{"Comment":{"@Name":"Test Test","Text":"Test Test"}},"Total":{"@AmountBeforeTax":"1.0000","@AmountAfterTax":"1.0000","@CurrencyCode":"USD"}}},{"@ServicePricingType":"Per person per night","@ServiceRPH":"3","@Inclusive":"false","@Quantity":"3","@ID":"5002998","ServiceDetails":{"TimeSpan":{"@Start":"2026-04-14T00:00:00","@Duration":"4"},"Comments":{"Comment":{"@Name":"American breakfast","Text":"American breakfast test"}},"Total":{"@AmountBeforeTax":"24.0000","@AmountAfterTax":"24.0000","@CurrencyCode":"USD"},"ServiceRates":{"ServiceRate":[{"@EffectiveDate":"2026-04-14","@AmountAfterTax":"6.0000"},{"@EffectiveDate":"2026-04-15","@AmountAfterTax":"6.0000"},{"@EffectiveDate":"2026-04-16","@AmountAfterTax":"6.0000"},{"@EffectiveDate":"2026-04-17","@AmountAfterTax":"6.0000"}]}}},{"@ServicePricingType":"Per person per night","@ServiceRPH":"4","@Inclusive":"false","@Quantity":"3","@ID":"5002998","ServiceDetails":{"TimeSpan":{"@Start":"2026-04-14T00:00:00","@Duration":"4"},"Comments":{"Comment":{"@Name":"American breakfast","Text":"American breakfast test"}},"Total":{"@AmountBeforeTax":"24.0000","@AmountAfterTax":"24.0000","@CurrencyCode":"USD"},"ServiceRates":{"ServiceRate":[{"@EffectiveDate":"2026-04-14","@AmountAfterTax":"6.0000"},{"@EffectiveDate":"2026-04-15","@AmountAfterTax":"6.0000"},{"@EffectiveDate":"2026-04-16","@AmountAfterTax":"6.0000"},{"@EffectiveDate":"2026-04-17","@AmountAfterTax":"6.0000"}]}}}]}}},"Success":""}}}}}
+    data = map_exely_to_reservation(booking,property)
+
     if data:
         for d in data:
             edoor_data = add_new_reservation(
                     d.get("doc"),
                     sync_room_available_to_channel_manager=False
                 )
-            try:
-                # edoor_data = add_new_reservation(
-                #     d.get("doc"),
-                #     sync_room_available_to_channel_manager=False
-                # )
-                if(edoor_data):
-                    booking_confirmation.append({
-                        "channel_manager_booking_id": d.get("doc").get("reservation").get("channel_manager_booking_id"),
-                        "pms_id": edoor_data.get("name", ""),
-                        "status": "Success"
-                    })
+            # try:
+            #     edoor_data = add_new_reservation(
+            #         d.get("doc"),
+            #         sync_room_available_to_channel_manager=False
+            #     )
+            #     if(edoor_data):
+            #         booking_confirmation.append({
+            #             "channel_manager_booking_id": d.get("doc").get("reservation").get("channel_manager_booking_id"),
+            #             "pms_id": edoor_data.get("name", ""),
+            #             "status": "Success"
+            #         })
 
-            except Exception as e:
-                booking_confirmation.append({
-                    "channel_manager_booking_id": d.get("doc").get("reservation").get("channel_manager_booking_id"),
-                    "pms_id":"",
-                    "status": "Failed",
-                    "error": str(e)
-                })
-        return booking_confirmation
-        # if booking_confirmation:
-        #     confirmation_message(booking_confirmation)
+            # except Exception as e:
+            #     booking_confirmation.append({
+            #         "channel_manager_booking_id": d.get("doc").get("reservation").get("channel_manager_booking_id"),
+            #         "pms_id":"",
+            #         "status": "Failed",
+            #         "error": str(e)
+            #     })
+        return edoor_data
+        if booking_confirmation:
+            confirmation_message(booking_confirmation,property)
         # frappe.enqueue(
         #         "edoor.channel_managers.exely.availability.update_room_availability",
         #         queue="channel_manager",

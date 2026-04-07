@@ -443,7 +443,7 @@ def add_new_reservation(doc,sync_room_available_to_channel_manager = True):
     
     #check if not have guest selected then create new guest
     if not check_field(doc["reservation"],"guest"):
-        guest = frappe.get_doc(doc["guest_info"]).insert(ignore_permissions=True)
+        guest = frappe.get_doc(doc["guest_info"]).save(ignore_permissions=True)
         doc["reservation"]["guest"] = guest.name
     else:
         guest = frappe.get_doc(doc["guest_info"]).save(ignore_permissions=True)
@@ -499,7 +499,8 @@ def add_new_reservation(doc,sync_room_available_to_channel_manager = True):
                     room = room_by_room_types[0]["name"]
                     available_rooms.remove(room_by_room_types[0])
         
-        
+
+
              
         stay = {
             "doctype":"Reservation Stay",
@@ -550,8 +551,23 @@ def add_new_reservation(doc,sync_room_available_to_channel_manager = True):
                     "is_manual_rate":d["is_manual_rate"]
                 }
             ],
-            # "inclusion_items":package_items
+            "inclusion_items":d.get("package_items") or [],
+            "require_pickup":d.get("require_pickup") or 0,
+            "pickup_time":d.get("pickup_time") or "",
+            "arrival_mode":d.get("arrival_mode") or "",
+            "arrival_flight_number":d.get("arrival_flight_number") or "",
+            "pickup_location":d.get("pickup_location") or "",
+            "pickup_note":d.get("pickup_note") or "",
+            "pickup_rate":d.get("pickup_rate") or "",
+            "require_drop_off":d.get("require_drop_off") or 0,
+            "drop_off_time":d.get("drop_off_time") or "",
+            "departure_mode":d.get("departure_mode") or "",
+            "departure_flight_number":d.get("departure_flight_number") or "",
+            "drop_off_location":d.get("drop_off_location") or "",
+            "drop_off_rate":d.get("drop_off_rate") or "",
+            "drop_off_note":d.get("drop_off_note") or "",
         }
+        
         if d.get("additional_guests"):
             stay["additional_guests"] = []
             for x in d.get("additional_guests"):
@@ -566,7 +582,16 @@ def add_new_reservation(doc,sync_room_available_to_channel_manager = True):
         stay_doc = frappe.get_doc(stay).insert()
         
         stay_names.append(stay_doc.name)
-
+        if d.get("childlist"):
+            for x in d.get("childlist"):
+                if x.get("value") > 0:
+                    child_stay = {
+                        "doctype":"Reservation Stay Occupancy",
+                        "reservation_stay": stay_doc.name,
+                        "occupancy_code": x.get("name"),
+                        "total": x.get("value")
+                    } 
+                frappe.get_doc(child_stay).insert()
 
     #update summary to reservation stay
     from edoor.api.generate_room_rate import generate_new_room_rate
@@ -4777,6 +4802,10 @@ def copy_reservation(reservation):
         new_doc["child"] = room_types[0]["child"]
 
     return {"reservation":new_doc,"room_types":room_types,"group_color_code":group_color_code}
+
+@frappe.whitelist()
+def get_room_type_occupancy_codes(room_type_id):
+    return frappe.get_all("Room Type Occupancy Rate", filters={"parent": room_type_id}, fields=["occupancy_code"])
 
 
 

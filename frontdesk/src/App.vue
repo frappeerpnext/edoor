@@ -226,6 +226,7 @@ onUnmounted(() => {
     window.socket.off("RunNightAudit")
 })
 onMounted(async () => { 
+    window.toast = toast;
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){

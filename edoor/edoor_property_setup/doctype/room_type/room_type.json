@@ -8,16 +8,22 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "property",
   "room_type_group",
   "naming_series",
-  "property",
   "room_type",
   "alias",
   "base_adult",
   "base_child",
+  "number_of_extra_guest",
+  "extra_child_without_bed",
+  "column_break_zsfq",
   "rate",
+  "room_type_color",
   "sort_order",
-  "room_type_color"
+  "disabled",
+  "rate_section",
+  "rates"
  ],
  "fields": [
   {
@@ -82,6 +88,36 @@
    "fieldname": "room_type_color",
    "fieldtype": "Color",
    "label": "Room Type Color"
+  },
+  {
+   "fieldname": "column_break_zsfq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate_section",
+   "fieldtype": "Section Break",
+   "label": "Rate"
+  },
+  {
+   "fieldname": "rates",
+   "fieldtype": "Table",
+   "options": "Room Type Occupancy Rate"
+  },
+  {
+   "fieldname": "number_of_extra_guest",
+   "fieldtype": "Int",
+   "label": "Number of Extra Guest"
+  },
+  {
+   "fieldname": "extra_child_without_bed",
+   "fieldtype": "Int",
+   "label": "Extra Child without Bed"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -92,7 +128,7 @@
    "link_fieldname": "room_type_id"
   }
  ],
- "modified": "2025-04-18 15:53:29.567385",
+ "modified": "2026-03-31 15:50:00.880791",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",

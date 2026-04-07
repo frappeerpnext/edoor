@@ -1,0 +1,65 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-03 10:43:25.059326",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "reservation_stay",
+  "occupancy_code",
+  "total",
+  "rate"
+ ],
+ "fields": [
+  {
+   "fieldname": "reservation_stay",
+   "fieldtype": "Link",
+   "label": "Reservation Stay",
+   "options": "Reservation Stay",
+   "search_index": 1
+  },
+  {
+   "fieldname": "occupancy_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Occupancy Code",
+   "options": "Occupancy Code"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-03 11:02:55.819590",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Reservation Stay Occupancy",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

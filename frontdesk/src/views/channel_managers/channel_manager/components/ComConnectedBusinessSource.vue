@@ -27,9 +27,9 @@
                     <div class="card-body">
                         <div class="label">Total Bookings</div>
                         <div class="value">142</div>
-                        <div class="bar-track">
+                        <!-- <div class="bar-track">
                             <div class="bar-fill" style="width:100%"></div>
-                        </div>
+                        </div> -->
                     </div>
                 </div> 
                 <!-- Expedia -->
@@ -51,9 +51,9 @@
                     <div class="card-body">
                         <div class="label">Total Bookings</div>
                         <div class="value">98</div>
-                        <div class="bar-track">
+                        <!-- <div class="bar-track">
                             <div class="bar-fill" style="width:69%"></div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -76,9 +76,9 @@
                     <div class="card-body">
                         <div class="label">Total Bookings</div>
                         <div class="value">64</div>
-                        <div class="bar-track">
+                        <!-- <div class="bar-track">
                             <div class="bar-fill" style="width:45%"></div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -101,9 +101,9 @@
                     <div class="card-body">
                         <div class="label">Total Bookings</div>
                         <div class="value">45</div>
-                        <div class="bar-track">
+                        <!-- <div class="bar-track">
                             <div class="bar-fill" style="width:32%"></div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -126,9 +126,9 @@
                     <div class="card-body">
                         <div class="label">Total Bookings</div>
                         <div class="value">32</div>
-                        <div class="bar-track">
+                        <!-- <div class="bar-track">
                             <div class="bar-fill" style="width:22%"></div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 

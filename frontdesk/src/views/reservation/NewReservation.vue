@@ -428,9 +428,16 @@
                                     @update:modelValue="get_room_rate_breakdown(d)" />
                             </td>
                             <td class="p-2 w-4rem">
-                                <InputNumber inputClass="w-4rem" v-model="d.child" inputId="stacked-buttons" showButtons
+                                   <div class="box-input-detail">
+                                    <div class="link_line_action" :class="!d.room_type_id ? 'pointer-events-none opacity-90' : ''"  @click="onOpenChangeChild($event, d)">
+                                        {{ d.child }}
+                                    </div>
+
+                                </div>
+                                <!-- <InputNumber @click="onOpenChangeChild($event, d)" inputClass="w-4rem" v-model="d.child" inputId="stacked-buttons" showButtons
                                     :min="0" :max="100" class="child-adults-txt"
-                                    @update:modelValue="get_room_rate_breakdown(d)" />
+                                    @update:modelValue="get_room_rate_breakdown(d)" /> -->
+                               
                             </td>
 
                             <td class="p-2 w-8rem">
@@ -501,6 +508,9 @@
             <ComReservationStayChangeRate v-model="rate" @onClose="onClose" @onUseRatePlan="onUseRatePlan"
                 @onChangeRate="onChangeRate" />
         </OverlayPanel>
+        <OverlayPanel ref="childOp">
+            <ComReservationStayChangeChild @onChangeChild="onChangeChild" v-model="childlist" :room="selectedStay?.room_type_id" @onClose="onCloseChild" />
+        </OverlayPanel>
     </ComDialogContent>
 </template>
 <script setup>
@@ -510,6 +520,7 @@ import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import iconPlusSignWhite from '@/assets/svg/plus-white-icon.svg'
 const theme = window.theme
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
+import ComReservationStayChangeChild from "./components/ComReservationStayChangeChild.vue"
 import ComPackageDetail from "@/views/frontdesk/components/ComPackageDetail.vue"
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComViewRoomRateBreakdown from '@/views/reservation/components/ComViewRoomRateBreakdown.vue';
@@ -532,14 +543,15 @@ const rooms = ref([])
 const working_day = ref({})
 const selectedStay = ref({})
 const rate = ref(0)
+const childlist = ref([])
 const op = ref();
+const childOp = ref();
 const can_view_rate = window.can_view_rate
 const room_tax = ref()
 const minDate = ref()
 const hasFutureResertion = ref(false)
 const checkFutureReservationInfo = ref({})
 const meta = ref()
-
 
 
 const isFieldHidden = computed(() => (fieldname) => {
@@ -555,6 +567,12 @@ const onOpenChangeRate = (event, stay) => {
     rate.value = JSON.parse(JSON.stringify(stay)).rate
 
     op.value.toggle(event);
+}
+
+const onOpenChangeChild = (event, stay) => {
+    selectedStay.value = stay
+    childlist.value = JSON.parse(JSON.stringify(stay)).childlist
+    childOp.value.toggle(event);
 }
 
 
@@ -862,6 +880,7 @@ const onAddRoom = () => {
             room_id: "",
             is_manual_rate: false,
             is_master: 0,
+            child: 0,
             total_tax: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].total_tax
 
         }
@@ -1142,6 +1161,8 @@ const OnSelectRoom = () => {
 const onSelectRoomType = (stay) => {
 
     stay.room_id = null
+    stay.childlist = []
+    stay.child = 0
     OnSelectRoom()
     updateRate(stay)
 
@@ -1269,6 +1290,12 @@ const onChangeRate = () => {
     op.value.hide();
 }
 
+const onChangeChild = (childData) => {
+    selectedStay.value.childlist = childData
+    selectedStay.value.child = childData.reduce((total, item) => total + (item.value || 0), 0)
+    childOp.value.hide();
+}
+
 const onUseRatePlan = () => {
 
     selectedStay.value.is_manual_rate = false;
@@ -1350,6 +1377,9 @@ function viewRoomRateBreakdown(stay) {
 
 function onClose() {
     op.value.hide()
+}
+function onCloseChild() {
+    childOp.value.hide()
 }
 
 function onAddNewBusinessSource(event) {

@@ -86,13 +86,30 @@ def extract_rate_plans_from_response(data):
             or rate_plan.get("Name")
             or ""
         )
+        
+        availability_block =(
+            rate_plan.get("@InvBlockCode")
+            or rate_plan.get("InvBlockCode")
+            or ""
+        )
+        allow_upload_price =(
+            rate_plan.get("@PriceUploadIsAllowed")
+            or rate_plan.get("PriceUploadIsAllowed")
+            or False
+        )
 
+        
+
+      
         rows.append({
             "rate_plan_code": rate_plan_code,
-            "rate_plan_name": rate_plan_name
+            "rate_plan_name": rate_plan_name,
+            "availability_block":availability_block,
+            "allow_upload_price": True if str(allow_upload_price).lower() == 'true' else False
         })
+       
 
-    return rows
+    return [d for d in rows if d.get("allow_upload_price")]
     
 def extract_payment_types_from_response(data):
     payment_types = (
@@ -172,8 +189,8 @@ def extract_service_from_response(data):
 
 
 @frappe.whitelist()
-def test():
-    config = get_exely_config()
+def test(property):
+    config = get_exely_config(property)
 
     body_content = f"""
     <OTA_HotelAvailRQ xmlns="http://www.opentravel.org/OTA/2003/05" Version="1.17">
@@ -189,14 +206,14 @@ def test():
     </OTA_HotelAvailRQ>
     """
 
-    data = send_soap_request("OTA_HotelAvailRQ", body_content)
+    data = send_soap_request(property, "OTA_HotelAvailRQ", body_content)
     services = extract_payment_types_from_response(data)
 
 
     return services
  
-def content_body():
-    config = get_exely_config()
+def content_body(property):
+    config = get_exely_config(property)
 
     body_content = f"""
     <OTA_HotelAvailRQ xmlns="http://www.opentravel.org/OTA/2003/05" Version="1.17">
@@ -212,7 +229,7 @@ def content_body():
     </OTA_HotelAvailRQ>
     """
 
-    data = send_soap_request("OTA_HotelAvailRQ", body_content)
+    data = send_soap_request(property, "OTA_HotelAvailRQ", body_content)
     room_types = extract_room_types_from_response(data)
     rate_plans = extract_rate_plans_from_response(data)
     payment_types = extract_payment_types_from_response(data)
@@ -222,8 +239,8 @@ def content_body():
 
 
 @frappe.whitelist()
-def send_property_info():
-    room_types, rate_plans, payment_types, services = content_body()
+def send_property_info(property):
+    room_types, rate_plans, payment_types, services = content_body(property)
     return {
         "room_types": room_types,
         "rate_plans": rate_plans,

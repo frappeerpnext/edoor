@@ -18,10 +18,16 @@ import copy
 from functools import lru_cache
 from edoor.api.update_reservation import update_reservation_stay
 from edoor.api.backup import run_backup_command
-
+import hashlib
 
 def after_login(user):
     frappe.local.response["hello"] = 'World'
+
+
+
+def make_hash(text):
+    return hashlib.md5(text.encode("utf-8")).hexdigest()
+
 
 @frappe.whitelist()
 def create_role():

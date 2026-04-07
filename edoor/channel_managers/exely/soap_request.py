@@ -22,6 +22,10 @@ OTA_REQUEST = {
     "OTA_NotifReportRQ":{
         "SOAPAction":"https://www.hopenapi.com/Api/PMSConnect/NotifReportRQRequest"
         # The Confirmation Message
+    },
+    "OTA_HotelRateAmountNotifRQ":{
+        "SOAPAction":"https://www.hopenapi.com/Api/PMSConnect/HotelRateAmountNotifRQ"
+        # The Confirmation Message
     }
 
 

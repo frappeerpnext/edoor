@@ -68,6 +68,11 @@
     <img v-else-if="icon == 'iconInHouse'" :style="{'height' : height}" :class="class" :src="iconInHouse"/>
     <img v-else-if="icon == 'iconReservation'" :style="{'height' : height}" :class="class" :src="iconReservation"/>
     <img v-else-if="icon == 'iconGuestFolio'" :style="{'height' : height}" :class="class" :src="iconGuestFolio"/>
+    <img v-else-if="icon == 'iconLightBulb'" :style="{'height' : height}" :class="class" :src="iconLightBulb"/>
+    <img v-else-if="icon == 'iconPurpleLightBulb'" :style="{'height' : height}" :class="class" :src="iconPurpleLightBulb"/>
+    <img v-else-if="icon == 'iconCalendarCheck'" :style="{'height' : height}" :class="class" :src="iconCalendarCheck"/>
+    <img v-else-if="icon == 'iconExchangeDollar'" :style="{'height' : height}" :class="class" :src="iconExchangeDollar"/>
+    <img v-else-if="icon == 'iconRestrictionLine'" :style="{'height' : height}" :class="class" :src="iconRestrictionLine"/>
 
 
     
@@ -156,6 +161,11 @@ import iconStayOver from '@/assets/svg/icon-stay-over.svg'
 import iconInHouse from '@/assets/svg/icon-in-house.svg'
 import iconReservation from '@/assets/svg/icon-reservations.svg'
 import iconGuestFolio from '@/assets/svg/icon-guest-folio.svg'
+import iconLightBulb from '@/assets/svg/icon-light-bulb.svg'
+import iconPurpleLightBulb from '@/assets/svg/icon-purple-light-bulb.svg'
+import iconRestrictionLine from '@/assets/svg/icon-restricted-line.svg'
+import iconExchangeDollar from '@/assets/svg/icon-exchange-dollar.svg'
+import iconCalendarCheck from '@/assets/svg/icon-calendar-check.svg'
 
 </script>
  

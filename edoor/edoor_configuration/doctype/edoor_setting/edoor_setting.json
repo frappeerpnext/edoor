@@ -16,6 +16,7 @@
   "allow_user_to_delete_auto_post_transaction",
   "maximum_number_of_folio_in_reservation_stay",
   "create_next_cashier_shift_after_close_shift",
+  "maximum_future_years_allowed",
   "cb_177",
   "show_summary_under_room_chart_calendar",
   "enable_over_booking",
@@ -491,12 +492,19 @@
    "fieldname": "floor_plan_template",
    "fieldtype": "JSON",
    "label": "floor plan template"
+  },
+  {
+   "default": "1",
+   "fieldname": "maximum_future_years_allowed",
+   "fieldtype": "Select",
+   "label": "Maximum Future Years Allowed",
+   "options": "1\n2"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-15 09:45:36.813870",
+ "modified": "2026-03-31 12:10:24.435551",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

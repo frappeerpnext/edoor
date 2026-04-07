@@ -1,4 +1,5 @@
  
+
 export function getDialogScrollHeight(adjustHeight = 0){
     let el = document.querySelectorAll(".p-dialog-content")
     if(el){
@@ -57,4 +58,57 @@ export function getDaysInMonth(month, year) {
 
   return days;
 }
+
+export function showWarning(title,message=""){
+
+  window.toast.add({ severity: 'warn', summary: title, detail: message, life: 3000 })
+}
+
+export function groupDatesToPeriods(dateInput) {
+    // handle Set or Array
+    let dates = Array.isArray(dateInput)
+        ? dateInput
+        : Array.from(dateInput);
+
+    // sort dates
+    dates.sort();
+
+    const periods = [];
+
+    if (dates.length === 0) return periods;
+
+    let start = dates[0];
+    let prev = dates[0];
+
+    for (let i = 1; i < dates.length; i++) {
+        const current = dates[i];
+
+        const prevDate = new Date(prev);
+        prevDate.setDate(prevDate.getDate() + 1);
+
+        const nextDay = prevDate.toISOString().slice(0, 10);
+
+        // break period if not consecutive
+        if (current !== nextDay) {
+            periods.push({
+                start_date: start,
+                end_date: prev
+            });
+
+            start = current;
+        }
+
+        prev = current;
+    }
+
+    // push last period
+    periods.push({
+        start_date: start,
+        end_date: prev
+    });
+
+    return periods;
+}
+
+
  

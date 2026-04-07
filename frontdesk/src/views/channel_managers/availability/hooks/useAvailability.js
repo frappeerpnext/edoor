@@ -29,7 +29,7 @@ export function useAvailability() {
         })
 
         if (res.data) {
-            roomTypes.value = res.data
+            roomTypes.value = res.data  
         }
 
     }

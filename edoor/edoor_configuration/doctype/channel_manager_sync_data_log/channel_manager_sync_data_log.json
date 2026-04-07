@@ -10,7 +10,9 @@
   "provider",
   "request_type",
   "room_type",
+  "rate_type",
   "date",
+  "occupancy_code",
   "value"
  ],
  "fields": [
@@ -19,20 +21,23 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Property",
-   "options": "Business Branch"
+   "options": "Business Branch",
+   "search_index": 1
   },
   {
    "fieldname": "provider",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Provider"
+   "label": "Provider",
+   "search_index": 1
   },
   {
    "fieldname": "request_type",
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Request Type"
+   "label": "Request Type",
+   "search_index": 1
   },
   {
    "fieldname": "room_type",
@@ -40,7 +45,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Room Type",
-   "options": "Room Type"
+   "options": "Room Type",
+   "search_index": 1
   },
   {
    "fieldname": "date",
@@ -54,11 +60,25 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Value"
+  },
+  {
+   "description": "For sync rate plan ",
+   "fieldname": "occupancy_code",
+   "fieldtype": "Data",
+   "label": "Occupancy Code",
+   "search_index": 1
+  },
+  {
+   "description": "For sync rate plan",
+   "fieldname": "rate_type",
+   "fieldtype": "Data",
+   "label": "Rate Type",
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-18 11:46:16.228414",
+ "modified": "2026-04-04 15:29:47.125544",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Channel Manager Sync Data Log",

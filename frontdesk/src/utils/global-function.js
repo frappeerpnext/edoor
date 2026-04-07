@@ -2,8 +2,10 @@
 
 import {getDocument,createDocument,getData,getDocumentList ,postData } from "@/plugin/api.js";
 import * as reservation from "@/utils/global/reservation.js";
+import * as utils from "@/utils/utils.js";
  
 globalThis.app = globalThis.app || {};
+globalThis.app.utils = utils
 
 
 // api url 
@@ -25,8 +27,8 @@ globalThis.app.getApi =  async function (api_url,param) {
 }
 
  
-globalThis.app.postApi =  async function (api_url,param) {
-  return await postData(api_url,param)
+globalThis.app.postApi =  async function (api_url,param,message="",show_message=true) {
+  return await postData(api_url,param,message,show_message)
 }
 
 globalThis.app.getDocList =  async function (DocType,param) {
@@ -45,3 +47,7 @@ globalThis.app.openGroupAssignRoom =  async function (name) {
 }
 
 
+// toast servce
+globalThis.app.showWarning =  async function (title, message = "") {
+  utils.showWarning(title,message)
+}

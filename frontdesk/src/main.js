@@ -168,6 +168,7 @@ import ComRepeatView from '@/components/layout/components/ComRepeatView.vue';
 import ComDataView from '@/components/layout/components/ComDataView.vue';
 import ComDocumentList from '@/components/document/ComDocumentList.vue';
 import ComStatus from '@/components/label/ComStatus.vue';
+import ComConfirmMessage from './components/ComConfirmMessage.vue';
 
 app.config.globalProperties.$t = i18n.global.t;
 
@@ -229,6 +230,7 @@ app.component('ComChartDoughnut', ComChartDoughnut)
 app.component('ComOverlayPanelFooter', ComOverlayPanelFooter)
 app.component('ComOverlayPanelContent', ComOverlayPanelContent)
 app.component('ComIcon', ComIcon)
+app.component('ComConfirmMessage', ComConfirmMessage)
 app.component('ComAttachFile', ComAttachFile)
 app.component('ComDocument', ComDocument)
 app.component('ComInputTime', ComInputTime)
@@ -375,7 +377,7 @@ if (setting) {
 	//attach permission
 	window.can_view_rate = setting.user.can_view_rate
 	 
-	let whitelist_route = ["OwnerDashboard","NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder","AccountCategorySortOrder","RoomSortOrder",
+	let whitelist_route = ["OwnerDashboard","NoPermission", "ReservationStayDetail", "ReservationDetail","RatePlanDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder","AccountCategorySortOrder","RoomSortOrder",
 		"AllReservation","ArrivalGuest","StayOverGuest","DepartureGuest","OperationDashboardGuestLedger","DailyReservation"
 	]
 	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]

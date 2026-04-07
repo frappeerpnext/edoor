@@ -1,0 +1,44 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-31 10:43:29.148302",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "service_type",
+  "edoor_posting_rule",
+  "edoor_charge_rule"
+ ],
+ "fields": [
+  {
+   "fieldname": "service_type",
+   "fieldtype": "Data",
+   "label": "Service Type"
+  },
+  {
+   "fieldname": "edoor_posting_rule",
+   "fieldtype": "Select",
+   "label": "eDoor Posting Rule",
+   "options": "Everyday\nChecked In Date\nChecked Out Date\nSpecific Date\nCustom Range"
+  },
+  {
+   "fieldname": "edoor_charge_rule",
+   "fieldtype": "Select",
+   "label": "eDoor Charge Rule",
+   "options": "Stay\nAdult\nChild\nPax"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-31 10:59:44.378026",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Package Rule Mapping",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

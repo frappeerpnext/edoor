@@ -5,6 +5,7 @@ from lxml import etree
 from edoor.api.utils import get_room_type_ids
 from frappe.model.document import bulk_insert
 from edoor.channel_managers.utils import get_channal_manager_info
+
 @frappe.whitelist()
 def get_current_working_date():
     sql="select max(posting_date) as date from `tabWorking Day` where is_closed = 0"

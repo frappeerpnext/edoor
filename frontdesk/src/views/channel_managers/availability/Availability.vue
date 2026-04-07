@@ -32,6 +32,7 @@ v-if="roomTypes"
   @update:selected="onSelected"
   @onUpdateStatus = "onToggleUpdate"
 />
+ 
   </div>
 </template>
 <script setup>

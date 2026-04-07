@@ -1,6 +1,7 @@
 import frappe
 import random
-
+import re
+from datetime import datetime
 def json_to_xml():
     return {}
 
@@ -29,6 +30,34 @@ def get_room_type_mapping(room_type,property):
             "Room Type Mapping",
             {"room_type_code": room_type, "parent": property},
             ["name", "edoor_room_type","room_type_name"],
+            as_dict=True
+        )
+        frappe.cache().set_value(cache_key, mapping)
+    return mapping
+def get_service_mapping(service,property):
+    cache_key = f"exely_service_mapping:{service}{property}"
+    mapping = frappe.cache().get_value(cache_key)
+    frappe.cache().delete_value(cache_key)
+    if not mapping:
+        mapping = frappe.db.get_value(
+            "Service Mapping",
+            {"services_code": service, "parent": property},
+            ["name", "edoor_service_code","service_name"],
+            as_dict=True
+        )
+        frappe.cache().set_value(cache_key, mapping)
+        # To clear a specific key
+       
+        
+    return mapping
+def get_rate_type_mapping(rate_type,property):
+    cache_key = f"exely_rate_type_mapping:{rate_type}{property}"
+    mapping = frappe.cache().get_value(cache_key)
+    if not mapping:
+        mapping = frappe.db.get_value(
+            "Rate Plan Mapping",
+            {"rate_plan_code": rate_type, "parent": property},
+            ["name","edoor_rate_plan"],
             as_dict=True
         )
         frappe.cache().set_value(cache_key, mapping)
@@ -90,4 +119,79 @@ def get_country(country_code):
         frappe.cache().set_value(cache_key, country_mapping)
     return country_mapping
     
+
+
+def parse_transfer(text):
+
+    def find(pattern, group=1):
+        m = re.search(pattern, text, re.IGNORECASE)
+        return m.group(group).strip() if m else None
+
+    text = text.replace("\\r\\n", "\n")
+
+    # Detect transfer type
+    transfer_type = "arrival" if "arrival" in text.lower() else \
+                    "departure" if "departure" in text.lower() else None
+
+    # Time (support HH:MM:SS)
+    time_match = re.search(r'(Arrival|Departure):\s*(\d{2}:\d{2}(?::\d{2})?)', text, re.IGNORECASE)
+    service_time = time_match.group(2) if time_match else None
+
+    # Date (optional, not in your sample)
+    date_match = re.search(r'(Arrival|Departure) date:\s*(\d{2}-\d{2}-\d{4})', text, re.IGNORECASE)
+    service_date = None
+    if date_match:
+        service_date = datetime.strptime(date_match.group(2), "%d-%m-%Y").strftime("%Y-%m-%d")
+
+    # Flight number (avoid wrong text)
+    flight = find(r'Flight number:\s*(.+)')
+    if flight and flight.lower() == "flight":
+        flight = None
+
+    # Extract vehicle + qty + amount
+    vehicle_match = re.search(r'(\w+)\s*-\s*(\d+)pcs\s*X\s*([\d.]+)\s*USD', text, re.IGNORECASE)
+
+    vehicle = None
+    qty = 1
+    amount = 0
+
+    if vehicle_match:
+        vehicle = vehicle_match.group(1)       
+        qty = int(vehicle_match.group(2)) 
+        amount = float(vehicle_match.group(3))
+
+    route_match = re.search(r'Transference\s*(.*?)\s*→\s*(.*?)\n', text)
+    route = None
+    if route_match:
+        route = route_match.group(1).strip()
+        # Remove backslash and quote
+        route = route.replace('\\', '').replace('"', '')
+
+    return {
+        "service_type": "airport_transfer",
+        "transfer_type": transfer_type,
+        "route": route,
+        "mode": vehicle,
+        "service_date": service_date,
+        "time": service_time,
+        "flight_number": flight,
+        "quantity": qty,
+        "amount": amount,
+        "currency": "USD" if amount else None,
+        "posting_date": service_date
+    }
+
+
+def get_package_rule_mapping(package_type,property):
+    cache_key = f"exely_package_type_mapping:{package_type}{property}"
+    mapping = frappe.cache().get_value(cache_key)
+    if not mapping:
+        mapping = frappe.db.get_value(
+            "Package Rule Mapping",
+            {"service_type": package_type, "parent": property},
+            ["name","edoor_posting_rule","edoor_charge_rule"],
+            as_dict=True
+        )
+        frappe.cache().set_value(cache_key, mapping)
+    return mapping
 

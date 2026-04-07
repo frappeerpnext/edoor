@@ -31,6 +31,7 @@
   "reservation_color_code",
   "reservation_color",
   "internal_reference_number",
+  "payment_method",
   "reservation",
   "reservation_date",
   "reservation_type",
@@ -113,7 +114,9 @@
   "pickup_location",
   "pickup_driver",
   "pickup_driver_name",
-  "pickup_driver_phone_number",
+  "pickup_rate",
+  "pickup_qty",
+  "pick_up_driver_phone_number",
   "pickup_note",
   "column_break_51",
   "require_drop_off",
@@ -123,6 +126,7 @@
   "drop_off_location",
   "drop_off_driver",
   "drop_off_driver_name",
+  "drop_off_rate",
   "drop_off_driver_phone_number",
   "drop_off_note",
   "last_update_pickup_and_drop_off",
@@ -453,7 +457,7 @@
   },
   {
    "fieldname": "drop_off_note",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Drop Off Note"
   },
   {
@@ -506,12 +510,6 @@
    "fieldname": "pickup_driver_name",
    "fieldtype": "Data",
    "label": "Pickup Driver Name"
-  },
-  {
-   "fetch_from": "pickup_driver.phone_number",
-   "fieldname": "pickup_driver_phone_number",
-   "fieldtype": "Data",
-   "label": "Phone Number"
   },
   {
    "fetch_from": "drop_off_driver.driver_name",
@@ -1035,12 +1033,41 @@
   {
    "fieldname": "column_break_hksy",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_method",
+   "fieldtype": "Link",
+   "label": "Payment Method",
+   "options": "Booking Guarantee"
+  },
+  {
+   "fetch_from": "drop_off_driver.",
+   "fieldname": "pickup_rate",
+   "fieldtype": "Currency",
+   "label": "Pickup Rate"
+  },
+  {
+   "fieldname": "pick_up_driver_phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fetch_from": "drop_off_driver.",
+   "fieldname": "pickup_qty",
+   "fieldtype": "Int",
+   "label": "PickUp QTY"
+  },
+  {
+   "fetch_from": "drop_off_driver.",
+   "fieldname": "drop_off_rate",
+   "fieldtype": "Currency",
+   "label": "Drop Off Rate"
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-26 15:50:35.153144",
+ "modified": "2026-04-03 11:01:59.674002",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

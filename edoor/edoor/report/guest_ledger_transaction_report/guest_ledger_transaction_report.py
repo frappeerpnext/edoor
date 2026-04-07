@@ -60,22 +60,27 @@ def get_columns():
 	]
 
 def get_folio_transaction_amount(filters):
-	sql="""
-		select 
-			transaction_number,
-			sum(if(type='Debit',0,amount)) as credit,
-			sum(if(type='Credit',0,amount)) as debit
-		from `tabFolio Transaction`
-		where
-			posting_date between '{}' and '{}' and 
-			transaction_type='Reservation Folio' 
-		group by
-			transaction_number
-	""".format(filters.start_date,filters.end_date)
-
- 
-	 
-	return frappe.db.sql(sql, as_dict=1)
+    sql = """
+        select 
+            transaction_number,
+            sum(if(type='Debit', amount, 0)) as debit,
+            sum(if(type='Credit', amount, 0)) as credit
+        from `tabFolio Transaction`
+        where
+            transaction_type='Reservation Folio' and
+            property = %(property)s and 
+            posting_date between %(start_date)s and %(end_date)s and
+            business_source = if(%(business_source)s='', business_source, %(business_source)s) and 
+            ifnull(reservation,'') = if(%(reservation)s='', ifnull(reservation,''), %(reservation)s) and 
+            ifnull(reservation_stay,'') = if(%(reservation_stay)s='', ifnull(reservation_stay,''), %(reservation_stay)s) and 
+            ifnull(account_code,'') = if(%(account_code)s='', ifnull(account_code,''), %(account_code)s) and
+            ifnull(room_id,'') = if(%(room_id)s='', ifnull(room_id,''), %(room_id)s) and
+            is_master_folio = if(%(is_master)s=0, is_master_folio, 1) and
+            ifnull(guest,'') = if(%(guest)s='', ifnull(guest,''), %(guest)s)
+        group by
+            transaction_number
+    """
+    return frappe.db.sql(sql, filters, as_dict=1)
 
 def get_report_data(folio_transaction_amount,filters):
 	#get folio number from folio folio transaction
@@ -116,7 +121,7 @@ def get_report_data(folio_transaction_amount,filters):
 			where
 				transaction_type='Reservation Folio' and
 				property = %(property)s and 
-				concat(name , ' ' ,' ',transaction_number ,' ', ifnull(room_number,'') , ' ', guest_name, ' ',account_code, ' ' ,account_name) like %(keyword)s and
+				posting_date between %(start_date)s and %(end_date)s and
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
 				ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
 				ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 
@@ -135,13 +140,13 @@ def get_report_data(folio_transaction_amount,filters):
 		data =  sorted(data, key=lambda k: k[filters.order_by], reverse=True if filters.order_type=='desc' else False)
 		
 		# total row
-		total_row = {
-			"name":"Total",
-			"is_total_row": 1,
-			"debit":sum([d.get("debit",0) for d  in data ]),
-			"credit":sum([d.get("credit",0) for d  in data ])
-		}
-		data.append(total_row)
+		# total_row = {
+		# 	"name":"Total",
+		# 	"is_total_row": 1,
+		# 	"debit":sum([d.get("debit",0) for d  in data ]),
+		# 	"credit":sum([d.get("credit",0) for d  in data ])
+		# }
+		# data.append(total_row)
 
 		return data 
 		

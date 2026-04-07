@@ -30,6 +30,7 @@
   "reservation_color",
   "group_code",
   "channel_manager_booking_id",
+  "payment_method",
   "group_name",
   "group_color",
   "column_break_6",
@@ -796,12 +797,19 @@
    "fieldtype": "Data",
    "label": "Channel Manager Booking ID",
    "search_index": 1
+  },
+  {
+   "fieldname": "payment_method",
+   "fieldtype": "Link",
+   "label": "Payment Method",
+   "options": "Booking Guarantee",
+   "search_index": 1
   }
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-14 11:29:58.998050",
+ "modified": "2026-03-28 09:05:02.356364",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

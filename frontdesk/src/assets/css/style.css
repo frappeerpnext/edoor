@@ -2078,3 +2078,11 @@ background-color: rgb(255, 234, 234);
 .dropdown-01 .dropdown-menu a:hover {
     background-color: #f1f1f1;
 }
+
+.upload-notice, .cm-init-message {
+    border-radius: 10px;
+}
+
+.cm-init-message svg, .upload-notice svg {
+    display: none;
+}
