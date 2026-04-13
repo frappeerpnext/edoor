@@ -8,6 +8,7 @@
  "field_order": [
   "occupancy_code",
   "rate",
+  "required",
   "age_bucket"
  ],
  "fields": [
@@ -29,12 +30,19 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Age Bucket"
+  },
+  {
+   "default": "1",
+   "fieldname": "required",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Required"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-27 11:07:30.165653",
+ "modified": "2026-04-10 09:40:28.499792",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Room Type Occupancy Rate",

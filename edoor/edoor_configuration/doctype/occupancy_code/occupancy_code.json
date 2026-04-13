@@ -9,6 +9,7 @@
   "occupancy_code",
   "title",
   "occupancy",
+  "age_bucket",
   "occupancy_type",
   "min_age",
   "max_age",
@@ -64,13 +65,19 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Occupancy Type",
-   "options": "\nMain Guest Adult\nMain Guest Child\nExtra Bed Adult\nExtra Bed Child\nChild Without Bed",
+   "options": "\nAdultBed\nChildBandBed\nAdultExtraBed\nChildBandExtraBed\nChildBandWithoutBed",
    "reqd": 1
+  },
+  {
+   "fieldname": "age_bucket",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Age Bucket"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-06 16:48:10.566595",
+ "modified": "2026-04-09 10:59:15.317995",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Occupancy Code",

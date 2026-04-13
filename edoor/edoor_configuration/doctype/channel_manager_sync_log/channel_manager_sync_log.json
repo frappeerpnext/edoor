@@ -10,9 +10,11 @@
   "provider",
   "title",
   "request_type",
-  "is_synced",
+  "status",
   "column_break_qytr",
   "response_text",
+  "sync_action",
+  "sync_until",
   "section_break_pcda",
   "data",
   "column_break_iyii",
@@ -35,13 +37,6 @@
    "fieldname": "data",
    "fieldtype": "JSON",
    "label": "Data"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_synced",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "label": "Is Synced"
   },
   {
    "fieldname": "response",
@@ -75,11 +70,27 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Title"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Success\nWarning\nFail"
+  },
+  {
+   "fieldname": "sync_action",
+   "fieldtype": "Data",
+   "label": "Sync Action"
+  },
+  {
+   "fieldname": "sync_until",
+   "fieldtype": "Datetime",
+   "label": "Sync Until"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-24 11:43:58.087530",
+ "modified": "2026-04-13 11:59:28.169979",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Channel Manager Sync Log",

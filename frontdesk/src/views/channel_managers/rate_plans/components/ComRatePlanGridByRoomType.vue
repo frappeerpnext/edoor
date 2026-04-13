@@ -111,11 +111,6 @@ const months = computed(() => {
 
 const selectedRoomType = computed(() => roomTypes.value.filter(r => r.selected))
  
-
-
-/* SELECTION STATE - Set for O(1) lookups */
-
-
 function getDateKey(monthFirstDay, day) {
   const monthStr = monthFirstDay.slice(0, 7) // "YYYY-MM"
   return `${monthStr}-${String(day).padStart(2, '0')}`

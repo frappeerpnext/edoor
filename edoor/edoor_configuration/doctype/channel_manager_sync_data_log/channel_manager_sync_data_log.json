@@ -13,7 +13,10 @@
   "rate_type",
   "date",
   "occupancy_code",
-  "value"
+  "value",
+  "restriction_type",
+  "column_break_mhyx",
+  "sync_session_id"
  ],
  "fields": [
   {
@@ -74,11 +77,26 @@
    "fieldtype": "Data",
    "label": "Rate Type",
    "search_index": 1
+  },
+  {
+   "fieldname": "column_break_mhyx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sync_session_id",
+   "fieldtype": "Data",
+   "label": "Sync Session ID",
+   "search_index": 1
+  },
+  {
+   "fieldname": "restriction_type",
+   "fieldtype": "Data",
+   "label": "Restriction Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-04 15:29:47.125544",
+ "modified": "2026-04-13 10:10:08.723869",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Channel Manager Sync Data Log",

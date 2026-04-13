@@ -2,6 +2,7 @@ import frappe
 import random
 import re
 from datetime import datetime
+from frappe.utils import now_datetime,get_datetime
 def json_to_xml():
     return {}
 
@@ -195,3 +196,98 @@ def get_package_rule_mapping(package_type,property):
         frappe.cache().set_value(cache_key, mapping)
     return mapping
 
+def get_occupancy_code_mapping(occupancy_type, age_bucket,is_alult = 0,total = 0):
+    cache_key = f"exely_occupancy_code_mapping:{occupancy_type}:{age_bucket}"
+    mapping = frappe.cache().get_value(cache_key)
+    filters = {
+    "occupancy_type": occupancy_type,
+    "age_bucket": age_bucket,
+}   
+    frappe.cache().delete_value(cache_key)
+    if is_alult:
+        filters["occupancy"] = total
+    if not mapping:
+        mapping = frappe.db.get_all(
+            "Occupancy Code",
+            filters=filters,
+            fields=["name", "occupancy_type", "min_age", "max_age"],
+            limit=1
+        )
+
+        mapping = mapping[0] if mapping else None
+
+        frappe.cache().set_value(cache_key, mapping)
+        
+    return mapping
+
+
+
+def get_sync_session_id(room_type_limit,rate_type):
+    # this method is very important
+    # we use this method to apply sync session id to channel manager sync log table 
+    # when get data to sync to cm we use this session id to get data from sync log 
+    # and delete it by session  by session id after sync success 
+
+    # if sync faild session id will be clear from queue job retry sync cm data in queue job
+    # we check if last modified date over 60 second
+
+    import uuid
+    session_id = str(uuid.uuid4())
+
+    for room_type, limit in room_type_limit.items():
+
+        rows = frappe.db.sql("""
+            SELECT name
+            FROM `tabChannel Manager Sync Data Log`
+            WHERE 
+                coalesce(sync_session_id,'') = ''  AND 
+                room_type = %(room_type)s  and 
+                rate_type = %(rate_type)s
+            ORDER BY date
+            LIMIT %(limit)s
+            FOR UPDATE SKIP LOCKED
+        """, {"room_type":room_type,"limit":limit,"rate_type":rate_type}, as_dict=True)
+
+        if len(rows) ==0:
+            continue
+
+        keys = [r.get("name") for r in rows]
+
+        frappe.db.sql("""
+            UPDATE `tabChannel Manager Sync Data Log`
+            SET sync_session_id = %(session_id)s,modified = NOW()
+            WHERE name IN %(names)s
+        """, {"session_id":session_id, "names":tuple(keys)})
+
+    frappe.db.commit()
+
+    return session_id
+
+def add_guest_list(group):
+    guest_list = []
+    for data in group.values(): 
+        age_code = data.get("@AgeQualifyingCode")
+        ages = data.get("@Age") or []
+        if not isinstance(ages, list):
+            ages = [ages]
+        age_str = ",".join(map(str, ages))
+        age_bucket = data.get("@AgeBucket") or 0
+        total = int(data.get("@Count", 0))
+        is_alult = data.get("is_alult", 0)
+        if not isinstance(ages, list):
+            ages = [ages]
+        mapping = get_occupancy_code_mapping(age_code, age_bucket,is_alult,total)
+        if not mapping:
+            continue
+        else:
+            guest_list.append({
+                "name": mapping["name"],
+                "age": age_str,
+                "value": total,
+            })
+    return guest_list
+
+def ensure_list(data):
+    if not data:
+        return []
+    return data if isinstance(data, list) else [data]

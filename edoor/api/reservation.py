@@ -582,14 +582,15 @@ def add_new_reservation(doc,sync_room_available_to_channel_manager = True):
         stay_doc = frappe.get_doc(stay).insert()
         
         stay_names.append(stay_doc.name)
-        if d.get("childlist"):
-            for x in d.get("childlist"):
+        if d.get("child_list"):
+            for x in d.get("child_list"):
                 if x.get("value") > 0:
                     child_stay = {
                         "doctype":"Reservation Stay Occupancy",
                         "reservation_stay": stay_doc.name,
                         "occupancy_code": x.get("name"),
-                        "total": x.get("value")
+                        "total": x.get("value"),
+                        "age": x.get("age")
                     } 
                 frappe.get_doc(child_stay).insert()
 

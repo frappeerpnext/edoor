@@ -5,20 +5,20 @@
 
                 <div class="logo-container grid">
                     <div class="col-5 flex justify-content-end"> 
-                        <Image :src="data.edoor_logo" :alt="data.name" width="50"/> 
+                        <Image :src="data.edoor_logo" :alt="data.name" :width="data.edoor_logo_width || '50'" /> 
                     </div>
                     <div class="arrow text-5xl col-2 text-center">⇄</div>
                     <div class="col-5">
-                        <Image :src="data.provider_logo" :alt="data.provider" width="80" /> 
+                        <Image :src="data.provider_logo" :alt="data.provider" :width="data.provider_logo_width || '80'" /> 
                     </div>
                 </div>
 
                 <button class="btn" @click="startInitializeData">
-                    Initialize Data Upload to Exely
+                {{$t(`Initialize Data Upload to ${data.provider || ''}`)}}
                 </button>
 
                 <p class="description">
-                    {{$t("Please click the button above to initiate the data initialization process for the channel manager. This will synchronize your property data with Exely.")}}
+                    {{$t(`Please click the button above to initiate the data initialization process for the channel manager. This will synchronize your property data with ${data.provider || ''}.`)}}
                 </p>
 
             </div>

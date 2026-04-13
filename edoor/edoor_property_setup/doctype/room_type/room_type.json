@@ -21,6 +21,8 @@
   "rate",
   "room_type_color",
   "sort_order",
+  "enable_min_rate",
+  "min_rate",
   "disabled",
   "rate_section",
   "rates"
@@ -118,6 +120,17 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_min_rate",
+   "fieldtype": "Check",
+   "label": "Enable Min Rate"
+  },
+  {
+   "fieldname": "min_rate",
+   "fieldtype": "Currency",
+   "label": "Min Rate"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -128,7 +141,7 @@
    "link_fieldname": "room_type_id"
   }
  ],
- "modified": "2026-03-31 15:50:00.880791",
+ "modified": "2026-04-13 10:32:57.136572",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",

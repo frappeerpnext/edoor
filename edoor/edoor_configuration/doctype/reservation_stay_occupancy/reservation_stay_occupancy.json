@@ -9,6 +9,7 @@
   "reservation_stay",
   "occupancy_code",
   "total",
+  "age",
   "rate"
  ],
  "fields": [
@@ -36,11 +37,17 @@
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate"
+  },
+  {
+   "fieldname": "age",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Age"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-03 11:02:55.819590",
+ "modified": "2026-04-07 14:47:58.015262",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Reservation Stay Occupancy",

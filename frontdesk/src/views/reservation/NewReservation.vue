@@ -509,7 +509,7 @@
                 @onChangeRate="onChangeRate" />
         </OverlayPanel>
         <OverlayPanel ref="childOp">
-            <ComReservationStayChangeChild @onChangeChild="onChangeChild" v-model="childlist" :room="selectedStay?.room_type_id" @onClose="onCloseChild" />
+            <ComReservationStayChangeChild @onChangeChild="onChangeChild" v-model="child_list" :room="selectedStay?.room_type_id" @onClose="onCloseChild" />
         </OverlayPanel>
     </ComDialogContent>
 </template>
@@ -543,7 +543,7 @@ const rooms = ref([])
 const working_day = ref({})
 const selectedStay = ref({})
 const rate = ref(0)
-const childlist = ref([])
+const child_list = ref([])
 const op = ref();
 const childOp = ref();
 const can_view_rate = window.can_view_rate
@@ -571,7 +571,7 @@ const onOpenChangeRate = (event, stay) => {
 
 const onOpenChangeChild = (event, stay) => {
     selectedStay.value = stay
-    childlist.value = JSON.parse(JSON.stringify(stay)).childlist
+    child_list.value = JSON.parse(JSON.stringify(stay)).child_list
     childOp.value.toggle(event);
 }
 
@@ -1161,7 +1161,7 @@ const OnSelectRoom = () => {
 const onSelectRoomType = (stay) => {
 
     stay.room_id = null
-    stay.childlist = []
+    stay.child_list = []
     stay.child = 0
     OnSelectRoom()
     updateRate(stay)
@@ -1291,7 +1291,7 @@ const onChangeRate = () => {
 }
 
 const onChangeChild = (childData) => {
-    selectedStay.value.childlist = childData
+    selectedStay.value.child_list = childData
     selectedStay.value.child = childData.reduce((total, item) => total + (item.value || 0), 0)
     childOp.value.hide();
 }

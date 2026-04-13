@@ -210,7 +210,7 @@ def test(property):
     services = extract_payment_types_from_response(data)
 
 
-    return services
+    return data
  
 def content_body(property):
     config = get_exely_config(property)

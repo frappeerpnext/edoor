@@ -59,9 +59,9 @@ export function getDaysInMonth(month, year) {
   return days;
 }
 
-export function showWarning(title,message=""){
+export function showWarning(title,message="",life=3000){
 
-  window.toast.add({ severity: 'warn', summary: title, detail: message, life: 3000 })
+  window.toast.add({ severity: 'warn', summary: title, detail: message, life: life })
 }
 
 export function groupDatesToPeriods(dateInput) {
@@ -110,5 +110,22 @@ export function groupDatesToPeriods(dateInput) {
     return periods;
 }
 
+
+export function onConfirm(){
+  window.confirm.require({
+        message: 'Are you sure you want to proceed?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        rejectClass: 'p-button-secondary p-button-outlined',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Save',
+        accept: () => {
+            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+        },
+        reject: () => {
+            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
+}
 
  

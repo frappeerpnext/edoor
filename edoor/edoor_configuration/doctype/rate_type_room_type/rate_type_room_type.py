@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class CMDataInitial(Document):
+class RateTypeRoomType(Document):
 	pass

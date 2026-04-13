@@ -22,8 +22,8 @@ globalThis.app.updateDoc =  async function (DocType,name,params) {
 }
 
  
-globalThis.app.getApi =  async function (api_url,param) {
-  return await getData(api_url,param)
+globalThis.app.getApi =  async function (api_url,param,base_url="edoor.api.") {
+  return await getData(api_url,param,base_url)
 }
 
  

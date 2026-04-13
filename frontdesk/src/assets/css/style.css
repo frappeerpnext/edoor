@@ -2086,3 +2086,11 @@ background-color: rgb(255, 234, 234);
 .cm-init-message svg, .upload-notice svg {
     display: none;
 }
+
+.input-rate-price .p-inputtext{
+    border-color: #6366f1;
+}
+
+.input-rate-price .p-disabled, .input-rate-price .p-component:disabled {
+    opacity: 0.2 !important;
+}

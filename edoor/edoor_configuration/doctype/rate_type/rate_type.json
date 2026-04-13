@@ -20,6 +20,10 @@
   "allow_discount",
   "disable_get_rate_room_room_type",
   "disabled",
+  "section_break_rufj",
+  "room_types",
+  "column_break_xndf",
+  "business_source",
   "section_break_uutq",
   "note"
  ],
@@ -112,11 +116,32 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "fieldname": "section_break_rufj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "room_types",
+   "fieldtype": "Table",
+   "label": "Room Types",
+   "options": "Rate Type Room Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xndf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "business_source",
+   "fieldtype": "Table",
+   "label": "Business Source",
+   "options": "Rate Type Business Source"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-31 15:51:29.413857",
+ "modified": "2026-04-09 16:02:00.560718",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type",

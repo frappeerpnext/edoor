@@ -57,7 +57,7 @@ import NewReservation from "@/views/reservation/NewReservation.vue"
 import ComLostAndFoundDetail from "@/views/lost_and_found/components/ComLostAndFoundDetail.vue"
 import ComCityLedgerInvoiceDetail from "@/views/city_ledger_invoice/components/ComCityLedgerInvoiceDetail.vue"
 import ComEditRoomBlock from "@/views/room_block/components/ComEditRoomBlock.vue";
-
+import { useConfirm } from "primevue/useconfirm";
 
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -67,6 +67,8 @@ import { useApp } from "./hooks/useApp";
 const { t: $t } = i18n.global;
 const ui = ref(urlParams.get('layout') || "main_layout")
 const {getSummaryData} = useApp();
+const confirm = useConfirm();
+
 window.isMobile = (/mobile/i.test(navigator.userAgent));
 
 
@@ -227,6 +229,7 @@ onUnmounted(() => {
 })
 onMounted(async () => { 
     window.toast = toast;
+    window.confirm  = confirm;
     if(window.isMobile){
         let elem = document.querySelectorAll(".p-dialog");
         if (elem){
