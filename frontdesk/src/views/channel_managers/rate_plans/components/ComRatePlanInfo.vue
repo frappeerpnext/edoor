@@ -21,40 +21,52 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>{{$t('Rate Type')}}</label>
-                            <InputText :value="rateInfo.rate_type?.name" readonly/>
+                            <input :value="rateInfo.rate_type?.name" readonly/>
                         </div> 
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" v-if="rateInfo.cm_rate_plan_list?.rate_plan_name">
                         <label>{{$t('Channel Rate Type')}}</label>
-                        <InputText :value="rateInfo.cm_rate_plan_list?.rate_plan_name" readonly/>
+                        <input :value="rateInfo.cm_rate_plan_list?.rate_plan_name" readonly/>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" v-if="rateInfo.cm_rate_plan_list?.cm_rate_plan">
                         <label>{{ $t('Channel Rate Code') }}</label>
-                        <InputText :value="rateInfo.cm_rate_plan_list?.cm_rate_plan" readonly/>
+                        <input :value="rateInfo.cm_rate_plan_list?.cm_rate_plan" readonly/>
                     </div>
                 </div>  
                 <div class="form-row">
-                    <div class="form-group" style="flex:1;">
+                    <div class="form-group" style="flex:1;" v-if="rateInfo.rate_type?.room_types.length>0">
                         <label>{{$t('Available Room Types')}}</label>
-                        <div class="checkbox-group">
-                            <div class="flex flex-column gap-4">
-                                <template v-for="rt in rateInfo.rate_type?.room_types"> 
-                                    <div class="flex gap-1">
-                                        <Checkbox v-model="checked" :binary="true" :trueValue="1" :falseValue="0" @change="checked = 1"/> 
-                                        <label >
-                                            {{roomTypes
-                                                .filter(name => name.edoor_room_type === rt.room_type)
+                        <div class="checkbox-group"> 
+                            <DataTable :value="rateInfo.rate_type?.room_types" tableStyle="min-width: 30rem">
+                                <Column header="Room Type">
+                                    <template #body="slotProps">
+                                        {{roomTypes
+                                                .filter(name => name.edoor_room_type === slotProps.data.room_type)
                                                 .map(name => name.room_type_name)
                                                 .join('')
                                             }}
-                                        </label> 
-                                    </div>
-                                </template>
-                            </div>
+
+                                    </template>
+                                </Column>
+                                <Column header="Code" >
+                                    <template #body="slotProps">
+                                        {{roomTypes
+                                                .filter(name => name.edoor_room_type === slotProps.data.room_type)
+                                                .map(name => name.cm_room_type)
+                                                .join('')
+                                            }}
+                                    </template>
+                                </Column>
+                                <Column header="Min Rate" class="text-center">
+                                    <template #body="slotProps">
+                                        <div class="col"><Chip><CurrencyFormat :value="slotProps.data.min_rate"/></Chip></div>
+                                    </template>
+                                </Column> 
+                            </DataTable> 
                         </div>
                     </div> 
-                    <div class="form-group" style="flex:1;">
+                    <div class="form-group" style="flex:1;" v-if="rateInfo.rate_type?.business_source.length>0">
                         <label>{{$t('Available Business Source')}}</label>
                         <div class="checkbox-group">
                             <div class="flex flex-column gap-4">
@@ -69,36 +81,39 @@
                             </div>
                         </div>
                     </div> 
-                </div>
-
-                <template v-for="date in rateInfo.room_rate_min_max_date">
-                    <div class="form-group" style="flex:1">
-                        <label>Sell Start Date</label>
-                        <input :value="date.start_date" />
+                </div> 
+                <div class="form-row" > 
+                    <div class="form-group" style="flex:1" v-if="rateInfo?.room_rate_min_max_date?.start_date">
+                        <label>{{$t("Start Sell Date")}}</label>
+                        <input :value="moment(rateInfo?.room_rate_min_max_date?.start_date).format('DD-MM-yyyy')" readonly/>
                     </div> 
-                </template>
+                    <div class="form-group" style="flex:1" v-if="rateInfo?.room_rate_min_max_date?.end_date">
+                        <label>{{$t("Stop Sell Date")}}</label>
+                        <input :value="moment(rateInfo?.room_rate_min_max_date?.end_date).format('DD-MM-yyyy')" readonly/>
+                    </div>   
+                </div>
     
                 <div class="form-group">
                     <label>{{$t('Note')}}</label>
-                    <textarea readonly>{{ $t(`${rateInfo.rate_type?.note}`) }}</textarea>
+                    <textarea readonly>{{ rateInfo.rate_type?.note || ''}}</textarea>
                 </div> 
             </div>
         </div>   
-    </div>
-    {{ rateInfo.room_rate_min_max_date }}
+    </div>  
+    {{ rateInfo.room_types }}
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, inject } from 'vue';
 import { useRatePlan } from '../hooks/useRatePlan'; 
 import {i18n} from '@/i18n'; 
+const moment= inject("$moment")
 const { t: $t } = i18n.global;
 const { 
         rateInfo, 
         roomTypes
     } = useRatePlan();    
 const checked = ref(1)
-onMounted(() => {    
-    console.log(roomTypes)
+onMounted(() => {     
 })
 </script>
 <style scoped> 
@@ -151,8 +166,8 @@ input:focus,
 select:focus,
 textarea:focus {
     outline: none;
-    border-color: #6c63ff;
-    background: #fff;
+    border-color: #e0e4ef;
+    background: #f9fafc;
 }
 
 textarea {

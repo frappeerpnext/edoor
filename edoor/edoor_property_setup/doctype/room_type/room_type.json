@@ -101,6 +101,7 @@
    "label": "Rate"
   },
   {
+   "description": "Note: If you remove occupancy code from this room type, Room Rate will be remove, and if you connect to channel manager, you need to re synchronize rate plan data for this room type.",
    "fieldname": "rates",
    "fieldtype": "Table",
    "options": "Room Type Occupancy Rate"
@@ -141,7 +142,7 @@
    "link_fieldname": "room_type_id"
   }
  ],
- "modified": "2026-04-13 10:32:57.136572",
+ "modified": "2026-04-18 15:28:01.534869",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",

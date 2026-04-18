@@ -15,7 +15,7 @@ def get_rate_plan_info(property,rate_type):
     room_types = get_room_types(property,rate_type)
     rate_type_doc = frappe.get_cached_doc("Rate Type", rate_type)
     room_rates_min_max_date = get_room_rates_min_max_dates(property)
-    cm_rate_plan_list = get_rate_plan_list(property)
+    cm_rate_plan_list = get_cm_rate_plan_list(property)
 
     maximum_future_years_allowed = int(frappe.get_cached_value("eDoor Setting",None, "maximum_future_years_allowed"))
     current_year = getdate(today()).year
@@ -28,7 +28,8 @@ def get_rate_plan_info(property,rate_type):
         "occupancy_codes": get_available_occupancy_codes(property),
         "rate_type": rate_type_doc,
         "cm_rate_plan_list": cm_rate_plan_list,
-        "room_rates_min_max_date": room_rates_min_max_date
+        "room_rates_min_max_date": room_rates_min_max_date,
+        "cm_info": get_channal_manager_info(property)
     }
 
 
@@ -74,7 +75,27 @@ def get_available_occupancy_codes(property):
     frappe.cache.set_value(cached_key, data)
     return data
 
-def get_rate_type(property):
+def get_room_restriction_by_rate_type(property):
+
+    sql = """
+        SELECT 
+            rate_type,
+            GROUP_CONCAT(restriction_type SEPARATOR ', ') AS group_restriction_type
+        FROM `tabRoom Restriction`
+        WHERE 
+            property = %(property)s
+        group by rate_type
+    """
+    data = frappe.db.sql(sql,{"property":property},as_dict = 1)
+
+    return data 
+
+@frappe.whitelist()
+def get_rate_type_list(property):
+    room_rates_max_min_date = get_room_rates_min_max_dates(property)
+    room_restriction = get_room_restriction_by_rate_type(property)
+    cm_info = get_channal_manager_info(property)
+
     sql = """
         select
             name
@@ -86,16 +107,32 @@ def get_rate_type(property):
             disabled = 0
     """
 
-    data = frappe.db.sql(sql,{"property":property},as_dict = 1)
+    data = frappe.db.sql(sql, {"property": property}, as_dict=1)
 
-    return data
+    rate_list = []
+
+    for d in data:
+        rate_item = {
+            "rate_type_name": d["name"],
+            "room_rates_max_min_date": [item for item in room_rates_max_min_date if item["rate_type"] == d["name"]],
+            "room_restriction": next((item for item in room_restriction if item["rate_type"] == d["name"]),{}),
+            "status": "Connected" if any(item.edoor_rate_plan == d["name"] for item in cm_info.rate_plans) else "Not Connected"
+        }
+
+        rate_list.append(rate_item)
+ 
+    result = {
+        "cm_logo": cm_info.get("provider_logo"),
+        "prodiver": cm_info.get("provider"),
+        "rate_type_list": rate_list
+    }
+
+    return result
 
 @frappe.whitelist()
-def get_rate_plan_list(property):
+def get_cm_rate_plan_list(property):
     
     cm_info = get_channal_manager_info(property)
-    room_rates_max_min_date = get_room_rates_min_max_dates(property)
-    rate_types = get_rate_type(property)
     rate_plans = [] 
     
     for r in cm_info.rate_plans:
@@ -105,7 +142,6 @@ def get_rate_plan_list(property):
                 "edoor_rate_plan": r.edoor_rate_plan,
                 "rate_plan_name":r.rate_plan_name,
                 "availability_block":r.availability_block,
-                "room_rates_max_min_date":[item for item in room_rates_max_min_date if item["rate_type"] == r.edoor_rate_plan]
             }
         )
 
@@ -258,7 +294,7 @@ def validate_bulk_update_room_rate(data):
     if cm_info:
         if cm_info.enable==1:
             if not  can_save_data(property=data.get("property"), title ="Prices update",provider=cm_info.provider):
-                frappe.throw("Data sync to {0} is temporarily blocked. Please check the sync status.".format(cm_info.provider))
+                frappe.throw("Data sync to {0} Channel Manager is temporarily blocked. Please check the sync status.".format(cm_info.provider))
                 
     # validate past date
     if not data.get("date_range"):

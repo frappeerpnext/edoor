@@ -4,6 +4,7 @@ from edoor.channel_managers.exely.utils import get_exely_property_code,get_exely
 from edoor.channel_managers.exely.soap_request import send_soap_request
 from edoor.channel_managers.exely.rate_limit import get_rate_limit,update_rate_limit_balance
 from frappe.utils import now_datetime, add_to_date
+from epos_restaurant_2023.custom_socket_client import emit_event
     
 from lxml import etree
 
@@ -94,9 +95,9 @@ def sync_room_rate(property=None):
                     if error_code:
                         doc["sync_action"] = error_code.get("action")
                         if error_code.get("action") == "Delay Sync" and error_code.get("delay"):
-                            doc["sync_until"] =   add_to_date(now_datetime(), error_code.get("delay"))
+                            doc["sync_until"] =   add_to_date(now_datetime(),seconds = error_code.get("delay"))
 
-                    frappe.get_doc(doc).insert(ignore_permissions=True)
+                    sync_log_doc=frappe.get_doc(doc).insert(ignore_permissions=True)
                 
 
                     # check success by have warning
@@ -111,13 +112,23 @@ def sync_room_rate(property=None):
                         # return soap_body
                         delete_synced_data_log(session_id=session_id,cm_response = response,xml_body=soap_body)
 
+                        emit_event("ChannelManagerUpdate",{"action":"update_sync_rate_plan_status","status":"Success","title":"Sync Room Rate","message":"Room rates have been successfully synced to the channel manager."})
+
                     else:
-                        pass
+                        
+                        emit_event("ChannelManagerUpdate",{
+                            "action":"update_sync_rate_plan_status",
+                            "satus":response.get("status"),
+                            "title":"Sync Room Rate Fail",
+                            "message": response.get("response_text"),
+                            "docname": sync_log_doc.name
+
+                        })
                         # send socket to socket server
 
     
     frappe.db.commit()
-
+    
     # ressync_pending_room_rate_data(property)
 
 
@@ -250,7 +261,8 @@ def get_period(session_id,data,rate_type):
                 a.room_type = %(room_type)s and 
                 a.provider = 'Exely' AND 
                 a.request_type = 'OTA_HotelRateAmountNotifRQ' and 
-                rate_type = %(rate_type)s
+                rate_type = %(rate_type)s and
+                a.date>=CURDATE()
             group by 
                 date
         ) as data

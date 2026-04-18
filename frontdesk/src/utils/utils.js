@@ -1,4 +1,6 @@
- 
+const isMobile = window.innerWidth <= 640
+const isTablet = window.innerWidth <= 960
+
 
 export function getDialogScrollHeight(adjustHeight = 0){
     let el = document.querySelectorAll(".p-dialog-content")
@@ -59,9 +61,27 @@ export function getDaysInMonth(month, year) {
   return days;
 }
 
-export function showWarning(title,message="",life=3000){
+export function showWarning(title,message="",life=5000,group="tc",data={}){
+ 
+if (life==0){
+window.toast.add({ group:group, severity: 'warn', summary: title, detail: message,...data  })
+ }else {
+  window.toast.add({ group:group,severity: 'warn', summary: title, detail: message, life: life ,...data})
+ }
 
-  window.toast.add({ severity: 'warn', summary: title, detail: message, life: life })
+ 
+  
+}
+
+export function showSuccess(title,message="",life=3000,group="tc",data={}){
+ if (life==0){
+window.toast.add({ group:group, severity: 'success', summary: title, detail: message,...data  })
+ }else {
+  window.toast.add({ group:group,severity: 'success', summary: title, detail: message, life: life ,...data})
+ }
+
+ 
+  
 }
 
 export function groupDatesToPeriods(dateInput) {
@@ -111,21 +131,71 @@ export function groupDatesToPeriods(dateInput) {
 }
 
 
-export function onConfirm(){
-  window.confirm.require({
-        message: 'Are you sure you want to proceed?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        rejectClass: 'p-button-secondary p-button-outlined',
-        rejectLabel: 'Cancel',
-        acceptLabel: 'Save',
-        accept: () => {
-            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
-        },
-        reject: () => {
-            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
-        }
-    });
+export function onConfirm(
+  header = 'Confirmation',
+  message = "Are you sure you want to proceed?",
+  icon = "pi pi-exclamation-triangle"
+) {
+  return new Promise((resolve) => {
+
+    window.confirm.require({
+      group:"headless",
+      message,
+      header,
+      icon,
+
+      rejectClass: 'p-button-secondary p-button-outlined',
+      acceptLabel: 'Ok',
+      accept: () => {
+        resolve(true)
+      },
+
+      reject: () => {
+        resolve(false)
+      }
+    })
+
+  })
 }
 
- 
+export function openDialog(component, title = "Dialog", options = null) {
+  return new Promise((resolve) => {
+    let _options = {
+        data:{
+          ...options?.data
+        },
+        props: {
+          
+          header: title,
+          style: { width: isMobile? '100vw': isTablet? '90vw': '65vw'},
+          breakpoints: {
+            '960px': '100vw',
+            '640px': '100vw'
+          },
+          modal: true,
+          closeOnEscape: true,
+          position: "top"
+        }
+      }
+    
+    if (options?.props){
+      _options.props = {..._options.props, ...options.props}
+    }
+    if (!options?.props?.position) {
+      _options.props.position = "top"
+    }
+  
+
+    // attach promise resolver
+    _options.onClose = (data) => {
+      if (data) {
+        resolve(data.data)     // return data
+      } else {
+        resolve(false)    // return false if closed without data
+      }
+    }
+
+    window.dialog.open(component, _options)
+
+  })
+}

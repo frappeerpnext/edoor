@@ -15,6 +15,16 @@ class RoomType(Document):
 		# delete occopancy codes cache
 
 		frappe.cache.delete_value(f"{self.property}_occupancy_codes") 
+		# check if occupancy code dont have in this room type by have in room rate and sync log then clear it
+		occupancy_codes = [d.get("occupancy_code") for d in self.rates]
+		sql = "delete from `tabRoom Rates` where room_type_id = %(room_type)s and not occupancy_code in %(occupancy_codes)s"
+		frappe.db.sql(sql,{"room_type":self.name,"occupancy_codes":occupancy_codes})
+		
+		# remove sync data log
+		sql="delete from `tabChannel Manager Sync Data Log` where room_type=%(room_type)s and not occupancy_code in %(occupancy_codes)s"
+		frappe.db.sql(sql,{"room_type":self.name,"occupancy_codes":occupancy_codes})
+		
+
    
 def update_fetch_from_fields(self):
 	data_for_updates = []

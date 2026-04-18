@@ -9,8 +9,9 @@
                 </div>
             </template>
             <template #end>
+                  
                 <div class="flex gap-2 w-full justify-content-end">
-                    <Button class="border-0">{{$t("Sync Now")}}</Button>
+                    <Button @click="onViewSyncStatus" class="border-0"  >{{$t("Sync Status")}}</Button>
                     
                 </div>
             </template>
@@ -23,8 +24,8 @@
                 class="border-0"
              ></Button> 
             <div v-if="selectedComponent"> 
-                <Message>{{ syncRoomRateActionStatus }} </Message>
-            
+                <ComSyncStatus method="Prices update"/>
+              
                 <component  :is="componentsMap[selectedComponent]"/>
             </div> 
         </div> 
@@ -35,15 +36,15 @@
 
 
 import { useRatePlan } from "./hooks/useRatePlan";
-import { onUnmounted } from 'vue'
- 
+import { inject, onMounted, onUnmounted } from 'vue'
+import ComSyncStatus from "@/views/channel_managers/rate_plans/components/ComSyncStatus.vue"
+import ComChannelManagerSyncStatus from "@/views/channel_managers/components/ComChannelManagerSyncStatus.vue"
  
 const { 
     components,
     selectedComponent,
     rateType,
     componentsMap,
-    syncRoomRateActionStatus,
     resetData
     
 } = useRatePlan();
@@ -55,9 +56,27 @@ const { t: $t } = i18n.global;
 function onSelectComponent(component){
     selectedComponent.value = component
 }
- 
+
+function onViewSyncStatus(){
+     app.utils.openDialog(ComChannelManagerSyncStatus,"Channel Manager Sync Status")
+}
+
+onMounted(()=>{
+       window.socket.on("ChannelManagerUpdate", (arg) => {
+        if (arg.action == "update_sync_rate_plan_status" ) {
+            if(arg.status?.toLowerCase()=="success"){
+                app.utils.showSuccess(arg.title,arg.message,0,"tr",{hello:"World"})
+            }else {
+               
+                app.utils.showWarning(arg.title,arg.message,0,"tr",{action_title:"View sync log","action":"view_channel_manager_sync_log|" + arg.docname})
+            }
+           
+        }
+    })
+})
  
 onUnmounted(()=>{
     resetData()
+    window.socket.off("ChannelManagerUpdate")
 })
 </script>

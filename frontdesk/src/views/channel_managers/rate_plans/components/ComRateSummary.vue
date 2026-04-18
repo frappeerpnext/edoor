@@ -1,11 +1,18 @@
 <template>
-  <ComSelect  class="my-2" v-model="selectedRoomType" :options="roomTypesWithAll" optionLabel="room_type_name" optionValue="edoor_room_type" />
-   
+  
+        <div class="flex gap-2 mb-3">
+            <Chip label="All Room Types" @click="onEnableUpdateAllRoomType()"
+                :icon="(updateRoomTypes.size == roomTypes.length) ? 'pi pi-check' : ''" :class="(updateRoomTypes.size == roomTypes.length) ? 'p-chip-selected' : ''" class="cursor-pointer select-none"></Chip>
+            <Chip :label="rt.room_type_name" :icon="(updateRoomTypes.has(rt.edoor_room_type)) ? 'pi pi-check' : ''"
+                @click="onToggleRoomTypeToUpdate(rt.edoor_room_type)" v-for="rt in roomTypes"
+                :key="'rt_selection' + rt.edoor_room_type" :class="(updateRoomTypes.has(rt.edoor_room_type)) ? 'p-chip-selected' : ''" class="cursor-pointer select-none"/>
+
+        </div>
   <table class="w-full border text-sm">
      <!-- HEADER -->
     <thead>
       <tr class="bg-gray-100">
-        <th class="border p-2 text-left">Room Type</th>
+        <th style="width: 100px;" class="border p-2 text-left">Room Type</th>
         <th style="width: 175px;" class="border p-2 text-left">Date Range</th>
 
         <th
@@ -15,12 +22,13 @@
         >
           {{ occ.title }}
         </th>
+        
       </tr>
     </thead>
 
     <!-- BODY -->
     <tbody>
-      <tr v-for="(row, i) in summaryRows" :key="i">
+      <tr v-if="summaryRows.length"  v-for="(row, i) in summaryRows" :key="i">
 
         <!-- ROOM TYPE -->
         <td class="border p-2 font-semibold">
@@ -43,16 +51,21 @@
         </td>
 
       </tr>
+      <tr v-else>
+        <td colspan="100%" class="border p-2 text-center text-gray-500">
+          No data to display. Please select room types to update.
+        </td>
+      </tr>
     </tbody>
 
   </table>
 </template>
 
 <script setup>
-import { ref,computed, inject } from 'vue'
+import { ref,computed, inject, onMounted} from 'vue'
 import { useRatePlan } from '../hooks/useRatePlan'
-const selectedRoomType = ref(null)
 
+const updateRoomTypes = ref(new Set())
 const moment = inject('$moment')
 
 
@@ -63,14 +76,31 @@ const {
   endDate
 } = useRatePlan()
 
+function onToggleRoomTypeToUpdate(room_type) {
+  const newSet = new Set(updateRoomTypes.value)
 
-const roomTypesWithAll = computed(() => [
-  {
-    room_type_name: 'All',
-    edoor_room_type: 'All'   // or 'ALL'
-  },
-  ...roomTypes.value
-])
+  if (newSet.has(room_type)) {
+    newSet.delete(room_type)
+  } else {
+    newSet.add(room_type)
+  }
+
+  updateRoomTypes.value = newSet
+}
+function onEnableUpdateAllRoomType(room_type) {
+    if (updateRoomTypes.value.size == roomTypes.value.length) {
+        // remove 
+        updateRoomTypes.value = new Set()
+    } else {
+        updateRoomTypes.value = new Set(
+  roomTypes.value.map(x => x.edoor_room_type)
+)
+    }
+    summaryRows.value
+
+}
+
+
 /* =========================
    FORMAT DATE
 ========================= */
@@ -172,19 +202,12 @@ const summaryRows = computed(() => {
 
   const rows = []
   const occList = occupancyColumns.value
-  const room_type_selected = computed(() => {
-    if (!selectedRoomType.value || selectedRoomType.value === 'All') {
-      return roomTypes.value
-    }
-    return selectedRoomType.value
-  })
-
 
   roomTypes.value
-    .filter(r => r.selected)
+    .filter(r => updateRoomTypes.value.has(r.edoor_room_type))
     .forEach(rt => {
 
-      const segments = buildSegments(room_type_selected.value , occList)
+      const segments = buildSegments(rt.edoor_room_type, occList) 
 
       segments.forEach(seg => {
 
@@ -199,7 +222,8 @@ const summaryRows = computed(() => {
         })
 
         rows.push({
-          room_type: rt.name || rt.edoor_room_type,
+          room_type: rt.name || rt.room_type_name
+,
           from: seg.from,
           to: seg.to,
           values
@@ -211,4 +235,8 @@ const summaryRows = computed(() => {
 
   return rows
 })
+onMounted(() => {
+  updateRoomTypes.value.add(roomTypes.value.find(x => x.selected).edoor_room_type)
+})
+
 </script>

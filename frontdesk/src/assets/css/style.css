@@ -2094,3 +2094,17 @@ background-color: rgb(255, 234, 234);
 .input-rate-price .p-disabled, .input-rate-price .p-component:disabled {
     opacity: 0.2 !important;
 }
+.p-chip-selected {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-color-text) !important;
+}
+
+.cs-close-open-sale-fieldset .p-toggleable-content .p-fieldset-content {
+    padding: 0.5rem 1.25rem !important;
+}
+.p-toast .p-toast-message.p-toast-message-success{
+    color: #121212!important;
+}
+.p-toast .p-toast-message.p-toast-message-warn{
+    color: #121212!important;
+}

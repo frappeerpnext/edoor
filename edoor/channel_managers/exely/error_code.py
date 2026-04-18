@@ -35,7 +35,9 @@ EXELY_ERROR_CODES = {
     },
     "150": {
         "message": "Changes are not permitted",
-        "type": None
+        "type": None,
+        "action":"Stop Sync",
+        "priority":1
     },
     "163": {
         "message": "Payment type invalid",
@@ -59,7 +61,7 @@ EXELY_ERROR_CODES = {
         "message": "System currently unavailable",
         "type": "12",
         "action": "Delay Sync",
-        "delay": 5000*5,
+        "delay": 60*5,
         "priority":2
     },
     "188": {
@@ -84,7 +86,10 @@ EXELY_ERROR_CODES = {
     },
     "320": {
         "message": "Invalid value",
-        "type": "3"
+        "type": "3",
+        "action": "Delay Sync",
+        "delay":60*5,
+        "priority":2
     },
     "321": {
         "message": "Required field missing",
@@ -180,7 +185,7 @@ EXELY_ERROR_CODES = {
         "type": None,
         "action":"Delay Sync",
         "priority":2,
-        "delay":5000*5,
+        "delay":60*5,
     },
     "840": {
         "message": "Duplicated rate plan codes",

@@ -108,14 +108,18 @@ def soap_response_status(ota_request,data):
         status = "Success"
     if "Warnings" in resp:
         status ="Warning"
-
+        
     if "Errors" in resp:
         success ="Fail"
     def get_warning_text():
         warnings = []
         if "Warnings" in resp:
-            for w in resp.get("Warnings",{}).get("Warning"):
-                
+            _warnings =resp.get("Warnings",{}).get("Warning")
+            
+            if not isinstance(_warnings, list):
+                _warnings = [_warnings]
+           
+            for w in _warnings:
                 warnings.append(f"{w.get('@Code')} - {w.get('#text')}")
 
         return warnings or []
@@ -123,14 +127,30 @@ def soap_response_status(ota_request,data):
     def get_error_text():
         errors = []
         if "Errors" in resp:
-            for w in resp.get("Errors",{}).get("Error"):
+            _error = resp.get("Errors",{}).get("Error")
+            if isinstance(_error,dict):
+                _error = [_error]
+
+            for w in _error:
                 errors.append(f"{w.get('@Code')} - {w.get('#text')}")
         return errors or []
         
 
     def get_priority_error_code():
-        codes = [d.get("@Code") for d in   resp.get("Errors",{}).get("Error") or []]
-        codes.extend([d.get("@Code") for d in   resp.get("Warnings",{}).get("Warning") or []] )
+        _error = resp.get("Errors",{}).get("Error") or []
+        if isinstance(_error, dict):
+            _error = [_error]
+
+        codes = [d.get("@Code") for d in   _error]
+
+        _warning = resp.get("Warnings",{}).get("Warning") or []
+        if not isinstance(_warning,list):
+            _warning =[_warning]
+        
+        codes.extend([d.get("@Code") for d in   _warning] )
+        
+        
+
         error_codes = []
         for c in codes:
             err = EXELY_ERROR_CODES.get(c)

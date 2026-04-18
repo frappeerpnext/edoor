@@ -6,7 +6,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "room_type"
+  "room_type",
+  "min_rate"
  ],
  "fields": [
   {
@@ -15,12 +16,19 @@
    "in_list_view": 1,
    "label": "Room Type",
    "options": "Room Type"
+  },
+  {
+   "fetch_from": "room_type.min_rate",
+   "fieldname": "min_rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Min Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-09 14:53:13.231247",
+ "modified": "2026-04-17 17:17:35.648594",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type Room Type",

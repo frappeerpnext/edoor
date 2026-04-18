@@ -21,7 +21,8 @@ const selectedDates = ref(new Set())
 const occupancyCodes = ref([])
 const hidePreviouseMonths = ref(false)
 const ratePlanMappedList = ref([])
-const syncRoomRateActionStatus = ref()
+
+const cm_info = ref()
 
 const components = ref([
     { component:"ComRatePlanInfo",is_loaded: true,title:"Rate Plan Information"},
@@ -97,20 +98,23 @@ export function useRatePlan() {
         })
 
         if (res.data) {
+
             ratePlan.value = res.data;
             ratePlanMappedList.value = res.data.cm_rate_plan_list
-            rateInfo.value = { 
+            rateInfo.value = {  
                 "rate_type": res.data.rate_type, 
                 "cm_rate_plan_list": ratePlanMappedList.value.find(r => r.edoor_rate_plan === res.data.rate_type.name) || {},
-                "room_rate_min_max_date": res.data.room_rates_min_max_date
-            };
-            roomTypes.value = res.data.room_types
+                "room_rate_min_max_date": res.data.room_rates_min_max_date.find(r => r.rate_type === res.data.rate_type.name)
+            }; 
+            roomTypes.value = res.data.room_types 
             if (roomTypes.value && roomTypes.value.length > 0) {
                 roomTypes.value[0].selected = true
 
             }
             years.value = res.data.visible_years
             occupancyCodes.value = res.data.occupancy_codes
+            cm_info.value = res.data.cm_info
+
         }
     }
 
@@ -156,25 +160,14 @@ export function useRatePlan() {
 
     }
 
-    async function getSyncRoomRateActionStatus(){
-        
-        const resp = await app.getApi("channel_managers.utils.get_sync_action_status",{
-            title:"Prices update",
-            property: property.name
-        },"edoor.")
-        if (resp.data){
-           syncRoomRateActionStatus.value = resp.data
-           
-
-        }
-    }
+    
     onMounted(async () => {
 
         // prevent multiple API calls
         if (initialized.value) return
         initialized.value = true
         
-        getSyncRoomRateActionStatus()
+        
 
         // get state hide previouse month from localstorage 
         hidePreviouseMonths.value = (localStorage.getItem("rate_plan_hide_previouse_months") === "true")
@@ -213,6 +206,7 @@ export function useRatePlan() {
 
     }
     return {
+        property,
         ratePlan,
         rateInfo,
         roomTypes,
@@ -230,8 +224,9 @@ export function useRatePlan() {
         components,
         selectedComponent,
         componentsMap,
-        syncRoomRateActionStatus,
-        getSyncRoomRateActionStatus,
+        
+        cm_info,
+       
         onSelectRoomType,
         getRoomRateData,
         reloadRoomRatesData,

@@ -6,20 +6,7 @@
     </template>
     <Property v-else />
     
-    <DynamicDialog v-if="isMobile"  :pt="{
-        root: { class: 'p-dialog-maximized' }
-    }"/>
-    <DynamicDialog v-else/>
-
-    <Toast position="top-center">
-        <template #message="slotProps">
-            <div class="flex flex-column" style="flex: 1">
-                <strong class="mb-1" v-if="slotProps.message.summary" v-html="slotProps.message.summary"></strong>
-                <p v-if="slotProps.message.detail" v-html="slotProps.message.detail"></p>
-            </div>
-        </template>
-    </Toast>
-    <ConfirmDialog></ConfirmDialog>
+    <ComAppComponentSetting/>
     
 </template>
 
@@ -57,6 +44,8 @@ import NewReservation from "@/views/reservation/NewReservation.vue"
 import ComLostAndFoundDetail from "@/views/lost_and_found/components/ComLostAndFoundDetail.vue"
 import ComCityLedgerInvoiceDetail from "@/views/city_ledger_invoice/components/ComCityLedgerInvoiceDetail.vue"
 import ComEditRoomBlock from "@/views/room_block/components/ComEditRoomBlock.vue";
+import ComAppComponentSetting from "@/components/ComAppComponentSetting.vue"
+import ComViewSyncData from "@/views/channel_managers/components/ComViewSyncData.vue"
 import { useConfirm } from "primevue/useconfirm";
 
 
@@ -81,7 +70,7 @@ const layout = computed(()=>{
     }
 })
 
-const isMobile = ref(window.isMobile)
+
 const gv = inject("$gv")
 const moment= inject("$moment")
 window.session_id = gv.generateGuid()
@@ -184,6 +173,15 @@ const actionClickHandler = async function (e) {
             }
             else if (data[0] == "view_city_ledger_invoice_detail") {  
                 showCityInvoiceDetail(data[1])
+            }
+            else if (data[0] == "view_channel_manager_sync_log") {  
+                 
+                await app.utils.openDialog(ComViewSyncData, "Sync Data", {
+                data: {
+                    docname: data[1]
+                }
+                })
+                
             }
         }
 

@@ -15,6 +15,7 @@
   "response_text",
   "sync_action",
   "sync_until",
+  "is_retry_sync",
   "section_break_pcda",
   "data",
   "column_break_iyii",
@@ -86,11 +87,17 @@
    "fieldname": "sync_until",
    "fieldtype": "Datetime",
    "label": "Sync Until"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_retry_sync",
+   "fieldtype": "Check",
+   "label": "Is Retry Sync"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-13 11:59:28.169979",
+ "modified": "2026-04-18 09:59:58.436191",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Channel Manager Sync Log",

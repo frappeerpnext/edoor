@@ -16,29 +16,34 @@
                 </template>
             </ComHeader>
             <div class="bg-white border-1 p-2 rounded-xl">
-   {{ data }}             
-<DataTable :value="data" tableStyle="min-width: 50rem">
+   <!-- {{ data }}              -->
+<DataTable :value="data.rate_type_list" tableStyle="min-width: 50rem">
     <Column   header="Rate Plan">
-       <template #body="slotProps">
-         <RouterLink class="p-button p-component p-button-link link_line_action1" :to="`/frontdesk/channel-manager/rate-plan/${encodeURIComponent(slotProps.data.edoor_rate_plan)}`">{{  slotProps.data.rate_plan_name }}</RouterLink>
-            
+        <template #body="slotProps">
+            <RouterLink 
+                class="p-button p-component p-button-link link_line_action1" 
+                :to="`/frontdesk/channel-manager/rate-plan/${encodeURIComponent(slotProps.data.rate_type_name)}`">
+                    {{  slotProps.data.rate_type_name }}
+            </RouterLink>
         </template>
     </Column>
     
-    <Column   header="Prices Set Date">
-       <template #body="slotProps"> 
-            <template v-if="slotProps.data?.room_rates_max_min_date.length > 0">
-                {{slotProps.data.room_rates_max_min_date.map(r=>moment(r.start_date).format("DD-MM-yyyy")).join('')}} &#8594;
-                {{slotProps.data.room_rates_max_min_date.map(r=>moment(r.start_end).format("DD-MM-yyyy")).join('')}}
-            </template>    
+    <Column header="Prices Set Date" class="text-center">
+       <template #body="slotProps">   
+            <Chip v-if="slotProps.data.room_rates_max_min_date.length>0"> 
+                {{slotProps.data.room_rates_max_min_date.start_date}} &#8594;  
+                {{ slotProps.data.room_rates_max_min_date.start_date }}
+            </Chip>    
+            <template v-else>
+                -
+            </template>
         </template>
     </Column>
     
-    <Column   header="Restriction">
-       <template #body="slotProps">
-            Close Sale <br/>
-            CTA <br/>
-            CTD
+    <Column header="Restriction" class="text-center">
+        <template #body="slotProps">
+            <Chip v-if="slotProps.data?.room_restriction?.group_restriction_type" :label="slotProps.data.room_restriction.group_restriction_type" />
+            <template v-else>-</template>
         </template>
     </Column>
     <Column   header="Rate and Restriction Period">
@@ -46,10 +51,13 @@
             Min max date to display and can update 
         </template>
     </Column>
-    <Column   header="Connted with Channel Manager">
-       <template #body="slotProps">
-            <Checkbox v-model="checked" :binary="true" :trueValue="1" :falseValue="0" @change="checked = 1"/>
-            connected
+    <Column header="Connted with Channel Manager">
+       <template #body="slotProps"> 
+            <template v-if="slotProps.data.status == 'Connected'">
+                <div class="flex gap-2 align-items-center">
+                    <span>Connected with</span><Image :src="data.cm_logo" width="50"/>
+                </div>
+            </template>
         </template>
     </Column>
 
@@ -63,8 +71,8 @@
     </template>
     <script setup>
 import { inject,  onMounted,  ref } from "vue";
+import Image from 'primevue/image';
 import { i18n } from '@/i18n';
-
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 const moment= inject("$moment")
@@ -74,11 +82,15 @@ const data = ref([])
 const checked = ref(1)
 async function getRatePlanList(){
     const l = await window.showLoading()
-    const res = await app.getApi("rate_plan.get_rate_plan_list",{
+    const res = await app.getApi("rate_plan.get_rate_type_list",{
         property: property.name
     })
     if (res.data){
         data.value = res.data
+        data.value.rate_type_list.map(r=> {
+            r.room_rates_max_min_date.start_date = moment(r.room_rates_max_min_date.start_date).format("DD-MM-yyyy")
+            r.room_rates_max_min_date.end_date = moment(r.room_rates_max_min_date.end_date).format("DD-MM-yyyy")
+        })
     }
 
     l.close()

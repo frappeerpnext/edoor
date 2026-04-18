@@ -77,7 +77,7 @@ const toggle = (event) => {
 function getData(){
     getDocList("Notification Log",{
         fields:["*"],
-        filters:[["for_user","=",window.user.name]]
+        filters:[["for_user","=",window.user.name],["document_type","not in",["Email Queue"]]]
     }).then(result=>{
         data.value = result.sort((a, b) => a.read - b.read)
         data.value.forEach(element => {
@@ -89,7 +89,7 @@ function getData(){
 function getCountData(){
   
     getCount("Notification Log", 
-     [["for_user","=",window.user.name],["read","=",0]]
+     [["for_user","=",window.user.name],["read","=",0],["document_type","not in",["Email Queue"]]]
     ).then(result=>{
         total_notification.value = result
        

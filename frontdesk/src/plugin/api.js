@@ -236,10 +236,18 @@ export function deleteDocument(doctype, name, option={show_error_message:true,sh
     
 }
 export function getApi(api, params = Object,base_url="edoor.api."){
-
+   
 
     return new Promise((resolve, reject)=>{
-        call.get(`${base_url}${api}`, params).then((result) => {
+        let api_url = ""
+        if (api.startsWith("edoor.")){
+            
+            api_url = api
+        }else {
+            api_url = `${base_url}${api}`
+        }
+
+        call.get(api_url, params).then((result) => {
             resolve(result)
         }).catch((error) =>{
           
@@ -251,8 +259,17 @@ export function getApi(api, params = Object,base_url="edoor.api."){
 
 // new api constract data and error to avoid callback hell like .then().then ....
 
-export function getData(api_url, params=null,base_url="edoor.api.") {
-      return call.get(`${base_url}${api_url}`, params)
+export async function getData(api, params=null,base_url="edoor.api.") {
+        let api_url = ""
+        if (api.startsWith("edoor.")){
+            
+            api_url = api
+        }else {
+            api_url = `${base_url}${api}`
+        }
+
+
+      return call.get(api_url, params)
       .then((r) => {
         if(r.message){
             return { data: r.message, error: null }
@@ -268,7 +285,13 @@ export function getData(api_url, params=null,base_url="edoor.api.") {
 
 export function postApi(api, params = Object, message,show_message=true,base_url="edoor.api."){
     return new Promise((resolve, reject)=>{
-        call.post(`${base_url}${api}`, params).then((result) => {
+        let api_url = ""
+        if (api.startsWith("edoor.")){
+            api_url = api
+        }else {
+            api_url = `${base_url}${api}`
+        }
+        call.post(api_url, params).then((result) => {
             if(show_message == true){
                 if(show_message && !result.hasOwnProperty("_server_messages")){
                     window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')

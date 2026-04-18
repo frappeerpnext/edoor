@@ -1,6 +1,6 @@
 <template>
   <div class="table-wrapper">
- {{ months }}
+ 
     <div
       v-if="dragRect.visible"
       class="drag-rect"

@@ -27,8 +27,8 @@ globalThis.app.getApi =  async function (api_url,param,base_url="edoor.api.") {
 }
 
  
-globalThis.app.postApi =  async function (api_url,param,message="",show_message=true) {
-  return await postData(api_url,param,message,show_message)
+globalThis.app.postApi =  async function (api_url,param,message="",show_message=true,base_url="edoor.api.") {
+  return await postData(api_url,param,message,show_message,base_url)
 }
 
 globalThis.app.getDocList =  async function (DocType,param) {

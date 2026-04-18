@@ -50,7 +50,7 @@ function getData(){
   loading.value = true
   getDocList("Notification Log",{
       fields:["*"],
-      filters:[["for_user","=",window.user.name]],
+      filters:[["for_user","=",window.user.name],["document_type","not in",["Email Queue"]]],
       limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
       limit: pageState.value?.rows || 20,
       orderBy: {
@@ -68,7 +68,7 @@ function getData(){
 function getCountData(){
 
   getCount("Notification Log", 
-   [["for_user","=",window.user.name]]
+   [["for_user","=",window.user.name],["document_type","not in",["Email Queue"]]]
   ).then(result=>{
     pageState.value.totalRecords= result
      
