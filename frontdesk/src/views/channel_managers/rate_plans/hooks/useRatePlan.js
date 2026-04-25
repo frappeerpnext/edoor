@@ -3,11 +3,11 @@ import ComRatePlanInfo from "@/views/channel_managers/rate_plans/components/ComR
 import ComRoomRate from "@/views/channel_managers/rate_plans/components/ComRoomRate.vue"
 import ComRestriction from "@/views/channel_managers/rate_plans/components/ComRestriction.vue"
 import ComCMSyncLog from "@/views/channel_managers/rate_plans/components/ComCMSyncLog.vue"
-
+import { useRestriction } from '@/views/channel_managers/rate_plans/hooks/useRestriction'
 import { useRoute } from 'vue-router'
 const ratePlan = ref({})
 const roomTypes = ref([])
-const rateInfo = ref([])
+const rateInfo = ref({})
 const selectedRoomTypes = ref([])
 const selectRoomTypesData = ref([])
 const initialized = ref(false)
@@ -21,6 +21,7 @@ const selectedDates = ref(new Set())
 const occupancyCodes = ref([])
 const hidePreviouseMonths = ref(false)
 const ratePlanMappedList = ref([])
+const prodiverName = ref('')
 
 const cm_info = ref()
 
@@ -38,6 +39,90 @@ const componentsMap = {
     "ComCMSyncLog":ComCMSyncLog
 }
 
+const savedselectedRestrictionTypes = localStorage.getItem("selectedRestrictionTypes")
+
+const selectedRestrictionTypes = ref(
+  savedselectedRestrictionTypes ? JSON.parse(savedselectedRestrictionTypes) : ["Closed", "Cta", "Ctd"]
+)
+const restrictionTypes = [
+
+  {
+    restriction_type:"Closed",
+    default_value:1,
+    show_radio_input:true,
+    show_number_input:false,
+    show_reset_value:false,
+
+  },
+  {
+    restriction_type:"Cta",
+    default_value:1,
+    show_radio_input:true,
+    show_number_input:false,
+    show_reset_value:false,
+  },
+  {
+    restriction_type:"Ctd",
+    default_value:1,
+    show_radio_input:true,
+    show_number_input:false,
+    show_reset_value:false,
+  },
+  {
+    restriction_type:"MinLos",
+    default_value:0,
+    show_radio_input:false,
+    show_number_input:true,
+    show_reset_value:true,
+  },
+  {
+    restriction_type:"MaxLos",
+    default_value:0,
+    show_radio_input:false,
+    show_number_input:true,
+    show_reset_value:true,
+  }, 
+  {
+    restriction_type:"MinLosArrival",
+    default_value:0,
+    show_radio_input:false,
+    show_number_input:true,
+    show_reset_value:true,
+  },
+  {
+    restriction_type:"MaxLosArrival",
+    default_value:0,
+    show_radio_input:false,
+    show_number_input:true,
+    show_reset_value:true,
+  },
+  {
+    restriction_type:"MinAdvBooking",
+    default_value:0,
+    show_radio_input:false,
+    show_number_input:true,
+    show_reset_value:true,
+  },
+  {
+    restriction_type:"MaxAdvBooking",
+    default_value:0,
+    show_radio_input:false,
+    show_number_input:true,
+    show_reset_value:true,
+  },
+  {
+    restriction_type:"FullPatternLos",
+    default_value:0,
+    show_radio_input:false,
+    show_number_input:false,
+    show_reset_value:false,
+    show_date_selection:true
+  }
+
+
+]
+
+
 const selectedComponent = ref("ComRatePlanInfo")
 
 
@@ -45,10 +130,14 @@ const selectedComponent = ref("ComRatePlanInfo")
 
 export function useRatePlan() {
 
-
+    
     const route = useRoute();
     const moment = inject('$moment')
     const property = JSON.parse(localStorage.getItem("edoor_property"))
+    const {
+        getRestrictionData,
+        restrictionData
+    } = useRestriction()
 
     const settingMenues = computed(() => [
         {
@@ -89,6 +178,7 @@ export function useRatePlan() {
                 }
 
                 await reloadRoomRatesData()
+                // xxx
     }
 
     async function getRatePlanInfo() {
@@ -104,8 +194,11 @@ export function useRatePlan() {
             rateInfo.value = {  
                 "rate_type": res.data.rate_type, 
                 "cm_rate_plan_list": ratePlanMappedList.value.find(r => r.edoor_rate_plan === res.data.rate_type.name) || {},
-                "room_rate_min_max_date": res.data.room_rates_min_max_date.find(r => r.rate_type === res.data.rate_type.name)
-            }; 
+                "room_rate_min_max_date": res.data.room_rates_min_max_date.find(r => r.rate_type === res.data.rate_type.name) 
+            };
+            if (ratePlanMappedList.value.find(r => r.edoor_rate_plan === res.data.rate_type.name) != undefined) {
+                prodiverName.value = res.data.cm_info.provider 
+            }
             roomTypes.value = res.data.room_types 
             if (roomTypes.value && roomTypes.value.length > 0) {
                 roomTypes.value[0].selected = true
@@ -114,7 +207,6 @@ export function useRatePlan() {
             years.value = res.data.visible_years
             occupancyCodes.value = res.data.occupancy_codes
             cm_info.value = res.data.cm_info
-
         }
     }
 
@@ -150,14 +242,72 @@ export function useRatePlan() {
     async function reloadRoomRatesData() {
 
         const l = await window.showLoading("Loading room rate data...")
-        await getRoomRateData({
+        const filter = {
             room_types: getSelectedRoomTypesID(),
             rate_type: rateType.value,
             start_date: moment(startDate.value).format('YYYY-MM-DD'),
             end_date: moment(endDate.value).format('YYYY-MM-DD'),
+        }
+        await getRoomRateData(filter)
+        // get stop sale data   
+
+        await getRestrictionData({
+            "restriction_types":["Closed"],
+            ...filter
         })
+
+
+         
         l.close();
 
+    }
+
+    async function reloadRestrictionData(restriction_type) {
+
+         const l = await window.showLoading("Loading restriction data...")
+        const filter = {
+            room_types: getSelectedRoomTypesID(),
+            rate_type: rateType.value,
+            start_date: moment(startDate.value).format('YYYY-MM-DD'),
+            end_date: moment(endDate.value).format('YYYY-MM-DD'),
+        }
+        
+        let _restrictionTypes = []
+        if (restriction_type){
+            if ((typeof restriction_type) == "string"){
+                
+                _restrictionTypes = [restriction_type]
+            }else {
+                _restrictionTypes = restriction_type
+            }
+            
+        }else 
+        {
+            _restrictionTypes = selectedRestrictionTypes.value
+        }
+        await getRestrictionData({
+            "restriction_types":_restrictionTypes,
+            ...filter
+        })
+
+        l.close()
+         
+      
+
+    }
+
+    
+
+
+    async function onRefresh() {
+        if (selectedComponent.value =="ComRoomRate"){
+             
+            await reloadRoomRatesData()
+            
+        }else  if (selectedComponent.value == "ComRestriction"){
+            
+            await reloadRestrictionData();
+        }
     }
 
     
@@ -184,10 +334,14 @@ export function useRatePlan() {
 
         const l = await window.showLoading()
 
+        
         await getRatePlanInfo()
        
 
         l.close()
+
+        
+      
 
     })
 
@@ -203,6 +357,10 @@ export function useRatePlan() {
         selectedYear.value = new Date().getFullYear()
         selectedDates.value = new Set();
         occupancyCodes.value = []
+        
+        components.value.forEach(x=>x.is_loaded=false)
+        selectedComponent.value = "ComRatePlanInfo"
+
 
     }
     return {
@@ -224,12 +382,16 @@ export function useRatePlan() {
         components,
         selectedComponent,
         componentsMap,
-        
         cm_info,
-       
+        restrictionData,
+        prodiverName,
+        restrictionTypes,
+        selectedRestrictionTypes,
         onSelectRoomType,
         getRoomRateData,
         reloadRoomRatesData,
-        resetData
+        resetData,
+        onRefresh,
+        reloadRestrictionData
     }
 }

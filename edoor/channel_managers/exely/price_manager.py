@@ -5,6 +5,8 @@ from edoor.channel_managers.exely.soap_request import send_soap_request
 from edoor.channel_managers.exely.rate_limit import get_rate_limit,update_rate_limit_balance
 from frappe.utils import now_datetime, add_to_date
 from epos_restaurant_2023.custom_socket_client import emit_event
+ 
+
     
 from lxml import etree
 
@@ -30,6 +32,12 @@ import time
 
 OTA_REQUEST = "OTA_HotelRateAmountNotifRQ"
 
+@frappe.whitelist()
+def testme():
+    emit_event("ChannelManagerStartStopSync", True)
+
+    time.sleep(3)
+    emit_event("ChannelManagerStartStopSync",False)
 
 @frappe.whitelist()
 def sync_room_rate(property=None):
@@ -47,7 +55,7 @@ def sync_room_rate(property=None):
             frappe.throw("Data sync to Exely is temporarily blocked. Please check the sync status.")
 
         # reset session id on pending 
-        frappe.db.sql("update `tabChannel Manager Sync Data Log` set sync_session_id = '' where sync_session_id <> '' and property=%(property)s" ,{"property":p.get("name")})
+        frappe.db.sql("update `tabChannel Manager Sync Data Log` set sync_session_id = '' where request_type='OTA_HotelRateAmountNotifRQ' and  sync_session_id <> '' and property=%(property)s" ,{"property":p.get("name")})
 
 
         rate_types = frappe.db.sql("select distinct room_type,rate_type from `tabChannel Manager Sync Data Log` where property = %(property)s and provider='Exely' and request_type='OTA_HotelRateAmountNotifRQ'",{"property":p.get("name")},as_dict = 1)
@@ -61,11 +69,10 @@ def sync_room_rate(property=None):
                 # this is very important to avoid rate limit to CM
                 room_type_limit =  get_rate_limit(property =  p.get("name"),room_types = room_types)
                 
-                session_id = get_sync_session_id(room_type_limit = room_type_limit,rate_type=rp)
+                session_id = get_sync_session_id(room_type_limit = room_type_limit,rate_type=rp,request_type=OTA_REQUEST)
 
     
-                group_data = get_group_room_rate_data(session_id,rp)
-                
+                group_data = get_group_room_rate_data(session_id,rp)   
                
                 
       
@@ -73,6 +80,7 @@ def sync_room_rate(property=None):
                 if group_data:
                      
                     soap_body = build_room_rate_xml(property = p.get("name"), group_data=group_data,rate_type = rp)
+                    
                     
                     response =  send_soap_request(p.get("name"),"OTA_HotelRateAmountNotifRQ",soap_body)
                   
@@ -83,9 +91,8 @@ def sync_room_rate(property=None):
                         "property": p.get("name"),
                         "doctype":"Channel Manager Sync Log",
                         "provider":"Exely",
-                        "request_type":"OTA_HotelRateAmountNotifRQ",
+                        "request_type":OTA_REQUEST,
                         "title":"Prices update",
-                         "title":"Prices update",
                         "status" : response.get("status"),
                         "data": frappe.as_json(group_data),
                         "response_text": response.get("response_text"),
@@ -112,11 +119,11 @@ def sync_room_rate(property=None):
                         # return soap_body
                         delete_synced_data_log(session_id=session_id,cm_response = response,xml_body=soap_body)
 
-                        emit_event("ChannelManagerUpdate",{"action":"update_sync_rate_plan_status","status":"Success","title":"Sync Room Rate","message":"Room rates have been successfully synced to the channel manager."})
+                        emit_event("ChannelManagerUpdateRatePlan",{"action":"update_sync_rate_plan_status","status":"Success","title":"Sync Room Rate","message":"Room rates have been successfully synced to the channel manager."})
 
                     else:
                         
-                        emit_event("ChannelManagerUpdate",{
+                        emit_event("ChannelManagerUpdateRatePlan",{
                             "action":"update_sync_rate_plan_status",
                             "satus":response.get("status"),
                             "title":"Sync Room Rate Fail",
@@ -196,16 +203,16 @@ def get_group_room_rate_data(session_id,rate_type):
     })
 
 
-   
     if occupancy_codes:
         unique_data =  get_unique_room_rate_values_by_occupancy_codes(session_id=session_id,occupancy_codes=occupancy_codes,rate_type=rate_type)
         occupancy_codes_by_room_type = []
-        if unique_data:
-            occupancy_codes_by_room_type = get_occupancy_codes_by_room_type(session_id,rate_type)
-          
+        
         for d in unique_data:
             d["period"] =  get_period(session_id = session_id, data = d,rate_type =  rate_type)
+          
             # clean up occupancy code that dont have in sync log by room type
+            occupancy_codes_by_room_type = get_occupancy_codes_by_room_type(session_id=session_id, rate_type=rate_type,start_date= d["period"][0].get("start_date"),end_date =  d["period"][0].get("end_date"))
+           
             
             for key in list(d.keys()):
                 
@@ -225,15 +232,17 @@ def get_group_room_rate_data(session_id,rate_type):
         return unique_data
     return None
 
-def get_occupancy_codes_by_room_type(session_id,rate_type):
+def get_occupancy_codes_by_room_type(session_id,rate_type,start_date, end_date):
     sql = """
         select distinct room_type,occupancy_code
         from `tabChannel Manager Sync Data Log`
         where
+            date between %(start_date)s and %(end_date)s and
             rate_type = %(rate_type)s and sync_session_id = %(session_id)s
         
     """
-    return frappe.db.sql(sql,{"session_id":session_id,"rate_type":rate_type},as_dict = 1)
+    return frappe.db.sql(sql,{"session_id":session_id,"rate_type":rate_type,"start_date":start_date,"end_date":end_date},as_dict = 1)
+
 
 
 

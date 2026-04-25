@@ -1,6 +1,8 @@
 import frappe
 import json
 from frappe.utils import getdate, add_days,get_datetime,now_datetime
+
+@frappe.whitelist()
 def get_channal_manager_info(property):
     cached_key = f"{property}_channel_manager_info"
     if cached_value := frappe.cache.get_value(cached_key):
@@ -76,8 +78,14 @@ def get_occupancy_codes():
     frappe.cache.set_value(cached_key, data)
     return data
 
-@frappe.whitelist()
+@frappe.whitelist(methods="POST")
 def get_sync_action_status(title,property,provider=None):
+    titles = []
+    if isinstance(title, str):
+        titles = [title]
+    else:
+        titles = title
+
     cm_info = get_channal_manager_info(property)
     if not cm_info:
         return None
@@ -85,9 +93,10 @@ def get_sync_action_status(title,property,provider=None):
     if not provider:
         provider = cm_info.provider
         
-    sql="select is_retry_sync, name, sync_action,title, sync_until,response_text,property,provider,creation from `tabChannel Manager Sync Log` where title = %(title)s and provider=%(provider)s and property = %(property)s order by creation desc limit 1"
+    sql="select is_retry_sync, name, sync_action,title, sync_until,response_text,property,provider,creation from `tabChannel Manager Sync Log` where title in %(titles)s and provider=%(provider)s and property = %(property)s order by creation desc limit 1"
 
-    data = frappe.db.sql(sql,{"title":title,"property":property,"provider":provider},as_dict = 1)
+    data = frappe.db.sql(sql,{"titles":titles,"property":property,"provider":provider},as_dict = 1)
+     
     data = [d for d in data if d.get("is_retry_sync") ==0]
     if data:
         data = data[0]

@@ -1,6 +1,7 @@
 <template>
   <div class="table-wrapper">
 
+
     <div v-if="dragRect.visible" class="drag-rect" :class="{ 'drag-rect-deselect': dragMode === 'deselect' }" :style="{
       left: dragRect.x + 'px',
       top: dragRect.y + 'px',
@@ -13,14 +14,17 @@
       <div v-if="showPopover" class="cell-popover"
         :style="{ left: popoverPosition.x + 'px', top: popoverPosition.y + 'px' }" @mouseenter="handlePopoverMouseEnter"
         @mouseleave="handlePopoverMouseLeave">
-        <ComRoomRateDetailPopOver v-if="selectedRoomType" :rate_type="rateType" :date="hoverDate"
-          :room_type_id="selectedRoomType[0].edoor_room_type" />
-
+        <div v-if="popoverLoading" class="popover-loading">Loading...</div>
+        <div v-else>
+          <div><strong>Date:</strong> {{ popoverData.date }}</div>
+          <div><strong>Room Type:</strong> {{ popoverData.roomType }}</div>
+          <div><strong>Occupancy:</strong> {{ popoverData.occupancy }}</div>
+          <div><strong>Rate:</strong> {{ popoverData.rate }}</div>
+        </div>
       </div>
     </Teleport>
 
     <div>
-
       <table class="rate-table">
         <thead>
           <tr>
@@ -38,17 +42,14 @@
               <div class="font-semibold text-lg mb-2">
                 {{ moment.utc(m.month).format("MMM - YYYY") }}
               </div>
-              <div class="guest-lines">
-                <template v-for="rt in selectedRoomType" :key="rt.edoor_room_type">
-                  <div v-for="occ in rt.occupancy_codes" :key="occ.occupancy_code">
-                    {{ occ.title }}
-                  </div>
-                </template>
+              <div v-for="rt in _restrictionTypes">
+                {{ rt.restriction_type }}
               </div>
+
             </th>
             <td v-for="n in numDays" :key="n" :data-day="n" :data-month-idx="monthIdx" :data-month="m.month" :class="[
               'dc',
-              isClosed(m.month, n) == 1 ? 'closed' : '',
+              getRestrictionValue('Closed', m.month, n) == 1 ? 'closed' : '',
               (n > m.total_days || today > moment(getDateKey(m.month, n)).local().toDate()) ? 'disable' : '',
               isCellSelected(m.month, n) ? 'selected-cell' : '',
               (n <= m.total_days ? moment.utc(`${moment.utc(m.month).format('YYYY-MM')}-${n}`).format('dd') : '')
@@ -60,11 +61,22 @@
                   {{ moment.utc(`${moment.utc(m.month).format("YYYY-MM")}-${n}`).format("D dd") }}<br />
                 </span>
               </div>
-              <template v-for="rt in selectedRoomType" :key="rt.edoor_room_type">
-                <div v-for="occ in rt.occupancy_codes" :key="occ.occupancy_code" class="v" v-if="n <= m.total_days">
-                  {{ getData(rt.edoor_room_type, m.month, n, occ.occupancy_code) }}
-                </div>
-              </template>
+              <div v-for="rt in _restrictionTypes" class="v">
+                <template v-if="n <= m.total_days">
+                  <template v-if="['Closed', 'Cta', 'Ctd'].includes(rt.restriction_type)">
+                    <i class="pi pi-times text-red-400" v-if="getRestrictionValue(rt.restriction_type, m.month, n)"
+                      style="font-size: 1rem"></i>
+                    <i class="pi pi-check  text-green-400" v-else style="font-size: 1rem"></i>
+                  </template>
+                  <template v-else>
+                    <span>
+                      {{ getRestrictionValue(rt.restriction_type, m.month, n) }}
+                    </span>
+                  </template>
+
+                </template>
+              </div>
+
             </td>
           </tr>
         </tbody>
@@ -76,25 +88,34 @@
 <script setup>
 import { computed, inject, ref, onMounted, onUnmounted, Teleport } from 'vue'
 import { useRatePlan } from '../hooks/useRatePlan'
-import ComRoomRateDetailPopOver from "@/views/channel_managers/rate_plans/components/ComRoomRateDetailPopOver.vue"
-import { useRoute } from 'vue-router'
-const { roomTypes, roomRatesData, selectedDates, startDate, restrictionData } = useRatePlan()
+
+const { roomTypes, selectedDates, startDate, restrictionData,
+  restrictionTypes,
+  selectedRestrictionTypes
+
+} = useRatePlan()
 const moment = inject('$moment')
 const props = defineProps({ year: Number, room_types: Object })
-const hoverDate = ref()
-const route = useRoute();
-const rateType = ref(route.params.name)
+
+const _restrictionTypes = computed(() => {
+  return restrictionTypes.filter(x => selectedRestrictionTypes.value.includes(x.restriction_type))
+})
 
 const numDays = Array.from({ length: 31 }, (_, i) => i + 1)
 
-function getData(room_type_id, month, day, occupancy_code) {
-  const key = moment(month).format("YYMM") + String(day).padStart(2, "0") + room_type_id + occupancy_code
-  return roomRatesData.value[key] >= 0 ? roomRatesData.value[key].toLocaleString('en-US') : "__"
-}
 
-function isClosed(month, day) {
+function getRestrictionValue(restriction_type, month, day) {
   const key = moment(month).format("YYMM") + String(day).padStart(2, "0")
-  return (restrictionData.value["Closed"] || {})[key] || 0
+  if (["Closed", "Cta", "Ctd"].includes(restriction_type)) {
+    return (restrictionData.value[restriction_type] || {})[key]
+  } else {
+    if (key in (restrictionData.value[restriction_type] || {})) {
+      return (restrictionData.value[restriction_type] || {})[key] || 0
+    } else {
+      return "__"
+    }
+  }
+
 }
 
 const today = moment(moment().local().format("YYYY-MM-DD")).toDate()
@@ -265,8 +286,22 @@ const isMouseOverPopover = ref(false)
 let hoverTimer = null
 let hideTimer = null
 let currentHoverCell = null
+let abortController = null
 
+// Function to call your server API – adjust endpoint and parameters as needed
+async function fetchPopoverDetails(month, day) {
+  // Example: replace with actual API call
+  // const response = await fetch(`/api/cell-details?month=${month}&day=${day}`, { signal: abortController.signal })
+  // return await response.json()
 
+  // Mock data for demo
+  return {
+    date: moment.utc(`${month.slice(0, 7)}-${String(day).padStart(2, '0')}`).format('YYYY-MM-DD'),
+    roomType: 'Deluxe',
+    occupancy: '2 Adults',
+    rate: '$150'
+  }
+}
 
 function handleCellMouseEnter(event, monthIdx, day, monthKey) {
   // Always update drag if dragging
@@ -321,7 +356,7 @@ function scheduleHidePopover() {
     if (!isMouseOverCell.value && !isMouseOverPopover.value) {
       hidePopover()
     }
-  }, 1000)
+  }, 100)
 }
 
 function clearHideTimer() {
@@ -336,7 +371,11 @@ function cancelHoverTimer() {
     clearTimeout(hoverTimer)
     hoverTimer = null
   }
-
+  // Abort any ongoing fetch
+  if (abortController) {
+    abortController.abort()
+    abortController = null
+  }
 }
 
 function hidePopover() {
@@ -358,12 +397,27 @@ async function showPopoverForCell(cell, monthKey, day, mouseX, mouseY) {
   }
 
   // Prepare fetch
-
+  abortController = new AbortController()
   popoverLoading.value = true
-  hoverDate.value = moment.utc(`${monthKey.slice(0, 7)}-${String(day).padStart(2, '0')}`).format('YYYY-MM-DD')
   showPopover.value = true
 
-
+  try {
+    const data = await fetchPopoverDetails(monthKey, day)
+    popoverData.value = {
+      date: moment.utc(`${monthKey.slice(0, 7)}-${String(day).padStart(2, '0')}`).format('YYYY-MM-DD'),
+      roomType: data.roomType || '...',
+      occupancy: data.occupancy || '...',
+      rate: data.rate || 'N/A'
+    }
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('Popover fetch error:', error)
+      popoverData.value = { error: 'Failed to load data' }
+    }
+  } finally {
+    popoverLoading.value = false
+    abortController = null
+  }
 }
 
 /* ---------- LIFECYCLE ---------- */
@@ -392,16 +446,7 @@ onUnmounted(() => {
 }
 
 .selected-cell {
-  /* content: "";
-  position: absolute;
-  inset: 0; */
   background: #cfe5ff !important;
-}
-
-.selected-cell.Sa>.day-name,
-.selected-cell.Su>.day-name {
-  background: rgb(246, 253, 217);
-  border-radius: 10px;
 }
 
 .drag-rect {
@@ -439,7 +484,7 @@ onUnmounted(() => {
 .closed .day-name {
   background: #ff0000b1 !important;
   border-radius: 10px;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Popover styling */
@@ -477,7 +522,7 @@ onUnmounted(() => {
 }
 
 .v {
-  text-align: right;
+  text-align: center;
 }
 
 .dc:not(.disable) .v {
@@ -504,10 +549,16 @@ onUnmounted(() => {
 .table-wrapper th {
   background: #e9e9ff;
 }
+
+.dc.selected-cell.Sa>.day-name,
+.dc.selected-cell.Su>.day-name {
+  background: rgb(246, 253, 217);
+  border-radius: 10px;
+}
 .rate-table > thead{
-    position: -webkit-sticky;
-    position: sticky;
-    top: 118px;
-    z-index: 4;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 118px;
+  z-index: 1000;
 }
 </style>

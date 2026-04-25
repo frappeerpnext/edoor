@@ -15,7 +15,7 @@
 const props = defineProps({
     label: {
         type: String,
-        default: 'Confirmation Message'
+        default: ''
     },
     text: {
         type: String,

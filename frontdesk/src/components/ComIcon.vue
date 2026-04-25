@@ -73,6 +73,7 @@
     <img v-else-if="icon == 'iconCalendarCheck'" :style="{'height' : height}" :class="class" :src="iconCalendarCheck"/>
     <img v-else-if="icon == 'iconExchangeDollar'" :style="{'height' : height}" :class="class" :src="iconExchangeDollar"/>
     <img v-else-if="icon == 'iconRestrictionLine'" :style="{'height' : height}" :class="class" :src="iconRestrictionLine"/>
+    <img v-else-if="icon == 'iconTaskSquare'" :style="{'height' : height}" :class="class" :src="iconTaskSquare"/>
 
 
     
@@ -166,6 +167,7 @@ import iconPurpleLightBulb from '@/assets/svg/icon-purple-light-bulb.svg'
 import iconRestrictionLine from '@/assets/svg/icon-restricted-line.svg'
 import iconExchangeDollar from '@/assets/svg/icon-exchange-dollar.svg'
 import iconCalendarCheck from '@/assets/svg/icon-calendar-check.svg'
+import iconTaskSquare from '@/assets/svg/icon-task-square.svg'
 
 </script>
  

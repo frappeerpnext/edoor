@@ -1,5 +1,4 @@
 <template>
-    
     <div class="wrap-page">
         <ProgressBar class="absolute top-0 right-0 left-0" style="z-index: 9999; height: 6px" v-if="gv.loading"
             mode="indeterminate">
@@ -29,7 +28,7 @@
                 </div>
                 <div class="flex-grow">
                     <div class="mr-auto flex justify-end h-full items-center">
-                        <div  class="hidden md:block px-2 items-center text-white pro-timebar">
+                        <div  class="hidden lg:block px-2 items-center text-white pro-timebar">
                             <ComHeaderDateTimeUpdate />
                             
                         </div>
@@ -40,6 +39,7 @@
                             </div>
                             
                             <ComNotification />
+                            <ComSynNotification/>
                             
 
                             <div>
@@ -148,6 +148,8 @@ import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
 import ComOperationDashboard from '@/components/layout/components/ComOperationDashboard.vue'
 import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import ComTodayInfoSideBar from "@/components/layout/components/ComTodayInfoSideBar.vue"
+import ComSynNotification from "@/views/channel_managers/channel_manager/components/ComSynNotification.vue"
+
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({

@@ -1,7 +1,8 @@
 <template>
   <ButtonGroup>
     
-            <Button
+            <Button 
+            class="border-0"
             :severity="selectedYear==y?'warning':''"
             :label="y" v-for="y in years" :key="y" 
             @click="onChangeYear(y)"

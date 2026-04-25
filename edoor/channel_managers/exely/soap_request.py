@@ -3,6 +3,10 @@ import requests
 import xmltodict
 import json
 from edoor.channel_managers.exely.error_code import EXELY_ERROR_CODES
+from frappe.utils import now_datetime, add_to_date
+from epos_restaurant_2023.custom_socket_client import emit_event
+
+
 # Constants
 SOAP_HEADER_NAMESPACE = "https://www.hopenapi.com/Api/PMSConnect" 
 REQUEST_TIMEOUT = 30
@@ -30,6 +34,11 @@ OTA_REQUEST = {
     "OTA_HotelRateAmountNotifRQ":{
         "SOAPAction":"https://www.hopenapi.com/Api/PMSConnect/HotelRateAmountNotifRQ",
         "response_key":"OTA_HotelRateAmountNotifRS"
+        # The Confirmation Message
+    },
+    "OTA_HotelAvailNotifRQ":{
+        "SOAPAction":"https://www.hopenapi.com/Api/PMSConnect/HotelAvailNotifRQ",
+        "response_key":"OTA_HotelAvailNotifRS"
         # The Confirmation Message
     }
 
@@ -85,10 +94,12 @@ def build_soap_body(property, body_content):
 
 
 def send_soap_request(property, ota_request, body_content):
+    emit_event("ChannelManagerStartStopSync",True)
     soap_body = build_soap_body(property, body_content)
     response_data = request_soap_action(property, ota_request, soap_body)
     resp = soap_response_status(ota_request,response_data)
     resp["data"] = response_data
+    emit_event("ChannelManagerStartStopSync",False)
     return resp
 
 

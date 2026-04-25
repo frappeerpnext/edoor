@@ -13,8 +13,8 @@
   "rate_type",
   "date",
   "occupancy_code",
-  "value",
   "restriction_type",
+  "value",
   "column_break_mhyx",
   "sync_session_id"
  ],
@@ -96,7 +96,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-13 10:10:08.723869",
+ "modified": "2026-04-24 10:57:08.671131",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Channel Manager Sync Data Log",

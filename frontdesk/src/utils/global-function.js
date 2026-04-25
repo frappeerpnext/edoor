@@ -1,16 +1,22 @@
 
 
-import {getDocument,createDocument,getData,getDocumentList ,postData } from "@/plugin/api.js";
+import {getDocument,createDocument,getData,getDocumentList ,postData,getCount,setValue } from "@/plugin/api.js";
 import * as reservation from "@/utils/global/reservation.js";
 import * as utils from "@/utils/utils.js";
+import * as dialog from "@/utils/dialog.js";
  
 globalThis.app = globalThis.app || {};
 globalThis.app.utils = utils
+globalThis.app.dialog = dialog;
 
 
 // api url 
 globalThis.app.getDoc =  async function (DocType,DocName) {
   return await getDocument(DocType,DocName)
+}
+
+globalThis.app.getCount =  async function (DocType,filters) {
+  return await getCount(DocType,filters)
 }
 
 globalThis.app.createDoc =  async function (DocType,params) {
@@ -19,6 +25,9 @@ globalThis.app.createDoc =  async function (DocType,params) {
 
 globalThis.app.updateDoc =  async function (DocType,name,params) {
   return await updateDocument(DocType,name,params)
+}
+globalThis.app.setValue =  async function (doctype,docname,fieldname,value=null){
+  return await setValue(doctype,docname,fieldname,value)
 }
 
  

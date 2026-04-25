@@ -9,6 +9,10 @@ const metas = ref([])
 const listViewSettings = ref([])
 const todaySummary =ref()
 
+// channel manager info
+const cmInfo = ref(null)
+
+
 
 
 
@@ -99,9 +103,24 @@ export function useApp() {
   }
 }
 
+async function getCMInfo(){
+  if (cmInfo.value) return cmInfo.value
+  
+  const res = await app.getApi("edoor.channel_managers.utils.get_channal_manager_info",{
+    property:window.property_name
+  })
+  if(res.data){
+    cmInfo.value = res.data
+    return cmInfo.value
+  }
+
+}
+
   return { 
     isCityLedgerInvoiceDetailOpen,
     todaySummary,
+    cmInfo,
+    getCMInfo,
     getMeta,
     getDoctypeDefaultFields,
     getListViewSetting,

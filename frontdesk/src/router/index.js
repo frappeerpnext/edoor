@@ -60,6 +60,7 @@ import DailyReservation from "@/views/operation_dashboard/DailyReservation.vue";
 import ChannelManagerAvailability from "@/views/channel_managers/availability/Availability.vue";
 import RatePlanList from "@/views/channel_managers/rate_plans/RatePlanList.vue";
 import RatePlan from "@/views/channel_managers/rate_plans/RatePlan.vue";
+import ChannelManagerSyncLog from "@/views/channel_managers/sync_log/ChannelManagerSyncLog.vue";
 
 import Test from "@/views/test.vue";
 
@@ -136,6 +137,7 @@ let routes = [
   { path: "/frontdesk/channel-manager/availability", name: "ChannelManagerAvailability", component: ChannelManagerAvailability, meta: { layout: 'main_layout', title: 'Channel Manager - Availability' } },
   { path: "/frontdesk/channel-manager/rate-plan", name: "RatePlanList", component: RatePlanList, meta: { layout: 'main_layout', title: 'Channel Manager - Rate Plan' } },
   { path: "/frontdesk/channel-manager/rate-plan/:name", name: "RatePlanDetail", component: RatePlan, meta: { layout: 'main_layout', title: 'Channel Manager - Rate Plan' } },
+  { path: "/frontdesk/channel-manager/sync-log", name: "ChannelManagerSyncLog", component: ChannelManagerSyncLog, meta: { layout: 'main_layout', title: 'Channel Manager - Sync Log' } },
  
   ...authRoutes,
 

@@ -2373,4 +2373,24 @@ def generate_flash_report_data(property, date=None):
 
     return {"rows_inserted": res[0].cnt}
 
+
+def generate_unique_dates(date_ranges):
+    unique_dates = []
     
+    for dr in date_ranges:
+        start_date = getdate(dr.get("start_date"))
+        end_date = getdate(dr.get("end_date"))
+
+        current_date = start_date
+
+        # exclude end_date (recommended for daily rate systems)
+        while current_date <= end_date:
+            unique_dates.append(str(current_date))
+
+            current_date = add_to_date(current_date,days = 1)
+
+
+    # convert to sorted dict list
+   
+    return list(set(unique_dates))
+

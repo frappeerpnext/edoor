@@ -11,7 +11,7 @@
             <template #end>
                 <div class="flex gap-2 w-full justify-content-end">
                     <Button @click="onBulkEdit">Bulk Edit</Button>
-                    <Button @click="onBulkEdit">Open/Close Sale</Button>
+                    <Button @click="onBulkEdit">Open/Closex Sale</Button>
                 </div>
             </template>
         </ComHeader>

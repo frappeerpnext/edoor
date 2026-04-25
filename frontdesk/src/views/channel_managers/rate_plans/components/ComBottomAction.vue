@@ -4,12 +4,13 @@
 
       <!-- Update Rate -->
       <button
+        v-if="!hideUpdateRate"
         class="dock-item update"
         :class="{ 'pulse': selectionCount > 0 && !loading }"
         :disabled="selectionCount === 0 || loading"
         @click="emit('update-rate')"
       >
-        <i class="pi pi-save icon"></i>
+        <i class="pi pi-dollar icon"></i>
 
         <span class="label">
           Update Rate
@@ -22,6 +23,42 @@
           {{ selectionCount }}
         </span>
       </button>
+      <!-- Update Close Sale -->
+<div>    
+      <Button
+  class="dock-item text-red-400"
+  :disabled="selectionCount === 0 || loading"
+  :class="{ 'pulse': selectionCount > 0 && !loading }"
+  @click="onupdaterestriction"
+>
+        <i class="pi pi-times icon" v-if="updateRestrictionText=='Open/Close Sale'"></i>
+        <i class="pi pi-bars icon" v-else></i>
+        <span class="label">
+          {{ updateRestrictionText }}
+        </span>
+        <span
+          v-if="selectionCount > 0"
+          class="badge"
+        >
+          {{ selectionCount }}
+        </span>
+      </Button>
+
+<Menu
+  ref="menu"
+  :model="RestrictionTypes"
+  popup
+>
+  <template #item="{ item, props }">
+    <a v-ripple class="flex items-center gap-2" v-bind="props.action">
+      <i :class="item.icon"></i>
+      <span>{{ item.label }}</span>
+    </a>
+  </template>
+</Menu>
+
+</div>
+
 
       <!-- Clear Selection -->
       <button
@@ -41,14 +78,55 @@
 </template>
 
 <script setup>
+import { ref,computed  } from 'vue';
+const menu = ref();
+
+
+
+
+
+
+
 const props = defineProps({
+  hideUpdateRate:Boolean,
   selectionCount: Number,
-  loading: Boolean
+  loading: Boolean,
+  updateRestrictionText:{
+    type:String,
+    default:"Open/Close Sale"
+  },
+  selectedRestrictionTypes:Array
 })
 
+function toggleMenu(event) {
+  if (props.selectedRestrictionTypes.length > 1) {
+    menu.value.toggle(event)
+  }else{
+    emit('update-restriction', props.selectedRestrictionTypes[0])
+  }
+}
+const RestrictionTypes = computed(() => {
+  if (props.selectedRestrictionTypes) {
+    return props.selectedRestrictionTypes.map(type => ({
+      label: type,
+      command: () => emit('update-restriction', type)
+    }))
+  } else {
+    return []
+  }
+})
+
+function onupdaterestriction(event) {
+  if (props.selectedRestrictionTypes) {
+    toggleMenu(event)
+  } else {
+    emit('update-restriction')
+  }
+}
 const emit = defineEmits([
   "update-rate",
-  "clear-selection"
+  "clear-selection",
+  "update-restriction"
 ])
 </script>
 

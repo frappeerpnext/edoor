@@ -3,17 +3,16 @@
 
         <!-- Basic Information -->
         <div class="col-6 card">
-            <div class="card-inner ">
-                <h3>{{$t('Rate Plan Info')}}</h3>
-
+            <div class="card-inner "> 
+                <h3>{{$t('Rate Plan Info')}} </h3>
                 <div class="form-row"> 
                     <div class="form-group" style="flex:1;"> 
                         <div class="status-box">
                             <div class="status-text">
                                 <strong>{{$t('Rate Plan Status')}}</strong>
-                                {{rateInfo.rate_type?.disabled==1? `${$t('Currently active and bookable')}`:`${$t('Currently inactive and unbookable')}`}}
+                                {{rateInfo.rate_type?.disabled!=1? `${$t('Currently active and bookable')}`:`${$t('Currently inactive and unbookable')}`}}
                             </div>
-                            <div class="switch" :class="rateInfo.rate_type?.disabled==1?'active':''"></div>
+                            <div class="switch" :class="rateInfo.rate_type?.disabled!=1?'active':''"></div>
                         </div>
                     </div>
                 </div>  
@@ -99,8 +98,8 @@
                 </div> 
             </div>
         </div>   
-    </div>  
-    {{ rateInfo.room_types }}
+    </div>   
+    
 </template>
 <script setup>
 import { onMounted, ref, inject } from 'vue';

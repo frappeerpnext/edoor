@@ -96,11 +96,11 @@ function onRestartResync() {
 }
 
 async function getSyncRoomRateActionStatus() {
-
-    const resp = await app.getApi("channel_managers.utils.get_sync_action_status", {
+    
+    const resp = await app.postApi("edoor.channel_managers.utils.get_sync_action_status", {
         title: props.method,
         property: property.name
-    }, "edoor.")
+    },"",false)
     if (resp.data) {
         data.value = resp.data
 

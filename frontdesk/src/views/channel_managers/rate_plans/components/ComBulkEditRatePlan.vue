@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onOK="onOk" hideButtonClose titleButtonOK="Save" :hideIcon="false">
-
+ 
         <div class="grid">
             <div class="col-6 font-bold">Start Date</div>
             <div class="col-6 font-bold">End Date</div>
@@ -45,7 +45,11 @@
                         Room Type
                     </th>
                     <th v-for="rt in data.room_types" class="text-left">
-                        {{ rt.room_type_name }} - ({{ rt.cm_room_type }})
+                       
+                       {{ rt.room_type_name }}
+                        <span v-if="rt.cm_room_type"><br/> ({{ rt.cm_room_type }}) </span>
+                            
+                        <span v-if="rt.enable_min_rate==1" class="text-red-500"> <br/> Min Rate: <CurrencyFormat :value="rt.min_rate" /></span>
                     </th>
                 </tr>
 
@@ -255,7 +259,9 @@ onMounted(async () => {
             room_type_name: rt.room_type_name,
             cm_room_type: rt.cm_room_type,
             edoor_room_type: rt.edoor_room_type,
-            occupancy_codes: occpancy_data
+            occupancy_codes: occpancy_data,
+            min_rate: rt.min_rate,
+            enable_min_rate:rt.enable_min_rate
         })
 
     });

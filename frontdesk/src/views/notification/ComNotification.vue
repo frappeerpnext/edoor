@@ -39,9 +39,9 @@
                                  <i class="pi pi-bell text-6xl" />
                             </div>
                            
-                            <strong>No Notification</strong>
+                            <strong>{{$t('No Notification')}}</strong>
                     <p>
-                        There's no notification for your
+                        {{$t(`There's no notification for you`)}}
                     </p>    
                         </div>
                       

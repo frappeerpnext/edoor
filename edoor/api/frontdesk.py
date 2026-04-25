@@ -2202,7 +2202,148 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
   
     return chart_data
 
+@frappe.whitelist()
+def get_mtd_summary_front(property):
 
+    working_day = get_working_day(property)
+    now = getdate(working_day["date_working_day"])
+
+    current_start = getdate(datetime(now.year, now.month, 1))
+    current_end = now
+    
+    last_year_start = add_to_date(current_start, years=-1)
+    last_year_end = add_to_date(current_end, years=-1)
+    
+    def calculate_mtd(start_date, end_date):
+
+        # -----------------------------
+        # ROOM NIGHTS + OCCUPANCY
+        # -----------------------------
+        result = frappe.db.sql("""
+            SELECT
+                SUM(
+                    CASE
+                        WHEN is_arrival=1
+                        AND is_active_reservation=1
+                        THEN 1 ELSE 0
+                    END
+                ) as arrival,
+
+                SUM(
+                    CASE
+                        WHEN is_stay_over=1
+                        AND is_active_reservation=1
+                        THEN 1 ELSE 0
+                    END
+                ) as stay_over,
+
+                SUM(
+                    CASE
+                        WHEN type='Block'
+                        THEN 1 ELSE 0
+                    END
+                ) as block_rooms
+
+            FROM `tabRoom Occupy`
+            WHERE property=%(property)s
+            AND date BETWEEN %(start)s AND %(end)s
+
+        """,{
+            "property": property,
+            "start": start_date,
+            "end": end_date
+        }, as_dict=1)[0]
+
+
+        arrival = result.arrival or 0
+        stay_over = result.stay_over or 0
+        block_rooms = result.block_rooms or 0
+
+        room_nights = arrival + stay_over
+
+
+        # -----------------------------
+        # TOTAL ROOMS
+        # -----------------------------
+        room_data = frappe.db.sql("""
+            SELECT SUM(total_room) as total_rooms
+            FROM `tabDaily Property Data`
+            WHERE property=%(property)s
+            AND date BETWEEN %(start)s AND %(end)s
+        """,{
+            "property": property,
+            "start": start_date,
+            "end": end_date
+        }, as_dict=1)[0]
+
+        total_rooms = room_data.total_rooms or 1
+
+
+        include_block = int(
+            frappe.db.get_single_value(
+                "eDoor Setting",
+                "calculate_room_occupancy_include_room_block"
+            )
+        )
+
+
+        if include_block:
+            occupancy_pct = round(
+                (room_nights / total_rooms) * 100,
+                2
+            )
+        else:
+            occupancy_pct = round(
+                (room_nights / max(total_rooms-block_rooms,1))*100,
+                2
+            )
+
+
+        # -----------------------------
+        # REVENUE
+        # Change debit if your revenue field differs
+        # -----------------------------
+        revenue_data = frappe.db.sql("""
+            SELECT
+                SUM(transaction_amount * IF(type='Debit', 1, -1)) as revenue
+            FROM `tabFolio Transaction`
+            WHERE property=%(property)s
+            AND posting_date BETWEEN %(start)s AND %(end)s
+           AND 
+            account_group_name='Charge' and 
+            is_base_transaction=1
+        """,{
+            "property": property,
+            "start": start_date,
+            "end": end_date
+        }, as_dict=1)[0]
+
+
+        revenue = revenue_data.revenue or 0
+
+
+        return {
+            "room_nights": room_nights,
+            "occupancy_pct": occupancy_pct,
+            "revenue": revenue
+        }
+
+
+    current = calculate_mtd(current_start,current_end)
+    last_year = calculate_mtd(last_year_start,last_year_end)
+
+
+    return {
+
+        "current_room_nights": current["room_nights"],
+        "current_occupancy": current["occupancy_pct"],
+        "current_revenue": current["revenue"],
+
+        "last_year_room_nights": last_year["room_nights"],
+        "last_year_occupancy": last_year["occupancy_pct"],
+        "last_year_revenue": last_year["revenue"]
+
+    }
 @frappe.whitelist(allow_guest=True)
 def get_server_port():
     return{"backend_port": frappe.get_doc('ePOS Settings').backend_port}

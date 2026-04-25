@@ -1,6 +1,7 @@
 
 import {handleServerMessage} from './handle-server-message'
 import { FrappeApp } from 'frappe-js-sdk';
+import { showSuccess,showInfo } from '@/utils/utils.js';
 const frappe = new FrappeApp()
 const db = frappe.db()
 const call = frappe.call()
@@ -13,6 +14,7 @@ export function getDoc(doctype, name){
             resolve(doc)
         })
         .catch((error) => {
+          
             const message = handleServerMessage(error)
             reject(message)
         });
@@ -300,6 +302,8 @@ export function postApi(api, params = Object, message,show_message=true,base_url
                         const _server_messages = JSON.parse(result._server_messages)
                         _server_messages.forEach(r => {
                             window.postMessage('show_success|' + JSON.parse(r).message, '*')
+
+                            
                         });
                     }
                    
@@ -315,8 +319,16 @@ export function postApi(api, params = Object, message,show_message=true,base_url
 
  
 
-export function postData(api, params = Object, message="",show_message=true,base_url="edoor.api."){
-      return call.post(`${base_url}${api}`, params)
+export async function postData(api, params = Object, message="",show_message=true,base_url="edoor.api."){
+      let api_url = ""
+        if (api.startsWith("edoor.")){
+            
+            api_url = api
+        }else {
+            api_url = `${base_url}${api}`
+        }
+
+      return call.post( api_url, params)
       .then((result) => {
         if(show_message == true){
             if(show_message && !result.hasOwnProperty("_server_messages")){
@@ -325,8 +337,21 @@ export function postData(api, params = Object, message="",show_message=true,base
                 if(result.hasOwnProperty("_server_messages")){
                     const _server_messages = JSON.parse(result._server_messages)
                     _server_messages.forEach(r => {
-                        window.postMessage('show_success|' + JSON.parse(r).message, '*')
-                    });
+                            // window.postMessage('show_success|' + JSON.parse(r).message, '*')
+                            let _message = JSON.parse(r)
+                            
+                            if (!_message.indicator){
+                                
+                            //  window.postMessage('show_success|' + _message.message, '*')
+                             showSuccess(_message.title || _message.message,_message.title?_message.message:"")
+                            }
+                            else {
+                                if (_message.indicator=="info"){
+                                    showInfo(_message.title || _message.message,_message.title?_message.message:"",10000,"tr")
+                                }
+                            }
+                            
+                        });
                 }
                
             }
@@ -402,6 +427,37 @@ export function renameDoc(doctype, old_name,new_name){
         }
     })
 }
+
+export async function setValue(doctype,docname,fieldname,value=null){
+    if((typeof fieldname) == "string"){
+
+    
+    return db.setValue(doctype, docname, fieldname,value)
+        .then((res) => {
+           
+             window.postMessage('show_success|Update successfully', '*')
+            return  { data: res.message, error: null }
+        })
+        .catch((error) => {
+              console.log(error)
+            handleServerMessage(error)
+            return { data: null, error }
+        });
+    } else {
+         return db.setValue(doctype, docname, fieldname)
+        .then((res) => {
+            app.showSuccess("Update successfully")
+            return  { data: res.message, error: null }
+        })
+        .catch((error) => {
+            handleServerMessage(error)
+            return { data: null, error }
+        });
+    } 
+     
+}
+
+
 export function uploadFiles(files, fileArgs = Object){
 
  

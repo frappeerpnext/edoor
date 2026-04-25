@@ -1,7 +1,6 @@
 <template>
   <div class="table-wrapper">
-    {{ selectedDates }}
-    <!-- Drag Rectangle with dynamic style based on mode -->
+    
     <div
       v-if="dragRect.visible"
       class="drag-rect"
@@ -46,23 +45,23 @@
             <td
               v-for="n in numDays"
               :key="n"
-              :data-month="m.month"
               :data-day="n"
               :data-month-idx="monthIdx"
-              :data-date="n <= m.total_days ? getDateKey(m.month, n) : ''"
+              :data-month="m.month"
               :class="[
                 'dc',
-                n > m.total_days ? 'disable' : '',
+                isClosed(m.month, n) == 1 ? 'closed' : '',
+                (n > m.total_days || today > moment(getDateKey(m.month, n)).local().toDate()) ? 'disable' : '',
                 isCellSelected(m.month, n) ? 'selected-cell' : '',
                 (n <= m.total_days ? moment.utc(`${moment.utc(m.month).format('YYYY-MM')}-${n}`).format('dd') : '')
               ]"
               @mousedown="startDrag($event, monthIdx, n, m.month)"
               @mouseenter="updateDragRect($event)"
-              @click.stop="handleCellClick($event, m.month, n)"
+             
             >
               <div class="day-name">
                 <span v-if="n <= m.total_days">
-                  {{ moment.utc(`${moment.utc(m.month).format("YYYY-MM")}-${n}`).format("Ddd") }}<br/>
+                  {{ moment.utc(`${moment.utc(m.month).format("YYYY-MM")}-${n}`).format("D dd") }}<br />
                 </span>
               </div>
               <template v-for="rt in selectedRoomType" :key="rt.edoor_room_type">
@@ -87,7 +86,7 @@
 import { computed, inject, ref, onMounted, onUnmounted } from 'vue'
 import { useRatePlan } from '../hooks/useRatePlan'
 
-const { roomTypes, roomRatesData } = useRatePlan()
+const { roomTypes, roomRatesData, selectedDates, startDate, closeSaleData } = useRatePlan()
 const moment = inject('$moment')
 const props = defineProps({ year: Number, room_types: Object })
 
@@ -98,21 +97,25 @@ function getData(room_type_id, month, day, occupancy_code) {
   return roomRatesData.value[key] >= 0 ? roomRatesData.value[key].toLocaleString('en-US') : "__"
 }
 
+function isClosed(month, day) {
+  const key = moment(month).format("YYMM") + String(day).padStart(2, "0")
+  return (closeSaleData.value || {})[key] || 0
+}
+
+const today = moment(moment().local().format("YYYY-MM-DD")).toDate()
+
 const months = computed(() => {
   return Array.from({ length: 12 }, (_, i) => {
     const month = i + 1
     const m = `${props.year}-${String(month).padStart(2, "0")}-01`
     return { month: m, total_days: moment.utc(m).startOf('month').daysInMonth() }
-  })
+  }).filter(x => moment(x.month).toDate() >= moment(startDate.value).local().toDate())
 })
 
 const selectedRoomType = computed(() => roomTypes.value.filter(r => r.selected))
 
-/* SELECTION STATE - Set for O(1) lookups */
-const selectedDates = ref(new Set())
-
 function getDateKey(monthFirstDay, day) {
-  const monthStr = monthFirstDay.slice(0, 7) // "YYYY-MM"
+  const monthStr = monthFirstDay.slice(0, 7)
   return `${monthStr}-${String(day).padStart(2, '0')}`
 }
 
@@ -120,30 +123,34 @@ function isCellSelected(month, day) {
   return selectedDates.value.has(getDateKey(month, day))
 }
 
-/* DRAG STATE – stores cell coordinates (month index, day) */
+/* DRAG STATE */
 const isDragging = ref(false)
 const dragRect = ref({ x: 0, y: 0, width: 0, height: 0, visible: false })
-const dragMode = ref('select') // 'select' or 'deselect'
+const dragMode = ref('select')
 
-let dragStart = { monthIdx: null, day: null, monthKey: null }
+let dragStart = { monthIdx: null, day: null, monthKey: null, cellEl: null }
 let dragCurrent = { monthIdx: null, day: null, monthKey: null }
 
+let rafId = null
+
 function startDrag(e, monthIdx, day, monthKey) {
+
   const cell = e.currentTarget
   if (cell.classList.contains("disable")) return
 
   e.preventDefault()
   e.stopPropagation()
 
-  dragStart = { monthIdx, day, monthKey }
-  dragCurrent = { ...dragStart }
+  dragStart = { monthIdx, day, monthKey, cellEl: cell }
+  dragCurrent = { monthIdx, day, monthKey }
   dragMode.value = selectedDates.value.has(getDateKey(monthKey, day)) ? 'deselect' : 'select'
 
   isDragging.value = true
-  updateDragRectFromCells()
+  updateDragRectFromCells(cell) // initial rectangle
 }
 
 function updateDragRect(e) {
+  console.log(e)
   if (!isDragging.value) return
 
   const cell = e.currentTarget
@@ -156,20 +163,26 @@ function updateDragRect(e) {
   if (dragCurrent.monthIdx === monthIdx && dragCurrent.day === day) return
 
   dragCurrent = { monthIdx, day, monthKey }
-  updateDragRectFromCells()
+
+  // Throttle with requestAnimationFrame for smooth 60fps updates
+  if (rafId) cancelAnimationFrame(rafId)
+  rafId = requestAnimationFrame(() => {
+    updateDragRectFromCells(cell)
+    rafId = null
+  })
+    
 }
 
-function updateDragRectFromCells() {
-  const startCell = document.querySelector(`td.dc[data-month-idx="${dragStart.monthIdx}"][data-day="${dragStart.day}"]`)
-  const endCell = document.querySelector(`td.dc[data-month-idx="${dragCurrent.monthIdx}"][data-day="${dragCurrent.day}"]`)
-
-  if (!startCell || !endCell) {
+function updateDragRectFromCells(endCellEl) {
+  console.log(endCellEl)
+  const startCellEl = dragStart.cellEl
+  if (!startCellEl || !endCellEl) {
     dragRect.value.visible = false
     return
   }
 
-  const startRect = startCell.getBoundingClientRect()
-  const endRect = endCell.getBoundingClientRect()
+  const startRect = startCellEl.getBoundingClientRect()
+  const endRect = endCellEl.getBoundingClientRect()
 
   const left = Math.min(startRect.left, endRect.left)
   const top = Math.min(startRect.top, endRect.top)
@@ -188,6 +201,11 @@ function updateDragRectFromCells() {
 function endDrag() {
   if (!isDragging.value) return
 
+  if (rafId) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
+
   if (dragStart.monthIdx !== null && dragCurrent.monthIdx !== null) {
     const minMonth = Math.min(dragStart.monthIdx, dragCurrent.monthIdx)
     const maxMonth = Math.max(dragStart.monthIdx, dragCurrent.monthIdx)
@@ -203,6 +221,7 @@ function endDrag() {
       for (let d = minDay; d <= maxDay; d++) {
         if (d <= daysInMonth) {
           cellsToToggle.add(getDateKey(monthKey, d))
+         
         }
       }
     }
@@ -218,76 +237,63 @@ function endDrag() {
       }
     }
     selectedDates.value = newSet
+
   }
 
   isDragging.value = false
   dragRect.value.visible = false
-  dragStart = { monthIdx: null, day: null, monthKey: null }
+  dragStart = { monthIdx: null, day: null, monthKey: null, cellEl: null }
   dragCurrent = { monthIdx: null, day: null, monthKey: null }
 }
-
-function handleCellClick(event, month, day) {
-  const totalDays = moment(month).daysInMonth()
-  if (day > totalDays) return
-
-  if (dragStart.monthIdx !== null && dragCurrent.monthIdx !== null &&
-      (dragStart.monthIdx !== dragCurrent.monthIdx || dragStart.day !== dragCurrent.day)) {
-    return
-  }
-
-  const key = getDateKey(month, day)
-  const newSet = new Set(selectedDates.value)
-  if (newSet.has(key)) {
-    newSet.delete(key)
-  } else {
-    newSet.add(key)
-  }
-  selectedDates.value = newSet
-}
-
+ 
 onMounted(() => {
   window.addEventListener("mouseup", endDrag)
 })
+
 onUnmounted(() => {
   window.removeEventListener("mouseup", endDrag)
+  if (rafId) cancelAnimationFrame(rafId)
 })
 </script>
 
 <style scoped>
-.table-wrapper { 
-  user-select: none; 
+.table-wrapper {
+  user-select: none;
   position: relative;
 }
-.disable { 
-  background: #f5f5f5!important; 
-  color: #bbb; 
-  pointer-events: none; 
+.disable {
+  background: #f5f5f5 !important;
+  color: #bbb;
+  pointer-events: none;
 }
-.selected-cell { 
-  background: #cfe5ff!important; 
+.selected-cell {
+  background: #cfe5ff !important;
 }
-
-/* Drag rectangle - dashed border, blue for select mode */
-.drag-rect { 
-  position: fixed; 
-  border: 2px dashed #409eff; 
-  background: rgba(64, 158, 255, 0.1); 
-  pointer-events: none; 
-  z-index: 9999; 
+.drag-rect {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  border: 2px dashed #409eff;
+  background: rgba(64, 158, 255, 0.08);
+  animation: dash-move 0.5s linear infinite;
+  box-shadow: 0 0 6px rgba(64, 158, 255, 0.6);
 }
-
-/* Deselect mode - red dashed border and red tint */
 .drag-rect.drag-rect-deselect {
   border: 2px dashed #f56c6c;
   background: rgba(245, 108, 108, 0.1);
 }
-
-.dc { 
-  cursor: crosshair; 
+.dc {
   transition: background-color 0.05s ease;
   position: relative;
 }
 .dc:hover {
   background-color: rgba(64, 158, 255, 0.05);
+}
+.Sa,
+.Su {
+  background: rgb(246, 253, 217);
+}
+.closed .day-name {
+  background: red;
 }
 </style>

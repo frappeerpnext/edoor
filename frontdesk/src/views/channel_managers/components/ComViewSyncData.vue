@@ -1,74 +1,45 @@
 <template>
- <ComDialogContent  hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true">
-  
-    <div class="flex flex-column gap-4">
+  <ComDialogContent hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true">
 
-      <!-- STATUS HEADER -->
-      <div class="flex align-items-center justify-content-between">
 
-        <div class="flex align-items-center gap-2">
-          <Tag
-            :severity="statusSeverity"
-            :value="log?.status"
-            class="text-lg"
-          />
+    <div class="sync-modal">
 
-          <span class="text-xl font-bold">
-            {{ log?.title }}
-          </span>
+      <!-- Header -->
+      <div class="sync-header">
+        <div class="left flex gap-2">
+          <span class="text-xl font-bold">{{ log?.title }}</span>
+          <Tag class="border-round" :severity="statusSeverity" :value="log?.status"/>
         </div>
-
-        <span class="text-500 text-sm">
-          {{log?.title}} at {{moment(log?.creation).format("DD-MM-YYYY hh:mm A")}}
-        </span>
-
+        <div class="right">
+          {{ log?.title }} at {{ moment(log?.creation).format("DD-MM-YYYY hh:mm A") }}
+        </div>
       </div>
 
-      <!-- SUMMARY INFO -->
-      <Card>
-        <template #content>
+      <!-- Info Cards -->
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="label">{{$t('Provider')}}</span>
+          <span class="value">{{ log?.provider }}</span>
+        </div>
 
-          <div class="grid">
+        <div class="info-card">
+          <span class="label">{{$t('Property')}}</span>
+          <span class="value">{{ log?.property }}</span>
+        </div>
 
-            <div class="col-6 md:col-3">
-              <div class="text-500 text-sm">Provider</div>
-              <div class="font-medium">
-                {{ log?.provider }}
-              </div>
-            </div>
+        <div class="info-card">
+          <span class="label">{{$t('Sync Action')}}</span>
+          <span class="value danger">{{ log?.sync_action || '' }}</span>
+        </div>
 
-            <div class="col-6 md:col-3">
-              <div class="text-500 text-sm">Property</div>
-              <div class="font-medium">
-                {{ log?.property }}
-              </div>
-            </div>
+        <div class="info-card" v-if="log?.title == 'Delay Sync'">
+          <span class="label">{{$t('Delay until')}}</span>
+          <span class="value">{{ moment(log?.sync_until).format("DD-MM-YYYY hh:mm A") }}</span>
+        </div>
+      </div>
 
-            <div class="col-6 md:col-3">
-              <div class="text-500 text-sm">Sync Action</div>
-              <Tag severity="danger">
-                {{ log?.sync_action }}
-              </Tag>
-            </div>
-
-            <div class="col-6 md:col-3" v-if="log?.title == 'Delay Sync'">
-              <div class="text-500 text-sm">Delay until</div>
-              <div class="font-medium">
-              {{moment(log?.sync_until).format("DD-MM-YYYY hh:mm A")}}  
-              </div>
-            </div>
-
- 
-          </div>
-
-        </template>
-      </Card>
-
-      <!-- ERROR MESSAGE -->
-      <Message
-        severity="warn"
-        icon="pi pi-exclamation-triangle"
-      >
+      <!-- Alert -->
+      <Message v-if="log?.response_text" severity="warn" icon="pi pi-exclamation-triangle">
         <div class="font-medium mb-2">
           Channel Manager Response
         </div>
@@ -78,125 +49,201 @@
         </div>
 
       </Message>
- 
-      <!-- RATES TABLE -->
-      <Card
-         v-if="log?.title == 'Prices update'"
-      >
+      <hr/>
 
-        <template #title>
-          Rates Detail
-        </template>
+      <!-- Table -->
+      <div class="table-container mt-5">
+        <h3 class="text-xl font-bold">Rates Detail</h3>
 
-        <template #content>
+        <DataTable :value="log?.data" stripedRows responsiveLayout="scroll">
 
-          <DataTable
-            :value="log?.data"
-            stripedRows
-            responsiveLayout="scroll"
-           
-          >
 
-            
 
-            <Column
-              field="room_type"
-              header="Room Type"
-            />
+            <Column field="room_type" header="Room Type" />
 
-            <Column
-              field="period"
-              header="Periods"
-            >
+            <Column field="period" header="Periods">
               <template #body="slotProps">
 
                 <span class="font-medium">
-                    <div v-for="d in slotProps.data.period">
-                        {{ moment(d.start_date).format("DD-MM-YYYY") }} to {{ moment(d.end_date).format("DD-MM-YYYY") }}
-                    </div>
-                  
+                  <div v-for="d in slotProps.data.period">
+                    {{ moment(d.start_date).format("DD-MM-YYYY") }} to {{ moment(d.end_date).format("DD-MM-YYYY") }}
+                  </div>
+
                 </span>
 
               </template>
             </Column>
-            <Column
-              field="rate"
-              header="Rate"
-            >
+            <Column field="rate" header="Rate">
               <template #body="slotProps">
 
                 <span class="font-medium">
-                    <div v-for="r in slotProps.data.rates">
-                        
-                      <CurrencyFormat :value="r.rate"></CurrencyFormat> /  {{ r.title }}
-                    </div>
-                  
+                  <div v-for="r in slotProps.data.rates">
+
+                    <CurrencyFormat :value="r.rate"></CurrencyFormat> / {{ r.title }}
+                  </div>
+
                 </span>
 
               </template>
             </Column>
 
           </DataTable>
-
-        </template>
-      </Card>
-
-     
+      </div>
 
     </div>
- 
-    <template #footer-right >
-      
-      <Button label="Retry Sync" v-if="log?.sync_action== 'Stop Sync' && log?.is_retry_sync == 0"  icon="pi pi-sync" @click="onRetrySync"/>
+
+    <template #footer-right>
+
+      <Button label="Retry Sync" v-if="log?.sync_action == 'Stop Sync' && log?.is_retry_sync == 0" icon="pi pi-sync"
+        @click="onRetrySync" />
     </template>
- </ComDialogContent>
+  </ComDialogContent>
 </template>
 <script setup>
-import { onMounted, ref,inject,computed } from 'vue';
+import { onMounted, ref, inject, computed } from 'vue';
 
 import Tag from 'primevue/tag';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 const moment = inject("$moment")
-    const dialogRef = inject("dialogRef");
-    const log = ref()
+const dialogRef = inject("dialogRef");
+const log = ref()
 
-    const statusSeverity = computed(() => {
+const statusSeverity = computed(() => {
 
-        if (log.value?.status === "Success")
-            return "success";
+  if (log.value?.status === "Success")
+    return "success";
 
-        if (log.value?.status === "Warning")
-            return "warning";
+  if (log.value?.status === "Warning")
+    return "warning";
 
-        if (log.value?.status === "Error")
-            return "danger";
+  if (log.value?.status === "Error")
+    return "danger";
 
-        return "info";
+  return "info";
 
-        });
+});
 
 
-    async function getLog(){
-        
-        const res = await app.getApi("edoor.channel_managers.utils.get_cm_sync_log_data",{
-            docname:dialogRef.value.data.docname
-        })
-        if (res.data){
-            log.value = res.data
-        }
-       
+async function getLog() {
 
-    }
+  const res = await app.getApi("edoor.channel_managers.utils.get_cm_sync_log_data", {
+    docname: dialogRef.value.data.docname
+  })
+  if (res.data) {
+    log.value = res.data
+  }
 
-    function onRetrySync(){
-      dialogRef.value.close({retry_sync:true})
-    }
-    onMounted(async ()=>{
-        
-        await getLog()    
-        
-        
-    })
+
+}
+
+function onRetrySync() {
+  dialogRef.value.close({ retry_sync: true })
+}
+onMounted(async () => {
+
+  await getLog()
+
+
+})
 </script>
+<style scoped>
+.sync-modal { 
+  /* margin: 30px auto; */
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+}
+
+/* Header */
+.sync-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sync-header h2 {
+  margin: 0;
+}
+
+.status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+.status.success {
+  background: #e6f7ec;
+  color: #22c55e;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.info-card {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.label {
+  display: block;
+  font-size: 12px;
+  color: #888;
+}
+
+.value {
+  font-weight: bold;
+}
+
+.value.danger {
+  color: #ef4444;
+}
+
+/* Alert */
+.alert {
+  background: #fff4e5;
+  color: #b45309;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Table */
+.table-container h3 {
+  margin-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-size: 13px;
+  color: #666;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+td {
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f1f1;
+  vertical-align: top;
+}
+
+td strong {
+  font-size: 14px;
+  color: #111;
+}
+</style>

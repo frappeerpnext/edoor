@@ -1,12 +1,39 @@
  
 <template>
+      <table class="text-sm border-collapse" style="width:50%">
+  <tr>
+    <td class="pr-4">MTD Room Nights :</td>
+    <td class="pr-6 font-medium">{{ mtdSummary.current_room_nights }}</td>
+
+    <td class="pr-4">MTD Occupancy :</td>
+    <td class="font-medium">{{ mtdSummary.current_occupancy }}% </td>
+
+     <td class="pr-4">MTD Revenue :</td>
+    <td class="font-medium">
+        <CurrencyFormat :value="mtdSummary.current_revenue" /> </td>
+  </tr>
+
+  <tr>
+    <td class="pr-4">Last Year Room Nights :</td>
+    <td class="pr-6 font-medium">{{ mtdSummary.last_year_room_nights }}</td>
+
+    <td class="pr-4">Last Year Occupancy :</td>
+    <td class="font-medium">{{ mtdSummary.last_year_occupancy }}</td>
+
+        <td class="pr-4">Last Year Revenue  :</td>
+    <td class="font-medium">
+         <CurrencyFormat :value="mtdSummary.last_year_revenue" /> </td>
+  </tr>
+</table>
     <div class="flex justify-content-end mr-5">
+        
         <SplitButton :model="items" @click="save" class="p-component spl__btn_cs sp mb-0 mt-2 mr-2" :label="$t(view_chart_by)"></SplitButton>
         <!-- <SplitButton :model="duration_types" :label="$t(duration_type)"   class="p-component spl__btn_cs sp mb-0 mt-2"></SplitButton> -->
     
     </div>
     <div class="card">
-         
+     
+        
         <ComChart v-if="chartData && !loading"   :chartData="chartData" />
     </div>
 </template>
@@ -88,7 +115,23 @@ const duration_types = [
 ]
 
  
+const mtdSummary = ref({})
 
+function getMTDSummary(){
+
+   getApi("frontdesk.get_mtd_summary_front", {
+      property: window.property_name
+   })
+   .then((result)=>{
+
+      mtdSummary.value = result.message
+
+   })
+   .catch(err=>{
+      console.error(err)
+   })
+
+}
 function getChartData(){
    loading.value  = true
 
@@ -112,6 +155,7 @@ function getChartData(){
 
 onMounted(() => {
     getChartData()
+    getMTDSummary()
     
 });
  
