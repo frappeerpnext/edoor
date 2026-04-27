@@ -38,9 +38,6 @@ export function useRestriction() {
             },"",
         false
         )
-
-        console.log("API RESPONSE:", res)
-
         restrictionTypeList.value = res?.data || []
 
     } catch (error) {

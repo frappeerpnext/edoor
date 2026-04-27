@@ -1,6 +1,6 @@
 <template>
   <ComDialogContent hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true">
-
+  
 
     <div class="sync-modal">
 
@@ -8,7 +8,7 @@
       <div class="sync-header">
         <div class="left flex gap-2">
           <span class="text-xl font-bold">{{ log?.title }}</span>
-          <Tag class="border-round" :severity="statusSeverity" :value="log?.status"/>
+          <Tag class="border-round" :severity="statusSeverity" :value="log?.status" />
         </div>
         <div class="right">
           {{ log?.title }} at {{ moment(log?.creation).format("DD-MM-YYYY hh:mm A") }}
@@ -18,22 +18,22 @@
       <!-- Info Cards -->
       <div class="info-grid">
         <div class="info-card">
-          <span class="label">{{$t('Provider')}}</span>
+          <span class="label">{{ $t('Provider') }}</span>
           <span class="value">{{ log?.provider }}</span>
         </div>
 
         <div class="info-card">
-          <span class="label">{{$t('Property')}}</span>
+          <span class="label">{{ $t('Property') }}</span>
           <span class="value">{{ log?.property }}</span>
         </div>
 
-        <div class="info-card">
-          <span class="label">{{$t('Sync Action')}}</span>
+        <div class="info-card" v-if="log?.sync_action">
+          <span class="label">{{ $t('Sync Action') }}</span>
           <span class="value danger">{{ log?.sync_action || '' }}</span>
         </div>
 
         <div class="info-card" v-if="log?.title == 'Delay Sync'">
-          <span class="label">{{$t('Delay until')}}</span>
+          <span class="label">{{ $t('Delay until') }}</span>
           <span class="value">{{ moment(log?.sync_until).format("DD-MM-YYYY hh:mm A") }}</span>
         </div>
       </div>
@@ -49,13 +49,16 @@
         </div>
 
       </Message>
-      <hr/>
+      <hr />
 
       <!-- Table -->
       <div class="table-container mt-5">
-        <h3 class="text-xl font-bold">Rates Detail</h3>
+        <template v-if="log?.title == 'Prices update'">
 
-        <DataTable :value="log?.data" stripedRows responsiveLayout="scroll">
+
+          <h3 class="text-xl font-bold">Rates Detail</h3>
+
+          <DataTable :value="log?.data" stripedRows responsiveLayout="scroll">
 
 
 
@@ -88,6 +91,49 @@
             </Column>
 
           </DataTable>
+        </template>
+        <template v-if="log?.title == 'Restriction update'">
+
+
+          <h3 class="text-xl font-bold">Restriction Detail</h3>
+
+          <DataTable :value="log?.data" stripedRows responsiveLayout="scroll">
+
+
+
+            <Column field="restriction_type" header="Restriction Type" />
+            <Column field="room_type" header="Room Type" />
+
+            <Column header="Periods">
+              <template #body="slotProps">
+                <span class="font-medium">
+                  
+                    {{ moment(slotProps.data.start_date).format("DD-MM-YYYY") }} to {{ moment(slotProps.data.end_date).format("DD-MM-YYYY") }}
+                  
+
+                </span>
+
+              </template>
+            </Column>
+            <Column field="value" header="Value">
+              <template #body="slotProps">
+
+                <span class="font-medium">
+                  <template v-if="['Closed','Cta','Ctd'].includes(slotProps.data.restriction_type)">
+                    <Chip label="Closed" v-if="slotProps.data.value === '1'" icon="pi pi-times" :class="'bg-red-200' " />
+                    <Chip label="Opened" icon="pi pi-check" :class="'bg-green-200'" v-else />
+                  </template>
+                  <template v-else>
+                    {{ slotProps.data.value }}
+                  </template>
+                  
+                </span>
+
+              </template>
+            </Column>
+
+          </DataTable>
+        </template>
       </div>
 
     </div>
@@ -149,7 +195,7 @@ onMounted(async () => {
 })
 </script>
 <style scoped>
-.sync-modal { 
+.sync-modal {
   /* margin: 30px auto; */
   background: #fff;
   border-radius: 14px;

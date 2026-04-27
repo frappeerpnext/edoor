@@ -114,6 +114,7 @@ def soap_response_status(ota_request,data):
     
 
     resp = data.get("s:Envelope", {}).get("s:Body", {}).get(OTA_REQUEST.get(ota_request).get("response_key"), {})
+     
     status = ""
     if "Success" in resp:
         status = "Success"
@@ -121,7 +122,10 @@ def soap_response_status(ota_request,data):
         status ="Warning"
         
     if "Errors" in resp:
-        success ="Fail"
+        status ="Fail"
+    
+  
+
     def get_warning_text():
         warnings = []
         if "Warnings" in resp:

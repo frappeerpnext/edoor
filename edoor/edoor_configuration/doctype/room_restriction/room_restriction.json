@@ -53,7 +53,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Restriction Type",
-   "options": "Closed\nMinLos\nMaxLos\nCta\nCtd\nMinLosArrival\nMaxLosArrival\nMinAdvBooking\nMaxAdvBooking",
+   "options": "Closed\nMinLos\nMaxLos\nCta\nCtd\nMinLosArrival\nMaxLosArrival\nMinAdvBooking\nMaxAdvBooking\nFullPatternLos",
    "search_index": 1
   },
   {
@@ -70,7 +70,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-24 10:25:33.295814",
+ "modified": "2026-04-27 11:42:00.125302",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Room Restriction",

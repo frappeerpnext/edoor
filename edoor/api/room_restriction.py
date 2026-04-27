@@ -7,8 +7,9 @@ from frappe.utils import getdate, add_to_date,today
 from frappe.rate_limiter import rate_limit
 
 
-
+REQUEST_TYPE = "Restriction update"
 # we use this prefix to combine unique key of restriction for upsert statemnt bulk insert
+
 RESTRICTION_TYPE_PREFIX = {
         "Stop Sale": 'ss',
         "Cta": 'cta',
@@ -252,7 +253,7 @@ def prepare_sync_data_to_channel_manager(filters,run_comit=True):
         select 
             name,
             '{provider}' as provider,
-            'OTA_HotelAvailNotifRQ' as request_type,
+            '{request_type}' as request_type,
             property,
             rate_type,
             room_type_id,
@@ -269,7 +270,7 @@ def prepare_sync_data_to_channel_manager(filters,run_comit=True):
             sync_session_id = '',
             `value` = VALUES(`value`);
 
-    """.format(provider = cm_info.get("provider"))
+    """.format(provider = cm_info.get("provider"),request_type=REQUEST_TYPE)
 
    
     # frappe.throw(str(filters))
@@ -287,14 +288,14 @@ def get_restriction_type_list(property_name):
         SELECT 
             `closed`,
             `minlos`,
-            `minlosarrival`,
-            `fullpatternlos`,
             `maxlos`,
+            `cta`,
+            `ctd`,
+            `minlosarrival`,
             `maxlosarrival`,
             `minadvbooking`,
             `maxadvbooking`,
-            `cta`,
-            `ctd`
+            `fullpatternlos`
         FROM `tabChannel Manager Integration`
         WHERE property = %s
         LIMIT 1
@@ -302,7 +303,9 @@ def get_restriction_type_list(property_name):
 
     if not result:
         return []
+
     doc = result[0]
+
     map_labels = {
         "closed": "Closed",
         "minlos": "MinLos",
@@ -318,6 +321,121 @@ def get_restriction_type_list(property_name):
 
     return [
         map_labels[key]
-        for key in map_labels
-        if doc.get(key) == 1
+        for key in doc
+        if key in map_labels and doc.get(key) == 1
     ]
+
+
+@frappe.whitelist(methods="GET")
+@rate_limit(limit=3, seconds=60)
+def resync_room_restriction(data=None):
+
+    if not data:
+        data = {
+            "rate_types": ["Daily Rate"],
+            "property": "ESTC Hotel 6",
+            "date_ranges": [
+                {"start_date": "2026-05-01", "end_date": "2026-05-30"},
+                {"start_date": "2026-07-01", "end_date": "2026-07-30"}
+            ],
+            "room_types": ["RT-0001", "RT-0004"],
+            "restriction_types":["Closed","MinLOS","MaxLOS","FullPatternLos"]
+        }
+
+
+    cm_info = get_channal_manager_info(data.get("property"))
+    if not cm_info:
+        frappe.throw("No Channel Manager Integration")
+    if cm_info.enable == 0:
+        frappe.throw("Channel manager integration is disabled")
+    if cm_info.restrictions =="Manage in CM":
+        frappe.throw("Restriction is not allow to manager from PMS")
+    
+    # validate rate plan has integration
+    for rp in data.get("rate_types"):
+        if len([x for x in  cm_info.rate_plans if x.edoor_rate_plan == rp and (x.rate_plan_code or "")!=""])==0:
+            frappe.throw("No rate plan mapping found for the rate plan '{0}'.".format(rp))
+
+    # validate restriction code allow manage from pms
+    for rs in data.get("restriction_types"):
+        if str(cm_info.get(rs.lower())) == "0":
+            frappe.throw("Restriction type {0} is not allow to manage from PMS".format(rs))
+
+    
+
+    
+    conditions = []
+    filters = {}
+
+    for i, r in enumerate(data.get("date_ranges")):
+        conditions.append(
+            f"(rr.date between %(start_{i})s and %(end_{i})s)"
+        )
+        filters[f"start_{i}"] = r.get("start_date")
+        filters[f"end_{i}"] = r.get("end_date")
+
+    date_filters = " OR ".join(conditions)
+
+    sql = f"""
+        insert into `tabChannel Manager Sync Data Log` (
+            name,
+            provider,
+            request_type,
+            property,
+            rate_type,
+            room_type,
+            restriction_type,
+            `date`,
+            `value`
+        )
+        select 
+            name,
+            '{cm_info.provider}' as provider,
+            'OTA_HotelAvailNotifRQ' as request_type,
+            property,
+            rate_type,
+            room_type_id,
+            restriction_type,
+            `date`,
+            `value`
+        from `tabRoom Restriction` rr
+        WHERE
+            ({date_filters})
+            AND rr.property = %(property)s
+            AND rr.rate_type IN %(rate_types)s
+            AND rr.room_type_id IN %(room_types)s 
+            AND rr.restriction_type IN %(restriction_types)s 
+        ON DUPLICATE KEY UPDATE
+            sync_session_id = '',
+            value = VALUES(value);
+
+    """ 
+
+    filters.update({
+        "property": data.get("property"),
+        "rate_types": tuple(data.get("rate_types")),
+        "room_types": tuple(data.get("room_types")),
+        "restriction_types": tuple(data.get("restriction_types"))
+    })
+
+    frappe.db.sql(sql, filters, as_dict=1)
+    frappe.db.commit()
+
+    if cm_info.get("provider") == "Exely": 
+        frappe.enqueue(
+            "edoor.channel_managers.exely.room_restriction.sync_room_restriction",
+            queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
+                property=data.get("property")
+        )
+            
+
+
+
+    frappe.msgprint("Room rate update sent successfully. The sync is running in the background, and you will be notified when it is complete.")
+
+    return "Success"
+
+
+
+
+

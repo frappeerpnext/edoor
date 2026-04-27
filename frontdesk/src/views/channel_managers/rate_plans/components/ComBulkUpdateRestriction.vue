@@ -343,9 +343,11 @@ function onToggleRoomTypeToUpdate(room_type) {
     room_type.selected = !room_type.selected
 }
 function onEnableUpdateAllRoomType() {
-     data.value.room_types.forEach(rt=>{
-      rt.selected = true
-     })
+  const allSelected = data.value.room_types.every(rt => rt.selected)
+
+  data.value.room_types.forEach(rt => {
+    rt.selected = !allSelected
+  })
 }
 
 /* DELETE */

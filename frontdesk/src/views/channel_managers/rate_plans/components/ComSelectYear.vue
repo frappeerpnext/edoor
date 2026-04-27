@@ -16,10 +16,26 @@ import { inject } from 'vue';
 const {years,selectedYear,startDate,endDate,reloadRoomRatesData,selectedDates } = useRatePlan();
 const moment = inject("$moment")
 async function onChangeYear(y){
+  
+  const hidePreviouseMonth = localStorage.getItem("rate_plan_hide_previouse_months")
+  
+
   if (selectedYear.value == y) return false;
   selectedYear.value=y
-  startDate.value = y + '-01-01'
-  endDate.value = y + '-12-31'
+  if (y>moment().year() || y<moment().year() ){
+     startDate.value = y + '-01-01'
+    endDate.value = y + '-12-31'
+  }else  {
+    if (hidePreviouseMonth){
+       startDate.value = moment().format("YYYY-MM-01")
+      endDate.value = y + '-12-31'
+    }else {
+      startDate.value = y + '-01-01'
+      endDate.value = y + '-12-31'
+    }
+  }
+  
+ 
   selectedDates.value = new Set();
   await reloadRoomRatesData()
 }

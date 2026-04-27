@@ -9,6 +9,7 @@
                     optionValue="edoor_room_type" />
             </div>
             <div>
+                <Button class="border-0" label="Resync Room Rate" @click="RoomRateResyncDialog" />
                 <Button class="border-0" label="Rate Summary" @click="onOpenRoomRateDialog" />
 
             </div>
@@ -22,8 +23,9 @@ import { i18n } from '@/i18n';
 import ComSelectYear from "@/views/channel_managers/rate_plans/components/ComSelectYear.vue"
 import { useRatePlan } from "../hooks/useRatePlan";
 import ComRateSummary from '@/views/channel_managers/rate_plans/components/ComRateSummary.vue';
+import RoomRateResync from '@/views/channel_managers/rate_plans/components/RoomRateResync.vue';
 import { onMounted, ref } from 'vue';
-
+const route = useRoute();
 const selectedRoomType = ref()
 const { roomTypes, reloadRoomRatesData } = useRatePlan()
 
@@ -43,6 +45,27 @@ function onOpenRoomRateDialog() {
             closeOnEscape: false,
             position: "top",
 
+        },
+    });
+}
+
+function RoomRateResyncDialog() {
+    dialog.open(RoomRateResync, {
+        data: {
+            rate_type: route.params.name,
+        },
+        props: {
+            header: $t('Rate Summary'),
+            style: {
+                width: '80vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: "top",
         },
     });
 }

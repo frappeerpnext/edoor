@@ -15,13 +15,13 @@
                   
                 <div class="flex gap-2 w-full justify-content-end">
                   <SplitButton
-  label="Close/Open Sales"
-  icon="pi pi-bars"
-  class="border-0"
-  :model="restrictionMenuItems"
-  @click="onOpenCloseSalesDialog('Closed')"
-/>
-                    
+                    label="Close/Open Sales"
+                    icon="pi pi-bars"
+                    class="border-0"
+                    :model="restrictionMenuItems"
+                    @click="onOpenCloseSalesDialog('Closed')"
+                    />
+                                        
                     <Button @click="onViewSyncStatus" class="border-0"  >{{$t("Sync Status")}}</Button>
                     
                 </div>

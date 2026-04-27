@@ -1,4 +1,7 @@
 <template>
+    <div>
+        <ComPendingSyncDataStatus :types="['Room Rate','Restriction']"/>
+    
     <div class="grid p-5 m-0 flex justify-content-center">
 
         <!-- Basic Information -->
@@ -99,11 +102,12 @@
             </div>
         </div>   
     </div>   
-    
+    </div>
 </template>
 <script setup>
 import { onMounted, ref, inject } from 'vue';
 import { useRatePlan } from '../hooks/useRatePlan'; 
+import ComPendingSyncDataStatus from '@/views/channel_managers/components/ComPendingSyncDataStatus.vue';
 import {i18n} from '@/i18n'; 
 const moment= inject("$moment")
 const { t: $t } = i18n.global;

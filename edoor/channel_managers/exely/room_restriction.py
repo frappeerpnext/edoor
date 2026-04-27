@@ -16,7 +16,8 @@ import time
 
 
  
-OTA_REQUEST = "OTA_HotelAvailNotifRQ"
+ 
+REQUEST_TYPE = "Restriction update"
 
 
 @frappe.whitelist()
@@ -27,8 +28,8 @@ def testme():
     emit_event("ChannelManagerStartStopSync",False)
 
 @frappe.whitelist()
-def sync_room_restriction(property=None):
-     
+def sync_room_restriction(property=None,retry_sync =True):
+      
     if not property:
         properties = frappe.db.sql("select name from `tabBusiness Branch`",as_dict=1)
     else:
@@ -41,10 +42,10 @@ def sync_room_restriction(property=None):
             frappe.throw("Data sync to Exely is temporarily blocked. Please check the sync status.")
 
         # reset session id on pending 
-        frappe.db.sql("update `tabChannel Manager Sync Data Log` set sync_session_id = '' where request_type = 'OTA_HotelAvailNotifRQ' and  sync_session_id <> '' and property=%(property)s" ,{"property":p.get("name")})
+        frappe.db.sql("update `tabChannel Manager Sync Data Log` set sync_session_id = '' where request_type = %(request_type)s and  sync_session_id <> '' and property=%(property)s" ,{"request_type":REQUEST_TYPE,"property":p.get("name")})
         
 
-        rate_types = frappe.db.sql("select distinct room_type,rate_type from `tabChannel Manager Sync Data Log` where property = %(property)s and provider='Exely' and request_type='OTA_HotelAvailNotifRQ'",{"property":p.get("name")},as_dict = 1)
+        rate_types = frappe.db.sql("select distinct room_type,rate_type from `tabChannel Manager Sync Data Log` where property = %(property)s and provider='Exely' and request_type=%(request_type)s",{"request_type":REQUEST_TYPE,"property":p.get("name")},as_dict = 1)
         
         if len(rate_types)>0:
             
@@ -56,7 +57,7 @@ def sync_room_restriction(property=None):
                 room_type_limit =  get_rate_limit(property =  p.get("name"),room_types = room_types)
                 
                 
-                session_id = get_sync_session_id(room_type_limit = room_type_limit,rate_type=rp,request_type=OTA_REQUEST)
+                session_id = get_sync_session_id(room_type_limit = room_type_limit,rate_type=rp,request_type=REQUEST_TYPE)
 
                 
                 group_data = get_group_restriction_data(session_id,rp)   
@@ -66,9 +67,10 @@ def sync_room_restriction(property=None):
                 if group_data:
                      
                     soap_body = build_restriction_xml(property = p.get("name"), group_data=group_data,rate_type = rp)
+                 
                     
                    
-                    response =  send_soap_request(p.get("name"),OTA_REQUEST,soap_body)
+                    response =  send_soap_request(p.get("name"),REQUEST_TYPE,soap_body)
                   
                    
 
@@ -77,7 +79,7 @@ def sync_room_restriction(property=None):
                         "property": p.get("name"),
                         "doctype":"Channel Manager Sync Log",
                         "provider":"Exely",
-                        "request_type":OTA_REQUEST,
+                        "request_type":REQUEST_TYPE,
                         "title":"Restriction update",
                         "status" : response.get("status"),
                         "data": frappe.as_json(group_data),
@@ -120,27 +122,33 @@ def sync_room_restriction(property=None):
     
     frappe.db.commit()
     
-    # ressync_pending_room_rate_data(property)
+    if retry_sync:
+        ressync_pending_restriction_data(property)
 
 
-    return (change_data,room_type_limit)
+    return "Success"
 
-def ressync_pending_room_rate_data(property=None):
+
+def ressync_pending_restriction_data(property=None):
+
     if not property:
          properties = frappe.db.sql("select name from `tabBusiness Branch`",as_dict=1)
     else:
         properties = [{"name":property}]
+
     for p in properties:
-        sql ="""select 
-            distinct room_type 
+        sql ="""
+            select 
+                distinct room_type 
             from `tabChannel Manager Sync Data Log` 
             where 
                 property = %(property)s and 
                 provider='Exely' and 
-                request_type = 'OTA_HotelRateAmountNotifRQ' and 
+                request_type = %(request_type)s and 
                 coalesce(sync_session_id,'')  = ''
         """
-        room_types = frappe.db.sql(sql,{"property":p.get("name")},as_dict = 1)
+
+        room_types = frappe.db.sql(sql,{"property":p.get("name"),"request_type":REQUEST_TYPE},as_dict = 1)
         room_types = [d.get("room_type")  for d in room_types]
         if len(room_types)>0:
             room_type_limit =  get_rate_limit(property =  p.get("name"),room_types = room_types)
@@ -149,9 +157,10 @@ def ressync_pending_room_rate_data(property=None):
             if any(v > 0 for v in room_type_limit.values()):
                 time.sleep(2)
                 frappe.enqueue(
-                    "edoor.channel_managers.exely.price_manager.sync_room_rate",
+                    "edoor.channel_managers.exely.restriction.sync_room_restriction",
                     queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
-                    property=property 
+                    property=property ,
+                    retry_sync = False
                 )
 
 
@@ -175,7 +184,7 @@ def delete_synced_data_log(session_id,cm_response=None,xml_body=None,run_commit 
             request_type = %(request_type)s and 
             provider = 'Exely'
     """
-    frappe.db.sql(sql, {"session_id":session_id,"request_type":OTA_REQUEST})
+    frappe.db.sql(sql, {"session_id":session_id,"request_type":REQUEST_TYPE})
     if run_commit:
         frappe.db.commit()
 
@@ -191,11 +200,12 @@ def get_group_restriction_data(session_id,rate_type):
         from `tabChannel Manager Sync Data Log`
         where
             sync_session_id = %(session_id)s and 
-            rate_type = %(rate_type)s 
+            rate_type = %(rate_type)s and 
+            request_type = %(request_type)s
         order by date,restriction_type
 
     """
-    data = frappe.db.sql(sql,{"session_id":session_id, "rate_type":rate_type},as_dict = 1)
+    data = frappe.db.sql(sql,{"session_id":session_id, "rate_type":rate_type,"request_type":REQUEST_TYPE},as_dict = 1)
     restriction_types = set([d.get("restriction_type") for d in data])
     
     group_data = {}
@@ -279,7 +289,7 @@ def get_use_restriction_types(filters):
             a.sync_session_id = %(session_id)s and 
             a.rate_type = %(rate_type)s
     """
-    return frappe.db.sql(sql, {**filters,"request_type":OTA_REQUEST},as_dict = 1)
+    return frappe.db.sql(sql, {**filters,"request_type":REQUEST_TYPE},as_dict = 1)
 
 
 def build_restriction_xml(property,group_data,rate_type):
@@ -311,6 +321,8 @@ def build_restriction_xml(property,group_data,rate_type):
                 build_min_max_los_arrival_tag(parent_tag = AvailStatusMessages,rate_type = rate_plan_code,data = d,restriction_type = restriction_type)
             elif restriction_type in ["MinAdvBooking","MaxAdvBooking"]:
                 build_min_max_adv_booking_tag(parent_tag = AvailStatusMessages,rate_type = rate_plan_code,data = d,restriction_type = restriction_type )
+            elif restriction_type =="FullPatternLosx":
+                build_full_pattern_los_tag(parent_tag = AvailStatusMessages,rate_type = rate_plan_code,data = d)
 
     
     
@@ -412,9 +424,19 @@ def build_min_max_adv_booking_tag(parent_tag,rate_type,data,restriction_type):
 
 
  
-    
+def build_full_pattern_los_tag(parent_tag,rate_type,data):
+    AvailStatusMessage =   etree.SubElement(parent_tag, "AvailStatusMessage")
+    build_status_application_control_tag(AvailStatusMessage, rate_type,data)
+   
+    LengthsOfStay = etree.SubElement(AvailStatusMessage, "LengthsOfStay")
+    LengthOfStay = etree.SubElement(LengthsOfStay, "LengthOfStay")
+    etree.SubElement(
+        LengthOfStay, 
+        "LOS_Pattern",
+        FullPatternLOS = data.get("value")
 
-
+    )
+ 
  
 def validate_zerow_rate(data):
     frappe.throw("validate 0 rate")

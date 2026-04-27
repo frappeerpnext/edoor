@@ -30,7 +30,8 @@ import time
 
 # constant variable
 
-OTA_REQUEST = "OTA_HotelRateAmountNotifRQ"
+
+REQUEST_TYPE = "Prices update"
 
 @frappe.whitelist()
 def testme():
@@ -40,7 +41,7 @@ def testme():
     emit_event("ChannelManagerStartStopSync",False)
 
 @frappe.whitelist()
-def sync_room_rate(property=None):
+def sync_room_rate(property=None,retry_sync=True):
      
 
     if not property:
@@ -55,10 +56,10 @@ def sync_room_rate(property=None):
             frappe.throw("Data sync to Exely is temporarily blocked. Please check the sync status.")
 
         # reset session id on pending 
-        frappe.db.sql("update `tabChannel Manager Sync Data Log` set sync_session_id = '' where request_type='OTA_HotelRateAmountNotifRQ' and  sync_session_id <> '' and property=%(property)s" ,{"property":p.get("name")})
+        frappe.db.sql("update `tabChannel Manager Sync Data Log` set sync_session_id = '' where request_type=%(request_type)s and  sync_session_id <> '' and property=%(property)s" ,{"request_type":REQUEST_TYPE,"property":p.get("name")})
 
 
-        rate_types = frappe.db.sql("select distinct room_type,rate_type from `tabChannel Manager Sync Data Log` where property = %(property)s and provider='Exely' and request_type='OTA_HotelRateAmountNotifRQ'",{"property":p.get("name")},as_dict = 1)
+        rate_types = frappe.db.sql("select distinct room_type,rate_type from `tabChannel Manager Sync Data Log` where property = %(property)s and provider='Exely' and request_type=%(request_type)s",{"request_type":REQUEST_TYPE,"property":p.get("name")},as_dict = 1)
         
         if len(rate_types)>0:
             
@@ -69,7 +70,7 @@ def sync_room_rate(property=None):
                 # this is very important to avoid rate limit to CM
                 room_type_limit =  get_rate_limit(property =  p.get("name"),room_types = room_types)
                 
-                session_id = get_sync_session_id(room_type_limit = room_type_limit,rate_type=rp,request_type=OTA_REQUEST)
+                session_id = get_sync_session_id(room_type_limit = room_type_limit,rate_type=rp,request_type=REQUEST_TYPE)
 
     
                 group_data = get_group_room_rate_data(session_id,rp)   
@@ -91,7 +92,7 @@ def sync_room_rate(property=None):
                         "property": p.get("name"),
                         "doctype":"Channel Manager Sync Log",
                         "provider":"Exely",
-                        "request_type":OTA_REQUEST,
+                        "request_type":REQUEST_TYPE,
                         "title":"Prices update",
                         "status" : response.get("status"),
                         "data": frappe.as_json(group_data),
@@ -135,8 +136,8 @@ def sync_room_rate(property=None):
 
     
     frappe.db.commit()
-    
-    # ressync_pending_room_rate_data(property)
+    if retry_sync:
+        ressync_pending_room_rate_data(property)
 
 
     return (change_data,room_type_limit)
@@ -153,10 +154,10 @@ def ressync_pending_room_rate_data(property=None):
             where 
                 property = %(property)s and 
                 provider='Exely' and 
-                request_type = 'OTA_HotelRateAmountNotifRQ' and 
+                request_type = %(request_type)s and 
                 coalesce(sync_session_id,'')  = ''
         """
-        room_types = frappe.db.sql(sql,{"property":p.get("name")},as_dict = 1)
+        room_types = frappe.db.sql(sql,{"property":p.get("name"),"request_type":REQUEST_TYPE},as_dict = 1)
         room_types = [d.get("room_type")  for d in room_types]
         if len(room_types)>0:
             room_type_limit =  get_rate_limit(property =  p.get("name"),room_types = room_types)
@@ -167,7 +168,8 @@ def ressync_pending_room_rate_data(property=None):
                 frappe.enqueue(
                     "edoor.channel_managers.exely.price_manager.sync_room_rate",
                     queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
-                    property=property 
+                    property=property ,
+                    retry_sync = True
                 )
 
 
@@ -179,8 +181,7 @@ def delete_synced_data_log(session_id,cm_response=None,xml_body=None,run_commit 
     # import xmltodict
     # return xmltodict.parse(xml_body)
     
-    # warnings =  cm_response.get("data",{}).get("s:Envelope",{}).get("s:Body",{}).get("OTA_HotelRateAmountNotifRS",{}).get("Warnings",{}).get("Warning")
-
+ 
     # for w in warnings:
     #     return get_value_from_xml_by_tag(xml_body,w.get("@Tag"))
 
@@ -188,10 +189,11 @@ def delete_synced_data_log(session_id,cm_response=None,xml_body=None,run_commit 
         delete from `tabChannel Manager Sync Data Log`
         where
             sync_session_id  =  %(session_id)s and 
-            request_type = 'OTA_HotelRateAmountNotifRQ' and 
+            request_type = %(request_type)s and 
             provider = 'Exely'
     """
-    frappe.db.sql(sql, {"session_id":session_id})
+    frappe.db.sql(sql, {"session_id":session_id,"request_type": REQUEST_TYPE})
+
     if run_commit:
         frappe.db.commit()
 
@@ -269,7 +271,7 @@ def get_period(session_id,data,rate_type):
                 a.sync_session_id = %(session_id)s and 
                 a.room_type = %(room_type)s and 
                 a.provider = 'Exely' AND 
-                a.request_type = 'OTA_HotelRateAmountNotifRQ' and 
+                a.request_type = %(request_type)s and 
                 rate_type = %(rate_type)s and
                 a.date>=CURDATE()
             group by 
@@ -287,7 +289,7 @@ def get_period(session_id,data,rate_type):
         )
      
     
-    data = frappe.db.sql(sql, {**data, "rate_type": rate_type,"session_id":session_id},as_dict=1)
+    data = frappe.db.sql(sql, {**data, "rate_type": rate_type,"session_id":session_id,"request_type":REQUEST_TYPE},as_dict=1)
 
     return group_date_ranges(data)
   
@@ -314,7 +316,7 @@ def get_unique_room_rate_values_by_occupancy_codes(session_id,occupancy_codes,ra
             where
                 a.sync_session_id = %(session_id)s and 
                 a.provider = 'Exely' AND 
-                a.request_type = 'OTA_HotelRateAmountNotifRQ' and 
+                a.request_type = %(request_type)s and 
                 a.rate_type = %(rate_type)s and 
                 a.date >=CURDATE()
             group by 
@@ -326,7 +328,7 @@ def get_unique_room_rate_values_by_occupancy_codes(session_id,occupancy_codes,ra
         occupancy_field = ",".join([d.get("occupancy_code") for d in occupancy_codes])
     )
     
-    return frappe.db.sql(sql,{"session_id":session_id,"rate_type":rate_type},as_dict=1)
+    return frappe.db.sql(sql,{"session_id":session_id,"rate_type":rate_type,"request_type":REQUEST_TYPE},as_dict=1)
 
 
 
@@ -342,10 +344,11 @@ def get_use_occupancy_codes(filters):
         join `tabOccupancy Code`  b on b.name = a.occupancy_code
         where
             a.provider= 'Exely' and
-            a.request_type = 'OTA_HotelRateAmountNotifRQ'  and 
+            a.request_type = %(request_type)s  and 
             a.sync_session_id = %(session_id)s and 
             a.rate_type = %(rate_type)s
     """
+    filters["request_type"] = REQUEST_TYPE
     return frappe.db.sql(sql, filters,as_dict = 1)
 
 

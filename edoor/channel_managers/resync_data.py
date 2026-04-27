@@ -1,15 +1,19 @@
 import frappe
 import edoor.channel_managers.exely.availability as exely_availability
+
 from edoor.channel_managers.utils import get_sync_action_status,get_channal_manager_info
 
 @frappe.whitelist()
 def re_sync_fail_job():
-    properties =frappe.db.sql( "select distinct  property, provider from `tabChannel Manager Sync Data Log`",as_dict = 1)
+    properties =frappe.db.sql( "select distinct  property, provider,request_type from `tabChannel Manager Sync Data Log`",as_dict = 1)
     
     if properties:
         for d in properties:
             if d.get("provider") == "Exely": 
                 exely_availability.update_room_availability(d.get("property"))
+
+                
+
 
 
 @frappe.whitelist(methods="POST")

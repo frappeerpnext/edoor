@@ -4,7 +4,7 @@
             aria-label="Custom ProgressSpinner" />
 
         <div v-else>
-            <i v-if="totalTaskCount > 0" ref="btn" v-badge="totalTaskCount" @click="onToggle"
+            <i v-if="totalTaskCount > 0" ref="btn" v-badge.danger="totalTaskCount" @click="onToggle"
                 class="pi pi-globe cursor-pointer text-white" style="font-size:18px" />
             <i v-else @click="onToggle" ref="btn" class="pi pi-globe cursor-pointer text-white"
                 style="font-size:18px" />
@@ -13,16 +13,19 @@
 
         <OverlayPanel ref="op">
             <div class="flex flex-column gap-3 w-25rem">
+                <ComPendingSyncDataStatus />  
                 <div class="flex gap-2">
                     <Chip class="cursor-pointer" :label="d" v-for="d in options" :class="{ 'active-tab text-white': d == selectedOption }"
                         @click="onSelect(d)" />
                 </div>
+
                 <div v-if="selectedOption == 'Notification'">
                     <ComSynNotificationLogList :data="cmSyncLogData" />
                     <br/>
                     <Button v-if="cmSyncLogData?.length>0" class="border-none w-full" label="View all sync logs" @click="onViewAllSyncLog" />
                 </div>
                 <div v-else>
+                  
                     <ComSynNotificationTaskList :data="cmTaskData" />
                     <Button v-if="cmTaskData?.length > 0" class="border-0 w-full" label="View all Tasks" @click="onViewAllTask" />
                 </div>
@@ -42,6 +45,8 @@ import OverlayPanel from 'primevue/overlaypanel';
 import ComSynNotificationLogList from '@/views/channel_managers/channel_manager/components/ComSynNotificationLogList.vue';
 import ComSynNotificationTaskList from '@/views/channel_managers/channel_manager/components/ComSynNotificationTaskList.vue';
 
+import ComPendingSyncDataStatus from '@/views/channel_managers/components/ComPendingSyncDataStatus.vue';
+
 import ProgressSpinner from 'primevue/progressspinner';
 import { useRouter } from "vue-router";
 const router = useRouter()
@@ -53,6 +58,8 @@ const btn = ref();
 const cmSyncLogData = ref()
 const cmTaskData = ref()
 const totalTaskCount = ref(0)
+const hasPendingData = ref(false)
+
 
 
 
@@ -64,10 +71,10 @@ const socket = inject("$socket")
 
 const onToggle = (event) => {
     op.value.toggle(event);
-    if (!cmSyncLogData.value) {
-
+    
         getCMSyncLog();
-    }
+        // checkPendingSyncData()
+   
 }
 
 async function onSelect(d) {
@@ -81,6 +88,7 @@ async function onSelect(d) {
     }
 
 }
+
 
 
 async function getCMSyncLog() {
@@ -131,16 +139,19 @@ async function onViewAllTask() {
     }
 }
 
+
+
 onMounted(async () => {
     cmInfo.value = await getCMInfo()
 
 
 
     await getCMTaskCount();
+ 
 
     setTimeout(async () => {
 
-        if (totalTaskCount.value > 0) {
+        if (totalTaskCount.value > 0 || hasPendingData.value) {
             selectedOption.value = "Channel Manager Task";
 
             await nextTick();
@@ -156,19 +167,22 @@ onMounted(async () => {
 
             // get task data
             await getCMTaskData();
+            
+
         }
     }, 2000)
 
 
     socket.on("ChannelManagerStartStopSync", (status) => {
-
-
+        
         isLoading.value = status;
          getCMTaskData();
-         getCMSyncLog();
          getCMTaskCount();
 
-
+        //  setTimeout(() => {
+        //         checkPendingSyncData()
+        //  }, 3000);
+ 
     })
 })
 

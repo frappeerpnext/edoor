@@ -8,7 +8,7 @@ from edoor.api.utils import make_hash,generate_unique_dates
 
 
 # constant variable
-OTA_REQUEST = "OTA_HotelRateAmountNotifRQ"
+REQUEST_TYPE = "Prices update"
 
 
         
@@ -448,7 +448,7 @@ def prepare_sync_data_to_channel_manager(filters,run_comit=True):
             select 
                 name,
                 '{provider}' as provider,
-                'OTA_HotelRateAmountNotifRQ' as request_type,
+                '{request_type}' as request_type,
                 property,
                 rate_type,
                 room_type_id,
@@ -465,7 +465,7 @@ def prepare_sync_data_to_channel_manager(filters,run_comit=True):
                 sync_session_id = '',
                 value = VALUES(value);
 
-        """.format(provider = cm_info.get("provider"))
+        """.format(provider = cm_info.get("provider"),request_type = REQUEST_TYPE)
         frappe.db.sql(sql,filters)
 
         if run_comit:
@@ -505,3 +505,107 @@ def get_room_rate_detail(property,rate_type,date):
         "room_rate":data,
         "occupancy_codes":occupancy_code_data
     }
+
+@frappe.whitelist(methods="POST")
+@rate_limit(limit=3, seconds=60)
+def resync_room_rate(data=None):
+
+    if not data:
+        data = {
+            "rate_types": ["Daily Rate"],
+            "property": "ESTC Hotel 6",
+            "date_ranges": [
+                {"start_date": "2026-05-01", "end_date": "2026-05-30"},
+                {"start_date": "2026-07-01", "end_date": "2026-07-30"}
+            ],
+            "room_types": ["RT-0001", "RT-0004"],
+        }
+
+    cm_info = get_channal_manager_info(data.get("property"))
+    if not cm_info:
+        frappe.throw("No Channel Manager Integration")
+    if cm_info.enable == 0:
+        frappe.throw("Channel manager integration is disabled")
+    if cm_info.prices_for_accommodation =="Manage in CM":
+        frappe.throw("Prices update is not allow to manager in PMS")
+    
+    # validate rate plan has integration
+    for rp in data.get("rate_types"):
+        if len([x for x in  cm_info.rate_plans if x.edoor_rate_plan == rp and (x.rate_plan_code or "")!=""])==0:
+            frappe.throw("No rate plan mapping found for the rate plan '{0}'.".format(rp))
+
+    
+
+    
+    conditions = []
+    filters = {}
+
+    for i, r in enumerate(data.get("date_ranges")):
+        conditions.append(
+            f"(rr.date between %(start_{i})s and %(end_{i})s)"
+        )
+        filters[f"start_{i}"] = r.get("start_date")
+        filters[f"end_{i}"] = r.get("end_date")
+
+    date_filters = " OR ".join(conditions)
+
+    sql = f"""
+         insert into `tabChannel Manager Sync Data Log` (
+            name,
+            provider,
+            request_type,
+            property,
+            rate_type,
+            room_type,
+            occupancy_code,
+            date,
+            value
+        )
+        select 
+            name,
+            '{cm_info.provider}' as provider,
+            '{REQUEST_TYPE}' as request_type,
+            property,
+            rate_type,
+            room_type_id,
+            occupancy_code,
+            date,
+            rate as value
+        FROM `tabRoom Rates` rr
+        WHERE
+            ({date_filters})
+            AND rr.property = %(property)s
+            AND rr.rate_type IN %(rate_types)s
+            AND rr.room_type_id IN %(room_types)s
+        ON DUPLICATE KEY UPDATE
+            sync_session_id = '',
+            value = VALUES(value);
+
+    """ 
+
+    filters.update({
+        "property": data.get("property"),
+        "rate_types": tuple(data.get("rate_types")),
+        "room_types": tuple(data.get("room_types"))
+    })
+
+    frappe.db.sql(sql, filters, as_dict=1)
+    frappe.db.commit()
+
+    if cm_info.get("provider") == "Exely": 
+        frappe.enqueue(
+            "edoor.channel_managers.exely.price_manager.sync_room_rate",
+            queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
+                property=data.get("property")
+        )
+            
+
+
+
+    frappe.msgprint("Room rate update sent successfully. The sync is running in the background, and you will be notified when it is complete.")
+
+    return "Success"
+
+
+
+
