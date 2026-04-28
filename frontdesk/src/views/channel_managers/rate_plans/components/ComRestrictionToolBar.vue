@@ -12,21 +12,24 @@
                     optionValue="restriction_type" isMultipleSelect />
             </div>
             <div>
+                <Button class="border-0" label="Restriction ReSync" @click="onOpenRestrictionSyncDailog" />
                 <Button class="border-0" label="Rate Summary" @click="onOpenRoomRateDialog" />
-
             </div>
         </div>
     </div>
 </template>
 <script setup>
-import { useRoute, useDialog } from '@/plugin'
+import { useRoute, useDialog,computed } from '@/plugin'
 const dialog = useDialog();
 import { i18n } from '@/i18n';
+const route = useRoute();
 import ComSelectYear from "@/views/channel_managers/rate_plans/components/ComSelectYear.vue"
 import { useRatePlan } from "../hooks/useRatePlan";
 import ComRateSummary from '@/views/channel_managers/rate_plans/components/ComRateSummary.vue';
 import { onMounted, ref, watch } from 'vue';
+import ComRestrictionSync from './ComRestrictionSync.vue';
 
+import ComBulkUpdateRestriction from '@/views/channel_managers/rate_plans/components/ComBulkUpdateRestriction.vue'; 
 const selectedRoomType = ref()
 
 const {
@@ -106,6 +109,30 @@ const handleScroll = () => {
     }
 
 };
+
+function onOpenRestrictionSyncDailog() {
+    dialog.open(ComRestrictionSync, {
+        data: {
+            rate_type: route.params.name,
+        },
+        props: {
+            header: $t('Restriction ReSync'),
+            style: {
+                width: '80vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: "top",
+        },
+    });
+}
+
+
+
 
 </script>
 <style scoped>

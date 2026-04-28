@@ -472,8 +472,6 @@ def prepare_sync_data_to_channel_manager(filters,run_comit=True):
             frappe.db.commit()
 
 
-        
-
 
 @frappe.whitelist()
 def get_room_rate_detail(property,rate_type,date):

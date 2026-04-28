@@ -55,7 +55,7 @@ function RoomRateResyncDialog() {
             rate_type: route.params.name,
         },
         props: {
-            header: $t('Rate Summary'),
+            header: $t('Room Rate Resync'),
             style: {
                 width: '80vw',
             },

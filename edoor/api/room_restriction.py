@@ -326,8 +326,8 @@ def get_restriction_type_list(property_name):
     ]
 
 
-@frappe.whitelist(methods="GET")
-@rate_limit(limit=3, seconds=60)
+@frappe.whitelist(methods="POST")
+@rate_limit(limit=3, seconds=60) 
 def resync_room_restriction(data=None):
 
     if not data:

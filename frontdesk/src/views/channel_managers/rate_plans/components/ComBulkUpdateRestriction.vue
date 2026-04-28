@@ -306,14 +306,14 @@ function onAddDateRange() {
 
 function onSelectRestrictionDate(values, rt) {
   // always reset to all "O"
-  const current = Array(30).fill("O")
+  const current = Array(30).fill("C")
 
   const selected = Array.isArray(values) ? values : [values]
 
   selected.forEach(v => {
     const index = Number(v) - 1
     if (index >= 0 && index < 30) {
-      current[index] = "C"
+      current[index] = "O"
     }
   })
 

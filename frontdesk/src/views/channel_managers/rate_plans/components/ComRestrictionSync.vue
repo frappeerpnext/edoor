@@ -90,6 +90,17 @@
         </div>
         
   </Fieldset>
+
+  <Fieldset class="cs-close-open-sale-fieldset">
+    <template #legend>
+        <div class="flex items-center pl-2">
+            <span class="font-bold p-2">Restriction Types</span>
+        </div>
+    </template>
+    <ComSelect v-model="data.restriction_types" maxSelectedLabels="6" :clear="false" @onSelected="onSelectRestrictionType"
+                    :placeholder="$t('Restriction Types')" :options="restrictionTypeList"  isMultipleSelect />
+        
+  </Fieldset>
   
 
   
@@ -100,6 +111,7 @@
 import { ref, inject , onMounted, computed } from 'vue'
 import { getApi } from '@/plugin';
 import { useRatePlan } from '../hooks/useRatePlan'
+import { useRestriction } from "@/views/channel_managers/rate_plans/hooks/useRestriction";
 import BlockUI from 'primevue/blockui';
 const restrictionPattern = ref(Array(30).fill("O"))
 const restrictionPatternString = computed(() => {
@@ -137,8 +149,18 @@ const data = ref({
   room_types_select: [],
   room_types: [],
   rate_type:[],
+  restriction_types: []
 })
 
+const {    
+    restrictionTypeList
+} = useRestriction();
+const restrictionMenuItems = computed(() => {
+  return restrictionTypeList.value.map(item => ({
+    label: item,
+    value: item,
+  }))
+})
 
 /* ADD DATE RANGE */
 function onAddDateRange() {
@@ -222,8 +244,8 @@ async function onOk() {
         x.start_date = moment(x.start_date).local().format("YYYY-MM-DD");
         x.end_date = moment(x.end_date).local().format("YYYY-MM-DD");
     })  
-  const l  =await window.showLoading("Resync Room Rates...")
-  const res = await app.postApi("rate_plan.resync_room_rate",{
+  const l  =await window.showLoading("ReSync Restriction...")
+  const res = await app.postApi("room_restriction.resync_room_restriction",{
     saveData
   })
    if (res.data){

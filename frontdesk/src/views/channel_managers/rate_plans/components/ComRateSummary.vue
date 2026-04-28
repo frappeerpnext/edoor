@@ -1,5 +1,5 @@
 <template>
-  
+  {{ updateRoomTypes }}
         <div class="flex gap-2 mb-3">
             <Chip label="All Room Types" @click="onEnableUpdateAllRoomType()"
                 :icon="(updateRoomTypes.size == roomTypes.length) ? 'pi pi-check' : ''" :class="(updateRoomTypes.size == roomTypes.length) ? 'p-chip-selected' : ''" class="cursor-pointer select-none"></Chip>
@@ -63,8 +63,9 @@
 
 <script setup>
 import { ref,computed, inject, onMounted} from 'vue'
+import { useRoute } from '@/plugin'
 import { useRatePlan } from '../hooks/useRatePlan'
-
+const route = useRoute();
 const updateRoomTypes = ref(new Set())
 const moment = inject('$moment')
 
@@ -73,10 +74,11 @@ const {
   roomTypes,
   roomRatesData,
   startDate,
-  endDate
+  endDate,
+  getRoomRateData
 } = useRatePlan()
 
-function onToggleRoomTypeToUpdate(room_type) {
+async function onToggleRoomTypeToUpdate(room_type) {
   const newSet = new Set(updateRoomTypes.value)
 
   if (newSet.has(room_type)) {
@@ -86,8 +88,18 @@ function onToggleRoomTypeToUpdate(room_type) {
   }
 
   updateRoomTypes.value = newSet
+  const l  = await window.showLoading("ReSync Restriction...")
+  const res = await getRoomRateData({
+  room_types: Array.from(updateRoomTypes.value),
+  rate_type: route.params.name,
+  start_date: moment(startDate.value),
+  end_date: moment(endDate.value)
+})
+  l.close();
 }
+
 function onEnableUpdateAllRoomType(room_type) {
+  
     if (updateRoomTypes.value.size == roomTypes.value.length) {
         // remove 
         updateRoomTypes.value = new Set()
@@ -97,7 +109,12 @@ function onEnableUpdateAllRoomType(room_type) {
 )
     }
     summaryRows.value
-
+getRoomRateData({
+  room_types: Array.from(updateRoomTypes.value),
+  rate_type: route.params.name,
+  start_date: moment(startDate.value),
+  end_date: moment(endDate.value)
+})
 }
 
 
@@ -208,7 +225,6 @@ const summaryRows = computed(() => {
     .forEach(rt => {
 
       const segments = buildSegments(rt.edoor_room_type, occList) 
-
       segments.forEach(seg => {
 
         const values = {}

@@ -38,6 +38,8 @@ def restart_sync_data_to_channel_manager(property,title,provider=None):
                     queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
                         property=property
                 )
+            elif title=="Restriction update" and provider == "Exely":
+                
               
     
     return "Success"

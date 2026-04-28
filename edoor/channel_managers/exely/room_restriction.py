@@ -70,7 +70,7 @@ def sync_room_restriction(property=None,retry_sync =True):
                  
                     
                    
-                    response =  send_soap_request(p.get("name"),REQUEST_TYPE,soap_body)
+                    response =  send_soap_request(p.get("name"),"OTA_HotelAvailNotifRQ",soap_body)
                   
                    
 
@@ -321,7 +321,7 @@ def build_restriction_xml(property,group_data,rate_type):
                 build_min_max_los_arrival_tag(parent_tag = AvailStatusMessages,rate_type = rate_plan_code,data = d,restriction_type = restriction_type)
             elif restriction_type in ["MinAdvBooking","MaxAdvBooking"]:
                 build_min_max_adv_booking_tag(parent_tag = AvailStatusMessages,rate_type = rate_plan_code,data = d,restriction_type = restriction_type )
-            elif restriction_type =="FullPatternLosx":
+            elif restriction_type =="FullPatternLos":
                 build_full_pattern_los_tag(parent_tag = AvailStatusMessages,rate_type = rate_plan_code,data = d)
 
     
@@ -427,9 +427,9 @@ def build_min_max_adv_booking_tag(parent_tag,rate_type,data,restriction_type):
 def build_full_pattern_los_tag(parent_tag,rate_type,data):
     AvailStatusMessage =   etree.SubElement(parent_tag, "AvailStatusMessage")
     build_status_application_control_tag(AvailStatusMessage, rate_type,data)
-   
     LengthsOfStay = etree.SubElement(AvailStatusMessage, "LengthsOfStay")
-    LengthOfStay = etree.SubElement(LengthsOfStay, "LengthOfStay")
+    LengthOfStay = etree.SubElement(LengthsOfStay, "LengthOfStay", MinMaxMessageType="FullPatternLOS")
+    
     etree.SubElement(
         LengthOfStay, 
         "LOS_Pattern",
