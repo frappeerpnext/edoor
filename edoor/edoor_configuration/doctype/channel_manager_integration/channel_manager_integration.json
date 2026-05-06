@@ -20,6 +20,7 @@
   "initialized_availability_upload",
   "initialized_prices_upload",
   "initialized_restrictions_upload",
+  "initialized_service_upload",
   "column_break_goez",
   "rooms_availability",
   "prices_for_accommodation",
@@ -103,19 +104,19 @@
    "fieldname": "rooms_availability",
    "fieldtype": "Select",
    "label": "Rooms Availability",
-   "options": "Receive from PMS\nManage in CM"
+   "options": "Receive from PMS\nManage in CM\nDeliver to PMS"
   },
   {
    "fieldname": "prices_for_accommodation",
    "fieldtype": "Select",
    "label": "Prices for accommodation",
-   "options": "Receive from PMS\nManage in CM"
+   "options": "Receive from PMS\nManage in CM\nDeliver to PMS"
   },
   {
    "fieldname": "restrictions",
    "fieldtype": "Select",
    "label": "Restrictions",
-   "options": "Receive from PMS\nManage in CM"
+   "options": "Receive from PMS\nManage in CM\nDeliver to PMS"
   },
   {
    "fieldname": "prices_for_extra_services",
@@ -306,11 +307,17 @@
    "fieldname": "initialized_restrictions_upload",
    "fieldtype": "Check",
    "label": "Initialized restrictions upload"
+  },
+  {
+   "default": "0",
+   "fieldname": "initialized_service_upload",
+   "fieldtype": "Check",
+   "label": "Initialized service upload"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-07 12:00:28.775413",
+ "modified": "2026-05-06 09:26:38.976868",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Channel Manager Integration",

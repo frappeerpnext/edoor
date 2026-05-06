@@ -220,11 +220,21 @@ function getWorkingDay(){
     });
 }
 
-onUnmounted(() => {
-    window.removeEventListener('message', actionClickHandler, false);
-    window.socket.off("UpdateCashierShift")
-    window.socket.off("RunNightAudit")
-})
+// function update pls just this only one
+function socketEvent(arg) {
+    
+    if (arg.action == "alert_cm_sync_message" && arg.property == window.property_name) {
+        
+        if (arg.status?.toLowerCase() == "success") {
+            app.utils.showSuccess(arg.title, arg.message, 0, "tr")
+        } else {
+
+            app.utils.showWarning(arg.title, arg.message, 0, "tr", { action_title: "View sync log", "action": "view_channel_manager_sync_log|" + arg.docname })
+        }
+
+    }
+}
+
 onMounted(async () => { 
     window.toast = toast;
     window.confirm  = confirm;
@@ -266,6 +276,7 @@ onMounted(async () => {
     })
 
 
+
     const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
     const edoor_property = JSON.parse(localStorage.getItem("edoor_property"))
     if (!working_day?.cashier_shift?.name && edoor_property ) {
@@ -294,14 +305,16 @@ onMounted(async () => {
 
     await getSummaryData(window.current_working_date);
 
+    window.socket.on("ChannelManagerUpdate", socketEvent)
 
- 
- 
-  
-  
-  
- 
 
+})
+
+onUnmounted(() => {
+    window.removeEventListener('message', actionClickHandler, false);
+    window.socket.off("UpdateCashierShift")
+    window.socket.off("RunNightAudit")
+    window.socket.off("ChannelManagerUpdate", socketEvent)
 
 })
 

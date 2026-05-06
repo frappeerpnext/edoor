@@ -1,6 +1,18 @@
 <template>
   <div class="table-wrapper">
-
+  <Message v-if="cm_info?.restrictions == 'Deliver to PMS'">
+    Room restriction are managed by the Channel Manager.
+</Message>
+  <Message v-if="cm_info?.closed == 0 && cm_info?.restrictions != 'Deliver to PMS'">
+   <strong
+  class="m-2 border-white  border border-round px-2 py-1 inline-block"
+  v-for="s in restrictionManageByCM"
+>
+  {{ s }}
+</strong>
+    <p>Manage by the Channel Manager.</p>
+    
+</Message>
 
     <div v-if="dragRect.visible" class="drag-rect" :class="{ 'drag-rect-deselect': dragMode === 'deselect' }" :style="{
       left: dragRect.x + 'px',
@@ -14,13 +26,9 @@
       <div v-if="showPopover" class="cell-popover"
         :style="{ left: popoverPosition.x + 'px', top: popoverPosition.y + 'px' }" @mouseenter="handlePopoverMouseEnter"
         @mouseleave="handlePopoverMouseLeave">
-        <div v-if="popoverLoading" class="popover-loading">Loading...</div>
-        <div v-else>
-          <div><strong>Date:</strong> {{ popoverData.date }}</div>
-          <div><strong>Room Type:</strong> {{ popoverData.roomType }}</div>
-          <div><strong>Occupancy:</strong> {{ popoverData.occupancy }}</div>
-          <div><strong>Rate:</strong> {{ popoverData.rate }}</div>
-        </div>
+        <ComRoomRateDetailPopOver v-if="selectedRoomType" :rate_type="rateType" :date="hoverDate"
+          :room_type_id="selectedRoomType[0].edoor_room_type" />
+
       </div>
     </Teleport>
 
@@ -68,6 +76,17 @@
                       style="font-size: 1rem"></i>
                     <i class="pi pi-check  text-green-400" v-else style="font-size: 1rem"></i>
                   </template>
+                  <template v-else-if="rt.restriction_type=='FullPatternLos'">
+                   <div
+  v-if="getRestrictionValue(rt.restriction_type, m.month, n)!='__'"
+  class="bg-primary-400 border-circle flex align-items-center pt-1 justify-content-center text-white text-xs"
+  style="width:1.2rem; height:1.2rem; line-height:1.2rem;    margin: 0 auto;"
+>
+  {{ getRestrictionValue(rt.restriction_type, m.month, n) }}
+</div>
+
+<span v-else>__</span>
+                  </template>
                   <template v-else>
                     <span>
                       {{ getRestrictionValue(rt.restriction_type, m.month, n) }}
@@ -88,14 +107,64 @@
 <script setup>
 import { computed, inject, ref, onMounted, onUnmounted, Teleport } from 'vue'
 import { useRatePlan } from '../hooks/useRatePlan'
+import { useRoute } from 'vue-router';
+import ComRoomRateDetailPopOver from "@/views/channel_managers/rate_plans/components/ComRoomRateDetailPopOver.vue"
+const route = useRoute();
+const rateType = ref(route.params.name)
 
 const { roomTypes, selectedDates, startDate, restrictionData,
   restrictionTypes,
-  selectedRestrictionTypes
+  selectedRestrictionTypes,
+  cm_info,
+  rateInfo
 
 } = useRatePlan()
 const moment = inject('$moment')
 const props = defineProps({ year: Number, room_types: Object })
+const restrictionManageByCM = computed(()=>{
+  const _data = []
+  if (cm_info.value.closed==0){
+    _data.push("Closed")
+  }
+  if (cm_info.value.cta==0){
+    _data.push("Cta")
+  }
+  if (cm_info.value.ctd==0){
+    _data.push("Ctd")
+  }
+  if (cm_info.value.minlos==0){
+    _data.push("MinLos")
+  }
+  
+  if (cm_info.value.maxlos==0){
+    _data.push("MaxLos")
+  }
+  
+  if (cm_info.value.minlosarrival==0){
+    _data.push("MinLosArrival")
+  }
+  
+  if (cm_info.value.maxlosarrival==0){
+    _data.push("MaxLosArrival")
+  }
+  
+  if (cm_info.value.minadvbooking==0){
+    _data.push("MinAdvBooking")
+  }
+  
+  if (cm_info.value.maxadvbooking==0){
+    _data.push("MaxAdvBooking")
+  }
+  if (cm_info.value.fullpatternlos==0){
+    _data.push("FullPatternLos")
+  }
+
+
+return _data
+
+
+
+})
 
 const _restrictionTypes = computed(() => {
   return restrictionTypes.filter(x => selectedRestrictionTypes.value.includes(x.restriction_type))
@@ -152,6 +221,9 @@ let rafId = null
 function startDrag(e, monthIdx, day, monthKey) {
   const cell = e.currentTarget
   if (cell.classList.contains("disable")) return
+
+  if (cm_info.value.restrictions=="Deliver to PMS" && rateInfo.value?.cm_rate_plan_list?.cm_rate_plan) return
+
 
   e.preventDefault()
   e.stopPropagation()
@@ -278,6 +350,7 @@ const showPopover = ref(false)
 const popoverLoading = ref(false)
 const popoverData = ref({})
 const popoverPosition = ref({ x: 0, y: 0 })
+const hoverDate  = ref()
 
 // Flags for mouse presence
 const isMouseOverCell = ref(false)
@@ -386,38 +459,38 @@ function hidePopover() {
   clearHideTimer()
 }
 
+
 async function showPopoverForCell(cell, monthKey, day, mouseX, mouseY) {
-  console.log(cell, monthKey, day)
+  
   if (!cell) return
+  const rect = cell.getBoundingClientRect();
+
+    let x = rect.left     // distance from left of viewport
+    let y = rect.top;  
+
+    if (x+500>window.innerWidth){
+      x = window.innerWidth - 500 + rect.width
+    }else {
+      x = x + rect.width;
+    }
+
+    if ((y+400)> window.innerHeight){
+      y = window.innerHeight - 450;
+    }
 
   // Position popover near mouse pointer (with offset)
   popoverPosition.value = {
-    x: mouseX + 15, // 15px right of cursor
-    y: mouseY + 10  // 10px below cursor
+    x: x , // 15px right of cursor
+    y: y  // 10px below cursor
   }
 
   // Prepare fetch
-  abortController = new AbortController()
+
   popoverLoading.value = true
+  hoverDate.value = moment.utc(`${monthKey.slice(0, 7)}-${String(day).padStart(2, '0')}`).format('YYYY-MM-DD')
   showPopover.value = true
 
-  try {
-    const data = await fetchPopoverDetails(monthKey, day)
-    popoverData.value = {
-      date: moment.utc(`${monthKey.slice(0, 7)}-${String(day).padStart(2, '0')}`).format('YYYY-MM-DD'),
-      roomType: data.roomType || '...',
-      occupancy: data.occupancy || '...',
-      rate: data.rate || 'N/A'
-    }
-  } catch (error) {
-    if (error.name !== 'AbortError') {
-      console.error('Popover fetch error:', error)
-      popoverData.value = { error: 'Failed to load data' }
-    }
-  } finally {
-    popoverLoading.value = false
-    abortController = null
-  }
+
 }
 
 /* ---------- LIFECYCLE ---------- */
@@ -470,6 +543,7 @@ onUnmounted(() => {
   border-right-width: 1px;
   padding-right: 3px;
   padding-left: 3px;
+  text-align: center;
 }
 
 .dc:hover {
@@ -559,6 +633,6 @@ onUnmounted(() => {
   position: -webkit-sticky;
   position: sticky;
   top: 118px;
-  z-index: 1000;
+  z-index: 950;
 }
 </style>

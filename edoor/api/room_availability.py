@@ -4,7 +4,13 @@ import json
 from lxml import etree
 from edoor.api.utils import get_room_type_ids
 from frappe.model.document import bulk_insert
-from edoor.channel_managers.utils import get_channal_manager_info
+from edoor.channel_managers.utils import get_channal_manager_info,get_sync_max_date
+import time
+from frappe.rate_limiter import rate_limit
+from edoor.channel_managers.data_upload import get_data_upload_status
+
+REQUEST_TYPE = 'Availability update'
+
 
 @frappe.whitelist()
 def get_current_working_date():
@@ -18,7 +24,18 @@ def get_current_working_date():
 @frappe.whitelist()
 def testme():
     
-    return update_room_availability({'property': 'ESTC HOTEL 6'})
+    return update_room_availability(
+       {
+   "end_date": "2026-04-08",
+   "property": "ESTC HOTEL 6",
+   "room_type_id": [
+    "RT-0001"
+   ],
+   "start_date": "2026-03-27",
+   "sync_room_available_to_channel_manager": True
+  }
+ 
+    )
 
 @frappe.whitelist()
 def fix_room_availibility():
@@ -31,8 +48,17 @@ def fix_room_availibility():
 
 
 def update_room_availability(filters=None,run_commit=True):
-    filters["room_type_id"] =  filters.get("room_type_id")  or get_room_type_ids(filters.get("property"))
+    # filters = 
+    #   "property": frappe.get_cached_value("Reservation Stay",stay_names[0],"property"),
+    #     "start_date": min([d["start_date"] for d in affected_data]),
+    #     "end_date": max([d["end_date"] for d in affected_data]),
+    #     "room_type_id": list(set([d["room_type_id"] for d in affected_data])),
 
+    
+
+
+    filters["room_type_id"] =  filters.get("room_type_id")  or get_room_type_ids(filters.get("property"))
+   
     if not filters.get("room_type_id"):
         return  # or skip query
 
@@ -44,28 +70,7 @@ def update_room_availability(filters=None,run_commit=True):
     if not "sync_room_available_to_channel_manager" in filters:
         filters["sync_room_available_to_channel_manager"] = True
     
-    
-    # backup old  value
-    backup_room_availability(filters,run_commit=False)
-
-    # sql="""
-    #     select 
-    #             t.date,
-    #             t.room_type_id,
-    #             sum(t.type = 'Reservation') as total_occupy,
-    #             sum(t.type = 'Block') as total_block
-    #         from `tabTemp Room Occupy` t
-    #         where
-                
-    #             t.is_active = 1 and 
-    #             t.date between %(start_date)s and %(end_date)s and 
-    #             t.room_type_id in %(room_type_id)s  and 
-    #             property = %(property)s
-    #         group by 
-    #             t.room_type_id,
-    #             t.date
-    # """
-    # return frappe.db.sql(sql,filters,as_dict = 1)
+ 
 
     sql="""
         update `tabDaily Property Data` d
@@ -88,6 +93,7 @@ def update_room_availability(filters=None,run_commit=True):
 
         ) AS t on d.room_type_id = t.room_type_id and d.date = t.date 
         set 
+            d.old_room_available = d.total_room_available,
             d.total_occupy = t.total_occupy, 
             d.total_block = t.total_block, 
             d.total_room_available = d.total_room - (t.total_occupy + t.total_block)
@@ -97,21 +103,26 @@ def update_room_availability(filters=None,run_commit=True):
             d.room_type_id in %(room_type_id)s
     """
     frappe.db.sql(sql,filters)
-    
+   
+
  
+    # send data to sync sync data log log
+
+    prepare_sync_data_to_channel_manager(filters,run_commit=False)
+
+
     
 
-    # get room available change change data save to sync log then sync data to channel manager
+ 
     
     cm_info = get_channal_manager_info(filters.get("property"))
     if str(cm_info.get("enable")) == "1":
-        room_available_data_changed =  get_room_availabilty_changed_data(filters)
         
-        if filters.get("sync_room_available_to_channel_manager") == True and room_available_data_changed:
+        if filters.get("sync_room_available_to_channel_manager") == True:
             # check if provider is exely
             if cm_info.get("provider") == "Exely" and cm_info.get("rooms_availability") == "Receive from PMS":
                 frappe.enqueue(
-                    "edoor.channel_managers.exely.availability.update_room_availability",
+                    "edoor.channel_managers.exely.availability.sync_room_availability",
                     queue="channel_manager",
                     property=filters.get("property")
                 )
@@ -123,88 +134,61 @@ def update_room_availability(filters=None,run_commit=True):
 
 
 
-def backup_room_availability(filters=None,run_commit = True):
-    filters["room_type_id"] =  filters.get("room_type_id")  or get_room_type_ids(filters.get("property"))
-    filters["start_date"] =  filters.get("start_date")  or get_current_working_date()
-    filters["end_date"] =  filters.get("end_date")  or add_to_date(today(),years = 5)
-    # we run backup and room available and reset room block and occupuy
-    sql = """
-        update `tabDaily Property Data` 
-        set
-            total_occupy = 0,
-            total_block= 0,
-            old_room_available = total_room_available 
-        where
-            room_type_id in %(room_type_id)s and 
-            property = %(property)s and 
-            date between %(start_date)s and %(end_date)s  
-    """
-    frappe.db.sql(sql, filters)
-    if run_commit:
-        frappe.db.commit()
+# prepare sync data to channel manager
+def prepare_sync_data_to_channel_manager(filters,run_commit=True):
+    # frappe.throw(str(filters))
+    if not filters.get("property"):
+        return
+        
+    cm_info = get_channal_manager_info(filters.get("property"))
+    # check can sync data to cm only it enable, price receive from PMS and fist init is done
+    if (str(cm_info.get("enable")) == "1" 
+        and cm_info.get("rooms_availability") =="Receive from PMS" 
+        and str(cm_info.get("initialized_availability_upload")) == "1"): 
+        # add changed data to sync data log
+        sql = """
+            insert into `tabChannel Manager Sync Data Log` (
+                name,
+                provider,
+                request_type,
+                property,
+                room_type,
+                date,
+                value
+            )
+            select 
+                name,
+                '{provider}' as provider,
+                '{request_type}' as request_type,
+                property,
+                room_type_id,
+                date,
+                total_room_available as value
+            from `tabDaily Property Data` 
+            where
+                room_type_id in %(room_type_id)s and 
+                date between %(start_date)s and %(end_date)s  and 
+                coalesce(total_room_available,0) <> coalesce(old_room_available,0)
+            ON DUPLICATE KEY UPDATE
+                sync_session_id = '',
+                value = VALUES(value);
 
-def get_room_availabilty_changed_data(filters,run_commit=True):
-    sql="""
-        select 
-            property,
-            room_type_id,
-            date,
-            total_room_available
-        from `tabDaily Property Data` 
-        where
-            old_room_available <> total_room_available and 
-            room_type_id in %(room_type_id)s and
-            property = %(property)s and 
-            date between %(start_date)s and %(end_date)s  and 
-            date>= CURDATE()
-    """
-    data = frappe.db.sql(sql, filters,as_dict=1)
-    # frappe.throw(str(data))
-  
-    
-    if data:
-        add_data_to_log(data)
-      
+        """.format(provider = cm_info.get("provider"),request_type = REQUEST_TYPE)
+        frappe.db.sql(sql,filters)
+
+        # update old value to value 
+        sql="""
+            update  `tabDaily Property Data` 
+            SET old_room_available = total_room_available
+            where
+                room_type_id in %(room_type_id)s and 
+                date between %(start_date)s and %(end_date)s  
+        """
+        frappe.db.sql(sql,filters)
 
         if run_commit:
             frappe.db.commit()
-
-    return data
-
-def add_data_to_log(data):
-    # clean old data queue 
-    sql = "delete from `tabChannel Manager Sync Data Log` where date in %(date)s and room_type in %(room_type_id)s and request_type='OTA_HotelAvailNotifRQ'"
-    frappe.db.sql(sql, {
-        "room_type_id": set([d.get("room_type_id") for d in data]),
-        "date": set([d.get("date") for d in data])
-    })
-
-    def get_data():
-
-        for d in data:
-            doc = doc = frappe.new_doc("Channel Manager Sync Data Log")
-            doc.name = frappe.generate_hash(length=10)
-            doc.property = d.get("property")
-            doc.provider = "Exely"
-            doc.request_type = "OTA_HotelAvailNotifRQ"
-            doc.room_type = d.get("room_type_id")
-            doc.date = d.get("date")
-            doc.value =   d.get("total_room_available")
-
-
-            yield doc
-
-    
-    
-
-    bulk_insert("Channel Manager Sync Data Log",get_data() , chunk_size=10000)
-
-
-
-
-
-    
-
+ 
 
 @frappe.whitelist()
 def get_room_availability(property, start_date,end_date):
@@ -224,68 +208,182 @@ def get_room_availability(property, start_date,end_date):
 
     # check if date not exist in daily property data then add future date to data get room total from room_type
     return data
+ 
+@frappe.whitelist()
+def runme():
+    initialized_availability_upload("ESTC HOTEL 6")
 
 @frappe.whitelist(methods="POST")
-def update_room_availability_restriction(property,stop_sale,data):
-    # status = 1 (Stop Sale), 0 open sale
-    # step 
-    #1 backup old stop sale
-    # 2 update stop sale
-    # 3 get change data and add to sync data log
-    # 4 run schedule task update availability restriction
+@rate_limit(limit=3, seconds=60)
+def resync_availability(data=None,show_message = True):
+    if not data:
+        data = {
+            "property": "ESTC Hotel 6",
+            "date_ranges": [
+                {"start_date": "2026-07-01", "end_date": "2026-07-30"},
+                {"start_date": "2026-09-01", "end_date": "2026-10-30"}
+            ],
+            "room_types": ["RT-0001", "RT-0004"],
+        }
 
-    filters = {
-        "property":property,
-        "stop_sale": stop_sale,
-        "start_date": min([getdate(d.get("date") for d in data)]),
-        "end_date": max([getdate(d.get("date") for d in data)]),
-        "room_type_id": set([d.get("room_type") for d in data]),
-        "dates": set([d.get("date") for d in data])
-    }
+    cm_info = get_channal_manager_info(data.get("property"))
+    if not cm_info:
+        frappe.throw("No Channel Manager Integration")
+    if cm_info.enable == 0:
+        frappe.throw("Channel manager integration is disabled")
+    if cm_info.prices_for_accommodation !="Receive from PMS":
+        frappe.throw("Availability is not allow to manager in PMS")
      
+    conditions = []
+    filters = {}
+    for i, r in enumerate(data.get("date_ranges")):
+        conditions.append(
+            f"(rr.date between %(start_{i})s and %(end_{i})s)"
+        )
+        filters[f"start_{i}"] = r.get("start_date")
+        filters[f"end_{i}"] = r.get("end_date")
 
-    # backup old current stop sale update to old stop sale field
-    sql="""update `tabDaily Property Data` set old_stop_sale = stop_sale 
-         where
-                property = %(property)s and 
-                room_type_id in %(room_type_id)s and 
-                date in %(dates)s 
-        """
-    frappe.db.sql(sql,filters)
+    date_filters = " OR ".join(conditions)
+    filters.update({
+        "property": data.get("property"),
+        "room_types":data.get("room_types")
+    })
 
-    # update stop sale value
-    sql = """update `tabDaily Property Data`
-             set stop_sale=%(stop_sale)s
-             where
-                property = %(property)s and 
-                room_type_id in %(room_type_id)s and 
-                date in %(dates)s
-    """
-    frappe.db.sql(sql,filters)
+    sql = f"""
+        insert into `tabChannel Manager Sync Data Log` (
+            name,
+            provider,
+            request_type,
+            property,
+            room_type,
+            date,
+            value
+        )
+        select 
+            name,
+            '{cm_info.provider}' as provider,
+            '{REQUEST_TYPE}' as request_type,
+            property,
+            room_type_id,
+            date,
+            if(total_room_available<0,0,total_room_available) as value
+        FROM `tabDaily Property Data` rr
+        WHERE
+            ({date_filters})
+            AND rr.property = %(property)s
+            AND rr.room_type_id in %(room_types)s 
+        ON DUPLICATE KEY UPDATE
+            sync_session_id = '',
+            value = VALUES(value);
 
-    # check if any data change then 
-    
-    frappe.db.commit()
+    """ 
+ 
 
-    return "Success"
-
-@frappe.whitelist(methods="POST")
-def toggle_update_availability_restriction(data):
-    import time
-    time.sleep(.5)
-    sql="update `tabDaily Property Data` set stop_sale=%(stop_sale)s, old_stop_sale =%(stop_sale)s where property = %(property)s and room_type_id= %(room_type_id)s and date=%(date)s"
-    frappe.db.sql(sql,data)
-    
-    # add data to sync queue
-
-    
-    frappe.db.commit()
-
-    return "Success"
-
-
-
-
+    frappe.db.sql(sql, filters, as_dict=1)
 
  
+    
+    frappe.db.commit()
+
+    if cm_info.get("provider") == "Exely": 
+        frappe.enqueue(
+            "edoor.channel_managers.exely.availability.sync_room_availability",
+            queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
+            property=data.get("property")
+        )
+
+
+    if show_message:  
+        frappe.msgprint("Room availability update sent successfully. The sync is running in the background, and you will be notified when it is complete.")
+    return "Success"
+
+@frappe.whitelist(methods="POST")
+@rate_limit(limit=5, seconds=60)
+def initialized_availability_upload(property):
+    cm_info = get_channal_manager_info(property)
+    if not cm_info:
+        frappe.throw("No channel manager integration for this property")
+    if cm_info.enable == 0:
+        frappe.throw("Channel Manager is disable")
+    
+    if cm_info.initialized_availability_upload == 1:
+        frappe.throw("Room availability is already synced with the channel manager. Please use the 'Re-upload' option in the dashboard.")
+    
+
+    
+    resync_availability({
+        "property":property,
+        "room_types":[d.get("edoor_room_type") for d in  cm_info.get("room_types") if d.get("edoor_room_type") and d.get("room_type_code")],
+        "date_ranges":[
+            {"start_date":today(),"end_date": frappe.utils.add_years(today(),1) }
+        ]
+    },show_message=False)
+
+
+    frappe.msgprint("We are currently processing your room availability data in the background. Please wait until the upload to the channel manager is completed.")
+
+    # update sync status to cached storage
+    for rt in cm_info.room_types:
+        cached_key = f"data_initialize_availability_{rt.edoor_room_type}"
+        frappe.cache().set_value(cached_key,"In Progress")
+        
+    # update room availablity sync status in background
+    frappe.enqueue("edoor.api.room_availability.update_availability_upload_status",
+            queue="long",
+            property=property
+        )
+
+    return "Room availability is being upload to channel manager"
+
+
+# this method is use to update availability sync status 
+# when first upload data to channel manger
+@frappe.whitelist()
+def update_availability_upload_status(property = "ESTC HOTEL 6"):   
+    from epos_restaurant_2023.custom_socket_client import emit_event
+    # we delay 5 second to wait data upload complete to cm
+    time.sleep(5)
+
+    cm_info = get_channal_manager_info(property)
+    for rt in cm_info.room_types:
+        cached_key = f"data_initialize_availability_{rt.edoor_room_type}"
+        filter = {
+            "property":property,
+            "room_type":rt.edoor_room_type,
+            "request_type":"Availability update"
+        }
+        if frappe.db.exists("Channel Manager Sync Data Log",filter):
+            frappe.cache().set_value(cached_key,"In Progress")
+        else:
+            frappe.cache().set_value(cached_key,"Complete")
+
+    if not frappe.db.exists("Channel Manager Sync Data Log",{"property":property,"request_type":"Availability update"}):
+        frappe.db.set_value("Channel Manager Integration",cm_info.name,"initialized_availability_upload",1)
+        frappe.db.commit()
+        # emit socket to client to data upload complete
+        emit_event("ChannelManagerUpdate",{
+                            "action":"alert_cm_sync_message",
+                            "property": property,
+                            "status":"Success",
+                            "title":"Upload Room Availability",
+                            "message": "Upload room availability to channel manager successuflly",
+        })
+
+                        
+    else:
+        frappe.enqueue("edoor.api.room_availability.update_availability_upload_status",
+            queue="long",
+            property=property
+        )
+
+
+    # socket client listent at 
+    # \frontdesk\src\views\channel_managers\channel_manager\components\cm_initialize_step\ComCMInit.vue
+    
+    emit_event("ChannelManagerUpdate",{
+                "action":"update_channel_manager_data_upload_status",
+                "property": property,
+                "upload_status":get_data_upload_status(property)
+    })
+
 

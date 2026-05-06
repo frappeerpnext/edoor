@@ -43,24 +43,26 @@ def generate_room_occupies(stay_names,run_commit = True,sync_room_available_to_c
     generate_temp_room_occupy(stays_info=stays_info)
     affected_data = affected_data + get_affected_data(stay_names)
 
-    # update room availability
-    from edoor.api.room_availability import update_room_availability
-    update_room_availability(
-        filters={
-        "property": frappe.get_cached_value("Reservation Stay",stay_names[0],"property"),
-        "start_date": min([d["start_date"] for d in affected_data]),
-        "end_date": max([d["end_date"] for d in affected_data]),
-        "room_type_id": list(set([d["room_type_id"] for d in affected_data])),
-        "sync_room_available_to_channel_manager":sync_room_available_to_channel_manager
-     },
-     run_commit=False
-    )
     
-
+         
+    
 
     generate_room_occupy(stays_info=stays_info)
     if run_commit:
         frappe.db.commit()
+
+    # update room availability
+    frappe.enqueue(
+            "edoor.api.room_availability.update_room_availability",
+            queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
+            filters={
+            "property": frappe.get_cached_value("Reservation Stay",stay_names[0],"property"),
+            "start_date": min([d["start_date"] for d in affected_data]),
+            "end_date": max([d["end_date"] for d in affected_data]),
+            "room_type_id": list(set([d["room_type_id"] for d in affected_data])),
+            "sync_room_available_to_channel_manager":sync_room_available_to_channel_manager
+     }
+     )
     
 def generate_temp_room_occupy(stays_info):	
     bulk_insert("Temp Room Occupy",get_temp_room_occupy_record(stays_info=stays_info) , chunk_size=10000)

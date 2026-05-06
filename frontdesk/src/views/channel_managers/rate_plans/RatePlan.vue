@@ -7,7 +7,7 @@
                         <div class="text-xl md:text-2xl white-space-nowrap">
                             {{ $t('Rate Plan') }} - {{ rateType }}
                         </div>
-                        <Tag v-if="prodiverName" :value="`connected with ${prodiverName}`" class="border-round"/>
+                        <Tag v-if="prodiverName && rateInfo?.cm_rate_plan_list?.cm_rate_plan" :value="`connected with ${prodiverName}`" class="border-round"/>
                     </div>
                 </div>
             </template>
@@ -19,7 +19,8 @@
                     icon="pi pi-bars"
                     class="border-0"
                     :model="restrictionMenuItems"
-                    @click="onOpenCloseSalesDialog('Closed')"
+                    @click="onOpenCloseSalesDialog('Closed')" 
+                    v-if="cm_info?.restrictions == 'Receive from PMS'"
                     />
                                         
                     <Button @click="onViewSyncStatus" class="border-0"  >{{$t("Sync Status")}}</Button>
@@ -34,6 +35,7 @@
             <div v-if="selectedComponent"> 
                 <ComSyncStatus :method="['Prices update','Restriction update']" v-if="rateInfo?.cm_rate_plan_list?.cm_rate_plan" />
                 <br/> 
+                
                 <component  :is="componentsMap[selectedComponent]"/> 
             </div> 
         </div> 
@@ -43,14 +45,14 @@
 import Tag from 'primevue/tag';
 import { i18n } from '@/i18n';
 import { useRatePlan } from "./hooks/useRatePlan";
-import { useRestriction } from "./hooks/useRestriction";
-import { inject, onMounted, onUnmounted } from 'vue'
+import {  onMounted, onUnmounted } from 'vue'
 import { useRoute , computed } from '@/plugin'
 import ComSyncStatus from "@/views/channel_managers/rate_plans/components/ComSyncStatus.vue"
 import ComChannelManagerSyncStatus from "@/views/channel_managers/components/ComChannelManagerSyncStatus.vue"
 import ComBulkUpdateRestriction from '@/views/channel_managers/rate_plans/components/ComBulkUpdateRestriction.vue'; 
 const route = useRoute()
 const { 
+    cm_info,
     components,
     selectedComponent,
     rateType,
@@ -60,18 +62,30 @@ const {
     settingMenues,
     onRefresh,
     resetData,
-    reloadRestrictionData
+    reloadRestrictionData,
+    restrictionTypes
 
 
     
 } = useRatePlan();
-const { 
-    loadRestrictionTypeList,    
-    restrictionTypeList
-} = useRestriction();
+
+const restrictionManageByCM = computed(()=>{
+
+  const _data = [];
+  ["Closed","Cta","Ctd","MinLos","MaxLos","MinLosArrival","MaxLosArrival","MinLosArrival","MaxLosArrival","FullPatternLos"].forEach(r => {
+    if (cm_info.value[r.toLowerCase()]===1){
+      _data.push(r)
+  }
+    
+  });
+
+return _data
+
+
+})
 
 const restrictionMenuItems = computed(() => {
-  return restrictionTypeList.value.map(item => ({
+  return restrictionManageByCM.value.map(item => ({
     label: item,
     command: () => onOpenCloseSalesDialog(item)
   }))
@@ -98,24 +112,26 @@ function onViewSyncStatus(){
      app.utils.openDialog(ComChannelManagerSyncStatus,"Channel Manager Sync Status")
 }
 
+function socketEvent(arg){
+ 
+  if(arg.action == "update_sync_rate_plan_status" && arg.property == window.property_name){
+      if (arg.status?.toLowerCase() == "success") {
+      app.utils.showSuccess(arg.title, arg.message, 0, "tr")
+    } else {
+
+      app.utils.showWarning(arg.title, arg.message, 0, "tr", { action_title: "View sync log", "action": "view_channel_manager_sync_log|" + arg.docname })
+    }
+    }
+  
+}
+
 onMounted(()=>{
-    loadRestrictionTypeList()
-       window.socket.on("ChannelManagerUpdateRatePlan", (arg) => {
-        
-            if(arg.status?.toLowerCase()=="success"){
-                app.utils.showSuccess(arg.title,arg.message,0,"tr")
-            }else {
-               
-                app.utils.showWarning(arg.title,arg.message,0,"tr",{action_title:"View sync log","action":"view_channel_manager_sync_log|" + arg.docname})
-            }
-           
-         
-    })
+       window.socket.on("ChannelManagerUpdate", socketEvent)
 })
  
 onUnmounted(()=>{
     resetData()
-    window.socket.off("ChannelManagerUpdateRatePlan")
+    window.socket.off("ChannelManagerUpdate",socketEvent)
 })
 </script>
 <style scoped>

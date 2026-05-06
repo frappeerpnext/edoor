@@ -1,10 +1,12 @@
 import frappe
 from edoor.api.utils import make_hash,generate_unique_dates
 from itertools import product
-from edoor.channel_managers.utils import get_channal_manager_info,can_save_data
+from edoor.channel_managers.utils import get_channal_manager_info,can_save_data,add_change_data_log
 from frappe import _
 from frappe.utils import getdate, add_to_date,today
 from frappe.rate_limiter import rate_limit
+
+
 
 
 REQUEST_TYPE = "Restriction update"
@@ -30,16 +32,13 @@ def get_room_restriction_data(filters):
 
     }
     for rt in filters.get("restriction_types") : 
-        
-        if rt in ["Closed","Cta","Ctd","MinLos","MaxLos","MinLosArrival","MaxLosArrival","MinAdvBooking","MaxAdvBooking"]:
-            return_data[rt] =  get_close_sale_data({**filters,"restriction_type":rt})
-        elif rt == "FullPatternLos":
-            return_data[rt] = {}
+        return_data[rt] =  get_restriction_data({**filters,"restriction_type":rt})
+       
 
     return return_data
 
 
-def get_close_sale_data(filters):
+def get_restriction_data(filters):
     sql = """
         SELECT 
             CONCAT(DATE_FORMAT(rr.date,'%%y%%m%%d')) AS `key`,
@@ -54,7 +53,11 @@ def get_close_sale_data(filters):
     """
      
     data = frappe.db.sql(sql, filters, as_dict=1)
+    if filters.get("restriction_type") == "FullPatternLos":
+        return {item['key']: item.get("value").count("O") for item in data}
+
     return {item['key']: item['value'] for item in data}
+ 
 
 
 @frappe.whitelist()
@@ -142,13 +145,16 @@ def bulk_update_room_restriction(data):
             "rate_type":data.get("rate_type"),
             "restriction_type":data.get("restriction_type")
         }, 
-        run_comit = False
+        run_commit = False
     )
 
     # delete record that have value empty
     sql="delete from `tabRoom Restriction` where value = ''"
     frappe.db.sql(sql)
 
+    data["room_type"] =  ", ".join([d.get("room_type") for d in data.get("room_types") or []])
+    data["transaction_type"] =  "Restriction update"
+    add_change_data_log(data, run_commit=False)
     
             
     frappe.db.commit()
@@ -183,7 +189,14 @@ def validate_bulk_update_room_restriction(data):
         if cm_info.enable==1 and has_cm_rate_plan: 
             if not  can_save_data(property=data.get("property"), title ="Restriction update",provider=cm_info.provider):
                 frappe.throw("Data sync to {0} Channel Manager is temporarily blocked. Please check the sync status.".format(cm_info.provider))
-                
+
+        # validate room restriction manage by CM
+        if cm_info.restrictions == "Deliver to PMS":
+            frappe.throw("Cannot update restriction because it is managed by the Channel Manager.")
+        else:
+            if cm_info.get(data.get("restriction_type").lower()) == 0:
+                frappe.throw("Cannot update <strong>{0}</strong> restriction because it is managed by the Channel Manager.".format(data.get("restriction_type")))
+
     # validate past date
     if not data.get("date_ranges"):
         frappe.throw("Please enter start date and end date")
@@ -191,6 +204,7 @@ def validate_bulk_update_room_restriction(data):
     maximum_future_years_allowed = int(frappe.get_cached_value("eDoor Setting",None, "maximum_future_years_allowed"))
     max_date = getdate(today())
     max_date = max_date.replace(max_date.year + maximum_future_years_allowed, month=12, day=31)
+
  
     
     for dt in data.get("date_ranges"):
@@ -213,7 +227,7 @@ def validate_bulk_update_room_restriction(data):
 
 
 # prepare sync data to channel manager
-def prepare_sync_data_to_channel_manager(filters,run_comit=True):
+def prepare_sync_data_to_channel_manager(filters,run_commit=True):
     if not filters.get("property") :
         return
     
@@ -273,11 +287,22 @@ def prepare_sync_data_to_channel_manager(filters,run_comit=True):
     """.format(provider = cm_info.get("provider"),request_type=REQUEST_TYPE)
 
    
-    # frappe.throw(str(filters))
+
         
     frappe.db.sql(sql,filters)
 
-    if run_comit:
+    # update old value = value to prevent sync again
+    sql = """
+        update  `tabRoom Restriction` 
+        SET old_value = value
+        where
+            room_type_id in %(room_types)s and 
+            rate_type = %(rate_type)s and 
+            `date` between %(start_date)s and %(end_date)s 
+    """
+    frappe.db.sql(sql,filters)
+
+    if run_commit:
         frappe.db.commit()
 
 
@@ -327,8 +352,9 @@ def get_restriction_type_list(property_name):
 
 
 @frappe.whitelist(methods="POST")
-@rate_limit(limit=3, seconds=60) 
+@rate_limit(limit=30, seconds=60) 
 def resync_room_restriction(data=None):
+   
 
     if not data:
         data = {
@@ -344,11 +370,13 @@ def resync_room_restriction(data=None):
 
 
     cm_info = get_channal_manager_info(data.get("property"))
+    
+    
     if not cm_info:
         frappe.throw("No Channel Manager Integration")
     if cm_info.enable == 0:
         frappe.throw("Channel manager integration is disabled")
-    if cm_info.restrictions =="Manage in CM":
+    if cm_info.restrictions =="Deliver to PMS":
         frappe.throw("Restriction is not allow to manager from PMS")
     
     # validate rate plan has integration
@@ -358,6 +386,8 @@ def resync_room_restriction(data=None):
 
     # validate restriction code allow manage from pms
     for rs in data.get("restriction_types"):
+        # frappe.throw(rs.lower())
+       
         if str(cm_info.get(rs.lower())) == "0":
             frappe.throw("Restriction type {0} is not allow to manage from PMS".format(rs))
 
@@ -391,7 +421,7 @@ def resync_room_restriction(data=None):
         select 
             name,
             '{cm_info.provider}' as provider,
-            'OTA_HotelAvailNotifRQ' as request_type,
+            '{REQUEST_TYPE}' as request_type,
             property,
             rate_type,
             room_type_id,
@@ -419,6 +449,22 @@ def resync_room_restriction(data=None):
     })
 
     frappe.db.sql(sql, filters, as_dict=1)
+
+    # some restrinction data are dont have in room restriction record 
+    # so we find missing record in room restrinction then send direct to cm sync data log
+    # then value set for missing record is 
+    # Close set 0 mean open
+    # Cta set 0 mean open
+    # Ctd set 0 mean open
+    # MinLos set "" mean remove value
+    # MaxLos set "" mean remove value
+    # MinLosArrival set "" mean remove value
+    # MaxLosArrival set "" mean remove value
+    # MinAdvBooking set "" mean remove value
+    # MaxAdvBooking set "" mean remove value
+    # FullPaternLos set "" mean remove value
+
+    get_missing_room_restriction_data(data)
     frappe.db.commit()
 
     if cm_info.get("provider") == "Exely": 
@@ -436,6 +482,93 @@ def resync_room_restriction(data=None):
     return "Success"
 
 
+def get_missing_room_restriction_data(data):
+    cm_info = get_channal_manager_info(data.get("property"))
+    # find missing date from date date range and restriction type
+    conditions = []
+    filters = {}
+    for i, r in enumerate(data.get("date_ranges")):
+        conditions.append(
+            f"(d.date between %(start_{i})s and %(end_{i})s)"
+        )
+        filters[f"start_{i}"] = r.get("start_date")
+        filters[f"end_{i}"] = r.get("end_date")
 
+    date_filters = " OR ".join(conditions)
+
+    
+    filters.update({
+                "property": data.get("property"),
+                "rate_types": tuple(data.get("rate_types")),
+                "room_types": tuple(data.get("room_types"))
+            })
+
+    def get_missing_date(restriction_type):
+        
+            
+        filters.update({
+            "restriction_type": restriction_type
+        })
+        sql = f"""
+            select 
+                d.date 
+            from `tabDates` d 
+            left join `tabRoom Restriction` rr 
+                on rr.date = d.date
+                and rr.restriction_type = %(restriction_type)s
+                and rr.room_type_id in %(room_types)s
+                and rr.property = %(property)s
+                and rr.rate_type in %(rate_types)s
+            where 
+                ({date_filters}) and 
+                rr.date is null
+        """
+        return  [d.get("date") for d in frappe.db.sql(sql,filters,as_dict=1)]
+
+
+
+    value_map = {
+        "Closed":"0","Cta":"0","Ctd":0,
+        "MinLos":"","MaxLos":"","MinLosArrival":"","MaxLosArrival":"",
+        "MinAdvBooking":"","MaxAdvBooking":"",
+        "FullPatternLos":"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+    } 
+
+    # bulk insert row to sync data log
+    def bulk_insert_to_cm_data_log(raw_data):
+        values_sql = ",".join(
+        f"('{d.get('name')}','{data.get('property')}','{cm_info.get('provider')}','Restriction update','{d.get('restriction_type')}','{d.get('date')}','{d.get('rate_type')}','{d.get('room_type_id')}','{d.get('value')}')"
+        for d in raw_data
+        )
+        sql = f"""
+            INSERT INTO `tabChannel Manager Sync Data Log`
+            (`name`,`property`,`provider`,`request_type`,`restriction_type`, `date`,`rate_type`, `room_type`, `value`)
+            VALUES
+            {values_sql}
+            ON DUPLICATE KEY UPDATE
+            sync_session_id = '',
+            `value` = VALUES(`value`);
+        """
+        frappe.db.sql(sql)
+        
+
+    raw_data = []
+    for rst in data.get("restriction_types"):
+        missing_date = get_missing_date(rst)
+        raw_data = raw_data +  [
+        {
+                "name": make_hash(f"rs{RESTRICTION_TYPE_PREFIX.get(rst)}{rate_type}{room_type}{date}"),
+                "date": date,
+                "room_type_id": room_type,
+                "rate_type":rate_type,
+                "restriction_type":rst,
+                "value": value_map.get(rst)
+            }
+            for date, room_type,rate_type in product(missing_date, data.get("room_types"),data.get("rate_types") )
+        ]
+        
+
+    if len(raw_data)>0:
+        bulk_insert_to_cm_data_log(raw_data)
 
 

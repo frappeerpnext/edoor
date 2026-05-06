@@ -1,12 +1,20 @@
 import time
 import frappe
 
+# this value from exely doc
 LIMITS = {
     "sec": (1460, 2),
     "min3": (4380, 180),
     "hour": (13140, 3600),
     "day": (43800, 86400)
 }
+
+# LIMITS = {
+#     "sec": (2460, 2),
+#     "min3": (6380, 180),
+#     "hour": (33140, 3600),
+#     "day": (63800, 86400)
+# }
 
 
 @frappe.whitelist()

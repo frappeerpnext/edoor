@@ -1,7 +1,11 @@
 <template>
-    <div class="step" :class="{ 'active': isActive }" >
-        <div class="circle">{{ index }}</div>
-        <p>{{ $t(title || '') }}</p>
+    <div class="step"  :class="{ 
+      'active': activeIndex === index,
+      'done': activeIndex > index
+    }" >
+   
+        <div class="circle">{{ index }} </div>
+        <p>{{ $t(title || '') }}  </p>
     </div>
 
 </template>
@@ -11,7 +15,7 @@ const emit = defineEmits(['onStepper']);
 const props = defineProps({
     title: String,
     index: Number,
-    activeIndex: Number  // Add this prop from parent
+    activeIndex: Number
 })
 
 const isActive = computed(() => props.activeIndex === props.index);
@@ -44,7 +48,10 @@ const isActive = computed(() => props.activeIndex === props.index);
     color: white;
     box-shadow: 0 5px 12px rgba(99, 102, 241, 0.4);
 }
-
+.step.done .circle {
+  background: #22c55e;
+  color: white;
+}
 .step p {
     font-size: 11px;
     margin-top: 8px;

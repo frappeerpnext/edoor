@@ -38,6 +38,68 @@ class Room(Document):
 			update_fetch_from_fields(self)
 		frappe.clear_document_cache('Room', self.name)
 
+		old_doc = self.get_doc_before_save()
+		if old_doc:
+			if old_doc.room_type_id != self.room_type_id:
+				update_total_room(self.room_type_id)
+				update_total_room(old_doc.room_type_id)
+				add_cm_task(self,[self.room_type,old_doc.room_type])
+		else:
+			update_total_room(self.room_type_id)
+			add_cm_task(self,[self.room_type])
+
+
+
+	def after_delete(self):
+		update_total_room(self.room_type_id)
+		add_cm_task(self,[self.room_type])
+		
+
+def update_total_room(room_type_id):
+	if room_type_id:
+		frappe.db.sql("update `tabDaily Property Data` set total_room = %(total)s where room_type_id = %(room_type_id)s and date>=CURDATE()",{
+			"total":frappe.db.count("Room",{"room_type_id":room_type_id,"disabled":0}),
+			"room_type_id":room_type_id
+		})
+
+def add_cm_task(self,room_types=None):
+	if not frappe.db.exists("Channel Manager Integration",self.property):
+		return
+	if str(frappe.get_cached_value("Channel Manager Integration",self.property,"enable")) == "0":
+		return
+	
+	if str(frappe.get_cached_value("Channel Manager Integration",self.property,"initialized_availability_upload")) == "0":
+		return
+	if not room_types:
+		return
+
+	description = "The total number of rooms for room type {0} has been updated.<br/>Please re-upload the data to the Channel Manager to ensure it is synchronized with your local PMS.".format(
+		", ".join(room_types)
+	)
+	
+	doc = {
+		"doctype":"ToDo",
+		"custom_subject":"Reupload availabilty to Channel Manager for Room Type: {0}".format(",".join(room_types)),
+		"custom_property": self.property,
+		"description":description,
+		"priority":"High",
+		"status":"Open",
+		"role":"Channel Manager User"
+	}
+
+	frappe.get_doc(doc).insert(ignore_permissions = True)
+
+
+	
+	frappe.msgprint(
+		msg=description,
+		title="Warning",
+		indicator="orange"
+	)
+
+
+
+
 @frappe.whitelist()
 def update_to_related_transaction(param):
     param = json.loads(param)

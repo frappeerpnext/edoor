@@ -6,8 +6,6 @@
     titleButtonOK="Save"
     :hideIcon="false"
   >
-  {{ data }}
- 
   <Fieldset class="cs-close-open-sale-fieldset">
     <template #legend>
         <div class="flex items-center pl-2">
@@ -168,20 +166,20 @@
           <div class="flex align-items-center"  v-if="restrictionType.show_radio_input">
             <RadioButton 
              v-model="rt.value" 
-              inputId="close"
+              :inputId="'close'+rt.room_type_id"
               :value="1"
               :disabled = "!rt.selected"
             />
-            <label class="ml-2 cursor-pointer" :class="{ 'text-gray-400': !rt.selected }">Close</label>
+            <label :for="'close'+rt.room_type_id" class="ml-2 cursor-pointer" :class="{ 'text-gray-400': !rt.selected }">Close</label>
           </div>
           <div class="flex align-items-center"  v-if="restrictionType.show_radio_input">
             <RadioButton 
               v-model="rt.value" 
-              inputId="open"
+              :inputId="'open'+rt.room_type_id"
           :value="0"
             :disabled = "!rt.selected"
             />
-            <label class="ml-2 cursor-pointer" :class="{ 'text-gray-400': !rt.selected }"">Open</label>
+            <label :for="'open'+rt.room_type_id"  class="ml-2 cursor-pointer" :class="{ 'text-gray-400': !rt.selected }"">Open</label>
           </div>
 
           <div class="flex gap-4">

@@ -3,7 +3,6 @@
         <ComPendingSyncDataStatus :types="['Room Rate','Restriction']"/>
     
     <div class="grid p-5 m-0 flex justify-content-center">
-
         <!-- Basic Information -->
         <div class="col-6 card">
             <div class="card-inner "> 
@@ -19,7 +18,18 @@
                         </div>
                     </div>
                 </div>  
+                    <div class="form-row">
+  <div class="form-group" style="flex:1"
+    v-if="rateInfo?.room_rate_min_max_date?.start_date || rateInfo?.room_rate_min_max_date?.end_date">
+
+    <label>Rate plan display period</label>
+    {{ moment(rateInfo.room_rate_min_max_date.start_date).format('DD-MM-YYYY') }}  →  {{ moment(rateInfo.room_rate_min_max_date.end_date).format('DD-MM-YYYY') }} 
+
+  </div>
+</div>
+                
                 <div class="form-row"> 
+                
                     <div class="form-row">
                         <div class="form-group">
                             <label>{{$t('Rate Type')}}</label>
@@ -36,6 +46,21 @@
                         <input :value="rateInfo.cm_rate_plan_list?.cm_rate_plan" readonly/>
                     </div>
                 </div>  
+                    <div class="field">
+      <label>{{$t('Restriction Manage By PMS')}}</label>
+    <div v-if="restrictionManageByCM.length" class="flex flex-wrap gap-2">
+      <Chip
+        v-for="restriction in restrictionManageByCM"
+        :key="restriction"
+        :label="restriction"
+        class="bg-primary text-white"
+      />
+    </div>
+    
+    <div v-else class="text-gray-400 italic">
+      No restrictions applied
+    </div>
+  </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1;" v-if="rateInfo.rate_type?.room_types.length>0">
                         <label>{{$t('Available Room Types')}}</label>
@@ -84,16 +109,7 @@
                         </div>
                     </div> 
                 </div> 
-                <div class="form-row" > 
-                    <div class="form-group" style="flex:1" v-if="rateInfo?.room_rate_min_max_date?.start_date">
-                        <label>{{$t("Start Sell Date")}}</label>
-                        <input :value="moment(rateInfo?.room_rate_min_max_date?.start_date).format('DD-MM-yyyy')" readonly/>
-                    </div> 
-                    <div class="form-group" style="flex:1" v-if="rateInfo?.room_rate_min_max_date?.end_date">
-                        <label>{{$t("Stop Sell Date")}}</label>
-                        <input :value="moment(rateInfo?.room_rate_min_max_date?.end_date).format('DD-MM-yyyy')" readonly/>
-                    </div>   
-                </div>
+        
     
                 <div class="form-group">
                     <label>{{$t('Note')}}</label>
@@ -103,9 +119,10 @@
         </div>   
     </div>   
     </div>
+
 </template>
 <script setup>
-import { onMounted, ref, inject } from 'vue';
+import { onMounted, ref, inject,computed } from 'vue';
 import { useRatePlan } from '../hooks/useRatePlan'; 
 import ComPendingSyncDataStatus from '@/views/channel_managers/components/ComPendingSyncDataStatus.vue';
 import {i18n} from '@/i18n'; 
@@ -113,8 +130,30 @@ const moment= inject("$moment")
 const { t: $t } = i18n.global;
 const { 
         rateInfo, 
-        roomTypes
+        roomTypes,
+        cm_info
     } = useRatePlan();    
+
+const restrictionManageByCM = computed(() => {
+  const map = {
+    closed: "Closed",
+    cta: "CTA",
+    ctd: "CTD",
+    minlos: "Min LOS",
+    maxlos: "Max LOS",
+    minlosarrival: "Min LOS Arrival",
+    maxlosarrival: "Max LOS Arrival",
+    minadvbooking: "Min Advance",
+    maxadvbooking: "Max Advance",
+    fullpatternlos: "Full Pattern LOS"
+  }
+
+  return Object.entries(map)
+    .filter(([key]) => cm_info.value?.[key] == 1)
+    .map(([, label]) => label)
+})
+
+
 const checked = ref(1)
 onMounted(() => {     
 })

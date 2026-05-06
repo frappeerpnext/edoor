@@ -13,9 +13,7 @@
   "total_block",
   "total_room_available",
   "old_room_available",
-  "column_break_uzni",
-  "stop_sale",
-  "old_stop_sale"
+  "column_break_uzni"
  ],
  "fields": [
   {
@@ -77,23 +75,11 @@
   {
    "fieldname": "column_break_uzni",
    "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "stop_sale",
-   "fieldtype": "Check",
-   "label": "Stop Sale"
-  },
-  {
-   "default": "0",
-   "fieldname": "old_stop_sale",
-   "fieldtype": "Check",
-   "label": "Old Stop Sale"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-23 10:45:20.998309",
+ "modified": "2026-05-01 16:45:21.016655",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Daily Property Data",

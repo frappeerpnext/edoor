@@ -3,7 +3,6 @@
   
 
     <div class="sync-modal">
-
       <!-- Header -->
       <div class="sync-header">
         <div class="left flex gap-2">
@@ -91,6 +90,8 @@
             </Column>
 
           </DataTable>
+
+          
         </template>
         <template v-if="log?.title == 'Restriction update'">
 
@@ -134,6 +135,15 @@
 
           </DataTable>
         </template>
+<template v-if="log?.title == 'Availability update'">
+<DataTable  :value="log?.raw_data">
+  <Column field="room_type" header="Room Type"></Column>
+  <Column field="booking_limit" header="Limit"></Column>
+  <Column field="start" header="Start"></Column>
+  <Column field="end" header="End"></Column>
+</DataTable>
+</template>
+        
       </div>
 
     </div>
@@ -166,6 +176,9 @@ const statusSeverity = computed(() => {
 
   if (log.value?.status === "Error")
     return "danger";
+  
+  if (log.value?.status === "Fail")
+    return "danger";
 
   return "info";
 
@@ -173,14 +186,14 @@ const statusSeverity = computed(() => {
 
 
 async function getLog() {
-
+  const l = await window.showLoading()
   const res = await app.getApi("edoor.channel_managers.utils.get_cm_sync_log_data", {
     docname: dialogRef.value.data.docname
   })
   if (res.data) {
     log.value = res.data
   }
-
+  l.close();
 
 }
 

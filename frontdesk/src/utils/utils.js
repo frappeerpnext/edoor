@@ -66,7 +66,13 @@ export function showWarning(title, message = "", life = 5000, group = "tc", data
   if (life == 0) {
     window.toast.add({ group: group, severity: 'warn', summary: title, detail: message, ...data, left: 1000 * 60 })
   } else {
-    window.toast.add({ group: group, severity: 'warn', summary: title, detail: message, life: life, ...data })
+ 
+    if (group=="tc"){
+window.toast.add({   severity: 'warn', summary: title, detail: message, life: life, ...data })
+    }else {
+      window.toast.add({ group:group,  severity: 'warn', summary: title, detail: message, life: life, ...data })
+    }
+    
   }
 
 
@@ -166,7 +172,7 @@ export function onConfirm(
   return new Promise((resolve) => {
 
     window.confirm.require({
-      group: "headless",
+      // group: "headless",
       message,
       header,
       icon,

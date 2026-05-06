@@ -162,6 +162,12 @@ scheduler_events = {
 			"*/10 * * * *": [
 				"edoor.api.schedule_task.ten_minute_job",
 			],
+        	"*/5 * * * *": [
+            "edoor.channel_managers.exely.reservation.add_new_exely_bookings"
+        	]
+
+	
+            
 	
 	},
 	# "all": [

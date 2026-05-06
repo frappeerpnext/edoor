@@ -3,6 +3,7 @@ import ComRatePlanInfo from "@/views/channel_managers/rate_plans/components/ComR
 import ComRoomRate from "@/views/channel_managers/rate_plans/components/ComRoomRate.vue"
 import ComRestriction from "@/views/channel_managers/rate_plans/components/ComRestriction.vue"
 import ComCMSyncLog from "@/views/channel_managers/rate_plans/components/ComCMSyncLog.vue"
+import ComChangeDataLog from "@/views/channel_managers/rate_plans/components/ComChangeDataLog.vue"
 import { useRestriction } from '@/views/channel_managers/rate_plans/hooks/useRestriction'
 import { useRoute } from 'vue-router'
 const ratePlan = ref({})
@@ -29,14 +30,16 @@ const components = ref([
     { component:"ComRatePlanInfo",is_loaded: true,title:"Rate Plan Information"},
     { component:"ComRoomRate",is_loaded: false,title:"Room Rate"},
     { component:"ComRestriction",is_loaded: false,title:"Restriction"},
-    { component:"ComCMSyncLog",is_loaded: false,title:"Channel Manager Sync Log"}
+    
+    { component:"ComChangeDataLog",is_loaded: false,title:"Change Data Log"}
 ])
 
 const componentsMap = {
     "ComRatePlanInfo":ComRatePlanInfo,
     "ComRoomRate":ComRoomRate,
     "ComRestriction":ComRestriction,
-    "ComCMSyncLog":ComCMSyncLog
+    "ComCMSyncLog":ComCMSyncLog,
+    "ComChangeDataLog":ComChangeDataLog
 }
 
 const savedselectedRestrictionTypes = localStorage.getItem("selectedRestrictionTypes")
@@ -336,6 +339,18 @@ export function useRatePlan() {
 
         
         await getRatePlanInfo()
+        
+        // hide cm sync log if not have cm integration
+        if(prodiverName.value && rateInfo.value?.cm_rate_plan_list?.cm_rate_plan){
+            if (!components.value.find(x=>x.component == "ComCMSyncLog")){
+                components.value.splice(3, 0, { component:"ComCMSyncLog",is_loaded: false,title:"Channel Manager Sync Log"});
+            }
+        }else {
+            if (components.value.find(x=>x.component == "ComCMSyncLog")){
+                components.value.splice(3, 1);
+            }
+        }
+
        
 
         l.close()

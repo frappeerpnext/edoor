@@ -1,7 +1,8 @@
 import frappe
 import json
-from frappe.utils import getdate, add_days,get_datetime,now_datetime,today
+from frappe.utils import getdate, add_days,get_datetime,now_datetime,today,nowdate, add_years
 from itertools import groupby
+from frappe.utils.caching import redis_cache
 
 @frappe.whitelist()
 def get_channal_manager_info(property):
@@ -21,6 +22,51 @@ def get_channal_manager_info(property):
     return data
 
 
+
+def get_sync_session_id(room_type_limit=0,rate_type="",request_type=None):
+    # this method is very important
+    # we use this method to apply sync session id to channel manager sync log table 
+    # when get data to sync to cm we use this session id to get data from sync log 
+    # and delete it by session  by session id after sync success 
+
+    # if sync faild session id will be clear from queue job retry sync cm data in queue job
+    # we check if last modified date over 60 second
+
+
+    import uuid
+    session_id = str(uuid.uuid4())
+    max_date =  get_sync_max_date()
+  
+
+    for room_type, limit in room_type_limit.items():
+
+        rows = frappe.db.sql("""
+            SELECT name
+            FROM `tabChannel Manager Sync Data Log`
+            WHERE 
+                coalesce(sync_session_id,'') = ''  AND 
+                room_type = %(room_type)s  and 
+                (%(rate_type)s = '' or rate_type = %(rate_type)s) and 
+                request_type = %(request_type)s and 
+                date<= %(max_date)s
+            ORDER BY date
+            LIMIT %(limit)s
+            FOR UPDATE SKIP LOCKED
+        """, {"room_type":room_type,"limit":limit,"rate_type":rate_type,"request_type":request_type,"max_date":max_date}, as_dict=True)
+
+        if len(rows) ==0:
+            continue
+        keys = [r.get("name") for r in rows]
+        frappe.db.sql("""
+            UPDATE `tabChannel Manager Sync Data Log`
+            SET sync_session_id = %(session_id)s,modified = NOW()
+            WHERE name IN %(names)s
+        """, {"session_id":session_id, "names":tuple(keys)})
+
+    frappe.db.commit()
+
+    return session_id
+    
 
 def group_date_ranges(dates_data):
     if not dates_data:
@@ -94,12 +140,14 @@ def get_sync_action_status(title,property,provider=None):
     if not provider:
         provider = cm_info.provider
         
-    sql="select is_retry_sync, name, sync_action,title, sync_until,response_text,property,provider,creation from `tabChannel Manager Sync Log` where title in %(titles)s and provider=%(provider)s and property = %(property)s order by creation desc limit 1"
+    sql="select is_retry_sync, name, sync_action,title, sync_until,response_text,property,provider,creation from `tabChannel Manager Sync Log` where title in %(titles)s and provider=%(provider)s and property = %(property)s and status <> 'Success' and is_retry_sync = 0 order by creation desc limit 1"
 
     data = frappe.db.sql(sql,{"titles":titles,"property":property,"provider":provider},as_dict = 1)
-     
+ 
+
     data = [d for d in data if d.get("is_retry_sync") ==0]
     if data:
+        
         data = data[0]
         if data.get("sync_action") == "Delay Sync":
             sync_until = get_datetime(data.get("sync_until") )
@@ -163,7 +211,8 @@ def get_cm_sync_log_data(docname):
         "sync_action":doc.sync_action,
         "sync_until":doc.sync_until,
         "creation":doc.creation,
-        "is_retry_sync":doc.is_retry_sync
+        "is_retry_sync":doc.is_retry_sync,
+        "raw_data": json.loads(doc.data)
     }
     def get_price_data():
         data =  json.loads(doc.data)
@@ -223,7 +272,7 @@ def get_all_cm_sync_status(property):
         _data = {
             "title":m
         }
-        sql = "select name,sync_action,provider, sync_until, is_retry_sync, response_text,status,creation  from `tabChannel Manager Sync Log` where property=%(property)s and title = %(title)s order by creation desc limit 1 "
+        sql = "select name,sync_action,provider, sync_until, is_retry_sync, response_text,status,creation  from `tabChannel Manager Sync Log` where property=%(property)s and request_type = %(title)s order by creation desc limit 1 "
         log = frappe.db.sql(sql,{"property":property,"title":m},as_dict = 1)
         if log:
             log = log[0]
@@ -231,6 +280,22 @@ def get_all_cm_sync_status(property):
         data.append(_data)
 
     return data
+
+
+
+@frappe.whitelist()
+def get_pending_sync_data_status(property):
+    max_sync_years = int(frappe.get_cached_value("eDoor Setting",None,"maximum_future_years_allowed") or 1)
+    max_date =  add_years(nowdate(), max_sync_years)
+    sql="select name from `tabChannel Manager Sync Data Log` where property=%(property)s and date<=%(date)s limit 1"
+    if len(frappe.db.sql(sql,{"property":property, "date": max_date},as_dict = 1))>0:
+        return {
+            "has_pending_data":1
+        }
+
+    return {
+            "has_pending_data":0
+        }
 
 @frappe.whitelist()
 def get_pending_sync_data(property):
@@ -266,7 +331,7 @@ def get_pending_group_room_rate_data(rate_type):
             from `tabChannel Manager Sync Data Log` a 
             join `tabOccupancy Code`  b on b.name = a.occupancy_code
             where
-                a.request_type = 'OTA_HotelRateAmountNotifRQ'  and 
+                a.request_type = 'Prices update'  and 
                 a.rate_type = %(rate_type)s
         """
         return frappe.db.sql(sql, {"rate_type":rate_type},as_dict = 1)
@@ -358,7 +423,7 @@ def get_unique_room_rate_values_by_occupancy_codes(occupancy_codes,rate_type):
             from 
                 `tabChannel Manager Sync Data Log` a 
             where
-                a.request_type = 'OTA_HotelRateAmountNotifRQ' and 
+                a.request_type = 'Prices update' and 
                 a.rate_type = %(rate_type)s and 
                 a.date >=CURDATE()
             group by 
@@ -393,7 +458,7 @@ def get_pending_room_rate_period(data,rate_type):
                 `tabChannel Manager Sync Data Log` a 
             where
                 a.room_type = %(room_type)s and 
-                a.request_type = 'OTA_HotelRateAmountNotifRQ' and 
+                a.request_type = 'Prices update' and 
                 rate_type = %(rate_type)s and
                 a.date>=CURDATE()
             group by 
@@ -480,7 +545,7 @@ def get_pending_room_restriction(rate_type):
         from `tabChannel Manager Sync Data Log`
         where
             rate_type = %(rate_type)s  and 
-            request_type = 'OTA_HotelAvailNotifRQ'
+            request_type = 'Restriction update'
         order by date,restriction_type
 
     """
@@ -505,3 +570,72 @@ def get_pending_room_restriction(rate_type):
         return restriction_data
 
     return get_restriction_data(group_data)
+
+def add_cm_task(data,run_commit=True):
+    doc = {
+        "doctype":"ToDo",
+         "reference_type":data.get("reference_type"),
+        "reference_name":data.get("reference_name"),
+        "custom_subject":data.get("subject"),
+        "custom_property": data.get("property"),
+        "description":data.get("description") or data.get("subject"),
+       
+        "priority":data.get("priority"),
+        "status":"Open",
+        "role":"Channel Manager User"
+    }
+
+    frappe.get_doc(doc).insert(ignore_permissions = True)
+    if run_commit:
+        frappe.db.commit()
+
+
+
+
+@redis_cache(ttl=86400)  
+def get_sync_max_date():
+    max_sync_years = int(
+        frappe.get_cached_value("eDoor Setting", None, "maximum_future_years_allowed") or 1
+    )
+    return add_years(nowdate(), max_sync_years)
+
+def delete_synced_data_log(session_id,request_type,provider="",cm_response=None,xml_body=None,run_commit = True):
+    # import xmltodict
+    # return xmltodict.parse(xml_body)
+    
+    # warnings =  cm_response.get("data",{}).get("s:Envelope",{}).get("s:Body",{}).get("OTA_HotelRateAmountNotifRS",{}).get("Warnings",{}).get("Warning")
+
+    # for w in warnings:
+    #     return get_value_from_xml_by_tag(xml_body,w.get("@Tag"))
+
+    sql="""
+        delete from `tabChannel Manager Sync Data Log`
+        where
+            ( 
+            sync_session_id  =  %(session_id)s and 
+            request_type = %(request_type)s and 
+            provider = %(provider)s
+            ) or 
+            date < CURDATE()
+            
+    """
+    frappe.db.sql(sql, {"session_id":session_id,"request_type":request_type,"provider":provider})
+    if run_commit:
+        frappe.db.commit()
+
+
+def add_change_data_log(data,run_commit=True):
+    doc = frappe.get_doc({
+        "doctype":"Change Data Log",
+        "property": data.get("property"),
+        "rate_type":data.get("rate_type"),
+        "room_type":data.get("room_type") or "",
+        "transaction_type":data.get("transaction_type"),
+        "restriction_type":data.get("restriction_type"),
+        "data":frappe.as_json(data)
+    })
+    doc.insert(ignore_permissions=True)
+
+    if run_commit:
+        frappe.db.commit()
+

@@ -138,6 +138,7 @@ import { useConfirm, h, ref, reactive, inject, onUnmounted, useToast, useDialog,
 
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import { useTippy } from 'vue-tippy'
+
 import interactionPlugin from '@fullcalendar/interaction'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import ComCalendarEventTooltip from '@/views/frontdesk/components/ComCalendarEventTooltip.vue'

@@ -7,9 +7,13 @@
                     <div class="notif-item" :class="d.status == 'Success' ? 'success' : 'warning'">
                         <span class="icon">{{ d.status == 'Success' ? '✔' : '⚠' }}</span>
                         <div class="content">
-                            <div class="title">{{ d.title }}</div>
+                            <div class="title">{{ d.request_type }}</div>
+                            <div class="text-overflow-ellipsis white-space-nowrap overflow-hidden" style="max-width: 250px;">
+  {{ d.response_text }}
+</div>
                             <div class="time">
                                 <ComTimeago :date="d.creation" />
+                            
                             </div>
                         </div>
                     </div>

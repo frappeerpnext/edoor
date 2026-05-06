@@ -31,7 +31,7 @@
 
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 import Image from 'primevue/image';
 
@@ -39,7 +39,9 @@ import ComInitializeWizardStep from "@/views/channel_managers/channel_manager/co
 import { useCMDashboard } from '@/views/channel_managers/channel_manager/hooks/useCMDashboard.js';
 const data = ref({})
 const {
-    channelManagerData
+    channelManagerData,
+    getDataUploadStatus,
+    dataUploadStatus
 } = useCMDashboard();
 
 const showWizardBox = ref(false)
@@ -47,19 +49,39 @@ const hideInitButton = ref(false)
 
 const startInitializeData = async () => {
     const l = await window.showLoading()
-    setTimeout(() => {   
+ 
         showWizardBox.value = true
         hideInitButton.value = true
         l.close()    
-    }, 3000);  
+ 
 
     
 }
 
+function socketEvent (arg){
+    if(arg.action == "update_channel_manager_data_upload_status" && arg.property == window.property_name){
+        dataUploadStatus.value = arg.upload_status;
+    }
+}
 
-onMounted(() => {
+
+onMounted(async() => {
     data.value = channelManagerData.value
+    if (!dataUploadStatus.value){
+        const l  = await window.showLoading();
+        await getDataUploadStatus()
+        l.close()
+    }
+
+    window.socket.on("ChannelManagerUpdate",socketEvent)
+
 })
+
+onUnmounted(()=>{
+    window.socket.off("ChannelManagerUpdate",socketEvent)
+})
+
+ 
 </script>
 <style scoped>
 .card {

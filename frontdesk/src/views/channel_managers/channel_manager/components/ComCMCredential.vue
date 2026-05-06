@@ -1,22 +1,39 @@
 <template>  
-    <div class="status-item align-items-center" :class="isAuthenticated ? 'success' : 'error'">
+<div class="status-item align-items-center" :class="statusClass">
+
+    <!-- ICON -->
+    <div class="icon">
+
         <template v-if="isAuthenticated">
-             <div class="icon">
-                <i class="pi pi-check" style="color: white"></i>
-            </div>
+            <i class="pi pi-check" style="color: white"></i>
         </template>
+
+        <template v-else-if="loading">
+            <ProgressSpinner
+                strokeWidth="8"
+                fill="transparent"
+                animationDuration=".8s"
+            />
+        </template>
+
         <template v-else>
-            <div class="icon" style="background: #ef4444;">
-                <i class="pi pi-times" style="color: white"></i>
-            </div>
-        </template>  
-        <div class="status-content">
-            <div class="font-bold">{{label || 'Label'}}</div>
-            <span>{{ valueData }} — {{status}}</span>
-        </div>
-    </div>  
+            <i class="pi pi-times" style="color: white"></i>
+        </template>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="status-content">
+        <div class="font-bold">{{ label || 'Label' }}</div>
+        <span>
+            {{ valueData }} — {{ loading ? 'Checking...' : status }}
+        </span>
+    </div>
+
+</div>
 </template>
 <script setup>
+import { ref, onMounted, inject, computed , watch } from '@/plugin'
 const props = defineProps({
     label: String,
     valueData: [String, Number],
@@ -24,8 +41,18 @@ const props = defineProps({
     isAuthenticated: {
         type: Boolean,
         default: false
+    },
+    loading: {
+        type: Boolean,
+        default: false
     }
 })
+const statusClass = computed(() => {
+  if (props.loading) return 'warning'
+  if (props.isAuthenticated) return 'success'
+  return 'error'
+})
+import ProgressSpinner from 'primevue/progressspinner';
 </script>
 <style scoped> 
 .status-item {
@@ -59,6 +86,7 @@ const props = defineProps({
 .success {
     background: linear-gradient(135deg, #e6f9f0, #f3fffa);
     border: 1px solid #b7f0d1;
+    transition: all 0.3s ease;
 }
 
 .success .icon {
@@ -70,6 +98,7 @@ const props = defineProps({
 .error {
     background: linear-gradient(135deg, #ffecec, #fff5f5);
     border: 1px solid #ffc9c9;
+    transition: all 0.3s ease;
 }
 
 .error .icon {
@@ -77,6 +106,28 @@ const props = defineProps({
     color: white;
 }
 
+/* Warning */
+.warning {
+    background: linear-gradient(135deg, #fff7e6, #fffdf5);
+    border: 1px solid #ffe0a3;
+    transition: all 0.5s ease;
+}
+
+.warning .icon {
+    background: #f59e0b;
+    color: white;
+}
+.status-item {
+    transition: all 0.5s ease;
+}
+
+.status-item .icon {
+    transition: transform 0.4s ease;
+}
+
+.status-item.success .icon {
+    transform: scale(1.05);
+}
 /* ICON */
 .icon {
     width: 26px;

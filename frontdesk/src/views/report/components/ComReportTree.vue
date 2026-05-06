@@ -47,7 +47,7 @@ const filterReports =ref([])
 
 
 const rootReport = computed(() => {
-    return props.root_report === "ServerReports" ? "eDoor Report" : "POS Report";
+    return props.root_report === "ServerReports" ? "eDoor Report" : "All Reports";
 });
 
 watch(() => props.root_report, (newValue, oldValue) => {

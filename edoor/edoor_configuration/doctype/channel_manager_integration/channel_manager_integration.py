@@ -7,9 +7,20 @@ from edoor.channel_managers.exely.property_info import send_property_info
 
 
 class ChannelManagerIntegration(Document):
-	
+
 	def on_update(self):
 		frappe.cache.delete_value(f"{self.name}_channel_manager_info") 
+	 
+		frappe.clear_document_cache(self.doctype, self.name)
+		for rt in self.room_types:
+			# fist sync room availabilityh
+			frappe.cache.delete_value(f"data_initialize_availability_{rt.edoor_room_type}") 
+			# fist sync room rate
+			frappe.cache.delete_value(f"data_initialize_room_rate_{rt.edoor_room_type}") 
+
+		
+
+		
 
 	@frappe.whitelist()
 	def get_property_info(self):

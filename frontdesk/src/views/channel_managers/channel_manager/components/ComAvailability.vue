@@ -1,16 +1,15 @@
 <template>
     <!-- Standard -->
-    <div class="availability-item align-items-center" :class="isRoomMapping ? 'success' : 'warning'">
-        <template v-if="isRoomMapping">
+    <div class="availability-item align-items-center" @click="$emit('onClick')">
+           
              <div class="icon">
-                <i class="pi pi-times" style="color: white"></i>
+                 <slot name="status">
+                
+            </slot>
+                
             </div>
-        </template>
-        <template v-else>
-            <div class="icon">
-                <i class="pi pi-check" style="color: white"></i>
-            </div>
-        </template>
+         
+    
         <div class="content">
             <div class="font-bold">{{ $t(roomTypeName) }} - ({{ roomTypeCode }})</div>
             <div>
@@ -53,6 +52,7 @@ const props = defineProps({
     margin-bottom: 12px;
     align-items: flex-start;
     transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .availability-item:hover {

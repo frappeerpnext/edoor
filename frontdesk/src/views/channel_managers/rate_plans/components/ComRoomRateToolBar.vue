@@ -9,7 +9,9 @@
                     optionValue="edoor_room_type" />
             </div>
             <div>
-                <Button class="border-0" label="Resync Room Rate" @click="RoomRateResyncDialog" />
+                <Button class="border-0" label="Resync Room Rate" @click="RoomRateResyncDialog" 
+                  v-if="cm_info?.prices_for_accommodation == 'Receive from PMS'"
+                />
                 <Button class="border-0" label="Rate Summary" @click="onOpenRoomRateDialog" />
 
             </div>
@@ -27,7 +29,7 @@ import RoomRateResync from '@/views/channel_managers/rate_plans/components/RoomR
 import { onMounted, ref } from 'vue';
 const route = useRoute();
 const selectedRoomType = ref()
-const { roomTypes, reloadRoomRatesData } = useRatePlan()
+const { roomTypes, reloadRoomRatesData,cm_info } = useRatePlan()
 
 const { t: $t } = i18n.global;
 function onOpenRoomRateDialog() {
@@ -55,7 +57,7 @@ function RoomRateResyncDialog() {
             rate_type: route.params.name,
         },
         props: {
-            header: $t('Room Rate Resync'),
+            header: $t('Resync Room Rate'),
             style: {
                 width: '80vw',
             },

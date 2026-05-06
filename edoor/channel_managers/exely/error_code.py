@@ -149,7 +149,9 @@ EXELY_ERROR_CODES = {
     },
     "450": {
         "message": "Unable to process",
-        "type": "13"
+        "type": "13",
+        "action":"Stop Sync",
+        "priority":1
     },
     "504": {
         "message": "Extra bed or crib not available",

@@ -12,8 +12,11 @@
                     optionValue="restriction_type" isMultipleSelect />
             </div>
             <div>
-                <Button class="border-0" label="Restriction ReSync" @click="onOpenRestrictionSyncDailog" />
-                <Button class="border-0" label="Rate Summary" @click="onOpenRoomRateDialog" />
+                <Button class="border-0" label="Restriction ReSync"
+                 @click="onOpenRestrictionSyncDailog" 
+                 v-if="cm_info?.restrictions == 'Receive from PMS'"
+                 />
+                <Button class="border-0" label="Restriction Summary" @click="onOpenRoomRateDialog" />
             </div>
         </div>
     </div>
@@ -25,7 +28,7 @@ import { i18n } from '@/i18n';
 const route = useRoute();
 import ComSelectYear from "@/views/channel_managers/rate_plans/components/ComSelectYear.vue"
 import { useRatePlan } from "../hooks/useRatePlan";
-import ComRateSummary from '@/views/channel_managers/rate_plans/components/ComRateSummary.vue';
+import ComRestrictionSummary     from '@/views/channel_managers/rate_plans/components/ComRestrictionSummary.vue';
 import { onMounted, ref, watch } from 'vue';
 import ComRestrictionSync from './ComRestrictionSync.vue';
 
@@ -34,13 +37,31 @@ const selectedRoomType = ref()
 
 const {
     roomTypes,
+    cm_info,
     reloadRestrictionData,
     restrictionTypes,
     selectedRestrictionTypes,
     restrictionData
 } = useRatePlan()
 
+function onOpenRoomRateDialog() {
+    dialog.open(ComRestrictionSummary, {
+        props: {
+            header: $t('Restriction Summary'),
+            style: {
+                width: '80vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: "top",
 
+        },
+    });
+}
 
 
 const { t: $t } = i18n.global;

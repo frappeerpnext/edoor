@@ -7,39 +7,29 @@
           <div class="text-4xl">{{ $t('Initial Data Upload') }}</div>
           <p>{{ $t('Channel Manager Integration') }}</p>
         </div>
-        <span>{{ $t('STEP') }} {{ activeIndex }} {{ $t('OF') }} {{ steps.length }}</span>
+        <span>{{ $t('STEP') }} {{ activeStepIndex }} {{ $t('OF') }} {{ dataUploadSteps.length }}</span>
       </div>
-
       <!-- Stepper -->
       <div class="stepper">
         <div class="line"></div>
         <ComStepper
-          v-for="step in steps"
+          v-for="step in dataUploadSteps"
           :key="step.index"
           :title="step.title"
           :index="step.index"
-          :activeIndex="activeIndex"
+          :activeIndex="activeStepIndex"
         />
       </div>
 
       <!-- Dynamic Component Rendering -->
+{{ activeStepIndex }}
       <component
         :is="currentStepComponent"
-        :key="activeIndex"
-        :step-index="activeIndex"
-        @next="goToNextStep"
-        @prev="goToPrevStep"
+        :key="activeStepIndex"
+        :step-index="activeStepIndex"
+         
       />
 
-      <!-- Footer -->
-      <div class="footer flex gap-2">
-        <Button @click="goToPrevStep" class="btn-back" :disabled="activeIndex === 1">
-          &#8592; {{ $t('Back') }}
-        </Button>
-        <Button @click="goToNextStep" class="btn-next" :disabled="activeIndex === steps.length">
-          {{ $t('Next') }} &#8594;
-        </Button>
-      </div>
     </div>
   </div>
 </template>
@@ -51,40 +41,38 @@ import ComStepper from '@/views/channel_managers/channel_manager/components/cm_i
 // Import all step components
 import WelcomeStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComWelcomeStep.vue'
 import CredentialsStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComCredentialStep.vue'
+import ComCMDataMapping from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComCMDataMapping.vue'
 import AvailabilityStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComAvailabilityStep.vue'
-
-const activeIndex = ref(1)
-
-const steps = [
-  { index: 1, title: 'WELCOME' },
-  { index: 2, title: 'CREDENTIALS' },
-  { index: 3, title: 'AVAILABILITY' },
-  { index: 4, title: 'PRICES' },
-  { index: 5, title: 'RESTRICTIONS' },
-  { index: 6, title: 'REVIEW' }
-]
+import ComRoomRateStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComRoomRateStep.vue'
+import { useCMDashboard } from '../../hooks/useCMDashboard'
+const {
+  activeStepIndex,
+  dataUploadSteps
+} = useCMDashboard()
 
 // Map step index to component
 const stepComponentMap = {
   1: WelcomeStep,
   2: CredentialsStep,
-  3: AvailabilityStep, 
+  3: ComCMDataMapping, 
+  4: AvailabilityStep,
+  5:ComRoomRateStep
 }
 
 // Computed property that returns the current component
 const currentStepComponent = computed(() => {
-  return stepComponentMap[activeIndex.value] || WelcomeStep
+  return stepComponentMap[activeStepIndex.value] || WelcomeStep
 })
 
 function goToNextStep() {
-  if (activeIndex.value < steps.length) {
-    activeIndex.value++
+  if (activeStepIndex.value < dataUploadSteps.value.length) {
+    activeStepIndex.value++
   }
 }
 
 function goToPrevStep() {
-  if (activeIndex.value > 1) {
-    activeIndex.value--
+  if (activeStepIndex.value > 1) {
+    activeStepIndex.value--
   }
 }
 </script>

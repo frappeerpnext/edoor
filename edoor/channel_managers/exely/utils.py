@@ -222,47 +222,6 @@ def get_occupancy_code_mapping(occupancy_type, age_bucket,is_alult = 0,total = 0
 
 
 
-def get_sync_session_id(room_type_limit,rate_type,request_type):
-    # this method is very important
-    # we use this method to apply sync session id to channel manager sync log table 
-    # when get data to sync to cm we use this session id to get data from sync log 
-    # and delete it by session  by session id after sync success 
-
-    # if sync faild session id will be clear from queue job retry sync cm data in queue job
-    # we check if last modified date over 60 second
-
-    import uuid
-    session_id = str(uuid.uuid4())
-
-    for room_type, limit in room_type_limit.items():
-
-        rows = frappe.db.sql("""
-            SELECT name
-            FROM `tabChannel Manager Sync Data Log`
-            WHERE 
-                coalesce(sync_session_id,'') = ''  AND 
-                room_type = %(room_type)s  and 
-                rate_type = %(rate_type)s and 
-                request_type = %(request_type)s
-            ORDER BY date
-            LIMIT %(limit)s
-            FOR UPDATE SKIP LOCKED
-        """, {"room_type":room_type,"limit":limit,"rate_type":rate_type,"request_type":request_type}, as_dict=True)
-
-        if len(rows) ==0:
-            continue
-
-        keys = [r.get("name") for r in rows]
-
-        frappe.db.sql("""
-            UPDATE `tabChannel Manager Sync Data Log`
-            SET sync_session_id = %(session_id)s,modified = NOW()
-            WHERE name IN %(names)s
-        """, {"session_id":session_id, "names":tuple(keys)})
-
-    frappe.db.commit()
-
-    return session_id
 
 def add_guest_list(group):
     guest_list = []

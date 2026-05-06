@@ -236,6 +236,84 @@ def content_body(property):
     services = extract_service_from_response(data)
 
     return room_types, rate_plans, payment_types, services
+import frappe
+
+@frappe.whitelist()
+def send_connection_test(property):
+    try:
+        config = get_exely_config(property)
+
+        if not config.get("hotel_code"):
+            return {
+                "success": False,
+                "message": "Missing Hotel Code"
+            }
+
+        if not config.get("username") or not config.get("password"):
+            return {
+                "success": False,
+                "message": "Missing Username or Password"
+            }
+
+        # ✅ SOAP Body
+        body_content = f"""
+        <OTA_HotelAvailRQ xmlns="http://www.opentravel.org/OTA/2003/05" Version="1.17">
+            <AvailRequestSegments>
+                <AvailRequestSegment>
+                    <HotelSearchCriteria>
+                        <Criterion>
+                            <HotelRef HotelCode="{config['hotel_code']}"/>
+                        </Criterion>
+                    </HotelSearchCriteria>
+                </AvailRequestSegment>
+            </AvailRequestSegments>
+        </OTA_HotelAvailRQ>
+        """
+
+        response = send_soap_request(property, "OTA_HotelAvailRQ", body_content)
+
+        response_text = str(response)
+        if "Unauthorized" in response_text:
+            return {
+                "success": False,
+                "message": "Wrong username or password"
+            }
+
+        if "Invalid HotelCode" in response_text:
+            return {
+                "success": False,
+                "message": "Invalid Hotel Code"
+            }
+
+        if "<faultstring>" in response_text:
+            start = response_text.find("<faultstring>") + 13
+            end = response_text.find("</faultstring>")
+            fault = response_text[start:end]
+
+            return {
+                "success": False,
+                "message": fault
+            }
+        if not response_text:
+            return {
+                "success": False,
+                "message": "Empty response from server"
+            }
+
+        # ✅ SUCCESS
+        return {
+            "success": True,
+            "message": "Connection successful",
+            "raw": response_text[:500]  # optional preview
+        }
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Exely Connection Test Error")
+
+        return {
+            "success": False,
+            "message": str(e)
+        }
 
 
 @frappe.whitelist()

@@ -98,7 +98,8 @@
         </div>
     </template>
     <ComSelect v-model="data.restriction_types" maxSelectedLabels="6" :clear="false" @onSelected="onSelectRestrictionType"
-                    :placeholder="$t('Restriction Types')" :options="restrictionTypeList"  isMultipleSelect />
+                    :placeholder="$t('Restriction Types')" :options="restrictionTypes" optionLabel="restriction_type"
+                    optionValue="restriction_type"  isMultipleSelect />
         
   </Fieldset>
   
@@ -148,17 +149,14 @@ const data = ref({
   ],
   room_types_select: [],
   room_types: [],
-  rate_type:[],
+  rate_types:[],
   restriction_types: []
 })
 
-const {    
-    restrictionTypeList
-} = useRestriction();
 const restrictionMenuItems = computed(() => {
-  return restrictionTypeList.value.map(item => ({
-    label: item,
-    value: item,
+  return restrictionTypes.value.map(item => ({
+    label: item.restriction_type,
+    value: item.restriction_type,
   }))
 })
 
@@ -246,7 +244,7 @@ async function onOk() {
     })  
   const l  =await window.showLoading("ReSync Restriction...")
   const res = await app.postApi("room_restriction.resync_room_restriction",{
-    saveData
+    data:saveData
   })
    if (res.data){
     dialogRef.value.close(true)
@@ -261,7 +259,7 @@ async function onOk() {
 onMounted(async () => {
      
     data.value.property = window.property_name
-    data.value.rate_type = [dialogRef.value.data.rate_type]
+    data.value.rate_types = [dialogRef.value.data.rate_type]
     
     data.value.room_types_select = []
 

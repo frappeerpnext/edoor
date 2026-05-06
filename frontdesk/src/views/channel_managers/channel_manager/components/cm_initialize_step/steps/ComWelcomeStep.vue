@@ -1,4 +1,5 @@
 <template>
+    <div>
     <div class="info">
           <!-- <div class="info-icon">💡</div> -->
           <div class="text-center"> 
@@ -10,10 +11,30 @@
               <ComIcon icon="iconLightBulb" height="125px" />
             </div>
           </div>
+
+          
+      <!-- Footer -->
+    
+
+        </div>
+        <div class="footer flex gap-2">
+ 
+  <Button 
+    @click="onChangeDataUploadStep()"
+    icon="pi pi-arrow-right"
+    iconPos="right"
+    :label="$t('Next')"
+  />
+</div>
         </div>
 </template>
-<script setup> 
+<script setup>
+import { useCMDashboard } from '@/views/channel_managers/channel_manager/hooks/useCMDashboard.js';
 
+ 
+  const {
+    onChangeDataUploadStep 
+  } = useCMDashboard()
 </script>
 <style scoped>
 

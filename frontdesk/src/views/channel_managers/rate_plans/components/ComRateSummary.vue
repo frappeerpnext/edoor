@@ -1,5 +1,4 @@
 <template>
-  {{ updateRoomTypes }}
         <div class="flex gap-2 mb-3">
             <Chip label="All Room Types" @click="onEnableUpdateAllRoomType()"
                 :icon="(updateRoomTypes.size == roomTypes.length) ? 'pi pi-check' : ''" :class="(updateRoomTypes.size == roomTypes.length) ? 'p-chip-selected' : ''" class="cursor-pointer select-none"></Chip>
@@ -86,16 +85,17 @@ async function onToggleRoomTypeToUpdate(room_type) {
   } else {
     newSet.add(room_type)
   }
-
+  roomTypes.value.find(x => x.edoor_room_type == room_type).selected = newSet.has(room_type)
   updateRoomTypes.value = newSet
+
   const l  = await window.showLoading("ReSync Restriction...")
   const res = await getRoomRateData({
-  room_types: Array.from(updateRoomTypes.value),
+  room_types: Array.from(updateRoomTypes.value || []),
   rate_type: route.params.name,
   start_date: moment(startDate.value),
   end_date: moment(endDate.value)
 })
-  l.close();
+l.close();
 }
 
 function onEnableUpdateAllRoomType(room_type) {
@@ -103,14 +103,16 @@ function onEnableUpdateAllRoomType(room_type) {
     if (updateRoomTypes.value.size == roomTypes.value.length) {
         // remove 
         updateRoomTypes.value = new Set()
+      roomTypes.value.forEach(x => x.selected = false)
     } else {
         updateRoomTypes.value = new Set(
   roomTypes.value.map(x => x.edoor_room_type)
 )
+roomTypes.value.forEach(x => x.selected = true)
     }
     summaryRows.value
 getRoomRateData({
-  room_types: Array.from(updateRoomTypes.value),
+  room_types: Array.from(updateRoomTypes.value || []),
   rate_type: route.params.name,
   start_date: moment(startDate.value),
   end_date: moment(endDate.value)
@@ -130,7 +132,6 @@ function formatDate(date) {
 ========================= */
 const occupancyColumns = computed(() => {
   const map = new Map()
-
   roomTypes.value
     .filter(r => r.selected)
     .forEach(rt => {
@@ -189,7 +190,6 @@ function buildSegments(room_type_id, occList) {
   while (cursor.isSameOrBefore(end, 'day')) {
 
     const sig = getSignature(room_type_id, cursor, occList)
-    console.log(sig)
     if (sig !== prevSig) {
 
       segments.push({

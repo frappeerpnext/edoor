@@ -3,65 +3,72 @@
         <div class="sync-header">
             <h2>Channel Manager Sync Status</h2>
         </div>
-
-        <div class="sync-list">
-
-            <div class="sync-card success">
-                <div class="sync-left">
-                    <span class="sync-title">Prices Update</span>
-                    <span class="sync-provider">Exely</span>
-                </div>
-                <div class="sync-right">
-                    <span class="sync-status">Success</span>
-                    <span class="sync-time">2026-04-22 16:55</span>
-                </div>
-            </div>
-
-            <div class="sync-card success">
-                <div class="sync-left">
-                    <span class="sync-title">Restriction Update</span>
-                    <span class="sync-provider">Exely</span>
-                </div>
-                <div class="sync-right">
-                    <span class="sync-status">Success</span>
-                    <span class="sync-time">2026-04-22 16:55</span>
-                </div>
-            </div>
-
-            <div class="sync-card success">
-                <div class="sync-left">
-                    <span class="sync-title">Availability Update</span>
-                    <span class="sync-provider">Exely</span>
-                </div>
-                <div class="sync-right">
-                    <span class="sync-status">Success</span>
-                    <span class="sync-time">2026-04-22 16:55</span>
-                </div>
-            </div>
-
+  <div v-if="filteredLogs.length">
+    <div
+      v-for="(item, index) in filteredLogs"
+      :key="item.name || index"
+      class="sync-card cursor-pointer"
+      @click="onViewLogDetail(item.name)"
+    >
+      <!-- LEFT -->
+      <div class="sync-left">
+        <div class="sync-title">{{ item.title }}</div>
+        <div class="sync-provider text-overflow-ellipsis white-space-nowrap overflow-hidden" style="max-width:400px;">
+          {{ item?.response_text }}
         </div>
+        <div class="sync-provider">
+          {{ item.provider || 'System' }}
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="sync-right">
+        <Tag :severity="statusClass(item.status)" :value="item.status || 'Unknown'" class="border-round-xl p-1 px-2"></Tag>
+        <div class="sync-time">
+            <ComTimeago :date='item.creation' />
+        </div>
+      </div>
     </div>
-    <div>Channel manger sync status all status</div>
-    {{ data }}
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div v-else class="empty">
+    No sync data
+  </div>
+    </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue'
+import Tag from 'primevue/tag';
 
-const data = ref()
+const data = ref([]) 
+
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 async function getData() {
-    const res = await app.getApi("edoor.channel_managers.utils.get_all_cm_sync_status", {
-        property: property.name
-    })
-    if (res.data) {
-        data.value = res.data
-    }
+  const res = await app.getApi("edoor.channel_managers.utils.get_all_cm_sync_status", {
+    property: property.name
+  })
+
+  if (res.data) {
+    data.value = res.data
+  }
+}
+
+const filteredLogs = computed(() => {
+  return data.value.filter(item => item.status || item.creation || item.provider)
+})
+const statusClass = (status) => {
+  if (!status) return 'default'
+  return status.toLowerCase() // success / warning
+}
+function onViewLogDetail(docname) {
+    window.postMessage("view_channel_manager_sync_log|" + docname, "*")
 }
 
 onMounted(async () => {
-    await getData()
+  await getData()
 })
-
 </script>
 <style scoped>
 .sync-container {
@@ -150,4 +157,5 @@ onMounted(async () => {
     font-size: 11px;
     color: #aaa;
 }
+
 </style>

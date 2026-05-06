@@ -1,7 +1,9 @@
 <template>
 
-    <div v-if="data?.sync_action">
-        <h1 class="text-3xl">{{ title }}</h1>
+    <div  v-if="data?.title" >
+        <Message severity="warn">
+          
+ <h1 class="text-xl">{{ title }}</h1>
         <div>
             {{ data?.response_text }}
         </div>
@@ -11,11 +13,13 @@
             {{ data?.sync_action }} at: {{ moment(data?.creation).format("DD-MM-YYYY hh:mm A") }}
         </div>
 
-        <div>
+       <div class="flex gap-2 mt-4">
             <Button severity="secondary" @click="onViewSyncData">View Sync Data</Button>
             <Button severity="secondary" @click="onViewSyncStatus">View Sync Status</Button>
             <Button @click="onRestartResync">Resync Data</Button>
         </div>
+        </Message>
+        
 
 
     </div>
@@ -108,20 +112,24 @@ async function getSyncRoomRateActionStatus() {
     }
 }
 
+function socketEvent(arg){
+   
+    if (arg.action=="update_sync_rate_plan_status" && arg.property == window.property_name){
+        getSyncRoomRateActionStatus()
+    }
+    
+}
+
 onMounted(() => {
     getSyncRoomRateActionStatus()
 
-    window.socket.on("ChannelManagerUpdate", (arg) => {
-        if (arg.action == "update_sync_rate_plan_status") {
-            getSyncRoomRateActionStatus()
-        }
-    })
+    window.socket.on("ChannelManagerUpdate", socketEvent )
 
 })
 
 onUnmounted(() => {
-
-    window.socket.off("ChannelManagerUpdate")
+    window.socket.off("ChannelManagerUpdate",socketEvent)
 })
 
 </script>
+ 

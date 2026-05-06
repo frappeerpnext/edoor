@@ -1,10 +1,11 @@
 import frappe 
-from edoor.channel_managers.utils import get_channal_manager_info,can_save_data
+from edoor.channel_managers.utils import get_channal_manager_info,can_save_data,add_change_data_log
 
 from frappe.rate_limiter import rate_limit
 
 from frappe.utils import getdate, add_to_date,today
 from edoor.api.utils import make_hash,generate_unique_dates
+import time
 
 
 # constant variable
@@ -275,11 +276,13 @@ def bulk_update_room_rate(data):
                         "room_types":[d.get("edoor_room_type") for d in data.get("room_types")],
                         "rate_type":data.get("rate_type")
                     }, 
-                    run_comit = False
+                    run_commit = False
                 )
     
-
-
+        # save change data log
+        data["room_type"] =  ", ".join([d.get("room_type_name") for d in data.get("room_types") or []])
+        data["traction_type"] =  "Prices update"
+        add_change_data_log(data,run_commit=False)
         frappe.db.commit()
 
         
@@ -300,6 +303,7 @@ def bulk_update_room_rate(data):
         return "Success"
          
 
+    
 
 def validate_bulk_update_room_rate(data):
     # validate if integrate channel manager then check sync status 
@@ -309,6 +313,10 @@ def validate_bulk_update_room_rate(data):
         if cm_info.enable==1 and has_cm_rate_plan: 
             if not  can_save_data(property=data.get("property"), title ="Prices update",provider=cm_info.provider):
                 frappe.throw("Data sync to {0} Channel Manager is temporarily blocked. Please check the sync status.".format(cm_info.provider))
+
+            # validate data manage in CM
+            if cm_info.get("prices_for_accommodation") == "Deliver to PMS":
+                frappe.throw("Cannot manage room rate because it is managed in the Channel Manager.")
                 
     # validate past date
     if not data.get("date_range"):
@@ -422,7 +430,7 @@ def check_room_rate_on_update(data):
 
 
 # prepare sync data to channel manager
-def prepare_sync_data_to_channel_manager(filters,run_comit=True):
+def prepare_sync_data_to_channel_manager(filters,run_commit=True):
     # frappe.throw(str(filters))
     if not filters.get("property"):
         return
@@ -468,7 +476,18 @@ def prepare_sync_data_to_channel_manager(filters,run_comit=True):
         """.format(provider = cm_info.get("provider"),request_type = REQUEST_TYPE)
         frappe.db.sql(sql,filters)
 
-        if run_comit:
+        # update old value to value 
+        sql="""
+            update  `tabRoom Rates` 
+            SET old_rate = rate
+            where
+                room_type_id in %(room_types)s and 
+                rate_type = %(rate_type)s and 
+                date between %(start_date)s and %(end_date)s  
+        """
+        frappe.db.sql(sql,filters)
+
+        if run_commit:
             frappe.db.commit()
 
 
@@ -488,49 +507,106 @@ def get_room_rate_detail(property,rate_type,date):
     """
 
     data = frappe.db.sql(sql,{"property":property,"rate_type":rate_type,"date":date},as_dict =1)
-    room_type_ids = set([d.get("rt") for d in data])
+    rate_type_doc = frappe.get_cached_doc("Rate Type",rate_type)
+    room_type_ids = set([d.get("room_type") for d in rate_type_doc.room_types])
     room_types=None
     if  room_type_ids:
         room_types = frappe.db.sql("select name,alias,room_type,sort_order from `tabRoom Type` where name in %(names)s order by sort_order",{"names":room_type_ids},as_dict = 1)
+        
     # occupancy code
     occupancy_code = set([d.get("occ") for d in data])
     occupancy_code_data=None
     if  occupancy_code:
         occupancy_code_data = frappe.db.sql("select name,title,sort_order from `tabOccupancy Code` where name in %(names)s order by sort_order",{"names":occupancy_code},as_dict=1)
 
+    # get restriction
+    sql = """
+        select restriction_type,room_type_id, value from `tabRoom Restriction`
+        where
+            property = %(property)s and 
+            date = %(date)s and 
+            rate_type = %(rate_type)s
+        order by 
+            case 
+                when restriction_type = 'Closed' then 1 
+                when restriction_type = 'Cta' then 2
+                when restriction_type = 'Ctd' then 3 
+                when restriction_type = 'MinLos' then 4 
+                when restriction_type = 'MaxLos' then 5 
+                when restriction_type = 'MinLosArrival' then 6 
+                when restriction_type = 'MaxLosArrival' then 7 
+                when restriction_type = 'MinAdvBooking' then 8 
+                when restriction_type = 'MaxAdvBooking' then 9 
+                when restriction_type = 'FullPatternLos' then 10 
+            end 
+    """
+    restriction_data = frappe.db.sql(sql, {"property":property,"rate_type":rate_type,"date":date},as_dict = 1)
+
     return {
-        "room_types":room_types,
+        "room_types":room_types or [],
         "room_rate":data,
-        "occupancy_codes":occupancy_code_data
+        "occupancy_codes":occupancy_code_data or [],
+        "restriction":restriction_data
     }
 
 @frappe.whitelist(methods="POST")
 @rate_limit(limit=3, seconds=60)
-def resync_room_rate(data=None):
+def resync_room_rate(data=None, auto_sync_to_cm=True,validate_initialized_upload = True):
 
     if not data:
         data = {
-            "rate_types": ["Daily Rate"],
+            "rate_types": [
+                {
+                    "rate_type": "Daily Rate",
+                    "room_types": [
+                    {
+                        "room_type": "RT-0004",
+                        "occupancy_codes": [
+                        "G1",
+                        "G2",
+                        "G3",
+                        "C3",
+                        "C4",
+                        "EA1",
+                        "EC1",
+                        "EC2",
+                        "EC3",
+                        "EC4",
+                        "CWB1"
+                        ]
+                    }
+                    ]
+                }
+                        ],
             "property": "ESTC Hotel 6",
             "date_ranges": [
                 {"start_date": "2026-05-01", "end_date": "2026-05-30"},
                 {"start_date": "2026-07-01", "end_date": "2026-07-30"}
             ],
-            "room_types": ["RT-0001", "RT-0004"],
         }
 
     cm_info = get_channal_manager_info(data.get("property"))
+    
     if not cm_info:
         frappe.throw("No Channel Manager Integration")
     if cm_info.enable == 0:
         frappe.throw("Channel manager integration is disabled")
-    if cm_info.prices_for_accommodation =="Manage in CM":
+    if cm_info.prices_for_accommodation !="Receive from PMS":
         frappe.throw("Prices update is not allow to manager in PMS")
+        
+    if validate_initialized_upload and cm_info.initialized_prices_upload ==0:
+        frappe.throw("Room rates are not initialized yet. Please upload them to the channel manager first.")
+    
+
     
     # validate rate plan has integration
+    if not data.get("rate_types"):
+        frappe.throw("Please select room types and occupancy codes to synchronize to channel manager")
     for rp in data.get("rate_types"):
-        if len([x for x in  cm_info.rate_plans if x.edoor_rate_plan == rp and (x.rate_plan_code or "")!=""])==0:
-            frappe.throw("No rate plan mapping found for the rate plan '{0}'.".format(rp))
+        
+        if len([x for x in  cm_info.rate_plans if x.edoor_rate_plan == rp.get("rate_type") and (x.rate_plan_code or "")!=""])==0:
+            frappe.throw("No rate plan mapping found for the rate plan '{0}'.".format(rp.get("rate_type")))
+
 
     
 
@@ -546,59 +622,73 @@ def resync_room_rate(data=None):
         filters[f"end_{i}"] = r.get("end_date")
 
     date_filters = " OR ".join(conditions)
-
-    sql = f"""
-         insert into `tabChannel Manager Sync Data Log` (
-            name,
-            provider,
-            request_type,
-            property,
-            rate_type,
-            room_type,
-            occupancy_code,
-            date,
-            value
-        )
-        select 
-            name,
-            '{cm_info.provider}' as provider,
-            '{REQUEST_TYPE}' as request_type,
-            property,
-            rate_type,
-            room_type_id,
-            occupancy_code,
-            date,
-            rate as value
-        FROM `tabRoom Rates` rr
-        WHERE
-            ({date_filters})
-            AND rr.property = %(property)s
-            AND rr.rate_type IN %(rate_types)s
-            AND rr.room_type_id IN %(room_types)s
-        ON DUPLICATE KEY UPDATE
-            sync_session_id = '',
-            value = VALUES(value);
-
-    """ 
-
     filters.update({
-        "property": data.get("property"),
-        "rate_types": tuple(data.get("rate_types")),
-        "room_types": tuple(data.get("room_types"))
+        "property": data.get("property")
     })
 
-    frappe.db.sql(sql, filters, as_dict=1)
+
+    
+    def save_data_sync_data_log(rate_type,room_type, occupancy_codes):
+
+        sql = f"""
+            insert into `tabChannel Manager Sync Data Log` (
+                name,
+                provider,
+                request_type,
+                property,
+                rate_type,
+                room_type,
+                occupancy_code,
+                date,
+                value
+            )
+            select 
+                name,
+                '{cm_info.provider}' as provider,
+                '{REQUEST_TYPE}' as request_type,
+                property,
+                rate_type,
+                room_type_id,
+                occupancy_code,
+                date,
+                rate as value
+            FROM `tabRoom Rates` rr
+            WHERE
+                ({date_filters})
+                AND rr.property = %(property)s
+                AND rr.rate_type = %(rate_type)s
+                AND rr.room_type_id = %(room_type)s and 
+                rr.occupancy_code in %(occupancy_codes)s
+            ON DUPLICATE KEY UPDATE
+                sync_session_id = '',
+                value = VALUES(value);
+
+        """ 
+
+        filters.update({
+            "rate_type": rate_type,
+            "room_type":room_type,
+            "occupancy_codes":occupancy_codes
+        })
+
+        frappe.db.sql(sql, filters, as_dict=1)
+
+    for rp in data.get("rate_types"):
+        
+        for rt in rp.get("room_types"):
+            if rt.get("occupancy_codes"):
+                save_data_sync_data_log(rate_type =rp.get("rate_type"), room_type = rt.get("room_type"), 
+                occupancy_codes =  rt.get("occupancy_codes"))
+        
     frappe.db.commit()
-
-    if cm_info.get("provider") == "Exely": 
-        frappe.enqueue(
-            "edoor.channel_managers.exely.price_manager.sync_room_rate",
-            queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
-                property=data.get("property")
-        )
+    if auto_sync_to_cm:
+        if cm_info.get("provider") == "Exely": 
+            frappe.enqueue(
+                "edoor.channel_managers.exely.price_manager.sync_room_rate",
+                queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
+                    property=data.get("property")
+            )
             
-
-
 
     frappe.msgprint("Room rate update sent successfully. The sync is running in the background, and you will be notified when it is complete.")
 
@@ -607,3 +697,92 @@ def resync_room_rate(data=None):
 
 
 
+
+@frappe.whitelist(methods="POST")
+@rate_limit(limit=5, seconds=60)
+def initialized_room_rate_upload(property = "ESTC HOTEL 6"):
+    
+    cm_info = get_channal_manager_info(property)
+    if not cm_info:
+        frappe.throw("No channel manager integration for this property")
+    if cm_info.enable == 0:
+        frappe.throw("Channel Manager is disable")
+    
+    if cm_info.initialized_prices_upload == 1:
+        frappe.throw("Room availability is already synced with the channel manager. Please use the 'Re-upload' option in the dashboard.")
+    
+    if not cm_info.prices_for_accommodation == "Receive from PMS":
+        frappe.throw("Room rate is not manage from PMS")
+    
+    
+    room_types = [d.get("edoor_room_type") for d in  cm_info.get("room_types") if d.get("edoor_room_type") and d.get("room_type_code")]
+
+    rate_types =  [{"rate_type": d.get("edoor_rate_plan"),"room_types":[]} for d in  cm_info.get("rate_plans") if d.get("edoor_rate_plan") and d.get("rate_plan_code")]
+
+    for rp in rate_types:
+        rate_type_doc = frappe.get_cached_doc("Rate Type",rp.get("rate_type"))
+        for rt in rate_type_doc.room_types:
+            if rt.get("room_type") in room_types:
+                room_type_doc = frappe.get_cached_doc("Room Type",rt.get("room_type"))
+                occupancy_codes = [
+                    x.get("occupancy_code") 
+                    for x in room_type_doc.rates
+                ]
+
+                rp["room_types"].append({
+                    "room_type":rt.get("room_type"),
+                    "occupancy_codes": occupancy_codes
+                })
+
+
+
+    
+    # 
+    if not room_types or len(room_types) == 0:
+        frappe.throw("No room type mapping to channel manager room type")
+        
+    if not rate_types or len(rate_types) == 0:
+        frappe.throw("No rate plan mapping to channel manager rate plan")
+    
+    # validate min rate
+
+
+    filter = {
+            "rate_types": rate_types,
+            "property": property,
+            "date_ranges": [
+                {"start_date": today(), "end_date": frappe.utils.add_years(today(),1)},
+            ],
+            "room_types": room_types,
+    }
+     
+
+    resync_room_rate(data=filter, 
+        auto_sync_to_cm=False,
+        validate_initialized_upload=False
+    )
+    
+
+    # run equeue job to update data to cm
+    
+    frappe.msgprint("We are currently processing upload your room rate data to channel manager in the background. Please wait until the upload to the channel manager is completed.")
+
+    frappe.enqueue(
+        "edoor.api.rate_plan.update_room_rate_to_channel_manager",
+        queue="long",
+        property= property
+    )
+    
+
+
+    return "Room rate is being upload to channel manager now"
+
+@frappe.whitelist()
+def update_room_rate_to_channel_manager(property):
+    # do task here until data from Sync Data Log clear
+    time.sleep(30)
+    frappe.enqueue(
+        "edoor.api.rate_plan.update_room_rate_to_channel_manager",
+        queue="long",
+        property= property
+    )

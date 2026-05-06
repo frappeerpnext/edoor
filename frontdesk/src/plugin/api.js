@@ -273,6 +273,8 @@ export async function getData(api, params=null,base_url="edoor.api.") {
 
       return call.get(api_url, params)
       .then((r) => {
+        
+
         if(r.message){
             return { data: r.message, error: null }
         }else {

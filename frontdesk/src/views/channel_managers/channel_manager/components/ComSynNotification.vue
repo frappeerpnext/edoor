@@ -93,7 +93,7 @@ async function onSelect(d) {
 
 async function getCMSyncLog() {
     const res = await app.getDocList("Channel Manager Sync Log", {
-        fields: ["name", "title", "status", "response_text", "creation"],
+        fields: ["name", "request_type", "status", "response_text", "creation"],
         filters: [["property", "=", window.property_name]],
         orderBy: {
             field: 'creation',
@@ -120,6 +120,7 @@ async function getCMTaskData() {
 }
 
 async function getCMTaskCount() {
+    
     const res = await app.getCount("ToDo", [["custom_property", "=", window.property_name], ["status", "=", "Open"]])
 
     totalTaskCount.value = res;
@@ -140,6 +141,22 @@ async function onViewAllTask() {
 }
 
 
+
+function socketEvent(arg){
+    
+  
+   
+    if (arg.action=="update_cm_notification_status" && arg.property == window.property_name){
+        
+        isLoading.value = arg.status;
+      
+                getCMTaskData();
+                setTimeout(() => {
+                    getCMTaskCount();   
+                }, 3000);
+            }
+     
+}
 
 onMounted(async () => {
     cmInfo.value = await getCMInfo()
@@ -172,18 +189,8 @@ onMounted(async () => {
         }
     }, 2000)
 
-
-    socket.on("ChannelManagerStartStopSync", (status) => {
-        
-        isLoading.value = status;
-         getCMTaskData();
-         getCMTaskCount();
-
-        //  setTimeout(() => {
-        //         checkPendingSyncData()
-        //  }, 3000);
  
-    })
+    socket.on("ChannelManagerUpdate",  socketEvent)
 })
 
 
@@ -191,7 +198,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
 
-    socket.off("ChannelManagerStartStopSync")
+    socket.off("ChannelManagerUpdate",socketEvent)
 })
  
 </script> 

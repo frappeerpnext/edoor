@@ -1,91 +1,187 @@
 <template>
+  <div> 
   <com-confirm-message label="Verify Credentials" text="Please ensure that all credentials are accurate and up to date before initiating the connection to the channel manager."/>
-
-  <!-- Stats -->
   <div class="connection-wrapper">
     <div class="connection-title">{{ $t('CONNECTION') }}</div>
+ 
     <ComCMCredential 
       v-for="value in credentailData" 
       :key="value.title" 
       :label="value.label" 
       :value-data="value.value"
       :status="value.status" 
+      :loading="apiCheck.loading"
       :is-authenticated="value.isAuthenticated" 
     />
-    <Message severity="warn" class="mt-4" style="border-radius: 12px;">
+    <Message severity="warn" class="mt-4" style="border-radius: 12px;"
+    v-if="credentailData?.find(x=>!x.isAuthenticated) && !apiCheck.loading"
+    >
       <div>
         <div class="font-semibold text-lg">{{ $t('Action Required') }}</div>
-        <p>{{ $t('Please update your password in the credentials section to ensure a successful upload.') }}</p>
+        <p>{{ $t('Please review and verify the Channel Manager integration details, including the URL, property code, username, and password. Kindly ensure all information is correct before proceeding with the initial data upload process.”') }}</p>
       </div>
     </Message>
 
   </div>
+
+    <Button 
+    @click="getData" 
+ :loading="apiCheck.loading"
+
+    :label="$t('Revalidate Credential')"
+  />
+  
+      <!-- Footer -->
+    <div class="footer flex gap-2">
+
+  <Button 
+    @click="onBack" 
+    class="btn-back" 
+    :disabled="activeStepIndex === 1"
+    icon="pi pi-arrow-left"
+    :label="$t('Back')"
+  />
+
+  <Button 
+    @click="onChangeDataUploadStep(1)" 
+    class="btn-next" 
+    :disabled="credentailData?.find(x=>!x.isAuthenticated)"
+    icon="pi pi-arrow-right"
+    iconPos="right"
+    :label="$t('Next')"
+  />
+</div>
+  </div>
 </template>
 <script setup>
-import { ref, onMounted, inject, computed } from '@/plugin'
+
+
+import { ref, onMounted, inject, computed , watch } from '@/plugin'
 import { i18n } from '@/i18n';
 import ComDataUpload from '@/views/channel_managers/channel_manager/components/ComDataUpload.vue';
 import ComCMCredential from '@/views/channel_managers/channel_manager/components/ComCMCredential.vue';
-const frappe = inject('$frappe')
+import { useCMDashboard } from "@/views/channel_managers/channel_manager/hooks/useCMDashboard";
+
 const { t: $t } = i18n.global;
-const db = frappe.db();
 const property = JSON.parse(localStorage.getItem('edoor_property'))
 const data = ref({})
+const response = ref({})
 
 data.value = {
   room_types: 0,
   rate_plans: 0
 }
+const {
+    channelManagerData,
+    dataUploadSteps,
+    onChangeDataUploadStep
+} = useCMDashboard()
+const apiCheck = ref({
+  reachable: false,
+  status: null,
+  loading: false,
+  codeerror: null
+})
 
-const credentailData = computed(() => [
-  {
-    label: $t('API Endpoint'),
-    value: 'https://api.channelmanager.com/v1',
-    status: $t('reachable'),
-    isAuthenticated: true
-  },
-  {
-    label: $t('Username'),
-    value: 'hotel_admin',
-    status: $t('authenticated'),
-    isAuthenticated: true
-  },
-  {
-    label: $t('Password'),
-    value: 'Not Set',
-    status: $t('Fix before upload'),
-    isAuthenticated: false
-  },
-  {
-    label: $t('Hote Code'),
-    value: '123456',
-    status: $t('Verified'),
-    isAuthenticated: true
+function onBack(){
+  dataUploadSteps.value[1].is_validate = false;
+  onChangeDataUploadStep(-1)
+}
+async function getData() {
+  try {
+    apiCheck.value.loading = true
+
+    const res = await app.getApi(
+      "edoor.channel_managers.exely.property_info.send_connection_test",
+      {
+        property: property.name
+      }
+    )
+
+    const result = res.data || {}
+    response.value = result
+    // =========================
+    // SUCCESS / FAIL
+    // =========================
+    apiCheck.value.reachable = result.success || false
+    apiCheck.value.status = result.message || "No response"
+
+    // =========================
+    // ERROR CODE DETECTION (SAFE)
+    // =========================
+    let code = null
+
+    if (result.raw) {
+      const raw = result.raw.toLowerCase()
+
+      if (raw.includes("450")) code = 450
+      else if (raw.includes("401") || raw.includes("unauthorized")) code = 401
+      else if (raw.includes("invalid hotelcode")) code = 400
+    }else {
+      code = result.message.includes("404") ? 404 : null
+    }
+
+    apiCheck.value.codeerror = code
+
+    apiCheck.value.loading = false
+    response.value = result
+
+  } catch (e) {
+    apiCheck.value.reachable = false
+    apiCheck.value.status = e.message
+    apiCheck.value.codeerror =
+      e.response?.status ||   // 404, 500
+      e.code ||               // network
+      "NETWORK_ERROR"
+ 
+    apiCheck.value.loading = false
+    
   }
-])
-
-const filter = [
-  ['property', '=', property.name],
-  ['disabled', '=', 0]
-]
-
-const getTotalRoomTypes = async () => {
-  await db.getCount('Room Type', filter)
-    .then((count) => {
-      data.value.room_types = count
-    })
+  dataUploadSteps.value[1].is_validate = true
 }
+const credentailData = computed(() => {
+  const { loading, codeerror, status } = apiCheck.value
 
-const getTotalRatePlans = async () => {
-  await db.getCount('Rate Type', filter)
-    .then((count) => {
-      data.value.rate_plans = count
-    })
+  const isAuthError = [401, 403, 450].includes(codeerror)
+  const isReady = !loading
+  const isAuthenticated = isReady && !isAuthError
+
+  return [
+    {
+      label: $t('API Endpoint'),
+      value: channelManagerData.value.api_url || 'Not Set',
+      status: loading ? $t('checking...') : status || '-',
+      isAuthenticated: isReady && codeerror !== 404
+    },
+    {
+      label: $t('Username'),
+      value: channelManagerData.value.username || 'Not Set',
+      status: isAuthenticated ? $t('Authenticated') : $t('Not Verified'),
+      isAuthenticated
+    },
+    {
+      label: $t('Password'),
+      value: channelManagerData.value.password ? '********' : 'Not Set',
+      status: isAuthenticated ? $t('Authenticated') : $t('Fix before upload'),
+      isAuthenticated
+    },
+    {
+      label: $t('Hotel Code'),
+      value: channelManagerData.value.property_code || 'Not Set',
+      status: isAuthenticated ? $t('Verified') : $t('Invalid / Not Checked'),
+      isAuthenticated: isReady && codeerror !== 450
+    }
+  ]
+})
+
+ 
+ 
+onMounted(async () => {
+  if (!dataUploadSteps.value[1].is_validate )
+{
+  await getData();
 }
-
-onMounted(() => {
-  getTotalRoomTypes();
-  getTotalRatePlans();
+  
 })
 </script>
 <style scoped>

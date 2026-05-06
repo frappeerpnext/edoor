@@ -1,6 +1,7 @@
 import frappe
 from edoor.channel_managers.utils import group_date_ranges,get_channal_manager_info,get_occupancy_codes,can_sync_data
-from edoor.channel_managers.exely.utils import get_exely_property_code,get_exely_room_type_code,get_sync_session_id
+from edoor.channel_managers.exely.utils import get_exely_property_code,get_exely_room_type_code
+from edoor.channel_managers.utils import get_sync_session_id,add_cm_task,delete_synced_data_log
 from edoor.channel_managers.exely.soap_request import send_soap_request
 from edoor.channel_managers.exely.rate_limit import get_rate_limit,update_rate_limit_balance
 from frappe.utils import now_datetime, add_to_date
@@ -50,6 +51,7 @@ def sync_room_rate(property=None,retry_sync=True):
         properties = [{"name":property}]
     change_data =[]
     room_type_limit=None
+    error_code = None
     for p in properties:
         
         if not can_sync_data(property = p.get("name"), title ='Prices update',provider="Exely"):
@@ -93,11 +95,11 @@ def sync_room_rate(property=None,retry_sync=True):
                         "doctype":"Channel Manager Sync Log",
                         "provider":"Exely",
                         "request_type":REQUEST_TYPE,
-                        "title":"Prices update",
                         "status" : response.get("status"),
                         "data": frappe.as_json(group_data),
                         "response_text": response.get("response_text"),
-                        "response":frappe.as_json(response.get("data"))
+                        "response":frappe.as_json(response.get("data")),
+                        "rate_type":rp
                     }
                     error_code = response.get("error_code")
                     if error_code:
@@ -106,6 +108,23 @@ def sync_room_rate(property=None,retry_sync=True):
                             doc["sync_until"] =   add_to_date(now_datetime(),seconds = error_code.get("delay"))
 
                     sync_log_doc=frappe.get_doc(doc).insert(ignore_permissions=True)
+                    sync_log_doc.add_comment(
+                        comment_type="Comment",
+                        text= soap_body
+                    )
+                    # add channel manager task to alert user to take action
+                    if error_code:
+                        if doc.get("sync_action") == "Stop Sync":
+                            task_doc = {
+                                "property":sync_log_doc.property,
+                                "subject": "Sync {0} has been stoped.".format(doc.get("request_type")),
+                                "description":  response.get("response_text"),
+                                "reference_type": "Channel Manager Sync Log",
+                                "reference_name": sync_log_doc.name,
+                                "priority":"High"
+                            }
+
+                            add_cm_task(task_doc,run_commit=False)
                 
 
                     # check success by have warning
@@ -118,15 +137,21 @@ def sync_room_rate(property=None,retry_sync=True):
                             update_rate_limit_balance(p.get("name"), cd.get("room_type"), cd.get("total"))
 
                         # return soap_body
-                        delete_synced_data_log(session_id=session_id,cm_response = response,xml_body=soap_body)
+                        delete_synced_data_log(session_id=session_id,provider="Exely",request_type = REQUEST_TYPE,run_commit=False)
 
-                        emit_event("ChannelManagerUpdateRatePlan",{"action":"update_sync_rate_plan_status","status":"Success","title":"Sync Room Rate","message":"Room rates have been successfully synced to the channel manager."})
+
+
+                        emit_event("ChannelManagerUpdate",{
+                            "action":"update_sync_rate_plan_status",
+                            "property":p.get("name"),"status":"Success","title":"Sync Room Rate","message":"Room rates have been successfully synced to the channel manager."
+                        })
 
                     else:
                         
-                        emit_event("ChannelManagerUpdateRatePlan",{
+                        emit_event("ChannelManagerUpdate",{
                             "action":"update_sync_rate_plan_status",
-                            "satus":response.get("status"),
+                            "property":p.get("name"),
+                            "status":response.get("status"),
                             "title":"Sync Room Rate Fail",
                             "message": response.get("response_text"),
                             "docname": sync_log_doc.name
@@ -136,13 +161,13 @@ def sync_room_rate(property=None,retry_sync=True):
 
     
     frappe.db.commit()
-    if retry_sync:
-        ressync_pending_room_rate_data(property)
+    if retry_sync and not error_code:
+        resync_pending_room_rate_data(property)
 
 
     return (change_data,room_type_limit)
 
-def ressync_pending_room_rate_data(property=None):
+def resync_pending_room_rate_data(property=None):
     if not property:
          properties = frappe.db.sql("select name from `tabBusiness Branch`",as_dict=1)
     else:
@@ -176,27 +201,7 @@ def ressync_pending_room_rate_data(property=None):
       
 
 
-
-def delete_synced_data_log(session_id,cm_response=None,xml_body=None,run_commit = True):
-    # import xmltodict
-    # return xmltodict.parse(xml_body)
-    
  
-    # for w in warnings:
-    #     return get_value_from_xml_by_tag(xml_body,w.get("@Tag"))
-
-    sql="""
-        delete from `tabChannel Manager Sync Data Log`
-        where
-            sync_session_id  =  %(session_id)s and 
-            request_type = %(request_type)s and 
-            provider = 'Exely'
-    """
-    frappe.db.sql(sql, {"session_id":session_id,"request_type": REQUEST_TYPE})
-
-    if run_commit:
-        frappe.db.commit()
-
 
 def get_group_room_rate_data(session_id,rate_type):
     occupancy_codes = get_use_occupancy_codes({

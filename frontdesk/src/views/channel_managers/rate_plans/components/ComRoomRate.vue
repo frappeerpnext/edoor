@@ -1,11 +1,11 @@
 <template>
     <div> 
-        
         <ComRoomRateToolBar />
         <ComRatePlanGridByRoomType :year="selectedYear" />
         <ComBottomAction :selectionCount="selectedDates.size" @update-rate="onBulkEdit()"
             @clear-selection="onClearSelection()" 
             @update-restriction="onCloseSale()"
+            v-if="cm_info?.prices_for_accommodation == 'Receive from PMS' || !rateInfo?.cm_rate_plan_list?.cm_rate_plan"
             />
     </div>
 </template>
@@ -31,7 +31,9 @@ const {
     components,
     selectedYear,
     selectedDates,
-    reloadRestrictionData
+    reloadRestrictionData,
+    cm_info,
+    rateInfo
 } = useRatePlan();
 
  

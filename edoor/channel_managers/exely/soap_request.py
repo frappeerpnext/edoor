@@ -94,14 +94,14 @@ def build_soap_body(property, body_content):
 
 
 def send_soap_request(property, ota_request, body_content):
-    emit_event("ChannelManagerStartStopSync",True)
+    emit_event("ChannelManagerUpdate",{"action":"update_cm_notification_status","property":property, "status": True})
     soap_body = build_soap_body(property, body_content)
     response_data = request_soap_action(property, ota_request, soap_body)
     
     resp = soap_response_status(ota_request,response_data)
     
     resp["data"] = response_data
-    emit_event("ChannelManagerStartStopSync",False)
+    emit_event("ChannelManagerUpdate",{"action":"update_cm_notification_status","property":property, "status": False})
     return resp
 
 

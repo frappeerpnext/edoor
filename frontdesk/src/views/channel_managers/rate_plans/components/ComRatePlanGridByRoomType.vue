@@ -1,6 +1,9 @@
 <template>
   <div class="table-wrapper">
-
+  <Message v-if="cm_info?.prices_for_accommodation == 'Deliver to PMS' && rateInfo?.cm_rate_plan_list?.cm_rate_plan">
+    Room rates are managed by the Channel Manager.
+</Message>
+    
     <div v-if="dragRect.visible" class="drag-rect" :class="{ 'drag-rect-deselect': dragMode === 'deselect' }" :style="{
       left: dragRect.x + 'px',
       top: dragRect.y + 'px',
@@ -53,7 +56,8 @@
               isCellSelected(m.month, n) ? 'selected-cell' : '',
               (n <= m.total_days ? moment.utc(`${moment.utc(m.month).format('YYYY-MM')}-${n}`).format('dd') : '')
             ]" @mousedown="startDrag($event, monthIdx, n, m.month)"
-              @mouseenter="handleCellMouseEnter($event, monthIdx, n, m.month)" @mouseleave="handleCellMouseLeave"
+              @mouseenter="handleCellMouseEnter($event, monthIdx, n, m.month)"
+               @mouseleave="handleCellMouseLeave"
               @click.stop="handleCellClick($event, m.month, n)">
               <div class="day-name">
                 <span v-if="n <= m.total_days">
@@ -78,7 +82,8 @@ import { computed, inject, ref, onMounted, onUnmounted, Teleport } from 'vue'
 import { useRatePlan } from '../hooks/useRatePlan'
 import ComRoomRateDetailPopOver from "@/views/channel_managers/rate_plans/components/ComRoomRateDetailPopOver.vue"
 import { useRoute } from 'vue-router'
-const { roomTypes, roomRatesData, selectedDates, startDate, restrictionData } = useRatePlan()
+import { useTippy } from 'vue-tippy'
+const { roomTypes, roomRatesData, selectedDates, startDate, restrictionData,cm_info,rateInfo } = useRatePlan()
 const moment = inject('$moment')
 const props = defineProps({ year: Number, room_types: Object })
 const hoverDate = ref()
@@ -131,6 +136,8 @@ let rafId = null
 function startDrag(e, monthIdx, day, monthKey) {
   const cell = e.currentTarget
   if (cell.classList.contains("disable")) return
+ 
+  if (cm_info.value.prices_for_accommodation=="Deliver to PMS" && rateInfo.value?.cm_rate_plan_list?.cm_rate_plan) return
 
   e.preventDefault()
   e.stopPropagation()
@@ -280,6 +287,7 @@ function handleCellMouseEnter(event, monthIdx, day, monthKey) {
 
   // Mark that mouse is over cell
   isMouseOverCell.value = true
+  
   clearHideTimer()
 
   // Cancel any previous hover timer and hide popover immediately
@@ -294,14 +302,16 @@ function handleCellMouseEnter(event, monthIdx, day, monthKey) {
     if (currentHoverCell && isMouseOverCell.value) {
       showPopoverForCell(currentHoverCell.cell, currentHoverCell.monthKey, currentHoverCell.day, currentHoverCell.mouseX, currentHoverCell.mouseY)
     }
-  }, 500)
+  }, 700)
 }
 
 function handleCellMouseLeave() {
-  isMouseOverCell.value = false
+  
+    isMouseOverCell.value = false
   cancelHoverTimer()
   scheduleHidePopover()
   currentHoverCell = null
+ 
 }
 
 function handlePopoverMouseEnter() {
@@ -310,8 +320,12 @@ function handlePopoverMouseEnter() {
 }
 
 function handlePopoverMouseLeave() {
-  isMouseOverPopover.value = false
+  setTimeout(()=>{
+isMouseOverPopover.value = false
   scheduleHidePopover()
+  }, 3000)
+  
+
 }
 
 function scheduleHidePopover() {
@@ -321,7 +335,7 @@ function scheduleHidePopover() {
     if (!isMouseOverCell.value && !isMouseOverPopover.value) {
       hidePopover()
     }
-  }, 1000)
+  }, 3000)
 }
 
 function clearHideTimer() {
@@ -348,13 +362,27 @@ function hidePopover() {
 }
 
 async function showPopoverForCell(cell, monthKey, day, mouseX, mouseY) {
-  console.log(cell, monthKey, day)
+  
   if (!cell) return
+  const rect = cell.getBoundingClientRect();
+
+    let x = rect.left     // distance from left of viewport
+    let y = rect.top;  
+
+    if (x+500>window.innerWidth){
+      x = window.innerWidth - 500 + rect.width
+    }else {
+      x = x + rect.width;
+    }
+
+    if ((y+400)> window.innerHeight){
+      y = window.innerHeight - 450;
+    }
 
   // Position popover near mouse pointer (with offset)
   popoverPosition.value = {
-    x: mouseX + 15, // 15px right of cursor
-    y: mouseY + 10  // 10px below cursor
+    x: x , // 15px right of cursor
+    y: y  // 10px below cursor
   }
 
   // Prepare fetch
@@ -365,6 +393,9 @@ async function showPopoverForCell(cell, monthKey, day, mouseX, mouseY) {
 
 
 }
+
+
+
 
 /* ---------- LIFECYCLE ---------- */
 onMounted(() => {

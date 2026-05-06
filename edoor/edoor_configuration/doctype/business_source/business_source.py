@@ -10,6 +10,7 @@ class BusinessSource(Document):
 			if self.auto_create_city_ledger_account==1:
 				if not self.city_ledger_type:
 					frappe.throw("Please select city ledger type")
+	
 
 	def after_insert(self):
 		if self.auto_create_city_ledger_account==1:
@@ -24,6 +25,7 @@ class BusinessSource(Document):
 				"city_ledger_type":self.city_ledger_type
 			})
 			doc.insert()
+			
    
 	def on_update(self):
 		frappe.clear_document_cache('Business Source', self.name)

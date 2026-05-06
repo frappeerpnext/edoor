@@ -2,44 +2,43 @@
   <ComDialogContent
     @onOK="onOk"
     hideButtonClose
-   
     titleButtonOK="Save"
-    :hideIcon="false"
   >
+  <Message severity="warn">
+    <p>
+      <strong>Resync is used when data between PMS and Channel Manager becomes inconsistent.</strong>
+      <br/>
+This may happen due to connection issues, sync errors, or missed updates.
+Use this only when needed, as full data upload should not be done frequently.
+    </p>
+  </Message>
  
-  <Fieldset class="cs-close-open-sale-fieldset">
-    <template #legend>
-        <div class="flex items-center pl-2">
-            <span class="font-bold p-2">Validity period</span>
-        </div>
-    </template>
-    
+    <!-- ================= VALIDITY ================= -->
+    <Fieldset class="cs-close-open-sale-fieldset">
+      <template #legend>
+        <span class="font-bold p-2">Validity period</span>
+      </template>
 
-    <!-- HEADER -->
-    <div class="grid">
-      <div class="col-6 font-bold">Start Date</div>
-      <div class="col-6 font-bold">End Date</div>
-    </div>
-
-    <!-- DATE RANGE -->
-    <div class="grid" v-for="(d, index) in data.date_ranges" :key="index">
-
-      <!-- START -->
-      <div class="col-6">
-        <Calendar
-          v-model="d.start_date"
-          dateFormat="dd-mm-yy"
-          showIcon
-          class="w-full"
-          :minDate="getMinStartDate(index)"
-          :maxDate="getMaxEndDate(index)"
-          @date-select="onStartDateChange(d)"
-        />
+      <div class="grid">
+        <div class="col-6 font-bold">Start Date</div>
+        <div class="col-6 font-bold">End Date</div>
       </div>
 
-      <!-- END -->
-      <div class="col-6">
-        <div class="flex">
+      <div class="grid" v-for="(d, index) in data.date_ranges" :key="index">
+
+        <div class="col-6">
+          <Calendar
+            v-model="d.start_date"
+            dateFormat="dd-mm-yy"
+            showIcon
+            class="w-full"
+            :minDate="getMinStartDate(index)"
+            :maxDate="getMaxEndDate(index)"
+            @date-select="onStartDateChange(d)"
+          />
+        </div>
+
+        <div class="col-6 flex">
           <Calendar
             v-model="d.end_date"
             dateFormat="dd-mm-yy"
@@ -49,7 +48,6 @@
             :maxDate="getMaxEndDate(index)"
           />
 
-          <!-- DELETE (FIRST LOCKED) -->
           <Button
             icon="pi pi-times"
             v-if="data.date_ranges.length > 1"
@@ -58,211 +56,294 @@
             @click="onDeleteDateRange(index)"
           />
         </div>
+
       </div>
 
-    </div>
+      <div class="flex justify-end">
+        <Button label="Add Period" icon="pi pi-plus" text @click="onAddDateRange"/>
+      </div>
+    </Fieldset>
 
-    <!-- ADD PERIOD -->
-   <div class="flex justify-end">
-  <Button
-  label="Add Period"
-  icon="pi pi-plus"
-  text
-  @click="onAddDateRange"
-/>
-</div>
+    <!-- ================= RATE TYPE ================= -->
+    <Fieldset
+      v-for="(rateType, rateTypeIndex) in rateplanlist?.rate_type_list || []"
+      :key="rateType.rate_type_name"
+      class="cs-close-open-sale-fieldset"
+    >
+      <template #legend>
+        <span class="font-bold p-2">
+          {{ rateType.rate_type_name }}
+        </span>
+      </template>
 
-<!-- APPLY BUTTON TO All Room Type -->
-</Fieldset>
-  <Fieldset class="cs-close-open-sale-fieldset">
-    <template #legend>
-        <div class="flex items-center pl-2">
-            <span class="font-bold p-2">Room Type</span>
+      <!-- ROOM TYPE SELECT -->
+      <div class="flex gap-2 flex-wrap mb-3">
+        <Chip
+          label="All Room Types"
+          class="cursor-pointer"
+          :class="isAllRoomTypesSelected(rateTypeIndex) ? 'bg-primary text-white' : ''"
+          @click="onToggleAllRoomTypes(rateTypeIndex)"
+        />
+
+        <Chip
+          v-for="rt in getRoomTypesForRateType(rateTypeIndex)"
+          :key="rt.room_type_id"
+          :label="rt.room_type"
+          class="cursor-pointer"
+          :class="rt.selected ? 'bg-primary text-white' : ''"
+          @click="onToggleRoomType(rateTypeIndex, rt)"
+        />
+      </div>
+
+      <!-- OCCUPANCY -->
+      <div
+        v-for="rt in getSelectedRoomTypes(rateTypeIndex)"
+        :key="rt.room_type_id"
+        class="mb-3"
+      >
+        <div class="font-bold mb-1">
+          {{ rt.room_type }}
         </div>
-    </template>
-   <div class="flex gap-2 mb-3">
-            <Chip label="All Room Types" @click="onEnableUpdateAllRoomType()"
-                :icon="isRoomTypeSelectAll ? 'pi pi-check' : ''" :class="isRoomTypeSelectAll ? 'p-chip-selected' : ''" class="cursor-pointer select-none"></Chip>
-            <Chip :label="rt.room_type" :icon="rt.selected ? 'pi pi-check' : ''"
-                @click="onToggleRoomTypeToUpdate(rt)" v-for="rt in data?.room_types_select"
-                :key="'rt_selection' + rt.edoor_room_type" :class="rt.selected ? 'p-chip-selected' : ''" class="cursor-pointer select-none"/>
 
-        </div>
-        
-  </Fieldset>
-  
+        <ComSelect
+          :modelValue="rt.occupancies"
+          @update:modelValue="(val) => updateOccupancies(rateTypeIndex, rt.room_type_id, val)"
+          :clear="false"
+          :options="getOccupancy(rt.room_type_id)"
+          optionLabel="title"
+          optionValue="occupancy_code"
+          isMultipleSelect
+          placeholder="Select Occupancy"
+        />
+      </div>
 
-  
+    </Fieldset>
   </ComDialogContent>
 </template>
 
 <script setup>
-import { ref, inject , onMounted, computed } from 'vue'
-import { getApi } from '@/plugin';
-import { useRatePlan } from '../hooks/useRatePlan'
-import BlockUI from 'primevue/blockui';
-const restrictionPattern = ref(Array(30).fill("O"))
-const restrictionPatternString = computed(() => {
-  return restrictionPattern.value.join("")
+import { ref, inject, onMounted } from "vue"
+import { useRatePlan } from "../hooks/useRatePlan"
+
+const property = JSON.parse(localStorage.getItem("edoor_property"))
+const dialogRef = inject("dialogRef")
+const moment = inject("$moment")
+const incomingRateType = dialogRef?.value?.data?.rate_type || []
+
+const { roomTypes } = useRatePlan()
+
+/* ================= STATE ================= */
+const rateplanlist = ref({
+  rate_type_list: []
 })
 
-const selecteddayoptions = Array.from({ length: 30 }, (_, i) => {
-  const day = i + 1
-  return {
-    label: `${day} day`,
-    value: day
-  }
-})
-const {
-  roomTypes,
-  restrictionTypes
-} = useRatePlan()
-const dialogRef = inject("dialogRef");
-const moment = inject('$moment')
-const updateRoomTypes = ref(new Set())
+// Store room types selection per rate type
+const rateTypeRoomSelections = ref([])
 
-const isRoomTypeSelectAll = computed(()=>{
-  return data.value.room_types_select.filter(x=>x.selected).length == data.value.room_types_select.length;
-})
-const restrictionType = ref()
-
-/* ---------------- DATA ---------------- */
 const data = ref({
   date_ranges: [
     {
       start_date: moment().toDate(),
-      end_date: moment().add(1, 'day').toDate(),
+      end_date: moment().add(1, "day").toDate(),
     }
   ],
-  room_types_select: [],
-  room_types: [],
-  rate_type:[],
+  property: null,
 })
 
-
-/* ADD DATE RANGE */
-function onAddDateRange() {
-  const last = data.value.date_ranges[data.value.date_ranges.length - 1]
-
-  const start = last
-    ? moment(last.end_date).add(1, 'day')
-    : moment()
-
-  const newRange = {
-    start_date: start.toDate(),
-    end_date: start.clone().add(1, 'day').toDate()
+/* ================= HELPER FUNCTIONS ================= */
+function getRoomTypesForRateType(rateTypeIndex) {
+  if (!rateTypeRoomSelections.value[rateTypeIndex]) {
+    // Initialize if not exists
+    rateTypeRoomSelections.value[rateTypeIndex] = []
+    const map = new Map()
+    
+    roomTypes.value.forEach(rt => {
+      if (!map.has(rt.edoor_room_type)) {
+        map.set(rt.edoor_room_type, {
+          room_type: rt.room_type_name,
+          room_type_id: rt.edoor_room_type,
+          selected: false,
+          occupancies: []
+        })
+      }
+    })
+    
+    rateTypeRoomSelections.value[rateTypeIndex] = Array.from(map.values())
   }
-
-  data.value.date_ranges.push(newRange)
+  
+  return rateTypeRoomSelections.value[rateTypeIndex]
 }
 
+function getSelectedRoomTypes(rateTypeIndex) {
+  const roomTypesList = getRoomTypesForRateType(rateTypeIndex)
+  return roomTypesList.filter(rt => rt.selected)
+}
+
+function isAllRoomTypesSelected(rateTypeIndex) {
+  const roomTypesList = getRoomTypesForRateType(rateTypeIndex)
+  if (!roomTypesList.length) return false
+  return roomTypesList.every(rt => rt.selected)
+}
+
+function onToggleAllRoomTypes(rateTypeIndex) {
+  const roomTypesList = getRoomTypesForRateType(rateTypeIndex)
+  const allSelected = isAllRoomTypesSelected(rateTypeIndex)
+  
+  roomTypesList.forEach(rt => {
+    rt.selected = !allSelected
+    if (!allSelected) {
+      rt.occupancies = []
+    }
+  })
+}
+
+function onToggleRoomType(rateTypeIndex, rt) {
+  rt.selected = !rt.selected
+  if (!rt.selected) {
+    rt.occupancies = []
+  }
+}
+
+function updateOccupancies(rateTypeIndex, roomTypeId, occupancies) {
+  const roomTypesList = getRoomTypesForRateType(rateTypeIndex)
+  const roomType = roomTypesList.find(rt => rt.room_type_id === roomTypeId)
+  if (roomType) {
+    roomType.occupancies = occupancies
+  }
+}
+
+/* ================= OCCUPANCY ================= */
+function getOccupancy(room_type_id) {
+  const room = roomTypes.value.find(
+    r => r.edoor_room_type === room_type_id
+  )
+
+  return room
+    ? room.occupancy_codes.map(o => ({
+        title: o.title,
+        occupancy_code: o.occupancy_code
+      }))
+    : []
+}
+
+/* ================= DATE ================= */
+function onAddDateRange() {
+  const last = data.value.date_ranges.at(-1)
+  const start = last ? moment(last.end_date).add(1, "day") : moment()
+
+  data.value.date_ranges.push({
+    start_date: start.toDate(),
+    end_date: start.clone().add(1, "day").toDate()
+  })
+}
 
 function onStartDateChange(d) {
-  if (!d.start_date) return
-
   if (!d.end_date || d.start_date > d.end_date) {
-    const newEnd = new Date(d.start_date)
-    newEnd.setDate(newEnd.getDate() + 1)
-
-    d.end_date = newEnd
+    d.end_date = moment(d.start_date).add(1, "day").toDate()
   }
 }
 
-/* DELETE */
 function onDeleteDateRange(index) {
   data.value.date_ranges.splice(index, 1)
 }
 
-/* min start */
 function getMinStartDate(index) {
   const prev = data.value.date_ranges[index - 1]
-
-  if (prev) {
-    return moment(prev.end_date).add(1, 'day').toDate()
-  }
-
-  return null
+  return prev ? moment(prev.end_date).add(1, "day").toDate() : null
 }
 
-// end
 function getMaxEndDate(index) {
   const next = data.value.date_ranges[index + 1]
+  return next ? moment(next.start_date).add(-1, "day").toDate() : null
+}
 
-  if (next) {
-    return moment(next.start_date).add(-1, 'day').toDate()
+/* ================= API ================= */
+async function getRatePlanList() {
+  if (incomingRateType) {
+    const l = await window.showLoading()
+    rateplanlist.value.rate_type_list = [{"rate_type_name":incomingRateType}]
+
+    l.close()
+  } else {
+    // if no rate type from dialog, load all rate types
+    const l = await window.showLoading()
+
+    const res = await app.getApi("rate_plan.get_rate_type_list", {
+      property: property.name
+    })
+
+    if (res.data) {
+      rateplanlist.value = {
+        ...res.data,
+        rate_type_list: (res.data.rate_type_list || []).filter(
+          x => x.status === "Connected"
+        )
+      }
+    }
+
+    l.close()
+  }
+}
+
+/* ================= SUBMIT ================= */
+async function onOk() {
+  const rate_types = []
+
+  rateplanlist.value.rate_type_list.forEach((rateType, index) => {
+    const daily_rate = []
+
+    const selectedRoomTypesList = getSelectedRoomTypes(index)
+
+    selectedRoomTypesList.forEach(rt => {
+      if (rt.occupancies && rt.occupancies.length > 0) {
+
+        daily_rate.push({
+          
+          room_type:rt.room_type_id,
+          occupancy_codes:rt.occupancies
+        })
+      }
+    })
+
+    // only push if has data
+    if (daily_rate.length > 0) {
+      rate_types.push({
+        rate_type:rateType.rate_type_name,
+        room_types:  daily_rate
+      })
+    }
+  })
+
+  const saveData = {
+    rate_types: rate_types,
+    date_ranges: data.value.date_ranges.map(x => ({
+      start_date: moment(x.start_date).format("YYYY-MM-DD"),
+      end_date: moment(x.end_date).format("YYYY-MM-DD")
+    })),
+    property: data.value.property
   }
 
-  return null
-}
+  // console.log(saveData)
+  // return
 
-function onToggleRoomTypeToUpdate(room_type) {
-    room_type.selected = !room_type.selected
-  data.value.room_types = data.value.room_types_select
-    .filter(rt => rt.selected)
-    .map(rt => rt.room_type_id)
-}
-function onEnableUpdateAllRoomType() {
-  const allSelected = data.value.room_types_select.every(rt => rt.selected)
-  data.value.room_types_select.forEach(rt => {
-    rt.selected = !allSelected
+ 
+
+  const l = await window.showLoading("Resync Room Rates...")
+
+  const res = await app.postApi("rate_plan.resync_room_rate", {
+    data: saveData
   })
-  data.value.room_types = data.value.room_types_select
-    .filter(rt => rt.selected)
-    .map(rt => rt.room_type_id)
 
-}
-
-
-async function onOk() {
-  // pls do validation
-  
-  const saveData = JSON.parse(JSON.stringify(data.value))
-  
-  saveData.date_ranges.forEach(x => {
-        x.start_date = moment(x.start_date).local().format("YYYY-MM-DD");
-        x.end_date = moment(x.end_date).local().format("YYYY-MM-DD");
-    })  
-  const l  =await window.showLoading("Resync Room Rates...")
-  const res = await app.postApi("rate_plan.resync_room_rate",{
-    saveData
-  })
-   if (res.data){
+  if (res.data) {
     dialogRef.value.close(true)
   }
-  l.close();
 
-
+  l.close()
 }
 
-
-
-onMounted(async () => {
-     
-    data.value.property = window.property_name
-    data.value.rate_type = [dialogRef.value.data.rate_type]
-    
-    data.value.room_types_select = []
-
-roomTypes.value.forEach(rt => {
-  data.value.room_types_select.push({
-    room_type: rt.room_type_name,
-    room_type_id: rt.edoor_room_type,
-    selected: rt.selected,
-  })
+/* ================= INIT ================= */
+onMounted(() => {
+  data.value.property = window.property_name
+  getRatePlanList()
 })
-
-data.value.room_types = data.value.room_types_select
-  .filter(rt => rt.selected)
-  .map(rt => rt.room_type_id)
-    
-
-
-
-})
-
 </script>
-<style scoped>
-.p-fieldset .p-fieldset-content {
-    padding: 0.5rem 1.25rem !important;
-}
-</style>
