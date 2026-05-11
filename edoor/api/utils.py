@@ -19,6 +19,7 @@ from functools import lru_cache
 from edoor.api.update_reservation import update_reservation_stay
 from edoor.api.backup import run_backup_command
 import hashlib
+from frappe.utils.caching import redis_cache
 
 def after_login(user):
     frappe.local.response["hello"] = 'World'
@@ -2394,3 +2395,13 @@ def generate_unique_dates(date_ranges):
    
     return list(set(unique_dates))
 
+
+@frappe.whitelist()
+@redis_cache(ttl=86400)
+def get_room_type_list(property):
+    sql="select name, room_type from `tabRoom Type` where property = %(property)s and disabled = 0 order by sort_order,room_type"
+    data = frappe.db.sql(sql,{"property":property},as_dict = 1)
+    for d in data:
+        d["total_rooms"] = frappe.db.count('Room', {'room_type_id': d.get("name"),"disabled":0})
+        
+    return data

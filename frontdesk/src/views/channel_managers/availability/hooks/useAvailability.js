@@ -1,31 +1,24 @@
 import { onMounted, inject, ref } from 'vue'
 
+// state variable
+const data = ref([])
+const roomTypes = ref([])
+const selectedData = ref([])
+
+const filters = ref({})
+const isInitialize = ref(false)
 
 export function useAvailability() {
     const moment = inject('$moment')
-    const property = JSON.parse(localStorage.getItem("edoor_property"))
+    
     const refAvailability = ref(null)
 
-    // state variable
-    const data = ref([])
-    const roomTypes = ref([])
-    const selectedData = ref([])
 
-    const filters = ref({
-        start_date: moment().toDate(),
-        end_date: moment().add(1, "month").toDate(),
-
-    })
     // methods
     async function getRoomTypes() {
 
-        const res = await app.getDocList("Room Type", {
-            fields: ["name", "room_type"],
-            filters: [["property", "=", property.name]],
-            orderBy: {
-                field: 'sort_order',
-                order: 'asc',
-            }
+        const res = await app.getApi("utils.get_room_type_list",{
+            property:window.property_name
         })
 
         if (res.data) {
@@ -37,7 +30,7 @@ export function useAvailability() {
 
     async function getData(start_date, end_date) {
         const res = await app.getApi("room_availability.get_room_availability", {
-            property: property.name,
+            property:window.property_name,
             start_date: moment.utc(start_date).format("YYYY-MM-DD"),
             end_date: moment.utc(end_date).format("YYYY-MM-DD")
         })
@@ -62,7 +55,7 @@ export function useAvailability() {
         // alert(123555)
 
         const res = await app.postApi("room_availability.update_room_availability_restriction", {
-            property: property.name,
+            property: window.property_name,
             stop_sale: status,
             data: selectedData.value.map(x => {
                 return {
@@ -92,7 +85,7 @@ export function useAvailability() {
 
         const res = await app.postApi("room_availability.toggle_update_availability_restriction", {
             data: {
-                property: property.name,
+                property: window.property_name,
                 stop_sale: status,
                 room_type_id: room_type,
                 date: date
@@ -116,6 +109,15 @@ export function useAvailability() {
     }
 
     onMounted(async () => {
+        if(!isInitialize) return
+        isInitialize.value = true;
+
+        filters.value = {
+            start_date: moment().toDate(),
+            end_date: moment().add(1, "year").toDate()
+        }
+        filters.value.dates = [ "dates", "Between", [  moment().toDate(),  moment().add(1, "year").toDate() ] ]
+       
         await getRoomTypes()
         await getData(filters.value.start_date, filters.value.end_date);
     })

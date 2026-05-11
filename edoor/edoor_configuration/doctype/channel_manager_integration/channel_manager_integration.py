@@ -17,6 +17,13 @@ class ChannelManagerIntegration(Document):
 			frappe.cache.delete_value(f"data_initialize_availability_{rt.edoor_room_type}") 
 			# fist sync room rate
 			frappe.cache.delete_value(f"data_initialize_room_rate_{rt.edoor_room_type}") 
+			frappe.cache.delete_value(f"data_initialize_restriction_{rt.edoor_room_type}") 
+			_restrictions = ["Closed","Cta","Ctd","MinLos","MaxLos","MinLosArrival","MaxLosArrival","MinAdvBooking","MaxAdvBooking","FullPatternLos"]
+			for rs in _restrictions:
+				frappe.cache.delete_value(f"data_initialize_restriction_{rt.edoor_room_type}_{rs}")
+				
+
+
 
 		
 

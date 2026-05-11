@@ -44,6 +44,9 @@ import CredentialsStep from '@/views/channel_managers/channel_manager/components
 import ComCMDataMapping from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComCMDataMapping.vue'
 import AvailabilityStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComAvailabilityStep.vue'
 import ComRoomRateStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComRoomRateStep.vue'
+import ComRoomRestrictionStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComRoomRestrictionStep.vue'
+import ComExtraServiceStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComExtraServiceStep.vue'
+import ComCompleteStep from '@/views/channel_managers/channel_manager/components/cm_initialize_step/steps/ComCompleteStep.vue'
 import { useCMDashboard } from '../../hooks/useCMDashboard'
 const {
   activeStepIndex,
@@ -56,7 +59,10 @@ const stepComponentMap = {
   2: CredentialsStep,
   3: ComCMDataMapping, 
   4: AvailabilityStep,
-  5:ComRoomRateStep
+  5:ComRoomRateStep,
+  6:ComRoomRestrictionStep,
+  7:ComExtraServiceStep,
+  8:ComCompleteStep
 }
 
 // Computed property that returns the current component

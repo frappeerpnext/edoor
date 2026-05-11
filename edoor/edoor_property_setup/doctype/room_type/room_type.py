@@ -3,12 +3,15 @@
 
 import frappe
 from frappe.model.document import Document
+from edoor.api.utils import get_room_type_list
 
 class RoomType(Document):
 	def after_insert(self):
 		pass
 		
 	def on_update(self):
+		get_room_type_list.clear_cache()
+
 		if self.creation != self.modified:
 			update_fetch_from_fields(self)
 
@@ -25,7 +28,8 @@ class RoomType(Document):
 		frappe.db.sql(sql,{"room_type":self.name,"occupancy_codes":occupancy_codes})
 		
 
-   
+
+
 def update_fetch_from_fields(self):
 	data_for_updates = []
 

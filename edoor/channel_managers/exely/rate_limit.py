@@ -76,6 +76,41 @@ def update_rate_limit_balance(
     return True, "OK"
 
 @frappe.whitelist()
+def check_rate_limit_status_by_room_type(
+    property = 'ESTC HOTEL 6',
+    room_type = 'RT0001'
+):
+    cache = frappe.cache()
+
+    now = int(time.time())
+
+    keys = {
+        "sec": f"pms_limit:{property}:{room_type}:sec:{now}",
+        "min3": f"pms_limit:{property}:{room_type}:min3:{now // 180}",
+        "hour": f"pms_limit:{property}:{room_type}:hour:{now // 3600}",
+        "day": f"pms_limit:{property}:{room_type}:day:{time.strftime('%Y%m%d')}"
+    }
+
+    # 🔎 Step 1 — Check limits
+    for window, key in keys.items():
+
+        limit, ttl = LIMITS[window]
+
+        current = cache.get_value(key) or 0
+
+        if int(current) >= limit:
+
+            return {"rate_limit_status":False, "rate_limit_message": (
+                f"{window} limit exceeded "
+                f"for room_type {room_type}")
+            }
+
+ 
+    return {"rate_limit_status": True, "rate_limit_message":"Ok"}
+
+
+
+@frappe.whitelist()
 def get_room_limit_balance():
     room_types = frappe.db.sql("select property,name from `tabRoom Type`",as_dict = 1)
     data = {}
@@ -107,11 +142,12 @@ def get_room_limit_balance():
 
     return  data
 
+@frappe.whitelist()
 def get_rate_limit(property=None,room_types=None):
     if not property:
-        property="SR0001"
+        property="ESTC HOTEL 6"
     if not room_types:
-        room_types = ["rt0041"]
+        room_types = ["RT0001","RT0002","RT0003","RT0004"]
     def get_min_value(room_type="rt0041"):    
         
         cache = frappe.cache()

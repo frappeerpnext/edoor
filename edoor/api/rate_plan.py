@@ -1,10 +1,11 @@
 import frappe 
 from edoor.channel_managers.utils import get_channal_manager_info,can_save_data,add_change_data_log
-
 from frappe.rate_limiter import rate_limit
-
+from edoor.channel_managers.exely.rate_limit import check_rate_limit_status_by_room_type
 from frappe.utils import getdate, add_to_date,today
 from edoor.api.utils import make_hash,generate_unique_dates
+from edoor.channel_managers.data_upload import get_data_upload_status
+from epos_restaurant_2023.custom_socket_client import emit_event
 import time
 
 
@@ -128,7 +129,7 @@ def get_rate_type_list(property):
  
     result = {
         "cm_logo": cm_info.get("provider_logo"),
-        "prodiver": cm_info.get("provider"),
+        "provider": cm_info.get("provider"),
         "rate_type_list": rate_list
     }
 
@@ -709,7 +710,7 @@ def initialized_room_rate_upload(property = "ESTC HOTEL 6"):
         frappe.throw("Channel Manager is disable")
     
     if cm_info.initialized_prices_upload == 1:
-        frappe.throw("Room availability is already synced with the channel manager. Please use the 'Re-upload' option in the dashboard.")
+        frappe.throw("Room rate is already synced with the channel manager. Please use the 'Re-upload' option in the dashboard.")
     
     if not cm_info.prices_for_accommodation == "Receive from PMS":
         frappe.throw("Room rate is not manage from PMS")
@@ -778,11 +779,116 @@ def initialized_room_rate_upload(property = "ESTC HOTEL 6"):
     return "Room rate is being upload to channel manager now"
 
 @frappe.whitelist()
-def update_room_rate_to_channel_manager(property):
+def update_room_rate_to_channel_manager(property="ESTC HOTEL 6"):
+    # first init room rate 
     # do task here until data from Sync Data Log clear
-    time.sleep(30)
-    frappe.enqueue(
-        "edoor.api.rate_plan.update_room_rate_to_channel_manager",
-        queue="long",
-        property= property
-    )
+    # stop resync cm data from schedult job
+    # we use this in 
+    # edoor\channel_managers\resync_data.py
+
+    frappe.cache.set_value(f"{property}_channel_manager_stop_resync_fail_job", "1", expires_in_sec=60*10)
+    cm_info = get_channal_manager_info(property)
+
+    filter = {
+        "property": property,
+        "request_type":"Prices update",
+        "provider":cm_info.provider
+    }
+
+    sql="select distinct room_type from `tabChannel Manager Sync Data Log` where property=%(property)s and request_type = 'Prices update' and provider=%(provider)s"
+    room_type_data = frappe.db.sql(sql,filter,as_dict=1) or []
+    for rt in room_type_data:
+        if cm_info.provider == "Exely":
+            rate_limit_status = check_rate_limit_status_by_room_type(property, rt.get("room_type"))
+            rt["rate_limit_status"] = rate_limit_status.get("rate_limit_status")
+            # alert user about some room type reach rate limit
+
+
+    
+ 
+
+    if len(room_type_data)>0:
+        update_sync_status_to_cached(property, [d.get("room_type") for d in room_type_data],"In Progress")
+
+        if len([x for x in room_type_data if x.get("rate_limit_status") == True])>0:
+            if cm_info.provider == "Exely":
+                from edoor.channel_managers.exely.price_manager import sync_room_rate
+                sync_room_rate(
+                    property = property,
+                    retry_sync = False
+                )
+                
+                time.sleep(15)
+            else:
+                pass
+                # for other channel manager integration
+        else:
+            # synch data is reach rate limit for value change
+            time.sleep(45)
+
+
+        # enqueue update sync status to redish cache to make it run after db commit
+        # cause we need to count record in db
+        frappe.enqueue(
+            "edoor.api.rate_plan.update_sync_status_to_cached",
+            queue="long",
+            property= property
+        )
+
+        # send send resync pending data
+        
+        frappe.enqueue(
+            "edoor.api.rate_plan.update_room_rate_to_channel_manager",
+            queue="long",
+            property= property
+        )
+
+    
+
+@frappe.whitelist()   
+def update_sync_status_to_cached(property=None,room_types=None,status=None):
+    cm_info = get_channal_manager_info(property)
+    if not room_types:
+        
+        room_types = [d.get("edoor_room_type") for d in cm_info.room_types if d.get("edoor_room_type")]
+    for rt in room_types:
+        if not rt:
+            continue
+
+        cached_key = f"data_initialize_room_rate_{rt}"
+        if status:
+            frappe.cache().set_value(cached_key, status)
+        else:
+            filter = {"property":property,"room_type":rt,"request_type":"Prices update"}
+            if frappe.db.exists("Channel Manager Sync Data Log",filter):
+               frappe.cache().set_value(cached_key, "In Progress")
+            else:
+                frappe.cache().set_value(cached_key, "Complete")
+
+    # update to channel manager integration set state we already upload room rate to cm
+    
+    if not frappe.db.exists("Channel Manager Sync Data Log",{
+        "property":property,
+        "request_type":"Prices update"
+    }):
+        
+        frappe.db.set_value("Channel Manager Integration",property,"initialized_prices_upload",1)
+        frappe.cache.delete_value(f"{property}_channel_manager_info") 
+        # remove stop sync state
+        frappe.cache.delete_value(f"{property}_channel_manager_stop_resync_fail_job")
+
+
+
+    
+    # emit event to socket client
+    emit_event("ChannelManagerUpdate",{
+                "action":"update_channel_manager_data_upload_status",
+                "property": property,
+                "upload_status":get_data_upload_status(property)
+    })
+
+
+@frappe.whitelist()
+def testme():
+    # frappe.cache.set_value("ESTC HOTEL 6_channel_manager_stop_resync_fail_job", "1", expires_in_sec=60)
+    return frappe.cache.get_value("ESTC HOTEL 6_channel_manager_stop_resync_fail_job")  == "1"

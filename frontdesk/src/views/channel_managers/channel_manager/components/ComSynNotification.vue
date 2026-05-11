@@ -107,7 +107,7 @@ async function getCMSyncLog() {
 
 async function getCMTaskData() {
     const res = await app.getDocList("ToDo", {
-        fields: ["name", "status", "priority", "custom_subject", "description"],
+        fields: ["name", "status", "priority", "custom_subject", "description","creation"],
         filters: [["custom_property", "=", window.property_name], ["status", "=", "Open"]],
         orderBy: {
             field: 'creation',

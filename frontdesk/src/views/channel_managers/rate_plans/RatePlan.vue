@@ -44,6 +44,7 @@
 <script setup>
 import Tag from 'primevue/tag';
 import { i18n } from '@/i18n';
+import Image from 'primevue/image';
 import { useRatePlan } from "./hooks/useRatePlan";
 import {  onMounted, onUnmounted } from 'vue'
 import { useRoute , computed } from '@/plugin'

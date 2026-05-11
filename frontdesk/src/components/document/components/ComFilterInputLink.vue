@@ -107,6 +107,9 @@ async function onLoadOptionData() {
             doctype: props.option.options,
             txt: keyword.value,
             limit_page_length: 50,
+            filters: {
+            name: "House Use"
+    }
         };
         const res = await getData("frappe.desk.search.search_link", searchParams, "");
         if (!res.error) {

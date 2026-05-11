@@ -5,15 +5,17 @@ from edoor.channel_managers.utils import get_sync_action_status,get_channal_mana
 
 @frappe.whitelist()
 def re_sync_fail_job():
-    
     delete_past_sync_data()
-    
-
     properties =frappe.db.sql( "select distinct  property, provider,request_type from `tabChannel Manager Sync Data Log`",as_dict = 1)
-    
+
     if properties:
         
         for d in properties:
+            # check from cached synch status is temporary stop 
+            # we do this to prevent data from first upload
+            if str(frappe.cache.get_value(f"{d.get('property')}_channel_manager_stop_resync_fail_job")) == "1":
+                continue
+            
             property_name = d.get("property")
             cm_info = get_channal_manager_info(d.get("property"))
             if not cm_info:
@@ -23,6 +25,7 @@ def re_sync_fail_job():
 
 
             if d.get("provider") == "Exely": 
+
                 if d.get("request_type") == "Availability update":
                     frappe.enqueue(
                         "edoor.channel_managers.exely.availability.sync_room_availability",
@@ -63,8 +66,8 @@ def delete_past_sync_data():
 
 
 @frappe.whitelist(methods="POST")
-def restart_sync_data_to_channel_manager(property,title,provider=None):
-    status = get_sync_action_status(property = property,title = title,provider=provider)
+def restart_sync_data_to_channel_manager(property,request_type,provider=None):
+    status = get_sync_action_status(property = property,request_type = request_type,provider=provider)
     if not provider:
         cm_info = get_channal_manager_info(property)
         if cm_info:
@@ -77,14 +80,14 @@ def restart_sync_data_to_channel_manager(property,title,provider=None):
             frappe.db.set_value("Channel Manager Sync Log",status.get("name"),"is_retry_sync",1)
             frappe.db.commit()
           
-            if title=="Prices update" and provider == "Exely":
+            if request_type=="Prices update" and provider == "Exely":
                  
                 frappe.enqueue(
                     "edoor.channel_managers.exely.price_manager.sync_room_rate",
                     queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
                         property=property
                 )
-            elif title=="Restriction update" and provider == "Exely":
+            elif request_type=="Restriction update" and provider == "Exely":
                 frappe.enqueue(
                     "edoor.channel_managers.exely.room_restriction.sync_room_restriction",
                     queue="short" if frappe.conf.get("developer_mode") else "channel_manager",

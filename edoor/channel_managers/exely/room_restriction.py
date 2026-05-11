@@ -60,7 +60,7 @@ def sync_room_restriction(property=None,retry_sync =True):
                 room_type_limit =  get_rate_limit(property =  p.get("name"),room_types = room_types)
                 
                 
-                session_id = get_sync_session_id(room_type_limit = room_type_limit,rate_type=rp,request_type=REQUEST_TYPE)
+                session_id = get_sync_session_id(room_type_limit = room_type_limit,rate_type=rp,request_type=REQUEST_TYPE,order_by='room_type,restriction_type,date')
 
                 
                 group_data = get_group_restriction_data(session_id,rp)   
@@ -224,7 +224,7 @@ def get_group_restriction_data(session_id,rate_type):
             sync_session_id = %(session_id)s and 
             rate_type = %(rate_type)s and 
             request_type = %(request_type)s
-        order by date,restriction_type
+        order by room_type,restriction_type,date
 
     """
     data = frappe.db.sql(sql,{"session_id":session_id, "rate_type":rate_type,"request_type":REQUEST_TYPE},as_dict = 1)

@@ -191,13 +191,12 @@ def prepare_sync_data_to_channel_manager(filters,run_commit=True):
  
 
 @frappe.whitelist()
-def get_room_availability(property, start_date,end_date):
+def get_room_availability(property=None,room_types=None, start_date=None,end_date=None):
     sql = """
         select
-            room_type_id,
-            date,
+            CONCAT(DATE_FORMAT(date,'%%y%%m%%d'), room_type_id) AS `key`,
             total_room_available as value,
-            stop_sale
+            coalesce(total_block,0) as total_block 
         from `tabDaily Property Data`
         where
             property = %(property)s and 
@@ -205,9 +204,48 @@ def get_room_availability(property, start_date,end_date):
         
     """
     data = frappe.db.sql(sql,{"property":property, "start_date":start_date, "end_date":end_date},as_dict=1)
+ 
+    # prepare return data
+    # sample return data
+    # data = {}
+    return {item['key']: {"total_available":item['value'],"blocked":item["total_block"]} for item in data}
+ 
 
-    # check if date not exist in daily property data then add future date to data get room total from room_type
+@frappe.whitelist()
+def get_group_room_availability(filters=None):
+
+    # filter have property, room_types=[], start_date, end_date
+    if not filters:
+        filters = {
+            'property':"ESTC HOTEL 6",
+            "room_types":["RT-0001","RT-0002","RT-0003","RT-0004"],
+            "start_date":"2026-05-09",
+            "end_date":frappe.utils.add_years(frappe.utils.today(), 1)
+        }
+    total_room_fields = list(range(1,32))
+    sql_total_room_fields = ",".join(
+        f"MAX(CASE WHEN DAY(d.date) = {day} THEN d.total_room_available END) AS `{day}`"
+        for day in total_room_fields
+    )
+   
+    sql = """
+        select
+            room_type_id,
+            date_format(date,'%%b-%%Y') as month_name,
+            {total_fields}
+        from `tabDaily Property Data` d
+        where
+            d.property = %(property)s and 
+            d.room_type_id in %(room_types)s and 
+            d.date between %(start_date)s and %(end_date)s
+
+    """.format(total_fields = sql_total_room_fields)
+    return sql
+    data = frappe.db.sql(sql,filters,as_dict =1)
+
+
     return data
+    
  
 @frappe.whitelist()
 def runme():

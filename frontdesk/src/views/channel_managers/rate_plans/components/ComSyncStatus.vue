@@ -1,6 +1,6 @@
 <template>
-
-    <div  v-if="data?.title" >
+ todo this auto hide when restart synbd success
+    <div  v-if="data?.request_type" >
         <Message severity="warn">
           
  <h1 class="text-xl">{{ title }}</h1>
@@ -49,9 +49,9 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 
 const title = computed(() => {
-    let _title = `Sync ${data.value?.title} to  ${data.value?.provider} has been Stoped`;
+    let _title = `Sync ${data.value?.request_type} to  ${data.value?.provider} has been Stoped`;
     if (data.value?.sync_action == "Delay Sync") {
-        _title = `Sync ${data.value?.title} to ${data.value?.provider} has been Delay`;
+        _title = `Sync ${data.value?.request_type} to ${data.value?.provider} has been Delay`;
     }
     return _title
 })
@@ -102,7 +102,7 @@ function onRestartResync() {
 async function getSyncRoomRateActionStatus() {
     
     const resp = await app.postApi("edoor.channel_managers.utils.get_sync_action_status", {
-        title: props.method,
+        request_type: props.method,
         property: property.name
     },"",false)
     if (resp.data) {

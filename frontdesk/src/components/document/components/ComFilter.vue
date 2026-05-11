@@ -3,12 +3,18 @@
  
         <InputText v-if="!hideSearchField" class="px-2 py-1" v-model="filter.keyword" variant="filled" :placeholder="$t('Search')" size="small" v-debounce="onSearch" style="height: 30px !important;"/>
         <template v-for="(f, index) in filters" :key="index">
-            <ComFilterInputData v-if="f.fieldtype=='Data'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]"/>
+            
+            <ComFilterInputData v-if="f.fieldtype=='Data'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]">
+                <slot :name="f.fieldname"></slot>
+            </ComFilterInputData>
             <ComFilterInputLink v-if="f.fieldtype=='Link'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]" :operator="f.operator" :optionValue="f.optionValue"/> 
-            <ComFilterInputDate v-if="f.fieldtype=='Date'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]"/>
+            <ComFilterInputDate v-if="f.fieldtype=='Date'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]">
+                <slot :name="f.fieldname"></slot>
+            </ComFilterInputDate>
             <ComFilterInputSelect v-if="f.fieldtype=='Select'" :option="f"  @onFilter="onFilter" :defaultValue="filter[f.fieldname]"  />
             <ComFilterInputTree v-if="f.fieldtype=='Tree'" :option="f"  @onFilter="onFilter" :defaultValue="filter[f.fieldname]"  />
             <ComFilterInputNumber v-if="['Currency','Int','Float'].includes(f.fieldtype)" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]"/>
+           
         </template>
         <!-- <div style="height: 30px !important;">
             <ComFilterInputSelect v-if="f.fieldtype=='Select'" :option="f"  @onFilter="onFilter" :defaultValue="filter[f.fieldname]"  />

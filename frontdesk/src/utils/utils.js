@@ -1,7 +1,7 @@
+ 
 const isMobile = window.innerWidth <= 640
 const isTablet = window.innerWidth <= 960
-
-
+ 
 export function getDialogScrollHeight(adjustHeight = 0) {
   let el = document.querySelectorAll(".p-dialog-content")
   if (el) {
@@ -231,4 +231,58 @@ export function openDialog(component, title = "Dialog", options = null) {
     window.dialog.open(component, _options)
 
   })
+}
+
+export function getMonthlyRanges(startDate, endDate) {
+  // Convert ISO strings to UTC-midnight Date objects (ignores time)
+  const toUTCMidnight = (iso) => {
+    const d = new Date(iso);
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  };
+
+  const start = toUTCMidnight(startDate);
+  const end = toUTCMidnight(endDate);
+  
+  const result = [];
+  let current = new Date(start);
+  
+  while (current <= end) {
+    const year = current.getUTCFullYear();
+    const month = current.getUTCMonth();
+    
+    // First day of current month (UTC midnight)
+    const monthStart = new Date(Date.UTC(year, month, 1));
+    // Last day of current month (UTC midnight of that day)
+    const monthEnd = new Date(Date.UTC(year, month + 1, 0));
+    
+    let segmentStart, segmentEnd;
+    
+    if (result.length === 0) {
+      // First segment: from original start date to end of its month (or end date if earlier)
+      segmentStart = new Date(start);
+      segmentEnd = monthEnd < end ? monthEnd : new Date(end);
+    } else if (monthEnd >= end) {
+      // Last segment: from start of month to original end date
+      segmentStart = monthStart;
+      segmentEnd = new Date(end);
+    } else {
+      // Full month segment
+      segmentStart = monthStart;
+      segmentEnd = monthEnd;
+    }
+    
+    // Format YYYY-MM-DD from UTC date
+    const format = (date) => date.toISOString().split('T')[0];
+    
+    result.push({
+      start_date: format(segmentStart),
+      end_date: format(segmentEnd),
+      max_days: monthEnd.getUTCDate() // days in this month
+    });
+    
+    // Move to first day of next month
+    current = new Date(Date.UTC(year, month + 1, 1));
+  }
+  
+  return result;
 }

@@ -24,7 +24,8 @@ const dataUploadSteps = ref([
   { index: 4, title: 'AVAILABILITY' },
   { index: 5, title: 'PRICES' },
   { index: 6, title: 'RESTRICTIONS' },
-  { index: 7, title: 'COMPLETE' }
+  { index: 7, title: 'EXTRA SERVICES' },
+  { index: 8, title: 'COMPLETE' }
 ])
 
 
@@ -88,13 +89,25 @@ export function useCMDashboard() {
     })
 
      function resetData(){
-        alert("reset cm data")
         activeStepIndex.value = 1
+        initialized.value = false;
         dataUploadStatus.value = null
         // change credential step is validate = false
         dataUploadSteps.value[1].is_validate = false
+
     }
 
+    async function onRefresh(is_reset = false){
+        const l = await window.showLoading()
+        await getChannelManagerData() ;
+        await getDataUploadStatus();
+        if(is_reset){
+            resetData();
+            currentCMComponent.value = ChannelManagerDashboard;
+        }
+        l.close();
+
+    }
 
     return {
         dataUploadStatus,
@@ -105,8 +118,10 @@ export function useCMDashboard() {
         currentCMComponent,
         dataUploadSteps,
         activeStepIndex,
+        getChannelManagerData,
         getDataUploadStatus,
         resetData,
-        onChangeDataUploadStep
+        onChangeDataUploadStep,
+        onRefresh
     }
 }

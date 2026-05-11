@@ -4,7 +4,8 @@
         :hasFilter="selected || selectedMultiple || selectedTimespan || startDate || endDate"
         :operatorOptions="operatorOptions">
 
-        {{ $t(option.label) }}
+        <slot>{{ $t(option.label) }}</slot>
+       
         <template v-slot:filter-template>
             <template v-if="['=', '>=', '!=', '>', '<', '<='].includes(operator)">
 

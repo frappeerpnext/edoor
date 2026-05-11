@@ -43,7 +43,7 @@ async function onOk(){
         "resync_data.restart_sync_data_to_channel_manager",
         {
             property: data.value.property,
-            title: data.value.title,
+            request_type: data.value.request_type,
             
         },
         "",//message

@@ -23,7 +23,7 @@ def get_channal_manager_info(property):
 
 
 
-def get_sync_session_id(room_type_limit=0,rate_type="",request_type=None):
+def get_sync_session_id(room_type_limit=0,rate_type="",request_type=None,order_by ='date'):
     # this method is very important
     # we use this method to apply sync session id to channel manager sync log table 
     # when get data to sync to cm we use this session id to get data from sync log 
@@ -49,10 +49,11 @@ def get_sync_session_id(room_type_limit=0,rate_type="",request_type=None):
                 (%(rate_type)s = '' or rate_type = %(rate_type)s) and 
                 request_type = %(request_type)s and 
                 date<= %(max_date)s
-            ORDER BY date
+            ORDER BY {order_by}
             LIMIT %(limit)s
             FOR UPDATE SKIP LOCKED
-        """, {"room_type":room_type,"limit":limit,"rate_type":rate_type,"request_type":request_type,"max_date":max_date}, as_dict=True)
+        """.format(order_by=order_by)
+        , {"room_type":room_type,"limit":limit,"rate_type":rate_type,"request_type":request_type,"max_date":max_date}, as_dict=True)
 
         if len(rows) ==0:
             continue
@@ -126,12 +127,12 @@ def get_occupancy_codes():
     return data
 
 @frappe.whitelist(methods="POST")
-def get_sync_action_status(title,property,provider=None):
-    titles = []
-    if isinstance(title, str):
-        titles = [title]
+def get_sync_action_status(request_type,property,provider=None):
+    request_types = []
+    if isinstance(request_type, str):
+        request_types = [request_type]
     else:
-        titles = title
+        request_types = request_type
 
     cm_info = get_channal_manager_info(property)
     if not cm_info:
@@ -140,9 +141,9 @@ def get_sync_action_status(title,property,provider=None):
     if not provider:
         provider = cm_info.provider
         
-    sql="select is_retry_sync, name, sync_action,title, sync_until,response_text,property,provider,creation from `tabChannel Manager Sync Log` where title in %(titles)s and provider=%(provider)s and property = %(property)s and status <> 'Success' and is_retry_sync = 0 order by creation desc limit 1"
+    sql="select is_retry_sync, name, sync_action,request_type, sync_until,response_text,property,provider,creation from `tabChannel Manager Sync Log` where request_type in %(request_types)s and provider=%(provider)s and property = %(property)s and status <> 'Success' and is_retry_sync = 0 order by creation desc limit 1"
 
-    data = frappe.db.sql(sql,{"titles":titles,"property":property,"provider":provider},as_dict = 1)
+    data = frappe.db.sql(sql,{"request_types":request_types,"property":property,"provider":provider},as_dict = 1)
  
 
     data = [d for d in data if d.get("is_retry_sync") ==0]
@@ -638,4 +639,11 @@ def add_change_data_log(data,run_commit=True):
 
     if run_commit:
         frappe.db.commit()
+
+@frappe.whitelist(methods="POST")
+def mark_channel_data_upload_as_complete(property):
+    doc = frappe.get_doc("Channel Manager Integration",property)
+    doc.initialized_data_upload = 1
+    doc.save(ignore_permissions=True)
+    return "Success"    
 

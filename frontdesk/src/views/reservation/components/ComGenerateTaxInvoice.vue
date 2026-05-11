@@ -31,7 +31,7 @@
                         <div class="text-2xl">Rate Exchange</div>
                         <span class="text-2xl">
                             <CurrencyFormat currAddClass="font-semibold" :value="1"  />({{ data?.base_currency }}) =
-                            <CurrencyFormat currAddClass="font-semibold" :value="data.exchange_rate" :currency="data?.second_currency" /> ({{
+                            <CurrencyFormat v-if="data?.second_currency" currAddClass="font-semibold" :value="data.exchange_rate" :currency="data?.second_currency" /> ({{
                                 data?.second_currency?.currency }})
                         </span>
                     </div>
@@ -82,6 +82,7 @@ const data = ref({tax_invoice_type:""})
 const confirm = useConfirm()
 const gv = inject("$gv")
 const op = ref();
+import NumberFormat from 'number-format.js'
 const newExchange  = ref()
 const opshow = (event) => { 
     newExchange.value  = data.value.exchange_rate   

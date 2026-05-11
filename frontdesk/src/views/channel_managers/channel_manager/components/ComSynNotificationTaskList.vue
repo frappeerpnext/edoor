@@ -3,7 +3,7 @@
         <div class="task-container">  
             <div class="task-list"> 
                <div v-if="data?.length > 0" v-for="d in data" @click="onViewLogDetail(d)" class="cursor-pointer">
-  <div class="task-card open">
+                <div class="task-card open">
     <div class="w-full " :class="d.priority === 'High' ? 'border-button-color-danger' : 'border-button-color-warning'">
        <Tag class="border-round px-3" :severity="d.priority=='High'?'danger':'warning'">
         {{ d.priority }}
@@ -18,6 +18,7 @@
     <div class="task-desc ellipsis">
       {{ getPlainText(d.description) }}
     </div> 
+    <small> <ComTimeago :date="d.creation" /> </small>
   </div> 
 </div>
                 <div v-else class="flex flex-column align-items-center w-full h-23rem justify-content-center">

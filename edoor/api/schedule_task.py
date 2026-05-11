@@ -390,6 +390,11 @@ def five_minute_job():
         
      
 
+    # enqueue get data from channel manager
+    frappe.enqueue(
+        "edoor.channel_managers.exely.reservation.add_new_exely_bookings",
+        queue="long"
+    )
     return "done"
 
 

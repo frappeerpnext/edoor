@@ -17,35 +17,47 @@
             </template>
         </ComHeader>
 
-
-
-<Calendar :selectOtherMonths="true"  :modelValue="filters.start_date" @date-select="onStartDateChange" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
-<Calendar :selectOtherMonths="true"  :modelValue="filters.end_date" @date-select="onEndDateChange" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
- <Button @click="onClearSelection">Clear Selection</Button>
-<RoomAvailability
-v-if="roomTypes"
-        ref="refAvailability"
-  :startDate="filters.start_date"
-  :endDate="filters.end_date"
-  :roomTypes= "roomTypes"
-  :data="data"
-  @update:selected="onSelected"
-  @onUpdateStatus = "onToggleUpdate"
-/>
  
+{{ filters }}
+<ComFilter :hideSearchField="true" @onSearch="onFilter"
+                                :filters="filterOptions" v-model:filter="filters" >
+                            <template #dates v-if="filters?.dates">
+                                
+                              {{ moment(filters?.dates[2][0]).format("DD-MM-YYYY") }} to 
+                              {{ moment(filters?.dates[2][1]).format("DD-MM-YYYY") }} 
+                            </template>
+                            </ComFilter>
+
+ <div>
+    <ComRoomAvailabilityGrid/>
+    <Calendar :selectOtherMonths="true"  :modelValue="filters.start_date" @date-select="onStartDateChange" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
+<Calendar :selectOtherMonths="true"  :modelValue="filters.end_date" @date-select="onEndDateChange" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
+ 
+ </div>
   </div>
 </template>
 <script setup>
 
-import RoomAvailability from "@/views/channel_managers/availability/components/RoomAvailability.vue"
+import ComRoomAvailabilityGrid from "@/views/channel_managers/availability/components/ComRoomAvailabilityGrid.vue"
+import ComFilter from "@/components/document/components/ComFilter.vue"
+
 import { inject,  ref } from "vue";
 import { i18n } from '@/i18n';
 import { useAvailability } from "@/views/channel_managers/availability/hooks/useAvailability.js";
 const { t: $t } = i18n.global;
 import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
 
 const confirm = useConfirm();
+
+const filterOptions =  [
+        { fieldname: "dates", label: "Date",fieldtype:"Date",hideOperator:true },
+        
+        // { fieldname: "departure_date", label: "Departure" },
+        { fieldname: "room_types", label:"Room Types", fieldtype: 'Link', options: 'Room Type', operator: "in",hideOperator:true },
+        { fieldname: "rate_type", label:"Rate Plan", fieldtype: 'Link', options: 'Rate Type', operator: "=",hideOperator:true,filters:[["is_complimentary","=",0],["is_house_use","=",0]] },
+        
+
+    ]
 
 const {
     data,
@@ -60,10 +72,13 @@ const {
 } = useAvailability();
 
 
-
+const tempFilter=ref({...filters.value})
 const moment = inject('$moment')
 
-
+function onFilter(f){
+    alert()
+    console.log(f)
+}
 const actionMenus = [
     {
         label: 'Open Sale',

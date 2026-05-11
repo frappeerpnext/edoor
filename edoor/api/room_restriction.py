@@ -5,7 +5,10 @@ from edoor.channel_managers.utils import get_channal_manager_info,can_save_data,
 from frappe import _
 from frappe.utils import getdate, add_to_date,today
 from frappe.rate_limiter import rate_limit
-
+from edoor.channel_managers.data_upload import get_data_upload_status
+from epos_restaurant_2023.custom_socket_client import emit_event
+from edoor.channel_managers.exely.rate_limit import check_rate_limit_status_by_room_type
+import time
 
 
 
@@ -353,7 +356,7 @@ def get_restriction_type_list(property_name):
 
 @frappe.whitelist(methods="POST")
 @rate_limit(limit=30, seconds=60) 
-def resync_room_restriction(data=None):
+def resync_room_restriction(data=None,auto_sync_to_cm = True):
    
 
     if not data:
@@ -466,13 +469,13 @@ def resync_room_restriction(data=None):
 
     get_missing_room_restriction_data(data)
     frappe.db.commit()
-
-    if cm_info.get("provider") == "Exely": 
-        frappe.enqueue(
-            "edoor.channel_managers.exely.room_restriction.sync_room_restriction",
-            queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
-                property=data.get("property")
-        )
+    if auto_sync_to_cm:
+        if cm_info.get("provider") == "Exely": 
+            frappe.enqueue(
+                "edoor.channel_managers.exely.room_restriction.sync_room_restriction",
+                queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
+                    property=data.get("property")
+            )
             
 
 
@@ -503,12 +506,11 @@ def get_missing_room_restriction_data(data):
                 "room_types": tuple(data.get("room_types"))
             })
 
-    def get_missing_date(restriction_type):
+    def get_missing_date(filter):
         
             
-        filters.update({
-            "restriction_type": restriction_type
-        })
+        filters.update(**filter)
+       
         sql = f"""
             select 
                 d.date 
@@ -516,9 +518,9 @@ def get_missing_room_restriction_data(data):
             left join `tabRoom Restriction` rr 
                 on rr.date = d.date
                 and rr.restriction_type = %(restriction_type)s
-                and rr.room_type_id in %(room_types)s
+                and rr.room_type_id =  %(room_type)s
                 and rr.property = %(property)s
-                and rr.rate_type in %(rate_types)s
+                and rr.rate_type = %(rate_type)s
             where 
                 ({date_filters}) and 
                 rr.date is null
@@ -553,22 +555,244 @@ def get_missing_room_restriction_data(data):
         
 
     raw_data = []
-    for rst in data.get("restriction_types"):
-        missing_date = get_missing_date(rst)
+    rate_types_room_types_restriction_types = [
+        {
+                "rate_type": rate_type,
+                "room_type":room_type,
+                "restriction_type":restriction_type
+
+            }
+            for rate_type, room_type,restriction_type in product(data.get("rate_types"), data.get("room_types"),data.get("restriction_types") )
+    ]
+    
+    for d in  rate_types_room_types_restriction_types:
+        missing_date = get_missing_date(filter=d)
         raw_data = raw_data +  [
         {
-                "name": make_hash(f"rs{RESTRICTION_TYPE_PREFIX.get(rst)}{rate_type}{room_type}{date}"),
+                "name": make_hash(f"rs{RESTRICTION_TYPE_PREFIX.get(d.get('restriction_type'))}{d.get('rate_type')}{d.get('room_type')}{date}"),
                 "date": date,
-                "room_type_id": room_type,
-                "rate_type":rate_type,
-                "restriction_type":rst,
-                "value": value_map.get(rst)
+                "room_type_id": d.get("room_type"),
+                "rate_type":d.get("rate_type"),
+                "restriction_type":d.get("restriction_type"),
+                "value": value_map.get(d.get("restriction_type"))
             }
-            for date, room_type,rate_type in product(missing_date, data.get("room_types"),data.get("rate_types") )
+            for date in missing_date
         ]
         
 
     if len(raw_data)>0:
         bulk_insert_to_cm_data_log(raw_data)
+
+
+ 
+# ==========================================
+@frappe.whitelist()
+def runme():
+    return initialized_room_restriction_upload()
+
+@frappe.whitelist(methods="POST")
+@rate_limit(limit=5, seconds=60)
+def initialized_room_restriction_upload(property = "ESTC HOTEL 6"):
+    
+    cm_info = get_channal_manager_info(property)
+    if not cm_info:
+        frappe.throw("No channel manager integration for this property")
+    if cm_info.enable == 0:
+        frappe.throw("Channel Manager is disable")
+    
+    if cm_info.initialized_restrictions_upload == 1:
+        frappe.throw("Room restriction is already synced with the channel manager. Please use the 'Re-upload' option in the dashboard.")
+    
+    if not cm_info.restrictions == "Receive from PMS":
+        frappe.throw("Room restriction is not manage from PMS")
+        
+    
+    if  cm_info.initialized_availability_upload == 0:
+        frappe.throw("Please upload room availability first")
+
+    if  cm_info.initialized_prices_upload == 0:
+        frappe.throw("Please upload room rate first")
+
+    
+
+    room_types = [d.get("edoor_room_type") for d in  cm_info.get("room_types") if d.get("edoor_room_type") and d.get("room_type_code")]
+
+    rate_types =  [{"rate_type": d.get("edoor_rate_plan"),"room_types":[]} for d in  cm_info.get("rate_plans") if d.get("edoor_rate_plan") and d.get("rate_plan_code")]
+
+    # use restriction code
+    _restrictions = ["Closed","Cta","Ctd","MinLos","MaxLos","MinLosArrival","MaxLosArrival","MinAdvBooking","MaxAdvBooking","FullPatternLos"]
+    restrictions =[]
+    for rs in _restrictions:
+        if cm_info.get(rs.lower())==1:
+            restrictions.append(rs)
+
+    if len(restrictions) == 0:
+        frappe.throw("No restriction config in Channel Manager Integration setting.")
+
+     
+    
+    if not room_types or len(room_types) == 0:
+        frappe.throw("No room type mapping to channel manager room type")
+        
+    if not rate_types or len(rate_types) == 0:
+        frappe.throw("No rate plan mapping to channel manager rate plan")
+
+     
+
+   
+    filter = {
+            "rate_types": [x.get("rate_type") for x in rate_types],
+            "property": property,
+            "date_ranges": [
+                {"start_date": today(), "end_date": frappe.utils.add_years(today(),1)},
+            ],
+            "room_types": room_types,
+            "restriction_types":restrictions
+    }
+    
+    resync_room_restriction(data = filter, auto_sync_to_cm = False)
+
+    
+ 
+
+    # run equeue job to update data to cm
+    
+    frappe.msgprint("We are currently processing upload your room restriction data to channel manager in the background. Please wait until the upload to the channel manager is completed.")
+
+    frappe.enqueue(
+        "edoor.api.room_restriction.update_room_restriction_to_channel_manager",
+        queue="long",
+        property= property
+    )
+    
+
+
+    return "Room restriction is being upload to channel manager now"
+
+@frappe.whitelist()
+def update_room_restriction_to_channel_manager(property="ESTC HOTEL 6"):
+    
+
+    frappe.cache.set_value(f"{property}_channel_manager_stop_resync_fail_job", "1", expires_in_sec=60*10)
+     
+    cm_info = get_channal_manager_info(property)
+
+    filter = {
+        "property": property,
+        "request_type":"Restriction update",
+        "provider":cm_info.provider
+    }
+
+    sql="select distinct room_type from `tabChannel Manager Sync Data Log` where property=%(property)s and request_type = 'Restriction update' and provider=%(provider)s"
+    room_type_data = frappe.db.sql(sql,filter,as_dict=1) or []
+    
+    for rt in room_type_data:
+        if cm_info.provider == "Exely":
+            rate_limit_status = check_rate_limit_status_by_room_type(property, rt.get("room_type"))
+            rt["rate_limit_status"] = rate_limit_status.get("rate_limit_status")
+            # alert user about some room type reach rate limit
+
+
+    
+   
+
+    if len(room_type_data)>0:
+        update_sync_status_to_cached(property, [d.get("room_type") for d in room_type_data],"In Progress")
+
+        if len([x for x in room_type_data if x.get("rate_limit_status") == True])>0:
+            if cm_info.provider == "Exely":
+                from edoor.channel_managers.exely.room_restriction import sync_room_restriction
+                sync_room_restriction(
+                    property = property,
+                    retry_sync = False
+                )
+                
+                time.sleep(15)
+            else:
+                pass
+                # for other channel manager integration
+        else:
+            # synch data is reach rate limit for value change
+            # send wait delay until it allow to resync again
+            time.sleep(45)
+
+
+        # enqueue update sync status to redish cache to make it run after db commit
+        # cause we need to count record in db
+        frappe.enqueue(
+            "edoor.api.room_restriction.update_sync_status_to_cached",
+            queue="short",
+            property= property
+        )
+
+        # send send resync pending data
+        
+        frappe.enqueue(
+            "edoor.api.room_restriction.update_room_restriction_to_channel_manager",
+            queue="long",
+            property= property
+        )
+
+    
+# this method use only first data initialize
+@frappe.whitelist()   
+def update_sync_status_to_cached(property=None,room_types=None,status=None):
+    cm_info = get_channal_manager_info(property)
+    
+    if not room_types:
+        
+        room_types = [d.get("edoor_room_type") for d in cm_info.room_types if d.get("edoor_room_type")]
+    _restrictions = ["Closed","Cta","Ctd","MinLos","MaxLos","MinLosArrival","MaxLosArrival","MinAdvBooking","MaxAdvBooking","FullPatternLos"]
+
+    for rt in room_types:
+        if not rt:
+            continue
+        filter = {"property":property,"room_type":rt,"request_type":"Restriction update"}
+        cached_key = f"data_initialize_restriction_{rt}"
+        # update sync status by restriction type
+        
+        for rst in _restrictions:
+            if frappe.db.exists("Channel Manager Sync Data Log",{**filter,"restriction_type":rst}):
+                frappe.cache().set_value(f"{cached_key}_{rst}", "In Progress")
+            else:
+                frappe.cache().set_value(f"{cached_key}_{rst}", "Complete")
+
+        # status to room
+        if status:
+            frappe.cache().set_value(cached_key, status)
+        else:
+            
+            if frappe.db.exists("Channel Manager Sync Data Log",filter):
+               frappe.cache().set_value(cached_key, "In Progress")
+            else:
+                frappe.cache().set_value(cached_key, "Complete")
+
+
+
+        
+        
+
+
+    # update to channel manager integration set state we already upload room rate to cm
+    
+    if not frappe.db.exists("Channel Manager Sync Data Log",{
+        "property":property,
+        "request_type":"Restriction update"
+    }):
+        frappe.db.set_value("Channel Manager Integration",property,"initialized_restrictions_upload",1)
+        # remove stop sync state
+        frappe.cache.delete_value(f"{property}_channel_manager_stop_resync_fail_job")
+        frappe.cache.delete_value(f"{property}_channel_manager_info") 
+
+
+
+    
+    # emit event to socket client
+    emit_event("ChannelManagerUpdate",{
+                "action":"update_channel_manager_data_upload_status",
+                "property": property,
+                "upload_status":get_data_upload_status(property)
+    })
+
 
 

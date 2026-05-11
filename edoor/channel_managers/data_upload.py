@@ -23,7 +23,8 @@ def get_data_upload_status(property = "ESTC HOTEL 6"):
     return { 
         "availability": get_availability_status(property=property, cm_info = cm_info,room_types=copy.deepcopy(room_types)),
         "room_rate":get_price_upload_status(property=property, cm_info = cm_info,room_types=copy.deepcopy(room_types)),
-        "restriction":get_restriction_upload_status(property=property, cm_info = cm_info,room_types=copy.deepcopy(room_types))
+        "restriction":get_restriction_upload_status(property=property, cm_info = cm_info,room_types=copy.deepcopy(room_types)),
+        "extra_service":get_extra_service_update_status(property=property, cm_info = cm_info)
     }
 
 
@@ -128,14 +129,18 @@ def get_restriction_upload_status(property=None, cm_info=None,room_types=None):
             restrictions.append(rs)
 
     data = []
-    status = "Pending" if cm_info.initialized_restrictions_upload == 0 else "Complete"
+    status =  None 
+    if cm_info.initialized_restrictions_upload == 1:
+        status =  "Complete"
+    
+    
     def get_status_by_restriction_code():
         restriction_data = []
         for rs in restrictions:
             restriction_cached_key = f"data_initialize_restriction_{rt.get('room_type')}_{rs}"
             restriction_data.append({
                 "restriction": rs,
-                "status": frappe.cache().get_value(restriction_cached_key) or "Pending"
+                "status": status or (frappe.cache().get_value(restriction_cached_key) or "Pending")
             })
         return  restriction_data
 
@@ -146,26 +151,49 @@ def get_restriction_upload_status(property=None, cm_info=None,room_types=None):
             "disabled":0
         })
 
-        rt["status"] = "Complete" if status == "Complete" else ( frappe.cache().get(status_key) or "Pending")
+        rt["status"] = status or ( frappe.cache().get(status_key) or "Pending")
         rt["restrictions"] = get_status_by_restriction_code()
+        # check if restriction type sync status all complete then set status in room type = Complete also
+        if any(x.get("status") == "In Progress" for x in rt["restrictions"]):
+            rt["status"] = "In Progress" 
+        else:
+            if any(x.get("status") == "Pending" for x in rt["restrictions"]):
+                rt["status"] = "Pending" 
+            else:
+                rt["status"] = "Complete" 
+
         
 
         data.append(rt)
 
 
-    if not status == "Complete":
-        if len([d for d in data if d.get("status") == 'In Progress'])>0:
-            status = "In Progress"
-        elif len([d for d in data if d.get("status") == 'Complete'])>0:
-            status = "Complete"
+  
     
     
     return {
         "sync_mode":cm_info.restrictions,
         "status": status,
+        "restrictions":restrictions,
         "room_types": data
     }
 
 
 
  
+def get_extra_service_update_status(property,cm_info):
+     
+    status = frappe.cache().get_value("data_initialize_extra_service_status") or "Pending"
+    if cm_info.initialized_service_upload == 1:
+        status = "Complete"
+    return {
+        "sync_mode":cm_info.prices_for_extra_services,
+        "status":status,
+        "extra_services":[
+            {
+                "service_code":"0001",
+                "service_name":"Service name",
+                "rate":45,
+                "status":"Pending"
+            }
+        ]
+    }

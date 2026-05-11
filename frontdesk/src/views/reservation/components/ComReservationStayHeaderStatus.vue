@@ -1,7 +1,9 @@
 
 <template>
     <div class="flex items-center">
+       
         <div class="flex">
+
             <span @click="OnViewReservation">
                 <ComTagReservation :title="$t('RES #') + ':' " :value="rs?.reservation?.name" class="link_line_action w-auto hidden lg:inline-block">
                     <span class="number_action_line inline-block">
@@ -58,7 +60,9 @@
                 {{$t(rs.reservationStay?.reservation_status)  }}
                 
             </span>
-
+        <div v-if="rs.reservation.channel_manager_booking_id"> 
+        <i class="pi pi-check"></i>    
+        </div>
         </div>
     </div>
   
