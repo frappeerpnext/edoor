@@ -21,6 +21,7 @@ from edoor.api.backup import run_backup_command
 import hashlib
 from frappe.utils.caching import redis_cache
 
+
 def after_login(user):
     frappe.local.response["hello"] = 'World'
 
@@ -2405,3 +2406,12 @@ def get_room_type_list(property):
         d["total_rooms"] = frappe.db.count('Room', {'room_type_id': d.get("name"),"disabled":0})
         
     return data
+
+@frappe.whitelist()
+@redis_cache(ttl=86400)
+def get_property_year_operation():
+    sql="select distinct year(date) as `year` from `tabDates`"
+    data = frappe.db.sql(sql,as_dict = 1)
+        
+    return [d.get("year") for d in data]
+

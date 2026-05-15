@@ -52,7 +52,7 @@
 
       <!-- Table -->
       <div class="table-container mt-5">
-        <template v-if="log?.title == 'Prices update'">
+        <template v-if="log?.request_type == 'Prices update'">
 
 
           <h3 class="text-xl font-bold">Rates Detail</h3>
@@ -93,7 +93,7 @@
 
           
         </template>
-        <template v-if="log?.title == 'Restriction update'">
+        <template v-if="log?.request_type == 'Restriction update'">
 
 
           <h3 class="text-xl font-bold">Restriction Detail</h3>
@@ -135,12 +135,22 @@
 
           </DataTable>
         </template>
-<template v-if="log?.title == 'Availability update'">
+<template v-if="log?.request_type == 'Availability update'">
 <DataTable  :value="log?.raw_data">
   <Column field="room_type" header="Room Type"></Column>
+  
+      <Column header="Periods">
+              <template #body="slotProps">
+                <span class="font-medium">
+                  
+                    {{ moment(slotProps.data.start).format("DD-MM-YYYY") }} to {{ moment(slotProps.data.end).format("DD-MM-YYYY") }}
+                  
+
+                </span>
+
+              </template>
+            </Column>
   <Column field="booking_limit" header="Limit"></Column>
-  <Column field="start" header="Start"></Column>
-  <Column field="end" header="End"></Column>
 </DataTable>
 </template>
         

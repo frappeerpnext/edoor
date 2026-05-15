@@ -36,8 +36,10 @@
                 <Listbox v-model="selected" v-if="option.fieldtype == 'Link' && operator!='is'"
                  :options="listData"
                  :optionValue="optionValue"
-                 @change="onSelectOptionChange"
+                   @update:modelValue="onSelectOptionChange"
+              
                  :multiple="operator=='in' || operator=='not in'" 
+                    
 
                  class="w-full md:w-56 filter_content_custom">
                     <template #option="slotProps">
@@ -114,7 +116,22 @@ function onSearch(){
     
 }
 
-function onSelectOptionChange(){
+function onSelectOptionChange(val){
+    if (!val){
+        if(props.option?.require){
+        if(props.option?.default){
+            selected.value = props.option?.default
+        }else {
+            selected.value = listData.value?.length>0?listData.value[0].name:""
+        }
+    }
+
+    }else {
+        selected.value = val
+    }
+    
+   
+     
    emit("onFilter")
 }
 

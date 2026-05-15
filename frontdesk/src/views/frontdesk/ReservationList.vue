@@ -1,10 +1,7 @@
-
-
- <template>
+<template>
     <ComDocumentList ref="reservationList" doctype="Reservation" list_view_setting="reservation_list" :options="options"
         router_name="ReservationList" @row-dblclick="onRowDoubleClick" v-model:selectedRow="selectedRow"
-        @onBeforeContextMenuShow="onContextMenuBeforeShow"
-        >
+        @onBeforeContextMenuShow="onContextMenuBeforeShow">
         <template #action-button>
             <NewFITReservationButton />
             <NewGITReservationButton />
@@ -28,22 +25,22 @@
         </template>
         <template #room_numbers="{ item }">
             <div v-tippy="item.room_numbers" class="overflow-hidden text-overflow-ellipsis">
-                    <span v-if="(item.room_numbers || '').split(',').length<=3">
-                             {{ item.room_numbers }} 
-                    </span>
-                    <span v-else>
-                        {{ (item.room_numbers  || '').split(",").slice(0,3).join(",") }}
-                        <chip>{{item.room_numbers.split(',').length-3}} More(s)</chip>  
-                    </span>
-                        
-                                
-                            </div>
+                <span v-if="(item.room_numbers || '').split(',').length <= 3">
+                    {{ item.room_numbers }}
+                </span>
+                <span v-else>
+                    {{ (item.room_numbers || '').split(",").slice(0, 3).join(",") }}
+                    <chip>{{ item.room_numbers.split(',').length - 3 }} More(s)</chip>
+                </span>
+
+
+            </div>
         </template>
 
     </ComDocumentList>
 </template>
 <script setup>
-import { ref,getDocumentList } from "@/plugin"
+import { ref, getDocumentList } from "@/plugin"
 import ComDocumentList from "@/components/document/ComDocumentList.vue"
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
@@ -61,11 +58,11 @@ const options = ref({
         { "fieldname": "guest_name" },
         { "fieldname": "guest", is_hide: true },
         { "fieldname": "business_source" },
- 
+
         { "fieldname": "reservation_date" },
         { "fieldname": "arrival_date" },
         { "fieldname": "departure_date" },
-        { "fieldname": "total_active_reservation_stay",label:"Total Stays" },
+        { "fieldname": "total_active_reservation_stay", label: "Total Stays" },
 
         { "fieldname": "adr" },
         { "fieldname": "total_amount" },
@@ -87,7 +84,7 @@ const options = ref({
     ],
     filters: [['property', '=', window.property_name]],
     contextMenuOptions: [
-        {label: 'General Info', is_header:true,header_component:ComReservationListContextMenuHeader,header_prop:selectedRow.value },
+        { label: 'General Info', is_header: true, header_component: ComReservationListContextMenuHeader, header_prop: selectedRow.value },
         {
             label: $t('View Reservation Detail'), icon: 'pi pi-calendar', command: () => {
                 window.onOpenLink("view_reservation_detail", selectedRow.value.name);
@@ -109,76 +106,76 @@ function onOpenLink(action, name) {
     window.postMessage(action + '|' + name, '*')
 }
 
-async function onContextMenuBeforeShow(){
+async function onContextMenuBeforeShow() {
 
     const menus = []
-    const folioMenu =await getFolioMenu()
+    const folioMenu = await getFolioMenu()
 
-    if(folioMenu){
+    if (folioMenu) {
         menus.push(folioMenu)
     }
-    const reservationStayMenu =await getReservationStayMenu()
-    if(reservationStayMenu ) menus.push(reservationStayMenu)
+    const reservationStayMenu = await getReservationStayMenu()
+    if (reservationStayMenu) menus.push(reservationStayMenu)
 
- 
+
     reservationList.value.addContextMenu(menus);
 }
 
-async function getFolioMenu(){
-    const folios = await getDocumentList("Reservation Folio", {filters:[["reservation","=",selectedRow.value.name]]})
-    if(folios.data){
+async function getFolioMenu() {
+    const folios = await getDocumentList("Reservation Folio", { filters: [["reservation", "=", selectedRow.value.name]] })
+    if (folios.data) {
 
         const folioMenu = {
-                label: 'Guest Folio', icon: 'pi pi-file', 
-                is_dynamic:true,
-                badge: folios.data.length,
-                items:[]
-             
-            }
-          
-        folios.data.forEach(f=>{
+            label: 'Guest Folio', icon: 'pi pi-file',
+            is_dynamic: true,
+            badge: folios.data.length,
+            items: []
+
+        }
+
+        folios.data.forEach(f => {
             folioMenu.items.push(
                 {
-                label: f.name,
-                command: () => {
-                    window.onOpenLink("view_reservation_folio_detail", f.name);
-                }
+                    label: f.name,
+                    command: () => {
+                        window.onOpenLink("view_reservation_folio_detail", f.name);
+                    }
 
-            },
+                },
             )
         })
-        
+
         return folioMenu;
     }
-return null
+    return null
 }
 
-async function getReservationStayMenu(){
-    const res = await getDocumentList("Reservation Stay", {fields:["name","rooms","room_type_alias","reservation_status"],filters:[["reservation","=",selectedRow.value.name]]})
-    if(res.data){
+async function getReservationStayMenu() {
+    const res = await getDocumentList("Reservation Stay", { fields: ["name", "rooms", "room_type_alias", "reservation_status"], filters: [["reservation", "=", selectedRow.value.name]] })
+    if (res.data) {
 
         const menu = {
-                label: 'Reservation Stay', icon: 'pi pi-building', 
-                is_dynamic:true,
-                badge: res.data.length,
-                items:[]
-             
-            }
-          
-            res.data.forEach(f=>{
+            label: 'Reservation Stay', icon: 'pi pi-building',
+            is_dynamic: true,
+            badge: res.data.length,
+            items: []
+
+        }
+
+        res.data.forEach(f => {
             menu.items.push(
                 {
-                label: `${f.name} - ${f.room_type_alias} (${f.reservation_status})`,
-                command: () => {
-                    window.onOpenLink("view_reservation_stay_detail", f.name);
-                }
+                    label: `${f.name} - ${f.room_type_alias} (${f.reservation_status})`,
+                    command: () => {
+                        window.onOpenLink("view_reservation_stay_detail", f.name);
+                    }
 
-            },
+                },
             )
         })
-        
+
         return menu;
     }
-return null
+    return null
 }
-</script> 
+</script>

@@ -1,5 +1,6 @@
 <template>
   <div class="table-wrapper">
+   
   <Message v-if="cm_info?.restrictions == 'Deliver to PMS'">
     Room restriction are managed by the Channel Manager.
 </Message>
@@ -174,7 +175,8 @@ const numDays = Array.from({ length: 31 }, (_, i) => i + 1)
 
 
 function getRestrictionValue(restriction_type, month, day) {
-  const key = moment(month).format("YYMM") + String(day).padStart(2, "0")
+
+  const key = moment(month).format("YYMM") + String(day).padStart(2, "0") + selectedRoomType.value[0].edoor_room_type
   if (["Closed", "Cta", "Ctd"].includes(restriction_type)) {
     return (restrictionData.value[restriction_type] || {})[key]
   } else {

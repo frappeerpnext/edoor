@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent :hideButtonClose="true" :hideButtonOK="true">
+    <ComDialogContent :hideButtonClose="true" :hideButtonOK="true" :hideFooter="true">
         <template v-if="data">
         
             <ComServerReportViewer 

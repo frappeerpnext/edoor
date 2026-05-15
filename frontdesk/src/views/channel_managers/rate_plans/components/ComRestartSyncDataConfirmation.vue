@@ -1,17 +1,41 @@
 <template>
     <ComDialogContent @onOK="onOk" hideButtonClose titleButtonOK="Ok" :hideIcon="false" >
-        <strong>{{ $t("Sync to Channel Manager has been stopped due to the following problems:") }}</strong>
-        <div>
-            
-            {{ data?.response_text }}
-        </div>
-        <div>
-            {{ $t("Please review and resolve all issues. These problems may be caused by misconfiguration or incorrect data mapping between the PMS and the Channel Manager.") }}
-        </div>
-        <div>
+        <div class="sync-error-container p-4 border-round shadow-1">
+    <!-- Header with Icon -->
+    <div class="flex align-items-center mb-3 text-red-600">
+      <i class="pi pi-exclamation-triangle mr-2 text-2xl"></i>
+      <h3 class="m-0 font-bold">
+        {{ $t("Sync to Channel Manager has been stopped") }}
+      </h3>
+    </div>
 
-            <Checkbox inputId="checked" v-model="isChecked" :binary="true"  />  <label for="checked">{{ $t("I confirm that I have reviewed and resolved all issues.") }}</label>
-        </div>
+    <!-- Error Detail Box -->
+    <div class="error-details p-3 mb-3 bg-red-50 border-left-3 border-red-500">
+      <p class="m-0 font-medium text-red-700">
+        {{ data?.response_text || $t("Unknown error occurred.") }}
+      </p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions mb-4 text-secondary line-height-3">
+      <p>
+        {{ $t("Please review and resolve all issues. These problems may be caused by misconfiguration or incorrect data mapping between the PMS and the Channel Manager.") }}
+      </p>
+    </div>
+
+    <!-- Confirmation Action -->
+    <div class="confirmation-footer p-3 bg-gray-50 border-round flex align-items-center">
+      <Checkbox 
+        inputId="checked" 
+        v-model="isChecked" 
+        :binary="true" 
+        class="mr-2"
+      />
+      <label for="checked" class="cursor-pointer font-semibold selection-none">
+        {{ $t("I confirm that I have reviewed and resolved all issues.") }}
+      </label>
+    </div>
+  </div>
         
     </ComDialogContent>
 </template>

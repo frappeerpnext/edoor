@@ -2108,3 +2108,6 @@ background-color: rgb(255, 234, 234);
 .p-toast .p-toast-message.p-toast-message-warn{
     color: #121212!important;
 }
+.p-message .p-message-close{
+    margin-left: auto !important;
+}

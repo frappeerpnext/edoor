@@ -11,10 +11,8 @@ const todaySummary =ref()
 
 // channel manager info
 const cmInfo = ref(null)
-
-
-
-
+const isInitialize = ref(false)
+const propertyOperationYears = ref([]) // array year from start using system to next 5 year
 
 export function useApp() {
 
@@ -116,10 +114,18 @@ async function getCMInfo(){
 
 }
 
+onMounted(async ()=>{
+  if (isInitialize.value) return;
+  isInitialize.value = true
+  await getCMInfo()
+   
+})
+
   return { 
     isCityLedgerInvoiceDetailOpen,
     todaySummary,
     cmInfo,
+    propertyOperationYears,
     getCMInfo,
     getMeta,
     getDoctypeDefaultFields,

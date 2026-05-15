@@ -85,7 +85,13 @@ def get_availability_status(property=None, cm_info=None,room_types=None):
     }
 
 def get_price_upload_status(property=None, cm_info=None,room_types=None):
-    
+    def get_occupancy_codes(room_type):
+        doc = frappe.get_cached_doc("Room Type",room_type)
+        return [
+            frappe.get_cached_value("Occupancy Code", d.occupancy_code, "title") or d.occupancy_code 
+            for d in doc.rates if d.occupancy_code
+        ]
+
     if not cm_info:
         cm_info = get_channal_manager_info(property)
 
@@ -99,7 +105,7 @@ def get_price_upload_status(property=None, cm_info=None,room_types=None):
         })
 
         rt["status"] = "Complete" if status == "Complete" else ( frappe.cache().get_value(status_key) or "Pending")
-
+        rt["occupancy_codes"] = get_occupancy_codes(rt.get('room_type'))
         data.append(rt)
 
     

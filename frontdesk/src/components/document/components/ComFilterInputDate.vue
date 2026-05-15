@@ -1,5 +1,5 @@
 <template>
-    
+   
     <ComFilterInput :option="option" @onSearch="onSearch" v-model:operator="operator"
         :hasFilter="selected || selectedMultiple || selectedTimespan || startDate || endDate"
         :operatorOptions="operatorOptions">
@@ -26,12 +26,22 @@
 
             </template>
             <template v-else-if="operator == 'Between'">
+                 <div style="max-width: 250px;">
                 <Stack row>
                     <Calendar v-model="startDate" dateFormat="dd-mm-yy" :selectOtherMonths="true" :manualInput="true"
                         :placeholder="$t('Start Date')" />
                     <Calendar v-model="endDate" dateFormat="dd-mm-yy" :selectOtherMonths="true" :manualInput="true"
                         :placeholder="$t('End Date')" />
                 </Stack>
+                <div  v-if="option?.showYearSelection" class="mt-2">
+<strong>Or Select Year</strong>
+                
+                <div class="flex flex-wrap gap-2 mt-4 mb-4" >
+                   
+                    <Chip v-for="y in years" :label="y" @click="onSelectYear(y)" style="cursor: pointer;"></Chip>
+                    
+                </div>
+                </div>
                 <Stack row>
 
                     <Button :label="$t('Search')" @click="onSearchBetween" class="w-full border-none"></Button>
@@ -42,7 +52,7 @@
 
 
                 </Stack>
-
+</div>
 
             </template>
             <template v-else-if="operator == 'timespan'">
@@ -55,13 +65,15 @@
                 <Button @click="onClearSelection" :disabled="!selectedTimespan" label="Clear Filter" severity="warning"
                     class="w-full" />
             </template>
+             
         </template>
     </ComFilterInput>
+    
 </template>
 <script setup>
 import { ref, inject, watch } from "@/plugin"
 import ComFilterInput from "@/components/document/components/ComFilterInput.vue"
-import { computed } from "vue"
+import { computed, onMounted } from "vue"
 const props = defineProps({
     option: Object,
     defaultValue: Object//[key,"operator","value"]
@@ -76,6 +88,7 @@ const selectedTimespan = ref()
 const selectedMultiple = ref()
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
+const years = ref([])
 const operatorOptions = [
     { label: $t("Equal"), value: '=', },
     { label: $t("Not Equal"), value: '!=' },
@@ -177,7 +190,16 @@ function onCurrentAuditDate() {
 
 
 function onSearchBetween() {
+
     if (startDate.value && endDate.value) {
+        if(props.option.maxSelectDate ){
+            if(  moment(endDate.value).diff(moment(startDate.value), 'days') > props.option.maxSelectDate)
+        {
+            app.showWarning("Selection is limited to a maximum range of 366 days. Please choose a date range that does not exceed one year.")
+            return
+        }
+        }
+        
         emit("onFilter", [props.option.fieldname, operator.value, [
             moment(startDate.value).format("YYYY-MM-DD"),
             moment(endDate.value).format("YYYY-MM-DD")
@@ -202,5 +224,20 @@ function onClearSelection() {
     emit("onFilter", [props.option.fieldname, operator.value, null])
 }
 
+function onSelectYear(y){
+    emit("onFilter", [props.option.fieldname, "Between", [
+            y+"-01-01",
+            y+"-12-31"
+        ]])
+}
+
+
+onMounted(async()=>{
+    const res =await app.getApi("utils.get_property_year_operation")
+    if(res.data){
+        years.value = res.data
+    }
+    
+})
 
 </script>

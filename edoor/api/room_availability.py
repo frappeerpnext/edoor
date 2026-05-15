@@ -192,23 +192,69 @@ def prepare_sync_data_to_channel_manager(filters,run_commit=True):
 
 @frappe.whitelist()
 def get_room_availability(property=None,room_types=None, start_date=None,end_date=None):
+    if not room_types:
+        room_types = frappe.db.get_list(
+                'Room Type',
+                filters={
+                    'property': property,
+                    'disabled': 0
+                },
+                pluck='name'
+            )
     sql = """
         select
             CONCAT(DATE_FORMAT(date,'%%y%%m%%d'), room_type_id) AS `key`,
             total_room_available as value,
-            coalesce(total_block,0) as total_block 
+            coalesce(total_block,0) as total_block ,
+            total_occupy
         from `tabDaily Property Data`
         where
             property = %(property)s and 
-            date between %(start_date)s and %(end_date)s
+            date between %(start_date)s and %(end_date)s and 
+            room_type_id in %(room_types)s
         
     """
-    data = frappe.db.sql(sql,{"property":property, "start_date":start_date, "end_date":end_date},as_dict=1)
+    data = frappe.db.sql(sql,{"property":property, "start_date":start_date, "end_date":end_date,"room_types":room_types},as_dict=1)
+
+    # total data
+    sql = """
+        select
+            CONCAT(DATE_FORMAT(date,'%%y%%m%%d')) AS `key`,
+            sum(total_room_available) as value,
+            sum(coalesce(total_block,0)) as total_block ,
+            sum(total_occupy) as total_occupy,
+            sum(total_room) as total_room
+        from `tabDaily Property Data`
+        where
+            property = %(property)s and 
+            date between %(start_date)s and %(end_date)s and 
+            room_type_id in %(room_types)s
+        group by 
+            date
+        
+    """
+    total_data = frappe.db.sql(sql,{"property":property, "start_date":start_date, "end_date":end_date,"room_types":room_types},as_dict=1)
+
  
     # prepare return data
     # sample return data
     # data = {}
-    return {item['key']: {"total_available":item['value'],"blocked":item["total_block"]} for item in data}
+    calculate_room_occupancy_include_room_block = frappe.get_cached_value("eDoor Setting",None,"calculate_room_occupancy_include_room_block")
+    return {
+            **{item['key']: {
+                "total_available":item['value'],
+                "blocked":item["total_block"],
+                "occupy":item["total_occupy"]
+                } for item in data}
+            ,
+            **{item['key']: {
+                "total_available":item['value'],
+                "blocked":item["total_block"],
+                "occupy":item["total_occupy"],
+                "occupancy":round( item["total_occupy"] / max(1, item.get("total_room") if calculate_room_occupancy_include_room_block == 1 else item.get("total_room") - item.get("total_block") ) * 100,2)
+                } for item in total_data}
+            ,
+    }
  
 
 @frappe.whitelist()
@@ -246,23 +292,77 @@ def get_group_room_availability(filters=None):
 
     return data
     
- 
+
+
+@frappe.whitelist()
+def resync_differentcial_availability_data(run_commit=True):
+    properties = frappe.db.sql("select property   from `tabChannel Manager Integration` where enable = 1",as_dict = 1)
+    for p in properties:
+        cm_info = get_channal_manager_info(p.get("property"))
+        # check can sync data to cm only it enable, price receive from PMS and fist init is done
+        if ( cm_info.get("rooms_availability") =="Receive from PMS" 
+            and str(cm_info.get("initialized_availability_upload")) == "1"): 
+            # add changed data to sync data log
+            sql = """
+                insert into `tabChannel Manager Sync Data Log` (
+                    name,
+                    provider,
+                    request_type,
+                    property,
+                    room_type,
+                    date,
+                    value
+                )
+                select 
+                    name,
+                    '{provider}' as provider,
+                    '{request_type}' as request_type,
+                    property,
+                    room_type_id,
+                    date,
+                    total_room_available as value
+                from `tabDaily Property Data` 
+                where
+                    date >= curdate()  and 
+                    coalesce(total_room_available,0) <> coalesce(old_room_available,0)
+                ON DUPLICATE KEY UPDATE
+                    sync_session_id = '',
+                    value = VALUES(value);
+            """.format(provider = cm_info.get("provider"),request_type = REQUEST_TYPE)
+            frappe.db.sql(sql)
+            
+
+
+            # update old value to value 
+            sql="""
+                update  `tabDaily Property Data` 
+                SET old_room_available = total_room_available
+                where
+                    date >= CURDATE() and 
+                    coalesce(total_room_available,0) <> coalesce(old_room_available,0)
+            """
+            frappe.db.sql(sql)
+
+    if run_commit:
+        frappe.db.commit()
+
 @frappe.whitelist()
 def runme():
-    initialized_availability_upload("ESTC HOTEL 6")
+    resync_availability(recalculate_occupy_data = True)
 
 @frappe.whitelist(methods="POST")
 @rate_limit(limit=3, seconds=60)
-def resync_availability(data=None,show_message = True):
+def resync_availability(data=None,recalculate_occupy_data=False,show_message = True):
+
     if not data:
         data = {
             "property": "ESTC Hotel 6",
             "date_ranges": [
-                {"start_date": "2026-07-01", "end_date": "2026-07-30"},
-                {"start_date": "2026-09-01", "end_date": "2026-10-30"}
+                {"start_date": "2026-07-01", "end_date": "2026-07-30"}
             ],
             "room_types": ["RT-0001", "RT-0004"],
         }
+
 
     cm_info = get_channal_manager_info(data.get("property"))
     if not cm_info:
@@ -286,6 +386,11 @@ def resync_availability(data=None,show_message = True):
         "property": data.get("property"),
         "room_types":data.get("room_types")
     })
+
+    # check if user want to recalculate occupancy data 
+    # then sum occupy and block from temp room occupy and sum to daily property data
+    if recalculate_occupy_data:
+        force_update_occupy_to_daily_property_data()
 
     sql = f"""
         insert into `tabChannel Manager Sync Data Log` (
@@ -425,3 +530,49 @@ def update_availability_upload_status(property = "ESTC HOTEL 6"):
     })
 
 
+
+def force_update_occupy_to_daily_property_data():
+    # update total room 
+    sql = """
+       UPDATE `tabDaily Property Data` t
+        JOIN (
+            SELECT
+                room_type_id,
+                COUNT(*) AS total
+            FROM `tabRoom`
+            WHERE disabled = 0
+            GROUP BY room_type_id
+        ) b ON b.room_type_id = t.room_type_id
+        SET t.total_room = b.total, 
+            old_room_available = total_room_available
+        WHERE t.date >= CURDATE()
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
+  
+    # auto fix occupancy and block
+    sql = """
+       UPDATE `tabDaily Property Data` t
+        JOIN (
+            select 
+                room_type_id,
+                date,
+                sum(type='Reservation') as occupy,
+                sum(type='Block') as block
+            from `tabTemp Room Occupy` 
+            where 
+                date>CURDATE() and 
+                is_active = 1
+            group by room_type_id,date 
+        ) b ON b.room_type_id = t.room_type_id and t.date = b.date
+        SET t.total_occupy = b.occupy, 
+            t.total_block = b.block,
+            t.total_room_available = t.total_room - (b.occupy + b.block)
+        WHERE t.date >= CURDATE()
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
+
+   
+    return ("Success",frappe.utils.now())
+    

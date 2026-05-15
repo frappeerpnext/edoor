@@ -9,6 +9,7 @@ from edoor.api.tax_calculation import get_tax_breakdown
 from edoor.api.utils import update_reservation, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version,update_is_arrival_date_in_room_rate,update_tax_invoice_data_to_tax_invoice
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in,verify_reservation_stay
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
+from frappe.utils.caching import redis_cache
 from frappe.utils import today,add_to_date,getdate
 from rq.command import send_stop_job_command
 from rq.exceptions import InvalidJobOperation, NoSuchJobError
@@ -393,8 +394,11 @@ def five_minute_job():
     # enqueue get data from channel manager
     frappe.enqueue(
         "edoor.channel_managers.exely.reservation.add_new_exely_bookings",
-        queue="long"
+        queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
     )
+
+   
+
     return "done"
 
 
@@ -415,6 +419,10 @@ def ten_minute_job():
     if can_run_job("edoor.api.schedule_task.validate_reservation_balance"):
         frappe.enqueue("edoor.api.schedule_task.validate_reservation_balance",queue='default')
     
+    
+ 
+    # eqnueue job for fetch room rate from channel manager
+    frappe.enqueue("edoor.channel_managers.resync_data.sync_room_rate_from_channel_manager",queue='default')
     
     
     
@@ -531,8 +539,63 @@ def fix_generate_duplicate_room_occupy():
 
    
 
+# we fix total room and total occupy and total block to daily property data 
+# to prevent data inconconstent
+@frappe.whitelist()
+@redis_cache(ttl=60)
+def fix_daily_property_data():
+    # update total room 
+    sql = """
+       UPDATE `tabDaily Property Data` t
+        JOIN (
+            SELECT
+                room_type_id,
+                COUNT(*) AS total
+            FROM `tabRoom`
+            WHERE disabled = 0
+            GROUP BY room_type_id
+        ) b ON b.room_type_id = t.room_type_id
+        SET t.total_room = b.total, 
+            old_room_available = total_room_available
+        WHERE t.date >= CURDATE()
+    """
+    frappe.db.sql(sql)
+    frappe.db.commit()
+  
+    # auto fix occupancy and block
+    sql = """
+       UPDATE `tabDaily Property Data` t
+        JOIN (
+            select 
+                room_type_id,
+                date,
+                sum(type='Reservation') as occupy,
+                sum(type='Block') as block
+            from `tabTemp Room Occupy` 
+            where 
+                date>CURDATE() and 
+                is_active = 1
+            group by room_type_id,date 
+        ) b ON b.room_type_id = t.room_type_id and t.date = b.date
+        SET t.total_occupy = b.occupy, 
+            t.total_block = b.block
+        WHERE t.date >= CURDATE()
+    """
+    frappe.db.sql(sql)
+    # update total room available
+    frappe.db.sql("update `tabDaily Property Data` set total_room_available = total_room - (total_occupy-total_block) where date>=CURDATE()")
+    frappe.db.commit()
 
+
+    frappe.enqueue(
+        "edoor.api.room_availability.resync_differentcial_availability_data",
+        queue="short" if frappe.conf.get("developer_mode") else "channel_manager"
+    )
+    return ("Success",frappe.utils.now())
     
+    
+    
+
 
 @frappe.whitelist()
 def generate_audit_trail_from_version():
@@ -716,6 +779,9 @@ def hourly_jobs():
     update_guest_ledger_balance()
     update_desk_folio_balance()
     delete_unwanted_comment()
+
+    fix_daily_property_data()
+    
     
 def update_guest_ledger_balance():
     updated_data = frappe.db.sql("select distinct transaction_number from `tabFolio Transaction` where date(modified) = date(now()) and transaction_type='Reservation Folio'",as_dict=1)

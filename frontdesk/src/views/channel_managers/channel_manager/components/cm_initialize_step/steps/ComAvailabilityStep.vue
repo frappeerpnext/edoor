@@ -1,12 +1,32 @@
 <template>
     <div>
         
-             <com-confirm-message label="Verify Availability"
-            text="Please review and verify the availability details below before proceeding." />
- 
-<Message v-if="dataUploadStatus?.availability?.status == 'In Progress'">
-   We are currently processing your room availability data in the background. Please wait until the upload to the channel manager is completed.
-</Message>
+<!-- 1. PENDING CASE -->
+<StatusMessage 
+  :show="dataUploadStatus?.availability?.status === 'Pending'"
+  status="Pending"
+  title="Verify Availability"
+>
+  Please review and verify the availability details below before proceeding.
+</StatusMessage>
+<!-- 2. IN PROGRESS CASE -->
+<StatusMessage 
+  :show="dataUploadStatus?.availability?.status === 'In Progress'"
+  status="info" 
+  title="Processing Availability"
+>
+  Your room availability data is currently being processed in the background.
+  Please wait until the upload to the channel manager is completed.
+</StatusMessage>
+<!-- 3. COMPLETE CASE -->
+<StatusMessage 
+  :show="dataUploadStatus?.availability?.status === 'Complete'"
+  status="Complete"
+  title="Availability Uploaded Successfully"
+>
+  Your room availability data has been successfully uploaded to the channel manager.
+</StatusMessage>
+
 
         <div class="availability-wrapper" v-if="dataUploadStatus"> 
             <div class="availability-title">{{ $t('AVAILABILITY') }}</div>
@@ -26,20 +46,23 @@
                 </template>
                 </com-availability>
         </div>
+<div class="my-3">
         <Checkbox 
   v-model="iAgree" 
   :binary="true" 
   inputId="iAgree"
   
 />
-<label for="iAgree" class="ml-2 cursor-pointer">
+<label for="iAgree" class="ml-2 cursor-pointer my-5">
   By checking this box, you confirm that all room availability information is accurate.
 </label>
+</div>
+    
         <div class="footer flex gap-2">
             <Button @click="onChangeDataUploadStep(-1)" 
              :disabled="dataUploadStatus?.availability.status == 'In Progress'"
             class="btn-back" icon="pi pi-arrow-left" :label="$t('Back')" />
-            <Button  @click="onViewAvailabilityData('')"   icon="pi pi-eye" :label="$t('View Availability')" />
+            <Button  @click="onViewAvailability()"   icon="pi pi-eye" :label="$t('View Availability')" />
             
             <Button @click="onUploadRestrictionData"  
             v-if="dataUploadStatus?.availability.status != 'Complete' && dataUploadStatus.availability.sync_mode == 'Receive from PMS'"
@@ -62,7 +85,7 @@
 </template>
 <script setup>
 import ComAvailability from '@/views/channel_managers/channel_manager/components/ComAvailability.vue';
-
+import StatusMessage from '@/views/channel_managers/channel_manager/components/StatusMessage.vue'
 import { useCMDashboard } from '@/views/channel_managers/channel_manager/hooks/useCMDashboard.js';
 import { ref } from 'vue';
 const {
@@ -101,10 +124,17 @@ async function onUploadRestrictionData(){
     
 }
 
-function onViewAvailabilityData(room_type = ""){
-    app.dialog.viewAvailabilityData("View Room Availability Data",{"room_type":room_type})
-}
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+
+const onViewAvailability = () => {
+  // 1. Resolve the route by its name or path
+  const routeData = router.resolve({ path: '/frontdesk/channel-manager/availability' });
+  
+  // 2. Open the resolved href in a new window
+  window.open(routeData.href, '_blank');
+};
 
 
 

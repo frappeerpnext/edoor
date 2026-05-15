@@ -444,7 +444,9 @@ onUnmounted(() => {
   animation: dash-move 0.5s linear infinite;
   box-shadow: 0 0 6px rgba(64, 158, 255, 0.6);
 }
-
+.p-message .p-message-close{
+    margin-left: auto !important;
+}
 .drag-rect.drag-rect-deselect {
   border: 2px dashed #f56c6c;
   background: rgba(245, 108, 108, 0.1);

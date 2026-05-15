@@ -1,12 +1,15 @@
 import frappe
-from edoor.channel_managers.utils import group_date_ranges,get_channal_manager_info,get_occupancy_codes,can_sync_data
-from edoor.channel_managers.exely.utils import get_exely_property_code,get_exely_room_type_code
+from edoor.channel_managers.utils import group_date_ranges,get_channal_manager_info,get_occupancy_codes,can_sync_data,get_date_range,get_occupancy_code_mapping
+from edoor.channel_managers.exely.utils import get_exely_property_code,get_exely_room_type_code,get_edoor_rate_type, get_edoor_room_type_id
 from edoor.channel_managers.utils import get_sync_session_id,add_cm_task,delete_synced_data_log
 from edoor.channel_managers.exely.soap_request import send_soap_request
 from edoor.channel_managers.exely.rate_limit import get_rate_limit,update_rate_limit_balance
 from frappe.utils import now_datetime, add_to_date
 from epos_restaurant_2023.custom_socket_client import emit_event
- 
+from frappe.rate_limiter import rate_limit
+from edoor.api.utils import make_hash
+from decimal import Decimal
+
 
     
 from lxml import etree
@@ -518,3 +521,321 @@ def normalize_amount(value):
     # otherwise return float without trailing zeros
     return float(d.normalize())
     
+# in production mode we should enable rate limit to prevent user click multiple request
+@rate_limit(limit=10, seconds=60)
+def get_room_rate_from_channel_manager( property , cm_hotel_code,add_cm_sync_log_when_no_data = True):
+    
+
+
+    # from edoor.channel_managers.exely.dummy_data import room_rate_data
+    # room_rate_data =  get_room_rate_group_data_from_cm(room_rate_data)
+    # return bulk_update_room_rate (property = property, room_rate_data = room_rate_data)
+
+    # validate if can sync data or not 
+    if not can_sync_data( request_type =  "Prices update", property = property, provider="Exely"):
+        frappe.throw("The room rate sync from the channel manager has been blocked. Please check the sync status.") 
+
+    # emit channel manager loading notification
+    emit_event("ChannelManagerUpdate",{
+        "action":"update_cm_notification_status",
+        "property":property,
+        "status":True
+    })
+    
+    root = etree.Element(
+        "OTA_HotelRatePlanRQ",
+        xmlns="http://www.opentravel.org/OTA/2003/05",
+        Version="1.17"
+    )
+    RatePlans = etree.SubElement(root, "RatePlans")
+    RatePlan = etree.SubElement(RatePlans, "RatePlan")
+    etree.SubElement(RatePlan, "HotelRef" ,HotelCode = cm_hotel_code)
+    
+    soap_body = etree.tostring(root, pretty_print=True).decode()
+    
+    response =  send_soap_request(property,"OTA_HotelRatePlanRQ",soap_body)
+
+    # prepare data for cm sync log doc
+    cm_sync_doc = {
+            "property": property,
+            "doctype":"Channel Manager Sync Log",
+            "provider":"Exely",
+            "request_type":REQUEST_TYPE,
+            "status" : response.get("status"),
+            # "data": frappe.as_json(group_data),
+            "response_text": response.get("response_text")
+    }
+    
+    if response.get("status") == "Success":
+        # save rate to table Room Rate
+        OTA_HotelRatePlanRS= response.get("data").get("s:Envelope").get("s:Body").get("OTA_HotelRatePlanRS")
+
+        # no room rate data 
+        if not OTA_HotelRatePlanRS.get("RatePlans"):
+            if add_cm_sync_log_when_no_data:
+                frappe.db.sql("delete from `tabChannel Manager Sync Log` where request_type = %(request_type)s and coalesce(rate_type,'')='' and coalesce(data,'')='' and coalesce(response_text,'') = '' ",{"request_type":REQUEST_TYPE})
+
+                frappe.get_doc(cm_sync_doc).insert(ignore_permissions=True)
+                frappe.db.commit()
+            # emit socket event to disable loading in cm notification
+            
+            emit_event("ChannelManagerUpdate",{
+                "action":"update_cm_notification_status",
+                "property":property,
+                "status":False
+            })
+
+            return "Complete, No more rate to sync"
+
+
+        room_rate_data =  get_room_rate_group_data_from_cm(OTA_HotelRatePlanRS)
+
+        # update rate data to cm sync log doc
+        cm_sync_doc["data"] = frappe.as_json(room_rate_data)
+        # update rate type to cm sync data log get rate type from first record of room_rate_data
+        cm_sync_doc["rate_type"] = get_edoor_rate_type(room_rate_data[0].get("cm_rate_plan_code"))
+
+
+
+       
+        price_update_result =  bulk_update_room_rate(property = property, room_rate_data = room_rate_data)
+       
+        # check price update result if have warning then log to do and cm sync log
+
+        # notif back to cm that we update success 
+        if not price_update_result.get("warnings"):
+            RateAmountMessageId = response.get("data").get("s:Envelope").get("s:Body").get("OTA_HotelRatePlanRS").get("RatePlans").get("RatePlan").get("RateAmountMessageId")
+            
+            # confirm_request_response =  send_notify_sync_room_rate_request(property = property, hotel_code = cm_hotel_code, message_id =  RateAmountMessageId)
+           
+            
+        else:
+            # append warning text to reponse text in cm sync data log
+            # change sync status to warning
+            cm_sync_doc["status"] = "Warning"
+            warning_message = "\n".join(price_update_result.get("warnings"))
+            cm_sync_doc["response_text"] =  cm_sync_doc["response_text"] +"\n"+ warning_message
+
+            # add to do stop sync prices update
+            cm_sync_doc["sync_action"] = "Stop Sync"
+            
+
+        
+
+
+    # save data to cm sync log
+    sync_log_doc = frappe.get_doc(cm_sync_doc).insert(ignore_permissions=True)
+
+    if (cm_sync_doc.get("sync_action") or "") == "Stop Sync":
+        task_doc = {
+            "property":property,
+            "subject": "Sync {0} has been stoped.".format(cm_sync_doc.get("request_type")),
+            "description": (cm_sync_doc.get("response_text") or "").strip() ,
+            "reference_type": "Channel Manager Sync Log",
+            "reference_name": sync_log_doc.name,
+            "priority":"High",
+        }
+
+        add_cm_task(task_doc,run_commit=False)
+
+    frappe.db.commit()
+ 
+
+    # emit socket event  to notify client
+
+
+    # check cm_sync_doc if status success start send sync request until all room rate are
+    # fetch from cm 
+    if (cm_sync_doc.get("sync_action") or "") != "Stop Sync":
+        time.sleep(10)
+        frappe.enqueue(
+            "edoor.channel_managers.exely.price_manager.get_room_rate_from_channel_manager",
+            queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
+                property=property,
+                cm_hotel_code = cm_hotel_code,
+                add_cm_sync_log_when_no_data = False
+        )
+    
+
+
+
+    
+
+
+
+    return "Complete"
+
+
+def send_notify_sync_room_rate_request(property,hotel_code,message_id):
+    root = etree.Element(
+        "OTA_NotifReportRQ",
+        xmlns="http://www.opentravel.org/OTA/2003/05",
+        Version="1.17"
+    )
+    Success = etree.SubElement(root, "Success")
+    NotifDetails = etree.SubElement(root, "NotifDetails",HotelCode=hotel_code)
+    HotelNotifReport = etree.SubElement(NotifDetails, "HotelNotifReport")
+    RatePlanMessages = etree.SubElement(HotelNotifReport, "RatePlanMessages")
+    RatePlanMessage = etree.SubElement(RatePlanMessages, "RatePlanMessage",RateAmountMessageId=str(message_id))
+    etree.SubElement(RatePlanMessage, "Success")
+
+    soap_body = etree.tostring(root, pretty_print=True).decode()
+    response =  send_soap_request(property = property,ota_request = "OTA_NotifReportRQ",body_content =  soap_body,emit_socket_event = False)
+    return response
+
+
+    
+
+
+def get_room_rate_group_data_from_cm(data):
+    result = [
+
+    ]
+    # get rate plan  if dict convert to array dict
+    def get_rate_plans(data):
+        if isinstance(data.get("RatePlans").get("RatePlan"), dict):
+            return [data.get("RatePlans").get("RatePlan")]
+            
+        return data.get("RatePlans").get("RatePlan")
+
+    # get rate if dict convert to array dict
+    def get_rates(data):
+        if isinstance(data.get("Rates").get("Rate"), dict):
+            return [data.get("Rates").get("Rate")]
+        return data.get("Rates").get("Rate")
+    
+    # get BaseByGuestAmt if dict convert to array dict
+    def get_base_guest_amount(data):
+        if isinstance(data.get("BaseByGuestAmts").get("BaseByGuestAmt"), dict):
+            return [data.get("BaseByGuestAmts").get("BaseByGuestAmt")]
+        return data.get("BaseByGuestAmts").get("BaseByGuestAmt")
+    
+
+    # get AdditionalGuestAmounts if dict convert to array dict
+    def get_additional_guest_amount(data):
+        if isinstance(data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount"), dict):
+            return [data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount")]
+        return data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount") or []
+
+ 
+
+    for rp in get_rate_plans(data):
+        # return get_rates(rp)
+        for rate in get_rates(rp):
+            _row = {
+                "cm_rate_plan_code": rp.get("@RatePlanCode"),
+                "start_date": rate.get("@Start"),
+                "end_date": rate.get("@End"),
+                "cm_room_type_code": rate.get("@InvTypeCode"),
+                "rates":[
+
+                ]
+            }
+            # get base rate adult and child
+            for base_rate in  get_base_guest_amount(rate):
+                _occupancy_type =  "ChildBandBed" if base_rate.get("@MinAge") and base_rate.get("@MaxAge") else "AdultBed" 
+                _base_rate_row = {
+                    "occupancy_type":_occupancy_type,
+                    "occupancy":base_rate.get("@NumberOfGuests"),
+                    "min_age": base_rate.get("@MinAge"),
+                    "max_age": base_rate.get("@MaxAge"),
+                    "rate": base_rate.get("@AmountAfterTax")
+                }
+                _row["rates"].append(_base_rate_row)
+            
+            # get base rate adult and child
+            # return get_additional_guest_amount(rate)
+            for additional_rate in  get_additional_guest_amount(rate):
+
+                _occupancy_type =  "AdultExtraBed"
+                if additional_rate.get("@MinAge") and additional_rate.get("@MaxAge"):
+                    if "@BedRequired" in additional_rate:
+                        _occupancy_type = "ChildBandWithoutBed"
+                    else:
+                        _occupancy_type = "ChildBandExtraBed"
+
+                
+
+                _additional_rate_row = {
+                    "occupancy_type":_occupancy_type,
+                    "occupancy":additional_rate.get("@NumberOfGuests"),
+                    "min_age": additional_rate.get("@MinAge"),
+                    "max_age": additional_rate.get("@MaxAge"),
+                    "rate": additional_rate.get("@AmountAfterTax")
+                }
+
+                _row["rates"].append(_additional_rate_row)
+            
+            result.append(_row)
+
+
+    return result
+
+def bulk_update_room_rate(property , room_rate_data):
+    # return room_rate_data
+    occupancy_code_mapping = get_occupancy_code_mapping()
+    values = []
+    warnings = set()
+    for rr in room_rate_data:
+        rate_type = get_edoor_rate_type(rr.get("cm_rate_plan_code"))
+        room_type_id = get_edoor_room_type_id(rr.get("cm_room_type_code"))
+        dates = get_date_range(rr.get("start_date"), rr.get("end_date"))
+
+        for dt in dates:
+            for _rate in rr.get("rates"):
+
+                occupancy_key = (
+                    f"{_rate.get('occupancy_type')}_"
+                    f"{_rate.get('occupancy') or 1}_"
+                    f"{_rate.get('min_age') or 0}_"
+                    f"{_rate.get('max_age') or 0}"
+                )
+
+                occupancy_code = occupancy_code_mapping.get(occupancy_key) or ""
+                if not occupancy_code:
+                    if _rate.get("min_age") and _rate.get("max_age"):
+                        warnings.add(f"No occpancy code mapping for Bed Type: {_rate.get('occupancy_type')}, Min Age: {_rate.get('min_age') }, Max Age: {_rate.get('max_age') }")
+                    else:
+                        warnings.add(f"No occpancy code mapping for Bed Type: {_rate.get('occupancy_type')}, Occupancy: {_rate.get('occupancy') }")
+                    
+                 
+
+                room_rate = Decimal(_rate.get("rate") or 0)
+
+                has_text = f"p_{room_type_id}_{rate_type}_{occupancy_code}_{dt}"
+                row_name = make_hash(has_text)
+
+                _value = (
+                    f"('{row_name}', '{property}', '{rate_type}', "
+                    f"'{room_type_id}', '{occupancy_code}', "
+                    f"'{dt}', {room_rate})"
+                )
+
+                values.append(_value)
+
+    if values and not warnings:
+ 
+       
+        value_str = ", ".join(values)
+        
+        sql = f"""
+            INSERT INTO `tabRoom Rates`
+            (name, property, rate_type,room_type_id,  occupancy_code,date, rate)
+            VALUES {value_str}
+            ON DUPLICATE KEY UPDATE
+            rate = VALUES(rate)
+        """
+
+ 
+
+        frappe.db.sql(sql)
+
+        frappe.db.commit()
+
+
+ 
+    return {
+        "room_rate_value_count":len(values),
+        "warnings":list(warnings)
+    }
+

@@ -85,6 +85,33 @@
           </DataTable>
             </div>
         </div>
+        <div v-if="data?.availabilities.length>0">
+            <h1 class="text-3xl">Room Availability</h1>
+ 
+                
+                <DataTable :value="data?.availabilities" stripedRows responsiveLayout="scroll">
+
+
+
+            <Column field="room_type_name" header="Room Type" />
+            
+
+            <Column header="Periods">
+              <template #body="slotProps">
+                <span class="font-medium">
+                  
+                    {{ moment(slotProps.data.start_date).format("DD-MM-YYYY") }} to {{ moment(slotProps.data.end_date).format("DD-MM-YYYY") }}
+                  
+
+                </span>
+
+              </template>
+            </Column>
+            <Column field="value" header="Total Room Available" headerClass="text-center" bodyClass="text-center"/>
+
+          </DataTable>
+            
+        </div>
     </ComDialogContent>
 </template>
 <script setup>

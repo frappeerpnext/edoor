@@ -16,17 +16,97 @@
             Get data from cm and update to pms
 
         </template>
-        <div v-else v-for="rt in dataUploadStatus?.room_rate?.room_types">
-            <i v-if="rt.status == 'Pending'" class="pi pi-check bg-gray-500 text-white p-2 border-circle"></i>
-            <i v-else-if="rt.status == 'In Progress'"
-                class="pi pi-spin pi-spinner bg-gray-500 text-white p-2 border-circle"></i>
-            <i v-else class="pi pi-check bg-green-500 text-white p-2 border-circle"></i>
+        <!-- Message Box -->
+<div class="mt-4 mb-4">
+<!-- PENDING MESSAGE -->
+<StatusMessage 
+  :show="dataUploadStatus?.room_rate?.status === 'Pending'"
+  status="Pending"
+  title="Action Required: Verify Occupancy Mapping"
+>
+  Before proceeding to the next step, please verify that all <strong>Occupancy Titles</strong> 
+  listed under each room type match your contract rules. Incorrect mapping may result in 
+  pricing discrepancies on OTA channels.
+</StatusMessage>
 
-            {{ rt }}
+<!-- IN PROGRESS MESSAGE -->
+<StatusMessage 
+  :show="dataUploadStatus?.room_rate?.status === 'In Progress'"
+  status="In Progress"
+  title="Syncing Data"
+>
+  Your room rates and occupancy rules are currently being synchronized with the channel manager. 
+  Please stay on this page until the process is finished.
+</StatusMessage>
 
+<!-- COMPLETED MESSAGE -->
+<StatusMessage 
+  :show="dataUploadStatus?.room_rate?.status === 'Complete'"
+  status="Complete"
+  title="Mapping Confirmed"
+>
+  All room rates and occupancy codes have been successfully validated and linked. 
+  Your pricing structure is now ready for the next stage of integration.
+</StatusMessage>
+</div>
+        <div class="flex flex-column gap-3">
+ <div class="flex flex-column gap-3">
+    <div v-for="rt in dataUploadStatus?.room_rate?.room_types" :key="rt.room_type_code" 
+         class="flex flex-column p-3 border-round shadow-1 bg-white border-left-3"
+         :class="{
+            'border-gray-400': rt.status === 'Pending',
+            'border-blue-500': rt.status === 'In Progress',
+            'border-green-500': rt.status === 'Complete'
+         }">
+        
+        <!-- Top Row: Main Info -->
+        <div class="flex align-items-center justify-content-between">
+            <div class="flex align-items-center gap-3">
+                <!-- Status Icon -->
+                <div class="flex align-items-center justify-content-center border-circle shadow-sm" 
+                     style="width: 32px; height: 32px"
+                     :class="{
+                        'bg-gray-500': rt.status === 'Pending',
+                        'bg-blue-500': rt.status === 'In Progress',
+                        'bg-green-500': rt.status === 'Complete'
+                     }">
+                    <i :class="[
+                        'pi text-white text-xs',
+                        rt.status === 'Pending' ? 'pi-check' : 
+                        rt.status === 'In Progress' ? 'pi-spin pi-spinner' : 'pi-check'
+                    ]"></i>
+                </div>
+
+                <div class="flex flex-column">
+                    <span class="font-bold text-900 line-height-2">{{ rt.room_type_name }}</span>
+                    <span class="text-xs text-500">ID: {{ rt.room_type }} | Code: {{ rt.room_type_code }}</span>
+                </div>
+            </div>
+
+            <div class="flex align-items-center gap-3">
+                <div class="hidden sm:flex flex-column align-items-end mr-2">
+                    <span class="text-sm font-bold text-700">{{ rt.total_room }}</span>
+                    <span class="text-xs text-400 uppercase font-semibold" style="letter-spacing: 1px">Rooms</span>
+                </div>
+                <Tag :value="rt.status" 
+                     :severity="rt.status === 'Pending' ? 'secondary' : rt.status === 'In Progress' ? 'info' : 'success'" 
+                     class="px-3 border-round-xl" />
+            </div>
         </div>
 
-        <div>
+        <!-- Bottom Row: Occupancy Codes (New Section) -->
+        <div class="mt-3 pt-2 border-top-1 border-50">
+            <div class="flex flex-wrap gap-1">
+                <span v-for="code in rt.occupancy_codes" :key="code" 
+                      class="text-xs bg-bluegray-50 text-bluegray-600 px-2 py-1 border-round font-medium border-1 border-100">
+                    {{ code }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+        <div class="my-3">
         <!-- i agree -->
         <Checkbox v-model="iAgree" :binary="true" inputId="iAgree" />
         <label for="iAgree" class="ml-2 cursor-pointer">
@@ -55,6 +135,8 @@
 <script setup>
 import { useCMDashboard } from '@/views/channel_managers/channel_manager/hooks/useCMDashboard.js';
 import { ref } from 'vue';
+import StatusMessage from '@/views/channel_managers/channel_manager/components/StatusMessage.vue'
+import Tag from 'primevue/tag';
 
 const { onChangeDataUploadStep,
     dataUploadStatus

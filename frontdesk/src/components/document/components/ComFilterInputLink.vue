@@ -1,5 +1,5 @@
 <template>
-
+ 
     <ComFilterInput 
         	:option="option"
              @onSearch="onSearch" v-model:operator="operator" v-model:keyword="keyword"
@@ -9,7 +9,9 @@
         @onFilter="onFilter"
         :hasFilter="selected" 
         :optionValue="optionValue">
+        <slot>
         {{ $t(option.label) }}
+        </slot>
         <template #bottom>
             <Button @click="onClearFilter" :disabled="!selected" :label="$t('Clear Filter')" severity="warning"
                 class="w-full mt-4" />
@@ -79,6 +81,7 @@ function onSearch() {
 
 function onFilter() {
     
+    
     if (!selected.value) {
         emit("onFilter", [props.option.fieldname, operator.value, null])
     } else {
@@ -107,10 +110,12 @@ async function onLoadOptionData() {
             doctype: props.option.options,
             txt: keyword.value,
             limit_page_length: 50,
-            filters: {
-            name: "House Use"
-    }
+        
         };
+        if (props.option?.filters){
+            searchParams.filters =  props.option?.filters
+        }
+
         const res = await getData("frappe.desk.search.search_link", searchParams, "");
         if (!res.error) {
             listData.value = res.data;

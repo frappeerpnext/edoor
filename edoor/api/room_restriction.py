@@ -9,7 +9,7 @@ from edoor.channel_managers.data_upload import get_data_upload_status
 from epos_restaurant_2023.custom_socket_client import emit_event
 from edoor.channel_managers.exely.rate_limit import check_rate_limit_status_by_room_type
 import time
-
+from frappe.utils.caching import redis_cache
 
 
 REQUEST_TYPE = "Restriction update"
@@ -29,8 +29,22 @@ RESTRICTION_TYPE_PREFIX = {
 }
 
 
+@redis_cache(ttl=86400)
+def get_all_room_types_id(property):
+    return  frappe.db.get_list(
+        'Room Type',
+        filters={
+            'property': property,
+            'disabled': 0
+        },
+        pluck='name'
+    )
+    
+
 @frappe.whitelist(methods="POST")
 def get_room_restriction_data(filters):
+    if not filters.get("rom_types"):
+        filters["room_types"] = get_all_room_types_id(filters.get("property"))
     return_data = {
 
     }
@@ -44,7 +58,7 @@ def get_room_restriction_data(filters):
 def get_restriction_data(filters):
     sql = """
         SELECT 
-            CONCAT(DATE_FORMAT(rr.date,'%%y%%m%%d')) AS `key`,
+            CONCAT(DATE_FORMAT(rr.date,'%%y%%m%%d'),rr.room_type_id) AS `key`,
             rr.value
         FROM `tabRoom Restriction` rr
         WHERE

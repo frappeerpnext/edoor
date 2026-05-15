@@ -1,13 +1,15 @@
 <template>
     <Stack row gap="4px">
- 
+  
         <InputText v-if="!hideSearchField" class="px-2 py-1" v-model="filter.keyword" variant="filled" :placeholder="$t('Search')" size="small" v-debounce="onSearch" style="height: 30px !important;"/>
         <template v-for="(f, index) in filters" :key="index">
             
             <ComFilterInputData v-if="f.fieldtype=='Data'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]">
                 <slot :name="f.fieldname"></slot>
             </ComFilterInputData>
-            <ComFilterInputLink v-if="f.fieldtype=='Link'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]" :operator="f.operator" :optionValue="f.optionValue"/> 
+            <ComFilterInputLink v-if="f.fieldtype=='Link'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]" :operator="f.operator" :optionValue="f.optionValue">
+                 <slot :name="f.fieldname"></slot>
+            </ComFilterInputLink>
             <ComFilterInputDate v-if="f.fieldtype=='Date'" :option="f"  @onFilter="onFilter"   :defaultValue="filter[f.fieldname]">
                 <slot :name="f.fieldname"></slot>
             </ComFilterInputDate>

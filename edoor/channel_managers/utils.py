@@ -1,8 +1,26 @@
 import frappe
 import json
 from frappe.utils import getdate, add_days,get_datetime,now_datetime,today,nowdate, add_years
+ 
+
 from itertools import groupby
 from frappe.utils.caching import redis_cache
+
+
+@frappe.whitelist()
+def clear_cache():
+    get_sync_max_date.clear_cache()
+    get_cm_provider_list.clear_cache()
+    get_occupancy_code_mapping.clear_cache()
+
+ 
+
+@redis_cache(ttl=60*60)
+def get_cm_provider_list():
+    sql="select property,property_code,provider,prices_for_accommodation,initialized_prices_upload from `tabChannel Manager Integration` where enable=1"
+    return frappe.db.sql(sql,as_dict = 1)
+
+
 
 @frappe.whitelist()
 def get_channal_manager_info(property):
@@ -163,10 +181,12 @@ def get_sync_action_status(request_type,property,provider=None):
     
 
 @frappe.whitelist()
-def can_sync_data(title,property,provider):
-    sql="select  sync_action, sync_until from `tabChannel Manager Sync Log` where title = %(title)s and provider=%(provider)s and property = %(property)s and is_retry_sync = 0 order by creation desc limit 1"
+def can_sync_data(title=None,property=None,provider=None,request_type=None):
+    request_type = title or request_type
 
-    data = frappe.db.sql(sql,{"title":title,"property":property,"provider":provider},as_dict = 1)
+    sql="select  sync_action, sync_until from `tabChannel Manager Sync Log` where request_type = %(request_type)s and provider=%(provider)s and property = %(property)s and is_retry_sync = 0 order by creation desc limit 1"
+
+    data = frappe.db.sql(sql,{"request_type":request_type,"property":property,"provider":provider},as_dict = 1)
     
     if not data:
         return True
@@ -205,6 +225,7 @@ def get_cm_sync_log_data(docname):
     doc = frappe.get_cached_doc("Channel Manager Sync Log",docname)
     return_data = {
         "title":doc.title,
+        "request_type":doc.request_type,
         "provider":doc.provider,
         "property":doc.property,
         "status":doc.status,
@@ -256,9 +277,9 @@ def get_cm_sync_log_data(docname):
                 })
         return restriction_data
 
-    if doc.title == "Prices update":
+    if doc.request_type == "Prices update":
         return_data["data"] = get_price_data()
-    if doc.title == "Restriction update":
+    if doc.request_type == "Restriction update":
         return_data["data"] = get_restriction_data()
 
     
@@ -288,7 +309,9 @@ def get_all_cm_sync_status(property):
 def get_pending_sync_data_status(property):
     max_sync_years = int(frappe.get_cached_value("eDoor Setting",None,"maximum_future_years_allowed") or 1)
     max_date =  add_years(nowdate(), max_sync_years)
+    
     sql="select name from `tabChannel Manager Sync Data Log` where property=%(property)s and date<=%(date)s limit 1"
+      
     if len(frappe.db.sql(sql,{"property":property, "date": max_date},as_dict = 1))>0:
         return {
             "has_pending_data":1
@@ -299,10 +322,12 @@ def get_pending_sync_data_status(property):
         }
 
 @frappe.whitelist()
-def get_pending_sync_data(property):
+def get_pending_sync_data(property="ESTC HOTEL 6"):
     rate_types = frappe.db.sql("select distinct rate_type from `tabChannel Manager Sync Data Log` where property=%(property)s",{"property":property}, as_dict = 1)
+
     room_rates = []
     restrictions = []
+    availabilities = []
     
     for rt in rate_types:
         room_rate_data = get_pending_group_room_rate_data(rt.get("rate_type"))
@@ -317,8 +342,8 @@ def get_pending_sync_data(property):
                 "rate_type":rt.get("rate_type"),
                 "data":restriction_data
             })
-
-    return {"room_rates": room_rates,"restrictions":restrictions}
+    availabilities = get_pending_room_availability(property)
+    return {"room_rates": room_rates,"restrictions":restrictions,"availabilities":availabilities}
 
     
 def get_pending_group_room_rate_data(rate_type):
@@ -481,6 +506,74 @@ def get_pending_room_rate_period(data,rate_type):
 
     return group_date_ranges(data)
 
+# get pending room availability data
+def get_pending_room_availability(property):
+    max_date = get_sync_max_date()
+  
+    sql= """
+        select 
+            date,
+            room_type,
+            value
+        from `tabChannel Manager Sync Data Log`
+        where
+            date between CURDATE() and %(max_date)s and
+            request_type = 'Availability update' and 
+            property = %(property)s
+        order by room_type,date
+    """
+    
+    data = frappe.db.sql(sql,{"max_date": max_date, "property":property},as_dict = 1)
+   
+
+  
+    
+    results = []
+
+    for room_type, items in groupby(data, key=lambda x: x["room_type"]):
+
+        items = list(items)
+
+        start = items[0]["date"]
+        end = items[0]["date"]
+        last_date = getdate(start)
+        value = items[0]["value"]
+
+        for r in items[1:]:
+
+            current_date = getdate(r["date"])
+            if (
+                r["value"] == value
+                and current_date == add_days(last_date, 1)
+            ):
+                end = r["date"]
+
+            else:
+
+                results.append({
+                    "room_type": room_type,
+                    "start_date": start,
+                    "end_date": end,
+                    "value": value
+                })
+
+                start = r["date"]
+                end = r["date"]
+                value = r["value"]
+
+            last_date = current_date
+
+        results.append({
+            "room_type": room_type,
+            "start_date": start,
+            "end_date": end,
+            "value": value
+        })
+    for rt in results:
+        rt["room_type_name"] = frappe.get_cached_value("Room Type",rt.get("room_type"),"room_type")
+    return results
+ 
+
 # get peding room restriction 
 def get_pending_room_restriction(rate_type):
     
@@ -573,27 +666,41 @@ def get_pending_room_restriction(rate_type):
     return get_restriction_data(group_data)
 
 def add_cm_task(data,run_commit=True):
-    doc = {
-        "doctype":"ToDo",
-         "reference_type":data.get("reference_type"),
-        "reference_name":data.get("reference_name"),
-        "custom_subject":data.get("subject"),
-        "custom_property": data.get("property"),
-        "description":data.get("description") or data.get("subject"),
-       
-        "priority":data.get("priority"),
-        "status":"Open",
-        "role":"Channel Manager User"
-    }
+    # find existing cm task by subject and status open and property
+    sql = "select name from `tabToDo` where custom_property=%(property)s and custom_subject = %(subject)s and status='Open' order by modified limit 1"
+    existing_data = frappe.db.sql(sql,{"property":data.get("property"),"subject":data.get("subject")},as_dict = 1)
+    if existing_data:
+        doc = frappe.get_doc("ToDo", existing_data[0].get("name"))
+        doc.description = doc.description + "\n" + (data.get("description") or data.get("subject"))
+        doc.reference_type = data.get("reference_type")
+        doc.reference_name = data.get("reference_name")
+        doc.save(
+            ignore_permissions=True,  
+            ignore_version=True  
+        )
+        
+    else:
+        doc = {
+            "doctype":"ToDo",
+            "reference_type":data.get("reference_type"),
+            "reference_name":data.get("reference_name"),
+            "custom_subject":data.get("subject"),
+            "custom_property": data.get("property"),
+            "description":data.get("description") or data.get("subject"),
+        
+            "priority":data.get("priority"),
+            "status":"Open",
+            "role":"Channel Manager User"
+        }
 
-    frappe.get_doc(doc).insert(ignore_permissions = True)
+        frappe.get_doc(doc).insert(ignore_permissions = True)
     if run_commit:
         frappe.db.commit()
 
 
 
 
-@redis_cache(ttl=86400)  
+@redis_cache(ttl=60*60)  
 def get_sync_max_date():
     max_sync_years = int(
         frappe.get_cached_value("eDoor Setting", None, "maximum_future_years_allowed") or 1
@@ -647,3 +754,23 @@ def mark_channel_data_upload_as_complete(property):
     doc.save(ignore_permissions=True)
     return "Success"    
 
+
+ 
+def get_date_range(start_date, end_date):
+    start = getdate(start_date)
+    end = getdate(end_date)
+
+    dates = []
+
+    while start <= end:
+        dates.append(start.strftime("%Y-%m-%d"))
+        start = add_days(start, 1)
+
+    return dates
+
+@frappe.whitelist()
+@redis_cache(ttl=60*60)
+def get_occupancy_code_mapping():
+    sql = "select concat(occupancy_type,'_',occupancy,'_',min_age,'_',max_age) as `key`, name from `tabOccupancy Code`"
+    data = frappe.db.sql(sql,as_dict = 1)
+    return {item['key']: item['name'] for item in data}

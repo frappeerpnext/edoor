@@ -40,6 +40,11 @@ OTA_REQUEST = {
         "SOAPAction":"https://www.hopenapi.com/Api/PMSConnect/HotelAvailNotifRQ",
         "response_key":"OTA_HotelAvailNotifRS"
         # The Confirmation Message
+    },
+    "OTA_HotelRatePlanRQ":{
+        "SOAPAction":"https://www.hopenapi.com/Api/PMSConnect/HotelRatePlanRQRequest",
+        "response_key":"OTA_HotelRatePlanRS"
+        # The Confirmation Message
     }
 
 
@@ -93,7 +98,7 @@ def build_soap_body(property, body_content):
 
 
 
-def send_soap_request(property, ota_request, body_content):
+def send_soap_request(property, ota_request, body_content,emit_socket_event = True):
     emit_event("ChannelManagerUpdate",{"action":"update_cm_notification_status","property":property, "status": True})
     soap_body = build_soap_body(property, body_content)
     response_data = request_soap_action(property, ota_request, soap_body)
@@ -101,9 +106,13 @@ def send_soap_request(property, ota_request, body_content):
     resp = soap_response_status(ota_request,response_data)
     
     resp["data"] = response_data
-    emit_event("ChannelManagerUpdate",{"action":"update_cm_notification_status","property":property, "status": False})
+    if emit_socket_event:
+        emit_event("ChannelManagerUpdate",{"action":"update_cm_notification_status","property":property, "status": False})
     return resp
 
+
+
+ 
 
 
 def soap_response_status(ota_request,data):
@@ -195,6 +204,7 @@ def soap_response_status(ota_request,data):
     }
 
     return data
+
 
  
 

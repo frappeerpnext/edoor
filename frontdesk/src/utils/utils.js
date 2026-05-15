@@ -286,3 +286,36 @@ export function getMonthlyRanges(startDate, endDate) {
   
   return result;
 }
+
+export function compareJSON(obj1, obj2) {
+    const diff = {};
+
+    const keys = new Set([
+        ...Object.keys(obj1 || {}),
+        ...Object.keys(obj2 || {})
+    ]);
+
+    keys.forEach((key) => {
+        const oldValue = obj1?.[key];
+        const newValue = obj2?.[key];
+
+        // skip if same
+        if (JSON.stringify(oldValue) === JSON.stringify(newValue)) {
+            return;
+        }
+
+        diff[key] = {
+            key,
+            old_value: oldValue,
+            new_value: newValue,
+            changed: true,
+            type: !Object.hasOwn(obj1 || {}, key)
+                ? 'added'
+                : !Object.hasOwn(obj2 || {}, key)
+                    ? 'removed'
+                    : 'updated'
+        };
+    });
+
+    return diff;
+}

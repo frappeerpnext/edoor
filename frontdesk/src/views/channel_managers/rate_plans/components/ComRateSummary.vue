@@ -1,4 +1,5 @@
 <template>
+   <ComDialogContent @onOK="onOk" hideButtonClose hideButtonOK titleButtonOK="Ok" :hideIcon="false" >
         <div class="flex gap-2 mb-3">
             <Chip label="All Room Types" @click="onEnableUpdateAllRoomType()"
                 :icon="(updateRoomTypes.size == roomTypes.length) ? 'pi pi-check' : ''" :class="(updateRoomTypes.size == roomTypes.length) ? 'p-chip-selected' : ''" class="cursor-pointer select-none"></Chip>
@@ -58,6 +59,7 @@
     </tbody>
 
   </table>
+  </ComDialogContent>
 </template>
 
 <script setup>

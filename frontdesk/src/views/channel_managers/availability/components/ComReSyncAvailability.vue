@@ -88,18 +88,6 @@
                 :key="'rt_selection' + rt.edoor_room_type" :class="rt.selected ? 'p-chip-selected' : ''" class="cursor-pointer select-none"/>
 
         </div>
-        
-  </Fieldset>
-
-  <Fieldset class="cs-close-open-sale-fieldset">
-    <template #legend>
-        <div class="flex items-center pl-2">
-            <span class="font-bold p-2">Restriction Types</span>
-        </div>
-    </template>
-    <ComSelect v-model="data.restriction_types" maxSelectedLabels="6" :clear="false" @onSelected="onSelectRestrictionType"
-                    :placeholder="$t('Restriction Types')" :options="restrictionManageByCM"   isMultipleSelect />
-        
   </Fieldset>
   </ComDialogContent>
 </template>
@@ -107,71 +95,9 @@
 <script setup>
 import { ref, inject , onMounted, computed } from 'vue'
 import { getApi } from '@/plugin';
-import { useRatePlan } from '../hooks/useRatePlan'
-import { useRestriction } from "@/views/channel_managers/rate_plans/hooks/useRestriction";
-import BlockUI from 'primevue/blockui';
-const restrictionPattern = ref(Array(30).fill("O"))
-const restrictionPatternString = computed(() => {
-  return restrictionPattern.value.join("")
-})
+import { useAvailability } from '../hooks/useAvailability';
+const { roomTypes } = useAvailability()
 
-const selecteddayoptions = Array.from({ length: 30 }, (_, i) => {
-  const day = i + 1
-  return {
-    label: `${day} day`,
-    value: day
-  }
-})
-const {
-  roomTypes,
-  restrictionTypes,
-  cm_info
-} = useRatePlan()
-
-const restrictionManageByCM = computed(()=>{
-  const _data = []
-  if (cm_info.value.closed==1){
-    _data.push("Closed")
-  }
-  if (cm_info.value.cta==1){
-    _data.push("Cta")
-  }
-  if (cm_info.value.ctd==1){
-    _data.push("Ctd")
-  }
-  if (cm_info.value.minlos==1){
-    _data.push("MinLos")
-  }
-  
-  if (cm_info.value.maxlos==1){
-    _data.push("MaxLos")
-  }
-  
-  if (cm_info.value.minlosarrival==1){
-    _data.push("MinLosArrival")
-  }
-  
-  if (cm_info.value.maxlosarrival==1){
-    _data.push("MaxLosArrival")
-  }
-  
-  if (cm_info.value.minadvbooking==1){
-    _data.push("MinAdvBooking")
-  }
-  
-  if (cm_info.value.maxadvbooking==1){
-    _data.push("MaxAdvBooking")
-  }
-  if (cm_info.value.fullpatternlos==1){
-    _data.push("FullPatternLos")
-  }
-
-
-return _data
-
-
-
-})
 const dialogRef = inject("dialogRef");
 const moment = inject('$moment')
 const updateRoomTypes = ref(new Set())
@@ -179,7 +105,6 @@ const updateRoomTypes = ref(new Set())
 const isRoomTypeSelectAll = computed(()=>{
   return data.value.room_types_select.filter(x=>x.selected).length == data.value.room_types_select.length;
 })
-const restrictionType = ref()
 
 /* ---------------- DATA ---------------- */
 const data = ref({
@@ -191,15 +116,6 @@ const data = ref({
   ],
   room_types_select: [],
   room_types: [],
-  rate_types:[],
-  restriction_types: []
-})
-
-const restrictionMenuItems = computed(() => {
-  return restrictionTypes.value.map(item => ({
-    label: item.restriction_type,
-    value: item.restriction_type,
-  }))
 })
 
 /* ADD DATE RANGE */
@@ -285,8 +201,13 @@ async function onOk() {
         x.end_date = moment(x.end_date).local().format("YYYY-MM-DD");
     })  
   const l  =await window.showLoading("ReSync Restriction...")
-  const res = await app.postApi("room_restriction.resync_room_restriction",{
-    data:saveData
+  const res = await app.postApi("room_availability.resync_availability",{
+    data:saveData,
+    recalculate_occupy_data:true,
+    
+
+
+
   })
    if (res.data){
     dialogRef.value.close(true)
@@ -307,8 +228,8 @@ onMounted(async () => {
 
 roomTypes.value.forEach(rt => {
   data.value.room_types_select.push({
-    room_type: rt.room_type_name,
-    room_type_id: rt.edoor_room_type,
+    room_type: rt.room_type,
+    room_type_id: rt.name,
     selected: rt.selected,
   })
 })

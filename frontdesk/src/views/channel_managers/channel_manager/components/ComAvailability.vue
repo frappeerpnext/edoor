@@ -8,27 +8,31 @@
             </slot>
                 
             </div>
-         
-    
-        <div class="content">
-            <div class="font-bold">{{ $t(roomTypeName) }} - ({{ roomTypeCode }})</div>
-            <div>
-                <template v-if="isRoomMapping">
-                    <span>{{ totalRoom }} Rooms</span>
-                </template>
-                <template v-else>
-                    <span>{{$t('No code assigned')}}</span>
-                </template>
-            </div>
-            <div>
-                <template v-if="isRoomMapping">
-                    <span class="highlight">{{ dayCover }} days covered</span>
-                </template>
-                <template v-else>
-                    <span class="warning-text">{{$t('Will be skipped')}}</span>
-                </template>
-            </div>
+     <div class="content p-3 border-round border-1 border-200 bg-gray-50 w-full">
+    <!-- Header: Name and Code -->
+    <div class="flex align-items-center justify-content-between mb-2">
+        <div class="text-900 font-bold text-lg">
+            {{ $t(roomTypeName) }} ({{ roomTypeCode }})
         </div>
+        <!-- Status Indicator -->
+        <Tag :severity="isRoomMapping ? 'success' : 'warning'" :value="isRoomMapping ? $t('Mapped') : $t('Unmapped')" />
+    </div>
+
+    <!-- Details Row -->
+    <div class="flex gap-4 text-sm">
+        <div class="flex align-items-center gap-2">
+            <i class="pi pi-home text-400"></i>
+            <span v-if="isRoomMapping" class="text-700 font-medium">{{ totalRoom }} Rooms</span>
+            <span v-else class="text-400 italic">{{ $t('No code assigned') }}</span>
+        </div>
+
+        <div class="flex align-items-center gap-2 border-left-1 border-300 pl-4">
+            <i class="pi pi-calendar text-400"></i>
+            <span v-if="isRoomMapping" class="text-primary font-bold">{{ dayCover }} days covered</span>
+            <span v-else class="text-orange-500 font-medium">{{ $t('Will be skipped') }}</span>
+        </div>
+    </div>
+</div>
     </div> 
 </template>
 <script setup>
@@ -47,7 +51,7 @@ const props = defineProps({
 .availability-item {
     display: flex;
     gap: 14px;
-    padding: 16px;
+    padding-left: 10px;
     border-radius: 12px;
     margin-bottom: 12px;
     align-items: flex-start;

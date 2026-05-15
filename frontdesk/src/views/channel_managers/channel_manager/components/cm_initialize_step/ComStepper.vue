@@ -3,7 +3,6 @@
       'active': activeIndex === index,
       'done': activeIndex > index
     }" >
-   
         <div class="circle">{{ index }} </div>
         <p>{{ $t(title || '') }}  </p>
     </div>

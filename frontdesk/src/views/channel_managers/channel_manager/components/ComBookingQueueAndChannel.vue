@@ -1,125 +1,111 @@
 <template>
-    <ComPanel title="Connected Business Sources" :viewAll="true" class="sys-date h-17rem md:h-full ">
+    <ComPanel title="" :viewAll="true" class="sys-date h-17rem md:h-full ">
         <div class="grid">
 
         <!-- Recent Bookings -->
-        <div class="card col-6">
-            <div class="card-header">
-                <div class="title">Recent bookings</div>
-                <div class="badge">Live</div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="title">{{ $t('Recent bookings') }}</div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ $t('Booking ID') }}</th>
+                            <th>{{ $t('Channel ID') }}</th>
+                            <th class="text-center">{{ $t('Nights / Room') }}</th>
+                            <th>{{ $t('Channel') }}</th>
+                            <th>{{ $t('Room') }}</th>
+                            <th>{{ $t('Status') }}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr v-for="booking in recentReservationData" :key="booking.name"> 
+                            <td>
+                                <Button class="link_line_action1" @click="onOpenLink('view_reservation_detail', booking.name)" link>
+                                    {{ booking.name }} 
+                                </Button>
+                            </td>
+                            <td>{{ booking.channel_manager_booking_id }}</td>
+                            <td class="text-center">{{ booking.room_nights }} / {{ booking.total_active_reservation_stay }}</td>
+                            <td>{{ booking.business_source }}</td>
+                            <td> <span v-tippy="booking.room_types">{{ booking.room_type_alias }}</span></td>
+                            <td class="status">
+                                <span :style="{ backgroundColor: booking.status_color }" class="border-round-3xl py-1 px-2 text-white">{{ booking.reservation_status }}</span>
+                            </td>
+                        </tr> 
+                    </tbody>
+                </table> 
             </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Booking ID</th>
-                        <th>Channel</th>
-                        <th>Room</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td>20241226-3388</td>
-                        <td>Booking.com</td>
-                        <td>STD</td>
-                        <td class="status">
-                            <span class="dot green"></span> Confirmed
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>20241226-3389</td>
-                        <td>Expedia</td>
-                        <td>DLX</td>
-                        <td class="status">
-                            <span class="dot yellow"></span> Pending
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>20241226-3390</td>
-                        <td>Direct</td>
-                        <td>STD</td>
-                        <td class="status">
-                            <span class="dot green"></span> Confirmed
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>20241226-3391</td>
-                        <td>Agoda</td>
-                        <td>STE</td>
-                        <td class="status">
-                            <span class="dot red"></span> Undelivered
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>20241226-3392</td>
-                        <td>Booking.com</td>
-                        <td>DLX</td>
-                        <td class="status">
-                            <span class="dot orange"></span> Modified
-                        </td>
-                    </tr>
-                </tbody>
-            </table> 
         </div>
 
         <!-- Bookings by channel -->
-        <div class="card col-6">
-            <div class="card-header">
-                <div class="title">Bookings by channel</div>
-            </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="title">Bookings by channel</div>
+                </div>
 
-            <div class="progress-item">
-                <div class="progress-label">
-                    <span>Booking.com</span>
-                    <span>21</span>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Booking.com</span>
+                        <span>21</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%"></div>
+                    </div>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 80%"></div>
+
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Expedia</span>
+                        <span>11</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Agoda</span>
+                        <span>8</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Direct / PMS</span>
+                        <span>7</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 35%"></div>
+                    </div>
                 </div>
             </div>
-
-            <div class="progress-item">
-                <div class="progress-label">
-                    <span>Expedia</span>
-                    <span>11</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 50%"></div>
-                </div>
-            </div>
-
-            <div class="progress-item">
-                <div class="progress-label">
-                    <span>Agoda</span>
-                    <span>8</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 40%"></div>
-                </div>
-            </div>
-
-            <div class="progress-item">
-                <div class="progress-label">
-                    <span>Direct / PMS</span>
-                    <span>7</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 35%"></div>
-                </div>
-            </div>
-
         </div>
         </div>
     </ComPanel>
 
 </template>
-<script setup></script>
+<script setup>
+import { useCMDashboard } from '../hooks/useCMDashboard'; 
+
+
+const {
+    recentReservationData
+ } = useCMDashboard();
+
+function onOpenLink(action, name) {
+    window.postMessage(action + '|' + name, '*')
+}
+ 
+</script>
 <style scoped> 
     .container {
         display: flex;

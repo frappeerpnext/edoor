@@ -107,10 +107,10 @@ async function getCMSyncLog() {
 
 async function getCMTaskData() {
     const res = await app.getDocList("ToDo", {
-        fields: ["name", "status", "priority", "custom_subject", "description","creation"],
+        fields: ["name", "status", "priority", "custom_subject", "description","modified"],
         filters: [["custom_property", "=", window.property_name], ["status", "=", "Open"]],
         orderBy: {
-            field: 'creation',
+            field: 'modified',
             order: 'desc',
         }
     })
@@ -143,17 +143,21 @@ async function onViewAllTask() {
 
 
 function socketEvent(arg){
-    
+   
   
    
     if (arg.action=="update_cm_notification_status" && arg.property == window.property_name){
         
         isLoading.value = arg.status;
       
-                getCMTaskData();
-                setTimeout(() => {
-                    getCMTaskCount();   
-                }, 3000);
+                
+                if(!isLoading.value){
+                    getCMTaskData();
+                    setTimeout(() => {
+                        getCMTaskCount();   
+                    }, 3000);
+                }
+                
             }
      
 }
@@ -189,7 +193,7 @@ onMounted(async () => {
         }
     }, 2000)
 
- 
+  
     socket.on("ChannelManagerUpdate",  socketEvent)
 })
 

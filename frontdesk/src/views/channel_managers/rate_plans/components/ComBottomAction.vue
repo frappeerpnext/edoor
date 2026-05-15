@@ -1,4 +1,5 @@
 <template>
+ 
   <transition name="dock-slide">
     <div   class="dock">
 
@@ -26,6 +27,7 @@
       <!-- Update Close Sale -->
 <div>    
       <Button
+  v-if="cm_info?.closed"
   class="dock-item text-red-400"
   :disabled="selectionCount === 0 || loading"
   :class="{ 'pulse': selectionCount > 0 && !loading }"
@@ -72,7 +74,6 @@
           Clear Selection
         </span>
       </button>
-
     </div>
   </transition>
 </template>
@@ -80,8 +81,11 @@
 <script setup>
 import { ref,computed  } from 'vue';
 const menu = ref();
+import {useRatePlan} from "@/views/channel_managers/rate_plans/hooks/useRatePlan.js"
+const {
+    cm_info
 
-
+} = useRatePlan()
 
 
 

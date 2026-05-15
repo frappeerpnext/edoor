@@ -4,11 +4,14 @@
 import frappe
 from frappe.model.document import Document
 from edoor.channel_managers.exely.property_info import send_property_info
+from edoor.channel_managers.utils import clear_cache as clear_cm_info_cached
+
 
 
 class ChannelManagerIntegration(Document):
 
 	def on_update(self):
+		clear_cm_info_cached()
 		frappe.cache.delete_value(f"{self.name}_channel_manager_info") 
 	 
 		frappe.clear_document_cache(self.doctype, self.name)

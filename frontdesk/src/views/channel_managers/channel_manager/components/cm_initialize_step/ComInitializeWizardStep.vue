@@ -7,7 +7,11 @@
           <div class="text-4xl">{{ $t('Initial Data Upload') }}</div>
           <p>{{ $t('Channel Manager Integration') }}</p>
         </div>
-        <span>{{ $t('STEP') }} {{ activeStepIndex }} {{ $t('OF') }} {{ dataUploadSteps.length }}</span>
+        <div>
+          <span>{{ $t('STEP') }} {{ activeStepIndex }} {{ $t('OF') }} {{ dataUploadSteps.length }}</span>
+         <Button @click="reload" icon="pi pi-refresh" variant="text" class="btn-round" rounded aria-label="Filter" link />
+        </div>
+        
       </div>
       <!-- Stepper -->
       <div class="stepper">
@@ -20,9 +24,7 @@
           :activeIndex="activeStepIndex"
         />
       </div>
-
       <!-- Dynamic Component Rendering -->
-{{ activeStepIndex }}
       <component
         :is="currentStepComponent"
         :key="activeStepIndex"
@@ -50,7 +52,8 @@ import ComCompleteStep from '@/views/channel_managers/channel_manager/components
 import { useCMDashboard } from '../../hooks/useCMDashboard'
 const {
   activeStepIndex,
-  dataUploadSteps
+  dataUploadSteps,
+  onRefresh
 } = useCMDashboard()
 
 // Map step index to component
@@ -64,7 +67,9 @@ const stepComponentMap = {
   7:ComExtraServiceStep,
   8:ComCompleteStep
 }
-
+function reload() {
+  onRefresh();
+}
 // Computed property that returns the current component
 const currentStepComponent = computed(() => {
   return stepComponentMap[activeStepIndex.value] || WelcomeStep
@@ -89,7 +94,13 @@ function goToPrevStep() {
     justify-content: space-between;
     margin: 30px 0;
 }
-
+.btn-round{
+  position: absolute;
+  right: 0;
+  top: 0;
+      box-shadow: none !important;
+    color: #6366f1;
+}
 .line {
     position: absolute;
     top: 18px;
@@ -108,6 +119,7 @@ function goToPrevStep() {
 }
 
 .card {
+  position: relative;
   width: 900px;
   background: #fff;
   border-radius: 20px;

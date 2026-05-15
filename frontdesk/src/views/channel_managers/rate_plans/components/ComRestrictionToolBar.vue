@@ -15,6 +15,7 @@
                 <Button class="border-0" label="Restriction ReSync"
                  @click="onOpenRestrictionSyncDailog" 
                  v-if="cm_info?.restrictions == 'Receive from PMS'"
+                 :restriction = 'selectedRestrictionTypes'
                  />
                 <Button class="border-0" label="Restriction Summary" @click="onOpenRoomRateDialog" />
             </div>

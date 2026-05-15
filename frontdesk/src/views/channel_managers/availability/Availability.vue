@@ -1,181 +1,161 @@
 <template>
     <div>
-        <ComHeader :isRefresh="true" @onRefresh="onRefresh"> 
+        <ComHeader :isRefresh="true" @onRefresh="onRefresh">
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center justify-content-between w-full">
-                        <div   class="text-xl md:text-2xl white-space-nowrap">{{$t('Availability')}}</div> 
-                        
+                        <div class="text-xl md:text-2xl white-space-nowrap">{{ $t('Availability') }}</div>
+
                     </div>
                 </div>
             </template>
-            <template #end> 
+            <template #end>
                 <div class="flex gap-2 w-full justify-content-end">
-                     <SplitButton :disabled="selectedData.length==0" label="Action" @click="save" :model="actionMenus" />
-                     <Button>Bulk Edit</Button>
-                </div> 
+                      <Button  
+                v-if="cmInfo?.enable == 1 && cmInfo?.rooms_availability == 'Receive from PMS'"
+
+                icon="pi pi-sync" :label="$t('Resync Availability')" 
+                @click="onResyncAvailability"
+                />
+
+                    <SplitButton icon="pi pi-eye"  label="View" @click="save" :model="actionMenus" />
+                  
+                </div>
             </template>
         </ComHeader>
 
- 
-{{ filters }}
-<ComFilter :hideSearchField="true" @onSearch="onFilter"
-                                :filters="filterOptions" v-model:filter="filters" >
-                            <template #dates v-if="filters?.dates">
-                                
-                              {{ moment(filters?.dates[2][0]).format("DD-MM-YYYY") }} to 
-                              {{ moment(filters?.dates[2][1]).format("DD-MM-YYYY") }} 
-                            </template>
-                            </ComFilter>
 
- <div>
-    <ComRoomAvailabilityGrid/>
-    <Calendar :selectOtherMonths="true"  :modelValue="filters.start_date" @date-select="onStartDateChange" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
-<Calendar :selectOtherMonths="true"  :modelValue="filters.end_date" @date-select="onEndDateChange" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
- 
- </div>
-  </div>
+        <ComFilter :hideSearchField="true" @onSearch="onFilter" :filters="filterOptions" v-model:filter="filters">
+            <template #dates v-if="filters?.dates">
+
+                {{ moment(filters?.dates[2][0]).format("DD-MM-YYYY") }} to
+                {{ moment(filters?.dates[2][1]).format("DD-MM-YYYY") }}
+            </template>
+            <template #rate_type v-if="filters?.rate_type">
+                {{ filters?.rate_type[2] }}
+            </template>
+        </ComFilter>
+
+        <div>
+
+            <ComRoomAvailabilityGrid />
+
+        </div>
+    </div>
 </template>
 <script setup>
 
 import ComRoomAvailabilityGrid from "@/views/channel_managers/availability/components/ComRoomAvailabilityGrid.vue"
 import ComFilter from "@/components/document/components/ComFilter.vue"
+import ComReSyncAvailability from "@/views/channel_managers/availability/components/ComReSyncAvailability.vue"
 
-import { inject,  ref } from "vue";
+
+import { inject, onMounted, onUnmounted, ref } from "vue";
 import { i18n } from '@/i18n';
 import { useAvailability } from "@/views/channel_managers/availability/hooks/useAvailability.js";
 const { t: $t } = i18n.global;
 import { useConfirm } from "primevue/useconfirm";
-
+import { useApp } from "@/hooks/useApp.js";
+const moment = inject("$moment")
 const confirm = useConfirm();
 
-const filterOptions =  [
-        { fieldname: "dates", label: "Date",fieldtype:"Date",hideOperator:true },
-        
-        // { fieldname: "departure_date", label: "Departure" },
-        { fieldname: "room_types", label:"Room Types", fieldtype: 'Link', options: 'Room Type', operator: "in",hideOperator:true },
-        { fieldname: "rate_type", label:"Rate Plan", fieldtype: 'Link', options: 'Rate Type', operator: "=",hideOperator:true,filters:[["is_complimentary","=",0],["is_house_use","=",0]] },
-        
 
-    ]
+const {cmInfo} = useApp()
+ 
+
+const filterOptions = ref([
+    { fieldname: "dates", label: "Date", fieldtype: "Date", hideOperator: true, operator: "Between", default: [moment().toDate(), moment().add(1, "year").toDate()], showYearSelection: true,maxSelectDate:366 },
+
+    // { fieldname: "departure_date", label: "Departure" },
+    { fieldname: "room_types", label: "Room Types", fieldtype: 'Link', options: 'Room Type', operator: "in", hideOperator: true },
+    { fieldname: "rate_type", label: "Rate Plan", fieldtype: 'Link', options: 'Rate Type', operator: "=", hideOperator: true, filters: [["is_complimentary", "=", 0], ["is_house_use", "=", 0]], require: true },
+
+
+])
 
 const {
-    data,
-    roomTypes,
+    oldFitlers,
     filters,
     onRefresh,
-    refAvailability,
-    selectedData,
+resetData,
+    
     updateAvailabiltyRestricion,
     getData,
-    toggleUpdateAvailabilityRestriction
+   
+
+    getCloseRestrictionData
 } = useAvailability();
 
 
-const tempFilter=ref({...filters.value})
-const moment = inject('$moment')
 
-function onFilter(f){
-    alert()
-    console.log(f)
+
+async function onFilter(f) {
+
+    const change_filter = app.utils.compareJSON(oldFitlers.value, f)
+
+
+    const l = await window.showLoading();
+    if (change_filter?.dates) {
+        await getData();
+        await getCloseRestrictionData();
+    } else {
+        if (change_filter?.rate_type) {
+            await getCloseRestrictionData();
+        }
+    }
+
+    oldFitlers.value = JSON.parse(JSON.stringify(f));
+    l.close();
+
+
+}
+
+function onResyncAvailability(){
+    const result = app.utils.openDialog(ComReSyncAvailability,"Resync Room Availability")
 }
 const actionMenus = [
     {
-        label: 'Open Sale',
+        label: 'Room Inventory Report',
         command: () => {
-             confirm.require({
-                    message: 'Are you sure you want to proceed?',
-                    header: 'Confirmation',
-                    icon: 'pi pi-exclamation-triangle',
-                    rejectClass: 'p-button-secondary p-button-outlined',
-                    rejectLabel: 'Cancel',
-                    acceptLabel: 'Yes',
-                    accept: () => {
-                        updateAvailabiltyRestricion(0);
-                    },
-         
-    });
+            app.dialog.viewReport("/Reservation/rptRoomInventory",$t("Room Inventory"),
+             [
+                        {name: 'start_date', values: [moment.utc(filters.value.dates[2][0]).format("YYYY-MM-DD")] },
+                        {name: 'end_date', values: [moment.utc(filters.value.dates[2][1]).format("YYYY-MM-DD")] },
+                        {name: 'property', values: [window.propert_name] },
+                        
+                        
+                ]
 
-            
-            
+        )
+           
+
         }
     },
     {
-        label: 'Stop Sale',
+        label: 'Inventory Room Booked Report',
         command: () => {
-            confirm.require({
-                    message: 'Are you sure you want to proceed?',
-                    header: 'Confirmation',
-                    icon: 'pi pi-exclamation-triangle',
-                    rejectClass: 'p-button-secondary p-button-outlined',
-                    rejectLabel: 'Cancel',
-                    acceptLabel: 'Yes',
-                    accept: () => {
-                       updateAvailabiltyRestricion(1);
-                    },
-                });
-            
+             app.dialog.viewReport("/Reservation/rptRoomInventoryRoomBooked",$t("Inventory Room Booked"),
+             [
+                        {name: 'start_date', values: [moment.utc(filters.value.dates[2][0]).format("YYYY-MM-DD")] },
+                        {name: 'end_date', values: [moment.utc(filters.value.dates[2][1]).format("YYYY-MM-DD")] },
+                        {name: 'property', values: [window.propert_name] },
+                        
+                        
+                ]
+
+        )
+
         }
     },
 ]
 
 
-function onSelected(data){
-    selectedData.value =data; 
-}
+onUnmounted(()=>{
+    resetData()
+})
 
-async function onStartDateChange(event){
-    const l = await window.showLoading();
-    const date = moment.utc(moment(event).format("YYYY-MM-DD")).toDate()
-    let endDate = filters.value.end_date;
-    if (date>=moment.utc(filters.value.end_date).toDate()){
-        endDate = moment.utc(moment(date).add(1,"month").add(-1,"day"))   
-         
-    }
-     
- 
-     await getData( date,moment.utc(endDate).toDate());
-    filters.value.start_date = date;
-    filters.value.end_date = moment.utc(endDate).toDate();
-    l.close();
-
-}
-
-async function onEndDateChange(event){
-    const l = await window.showLoading();
-    const date = moment.utc(moment(event).format("YYYY-MM-DD")).toDate()
-     
-    let startDate = filters.value.end_date;
-    if (date<=moment.utc(filters.value.start_date).toDate()){
-        startDate = moment.utc(moment(date).add(-1,"month").add(1,"day")) 
-        filters.value.start_date = moment.utc(startDate).toDate();   
-    }
-     
-
-    
-    await getData(filters.value.start_date, date);
-    filters.value.end_date = date;
-    l.close();
-
-
-    
- 
-    
-
-}
- 
-function onClearSelection(){
-    refAvailability.value.clearSelections()
-}
-
-async function onToggleUpdate(data){
-    
-    await toggleUpdateAvailabilityRestriction(data.room_type_id,data.date,data.status)
-  
-
-}
 
 
  
- 
+
 </script>

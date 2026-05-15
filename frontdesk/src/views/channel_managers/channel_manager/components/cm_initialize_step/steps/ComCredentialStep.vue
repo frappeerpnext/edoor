@@ -1,9 +1,40 @@
 <template>
   <div> 
-  <com-confirm-message label="Verify Credentials" text="Please ensure that all credentials are accurate and up to date before initiating the connection to the channel manager."/>
-  <div class="connection-wrapper">
+    <div class="connection-wrapper">
     <div class="connection-title">{{ $t('CONNECTION') }}</div>
- 
+ <!-- 1. LOADING MESSAGE -->
+  <StatusMessage 
+    :show="apiCheck.loading"
+    status="In Progress"
+    :title="$t('Verifying Credentials')"
+  >
+    {{ $t('Please wait while we establish a secure connection with the Channel Manager API...') }}
+  </StatusMessage>
+
+  <!-- 2. ERROR MESSAGE (If any credential is not authenticated) -->
+  <StatusMessage 
+    :show="credentailData?.find(x => !x.isAuthenticated) && !apiCheck.loading"
+    status="Pending"
+    :title="$t('Action Required')"
+  >
+    {{ $t('Please review and verify the Channel Manager integration details, including the URL, property code, username, and password. Kindly ensure all information is correct before proceeding.') }}
+  </StatusMessage>
+
+  <!-- 3. SUCCESS MESSAGE (If all are authenticated) -->
+  <StatusMessage 
+    :show="!credentailData?.find(x => !x.isAuthenticated) && !apiCheck.loading && apiCheck.reachable"
+    status="Complete"
+    :title="$t('Connection Successful')"
+  >
+    {{ $t('Your credentials have been verified. You can now safely proceed to the next step of the data upload.') }}
+    <Button 
+    @click="getData" 
+ :loading="apiCheck.loading"
+severity="info" 
+style="height: 1px;"
+    :label="$t('Revalidate Credential')"
+  text/>
+  </StatusMessage>
     <ComCMCredential 
       v-for="value in credentailData" 
       :key="value.title" 
@@ -13,23 +44,9 @@
       :loading="apiCheck.loading"
       :is-authenticated="value.isAuthenticated" 
     />
-    <Message severity="warn" class="mt-4" style="border-radius: 12px;"
-    v-if="credentailData?.find(x=>!x.isAuthenticated) && !apiCheck.loading"
-    >
-      <div>
-        <div class="font-semibold text-lg">{{ $t('Action Required') }}</div>
-        <p>{{ $t('Please review and verify the Channel Manager integration details, including the URL, property code, username, and password. Kindly ensure all information is correct before proceeding with the initial data upload process.”') }}</p>
-      </div>
-    </Message>
 
   </div>
 
-    <Button 
-    @click="getData" 
- :loading="apiCheck.loading"
-
-    :label="$t('Revalidate Credential')"
-  />
   
       <!-- Footer -->
     <div class="footer flex gap-2">
@@ -61,7 +78,7 @@ import { i18n } from '@/i18n';
 import ComDataUpload from '@/views/channel_managers/channel_manager/components/ComDataUpload.vue';
 import ComCMCredential from '@/views/channel_managers/channel_manager/components/ComCMCredential.vue';
 import { useCMDashboard } from "@/views/channel_managers/channel_manager/hooks/useCMDashboard";
-
+import StatusMessage from '@/views/channel_managers/channel_manager/components/StatusMessage.vue'
 const { t: $t } = i18n.global;
 const property = JSON.parse(localStorage.getItem('edoor_property'))
 const data = ref({})

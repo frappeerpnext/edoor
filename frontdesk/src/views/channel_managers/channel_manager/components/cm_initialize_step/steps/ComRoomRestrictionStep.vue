@@ -27,32 +27,86 @@
         </template>
 
       
-        <div v-else v-for="rt in dataUploadStatus?.restriction?.room_types">
-              <template v-if="dataUploadStatus?.restriction?.restrictions?.length == 0">
-            You have not enabled any restriction configuration in the Channel Manager Integration Settings.
-            Please enable at least one restriction code if you would like to use restriction features.
+        <div v-else >
+        <!-- PENDING -->
+<StatusMessage 
+  :show="dataUploadStatus?.restriction?.status === 'Pending' || !(dataUploadStatus?.restriction?.status)"
+  status="Pending"
+  title="Action Required: Review Booking Restrictions"
+>
+  Please verify that the restriction rules below (like <strong>MinLOS</strong> and <strong>Closed</strong>) 
+  match your property policy. These settings will go live immediately upon confirmation.
+</StatusMessage>
 
-        </template>
-            <i v-if="rt.status == 'Pending'" class="pi pi-check bg-gray-500 text-white p-2 border-circle"></i>
-            <i v-else-if="rt.status == 'In Progress'"
-                class="pi pi-spin pi-spinner bg-gray-500 text-white p-2 border-circle"></i>
-            <i v-else class="pi pi-check bg-green-500 text-white p-2 border-circle"></i>
+<!-- IN PROGRESS -->
+<StatusMessage 
+  :show="dataUploadStatus?.restriction?.status === 'In Progress'"
+  status="In Progress"
+  title="Uploading Restriction Data"
+>
+  Updating restriction parameters for <strong>{{ dataUploadStatus?.room_rate?.room_types?.length }}</strong> 
+  room types. This may take a few moments as we sync each rule individually.
+</StatusMessage>
 
-            {{ rt }}
-
-            <div>
-                <template v-for="rs in rt.restrictions">
-                    <Chip :label="rs.restriction" v-if="rs.status == 'Pending'" />
-                    <Chip :label="rs.restriction" v-else-if="rs.status == 'In Progress'" icon="pi pi-spinner pi-spin" />
-                    <Chip :label="rs.restriction" v-else icon="pi pi-check bg-green-500 text-white rounded-full p-1" />
-                </template>
-
+<!-- COMPLETE -->
+<StatusMessage 
+  :show="dataUploadStatus?.restriction?.status === 'Complete'"
+  status="Complete"
+  title="Restrictions Successfully Synced"
+>
+  Your booking restrictions are now live and synchronized. You can proceed to the 
+  <strong>Extra Services</strong> step.
+</StatusMessage>
+             <div v-for="rt in dataUploadStatus?.restriction?.room_types" :key="rt.room_type_code" 
+     class="flex flex-column p-4 border-round shadow-1 bg-white mb-3 border-left-3"
+     :class="rt.status === 'Pending' ? 'border-gray-400' : 'border-green-500'">
+    
+    <!-- 1. Header Section -->
+    <div class="flex align-items-center justify-content-between mb-3">
+        <div class="flex align-items-center gap-3">
+            <div class="p-3 bg-bluegray-50 border-round">
+                <i class="pi pi-lock text-bluegray-600 text-xl"></i>
             </div>
+            <div class="flex flex-column">
+                <span class="text-xl font-bold text-900">{{ rt.room_type_name }}</span>
+                <span class="text-sm text-500">{{ rt.room_type }} | Code: {{ rt.room_type_code }}</span>
+            </div>
+        </div>
+        <Tag :value="rt.status" :severity="rt.status === 'Pending' ? 'secondary' : 'success'" />
+    </div>
+
+    <!-- 2. Restrictions Grid Section -->
+    <div class="bg-gray-50 p-3 border-round border-1 border-100">
+        <div class="text-xs font-bold text-500 uppercase mb-3 letter-spacing-1">
+            {{ $t('Syncing Restrictions') }} ({{ rt.restrictions.length }})
+        </div>
+        
+        <div class="grid">
+            <div v-for="res in rt.restrictions" :key="res.restriction" class="col-12 md:col-6 lg:col-4 xl:col-3">
+                <div class="flex align-items-center justify-content-between p-2 bg-white border-round border-1 border-200 shadow-sm">
+                    <span class="text-sm font-medium text-700 ml-1">{{ res.restriction }}</span>
+                    
+                    <!-- Compact Status Indicator -->
+                    <div class="flex align-items-center">
+                        <i v-if="res.status === 'Pending'" class="pi pi-clock text-orange-500 text-xs mr-2"></i>
+                        <i v-else-if="res.status === 'In Progress'" class="pi pi-spin pi-spinner text-blue-500 text-xs mr-2"></i>
+                        <i v-else class="pi pi-check-circle text-green-500 text-xs mr-2"></i>
+                        
+                        <span class="text-xs font-semibold uppercase" 
+                              :class="res.status === 'Pending' ? 'text-orange-500' : 'text-green-500'">
+                            {{ res.status }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
         </div>
 
         <!-- i agree -->
-        <div v-if="dataUploadStatus?.restriction?.restrictions?.length > 0 && dataUploadStatus?.restriction?.sync_mode == 'Receive from PMS'">
+        <div class="my-3" v-if="dataUploadStatus?.restriction?.restrictions?.length > 0 && dataUploadStatus?.restriction?.sync_mode == 'Receive from PMS'">
             <Checkbox v-model="iAgree" :binary="true" inputId="iAgree" />
             <label for="iAgree" class="ml-2 cursor-pointer">
                 By checking this box, you confirm that all room restriction information is accurate.
@@ -80,7 +134,7 @@
 <script setup>
 import { useCMDashboard } from '@/views/channel_managers/channel_manager/hooks/useCMDashboard.js';
 import { ref } from 'vue';
-
+import StatusMessage from '@/views/channel_managers/channel_manager/components/StatusMessage.vue'
 const { onChangeDataUploadStep,
     dataUploadStatus
 } = useCMDashboard();

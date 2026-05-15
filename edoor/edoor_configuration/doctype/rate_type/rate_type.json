@@ -19,6 +19,7 @@
   "allow_user_to_edit_rate",
   "allow_discount",
   "disable_get_rate_room_room_type",
+  "is_default_rate_type",
   "disabled",
   "section_break_rufj",
   "room_types",
@@ -137,11 +138,17 @@
    "fieldtype": "Table",
    "label": "Business Source",
    "options": "Rate Type Business Source"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_default_rate_type",
+   "fieldtype": "Check",
+   "label": "Is Default Rate Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-09 16:02:00.560718",
+ "modified": "2026-05-12 10:22:04.301605",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type",

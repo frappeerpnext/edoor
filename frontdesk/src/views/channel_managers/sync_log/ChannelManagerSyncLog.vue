@@ -5,8 +5,6 @@
     title="Channel Manager Sync Log"
     list_view_setting="channel_manager_sych_log_list"
     :options="options"
-     
-     
   >
  
     <template #name="{ item, index }">

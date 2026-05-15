@@ -1,6 +1,7 @@
 import frappe 
 from edoor.channel_managers.utils import get_channal_manager_info,can_save_data,add_change_data_log
 from frappe.rate_limiter import rate_limit
+
 from edoor.channel_managers.exely.rate_limit import check_rate_limit_status_by_room_type
 from frappe.utils import getdate, add_to_date,today
 from edoor.api.utils import make_hash,generate_unique_dates
@@ -888,7 +889,35 @@ def update_sync_status_to_cached(property=None,room_types=None,status=None):
     })
 
 
+ 
 @frappe.whitelist()
-def testme():
-    # frappe.cache.set_value("ESTC HOTEL 6_channel_manager_stop_resync_fail_job", "1", expires_in_sec=60)
-    return frappe.cache.get_value("ESTC HOTEL 6_channel_manager_stop_resync_fail_job")  == "1"
+def runme():
+    return get_room_rate_from_channel_manager()
+
+@frappe.whitelist(methods="POST")
+def get_room_rate_from_channel_manager(property="ESTC HOTEL 6"):
+    # validate
+    # check provider
+    # send soap request base on provider
+    # get xml data conver to dict
+    # mapping occupanyc code
+    # bulk update to Room Rate base on rate type
+    cm_info = get_channal_manager_info(property)
+    
+    if not cm_info:
+        frappe.throw("No channel manager integration")
+    if cm_info.initialized_prices_upload == 0:
+        frappe.throw("Room rate first update to Channel Manager not run yet. Please do it first before sync rate.")
+        
+    if cm_info.initialized_prices_upload == 0:
+        frappe.throw("Room rate first update to Channel Manager not run yet. Please do it first before sync rate.")
+
+    if cm_info.prices_for_accommodation != "Deliver to PMS":
+        frappe.throw("In order to get room rates from Channel Manager, please set the room rate sync mode to “Deliver to PMS” in your Channel Manager backend and PMS–Channel Manager integration settings.")
+    
+
+    # check provider and get data relevant to cm provider
+    if cm_info.provider == "Exely":
+        from edoor.channel_managers.exely.price_manager import get_room_rate_from_channel_manager as get_room_rate_from_exely
+        return get_room_rate_from_exely( property = property, cm_hotel_code = cm_info.property_code)
+    return cm_info

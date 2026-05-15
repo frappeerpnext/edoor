@@ -65,12 +65,12 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Restriction Type",
-   "options": "Closed\nMinLos\nMaxLos\nCta\nCtd\nMinLosArrival\nMaxLosArrival\nMinAdvBooking\nMaxAdvBooking\nFullPatternLos"
+   "options": "\nClosed\nMinLos\nMaxLos\nCta\nCtd\nMinLosArrival\nMaxLosArrival\nMinAdvBooking\nMaxAdvBooking\nFullPatternLos"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-04 11:30:26.321666",
+ "modified": "2026-05-15 09:43:08.559345",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Change Data Log",

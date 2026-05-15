@@ -5,6 +5,7 @@ import ComCMInit from "@/views/channel_managers/channel_manager/components/cm_in
 import {
     getRecentReservation
 }  from  "@/views/channel_managers/channel_manager/hooks/helper.js"
+import { listenImage } from "ol/Image"
 
 // State list
 const initialized = ref(false)
@@ -15,6 +16,7 @@ const channelManagerData = ref({})
 const currentCMComponent = ref()
 const dataUploadStatus = ref(null)
 const activeStepIndex = ref(1)
+const cmDashboardData = ref({})
 
 
 const dataUploadSteps = ref([
@@ -43,6 +45,38 @@ export function useCMDashboard() {
         }
 
     }
+
+    async function getBookingFromCM() { 
+        
+        const res = await app.getDocList('Reservation', {
+            filters:{"property":property.name, "channel_manager_booking_id": ["!=", null]},
+            fields: ["name", "channel_manager_booking_id", "reservation_status", "business_source", "room_types", "room_type_alias", "status_color","room_nights", "total_active_reservation_stay", "reservation_date"],
+            orderBy: {
+                field: 'creation',
+                order: 'desc',
+            },
+            limit: 5
+        })
+        
+
+        if (res.data) { 
+            recentReservationData.value = res.data 
+
+        }
+    }
+
+    async function getCMDashboardData() {
+        const res = await app.getApi("edoor.channel_managers.channel_manager_dashboard.get_channel_manager_dashboard_data",{
+            property: window.property_name,
+            working_date: window.working_day.date_working_day
+        })
+        if (res.data) {
+            cmDashboardData.value = res.data  
+        }
+        await getBookingFromCM()
+    }
+
+    
 
     function getSetting(){
         // api call 
@@ -83,9 +117,8 @@ export function useCMDashboard() {
                 ? ChannelManagerDashboard
                 : ComCMInit;
 
-            l.close()    
-      
-
+            l.close()     
+        await getCMDashboardData()
     })
 
      function resetData(){
@@ -101,6 +134,7 @@ export function useCMDashboard() {
         const l = await window.showLoading()
         await getChannelManagerData() ;
         await getDataUploadStatus();
+        await getBookingFromCM();
         if(is_reset){
             resetData();
             currentCMComponent.value = ChannelManagerDashboard;

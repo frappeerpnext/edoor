@@ -20,11 +20,15 @@
         </template>
     </ComHeader> 
 
-    <component :is="currentCMComponent" />
+    <!-- <component :is="currentCMComponent" /> -->
+    <ChannelManagerDashboard />
+    <ComCMInit/>
 </template>
 <script setup>
 import { onUnmounted, ref } from 'vue';
 import { useCMDashboard } from './hooks/useCMDashboard'; 
+import ChannelManagerDashboard from "@/views/channel_managers/channel_manager/ChannelManagerDashboard.vue"
+import ComCMInit from "@/views/channel_managers/channel_manager/components/cm_initialize_step/ComCMInit.vue"
 
 const { 
     resetData,

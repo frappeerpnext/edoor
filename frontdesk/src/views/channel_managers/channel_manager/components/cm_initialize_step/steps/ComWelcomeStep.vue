@@ -22,6 +22,7 @@
   <Button 
     @click="onChangeDataUploadStep()"
     icon="pi pi-arrow-right"
+    class="mt-3"
     iconPos="right"
     :label="$t('Next')"
   />

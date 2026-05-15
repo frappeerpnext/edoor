@@ -1,7 +1,10 @@
 import frappe
 import edoor.channel_managers.exely.availability as exely_availability
 
-from edoor.channel_managers.utils import get_sync_action_status,get_channal_manager_info
+from edoor.channel_managers.utils import get_sync_action_status,get_channal_manager_info,get_cm_provider_list
+
+
+
 
 @frappe.whitelist()
 def re_sync_fail_job():
@@ -34,7 +37,6 @@ def re_sync_fail_job():
                     )
 
                 elif d.get("request_type") == "Prices update":
-
                     frappe.enqueue(
                         "edoor.channel_managers.exely.price_manager.sync_room_rate",
                         queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
@@ -77,16 +79,28 @@ def restart_sync_data_to_channel_manager(property,request_type,provider=None):
     
     if status:
         if status.get("sync_action") == "Stop Sync":
+             
             frappe.db.set_value("Channel Manager Sync Log",status.get("name"),"is_retry_sync",1)
             frappe.db.commit()
           
+            # prices update sync room rate have 2 option 
+            # send rate to CM and get rate from CM
             if request_type=="Prices update" and provider == "Exely":
-                 
-                frappe.enqueue(
-                    "edoor.channel_managers.exely.price_manager.sync_room_rate",
-                    queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
-                        property=property
-                )
+                if cm_info.prices_for_accommodation =="Receive from PMS":
+                    frappe.enqueue(
+                        "edoor.channel_managers.exely.price_manager.sync_room_rate",
+                        queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
+                            property=property
+                    )
+                elif cm_info.prices_for_accommodation =="Deliver to PMS":
+                    frappe.enqueue(
+                        "edoor.channel_managers.exely.price_manager.get_room_rate_from_channel_manager",
+                        queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
+                        property=property,
+                        cm_hotel_code = cm_info.property_code
+                    )
+                # End restart sync room rate
+
             elif request_type=="Restriction update" and provider == "Exely":
                 frappe.enqueue(
                     "edoor.channel_managers.exely.room_restriction.sync_room_restriction",
@@ -98,3 +112,20 @@ def restart_sync_data_to_channel_manager(property,request_type,provider=None):
     
     return "Success"
 
+
+
+@frappe.whitelist()
+def sync_room_rate_from_channel_manager():
+    providers = get_cm_provider_list()
+    
+    if len(providers)>0:
+        for p in providers:
+            if p.get("provider") == "Exely" and p.get("prices_for_accommodation") =="Deliver to PMS" and p.get("initialized_prices_upload") == 1:
+                 frappe.enqueue(
+                    "edoor.channel_managers.exely.price_manager.get_room_rate_from_channel_manager",
+                    queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
+                        property=p.get("property"),
+                        cm_hotel_code = p.get("property_code")
+                )
+                
+            

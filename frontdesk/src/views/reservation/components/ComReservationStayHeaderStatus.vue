@@ -60,7 +60,7 @@
                 {{$t(rs.reservationStay?.reservation_status)  }}
                 
             </span>
-        <div v-if="rs.reservation.channel_manager_booking_id"> 
+        <div class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center" v-tippy="'Channel Manager Connection'" v-if="rs.reservation.channel_manager_booking_id"> 
         <i class="pi pi-check"></i>    
         </div>
         </div>

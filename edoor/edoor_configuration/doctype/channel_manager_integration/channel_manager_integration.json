@@ -62,14 +62,18 @@
   {
    "fieldname": "property",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Property",
    "options": "Business Branch",
+   "reqd": 1,
    "unique": 1
   },
   {
    "fieldname": "property_code",
    "fieldtype": "Data",
-   "label": "Property Code"
+   "in_list_view": 1,
+   "label": "Property Code",
+   "reqd": 1
   },
   {
    "fieldname": "provider",
@@ -89,12 +93,16 @@
   {
    "fieldname": "username",
    "fieldtype": "Data",
-   "label": "Username"
+   "in_list_view": 1,
+   "label": "Username",
+   "reqd": 1
   },
   {
    "fieldname": "password",
    "fieldtype": "Data",
-   "label": "Password"
+   "in_list_view": 1,
+   "label": "Password",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_goez",
@@ -317,7 +325,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-06 09:26:38.976868",
+ "modified": "2026-05-15 10:15:48.661711",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Channel Manager Integration",

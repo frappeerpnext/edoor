@@ -3,6 +3,8 @@ import random
 import re
 from datetime import datetime
 from frappe.utils import now_datetime,get_datetime
+from frappe.utils.caching import redis_cache
+
 def json_to_xml():
     return {}
 
@@ -66,12 +68,31 @@ def get_rate_type_mapping(rate_type,property):
 def random_color():
     return "#{:06X}".format(random.randint(0, 0xFFFFFF))
 
+@redis_cache(ttl=60)
 def get_exely_room_type_code(edoor_room_type_id):
     
     sql = "select room_type_code from `tabRoom Type Mapping` where edoor_room_type=%(edoor_room_type_id)s and coalesce(room_type_code,'') !=''"
     data = frappe.db.sql(sql,{"edoor_room_type_id":edoor_room_type_id},as_dict =1)
     if data:
         return data[0].get("room_type_code")
+    return None
+
+@redis_cache(ttl=60)
+def get_edoor_room_type_id(cm_room_type_code):
+    
+    sql = "select edoor_room_type from `tabRoom Type Mapping` where room_type_code=%(cm_room_type_code)s and coalesce(room_type_code,'') !=''"
+    data = frappe.db.sql(sql,{"cm_room_type_code":cm_room_type_code},as_dict =1)
+    
+    if data:
+        return data[0].get("edoor_room_type")
+    return None
+
+@redis_cache(ttl=60)
+def get_edoor_rate_type(cm_rate_type):
+    sql = "select edoor_rate_plan from `tabRate Plan Mapping` where rate_plan_code=%(cm_rate_type)s and coalesce(rate_plan_code,'')!='' and coalesce(edoor_rate_plan,'') !=''"
+    data = frappe.db.sql(sql,{"cm_rate_type":cm_rate_type},as_dict =1)
+    if data:
+        return data[0].get("edoor_rate_plan")
     return None
 
 

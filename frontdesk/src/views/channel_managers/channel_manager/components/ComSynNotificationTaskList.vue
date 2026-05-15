@@ -18,7 +18,7 @@
     <div class="task-desc ellipsis">
       {{ getPlainText(d.description) }}
     </div> 
-    <small> <ComTimeago :date="d.creation" /> </small>
+    <small> <ComTimeago :date="d.modified" /> </small>
   </div> 
 </div>
                 <div v-else class="flex flex-column align-items-center w-full h-23rem justify-content-center">
