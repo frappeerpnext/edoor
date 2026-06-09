@@ -11,8 +11,9 @@
             <div class="col-6">
                 <label> Room</label>
                 <div class="w-full">
+                    {{property.name}}
                     <ComAutoComplete placeholder="Select Room"  v-model="data.room_id" class="pb-2 w-full"  doctype="Room"
-                    @onSelected="onSearch" :filters="['property','=',property.name]" :disabled="doc?.docstatus==1" />
+                    @onSelected="onSearch" :filters="{ property: property.name }" :disabled="doc?.docstatus==1" />
                 </div>
             </div>
             <div class="col-12"> 

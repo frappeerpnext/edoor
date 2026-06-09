@@ -27,7 +27,7 @@
       <!-- Update Close Sale -->
 <div>    
       <Button
-  v-if="cm_info?.closed"
+  v-if="cm_info?.closed || updateRestrictionText ==='Update Restriction'"
   class="dock-item text-red-400"
   :disabled="selectionCount === 0 || loading"
   :class="{ 'pulse': selectionCount > 0 && !loading }"

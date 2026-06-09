@@ -32,8 +32,6 @@
     
     </div>
     <div class="card">
-     
-        
         <ComChart v-if="chartData && !loading"   :chartData="chartData" />
     </div>
 </template>

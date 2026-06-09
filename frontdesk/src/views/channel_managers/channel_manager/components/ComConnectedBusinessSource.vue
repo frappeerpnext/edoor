@@ -1,141 +1,82 @@
 <template>
-    <ComPanel title="Connected Business Sources" :viewAll="true" class="sys-date h-17rem md:h-full ">
+    <ComPanel title="Connected Business Sources" :viewAll="true" class="sys-date h-17rem md:h-full p-5"
+        style="border-radius: 30px !important;">
         <template #viewAll>
             <div class="panel-header justify-content-end">
-                <a href="#" class="view-all">View All Channels</a> 
+                <a href="#" class="view-all">
+                    {{ $t('View All Channels') }}
+                </a>
             </div>
         </template>
 
-        <div class="panel p-4"> 
-            <div class="cards"> 
-                <!-- Booking.com -->
-                <div class="card">
-                    <div class="card-top">
-                        <div class="logo-wrap logo-booking">
-                            <div class="logo-icon">B</div>
-                        </div>
-                        <div class="source-info">
-                            <div class="source-name">Booking.com</div>
-                            <div class="badge up">
-                                <svg viewBox="0 0 10 10">
-                                    <path d="M5 2L9 7H1L5 2Z" fill="currentColor" />
-                                </svg>
-                                +12.5%
+        <div class="panel">
+            <div class="cards">
+                <div v-for="source in businessSources" :key="source.name" class="card border">
+                    <div class="flex justify-content-between align-items-center">
+                        <div class="card-top"> 
+                            <div class="logo-wrap logo-booking">
+                                <div class="logo-icon">
+                                    {{ getFirstLetter(source.cm_business_source) }}
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="label">Total Bookings</div>
-                        <div class="value">142</div>
-                        <!-- <div class="bar-track">
-                            <div class="bar-fill" style="width:100%"></div>
-                        </div> -->
-                    </div>
-                </div> 
-                <!-- Expedia -->
-                <div class="card">
-                    <div class="card-top">
-                        <div class="logo-wrap logo-expedia">
-                            <div class="logo-icon">E</div>
-                        </div>
-                        <div class="source-info">
-                            <div class="source-name">Expedia</div>
-                            <div class="badge down">
-                                <svg viewBox="0 0 10 10">
-                                    <path d="M5 8L1 3H9L5 8Z" fill="currentColor" />
-                                </svg>
-                                −2.4%
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="label">Total Bookings</div>
-                        <div class="value">98</div>
-                        <!-- <div class="bar-track">
-                            <div class="bar-fill" style="width:69%"></div>
-                        </div> -->
-                    </div>
-                </div>
 
-                <!-- Airbnb -->
-                <div class="card">
-                    <div class="card-top">
-                        <div class="logo-wrap logo-airbnb">
-                            <div class="logo-icon">A</div>
+                            <div class="source-info">
+                                <div class="source-name">
+                                    {{ source.cm_business_source }}
+                                </div>
+                            </div> 
                         </div>
-                        <div class="source-info">
-                            <div class="source-name">Airbnb</div>
-                            <div class="badge up">
-                                <svg viewBox="0 0 10 10">
-                                    <path d="M5 2L9 7H1L5 2Z" fill="currentColor" />
-                                </svg>
-                                +24.8%
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="label">Total Bookings</div>
-                        <div class="value">64</div>
-                        <!-- <div class="bar-track">
-                            <div class="bar-fill" style="width:45%"></div>
-                        </div> -->
-                    </div>
-                </div>
 
-                <!-- Agoda -->
-                <div class="card">
-                    <div class="card-top">
-                        <div class="logo-wrap logo-agoda">
-                            <div class="logo-icon">A</div>
+                        <div class=""> 
+                            <Badge size="large" severity="success" :value="bookingMap[source.cm_business_source] || 0"></Badge>
                         </div>
-                        <div class="source-info">
-                            <div class="source-name">Agoda</div>
-                            <div class="badge up">
-                                <svg viewBox="0 0 10 10">
-                                    <path d="M5 2L9 7H1L5 2Z" fill="currentColor" />
-                                </svg>
-                                +5.2%
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="label">Total Bookings</div>
-                        <div class="value">45</div>
-                        <!-- <div class="bar-track">
-                            <div class="bar-fill" style="width:32%"></div>
-                        </div> -->
-                    </div>
+                    </div> 
                 </div>
-
-                <!-- Direct Website -->
-                <div class="card">
-                    <div class="card-top">
-                        <div class="logo-wrap logo-direct">
-                            <div class="logo-icon">W</div>
-                        </div>
-                        <div class="source-info">
-                            <div class="source-name">Direct Website</div>
-                            <div class="badge up">
-                                <svg viewBox="0 0 10 10">
-                                    <path d="M5 2L9 7H1L5 2Z" fill="currentColor" />
-                                </svg>
-                                +8.1%
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="label">Total Bookings</div>
-                        <div class="value">32</div>
-                        <!-- <div class="bar-track">
-                            <div class="bar-fill" style="width:22%"></div>
-                        </div> -->
-                    </div>
-                </div>
-
             </div>
         </div>
     </ComPanel>
 </template>
+
+<script setup>
+import { computed } from 'vue'
+import { useCMDashboard } from '@/views/channel_managers/channel_manager/hooks/useCMDashboard.js'
+
+const {
+    channelManagerData,
+    cmDashboardData
+} = useCMDashboard()
+
+/**
+ * Business sources
+ */
+const businessSources = computed(() => {
+    return channelManagerData.value?.business_source || []
+})
+
+/**
+ * Create lookup map once
+ * {
+ *   Agoda: 10,
+ *   Booking: 5
+ * }
+ */
+const bookingMap = computed(() => {
+    const reservations =
+        cmDashboardData.value?.get_reservation_by_business_source || []
+
+    return reservations.reduce((acc, item) => {
+        acc[item.business_source] = item.total_booking
+        return acc
+    }, {})
+})
+
+/**
+ * Faster + safer
+ */
+const getFirstLetter = (text = '') => {
+    return text[0]?.toUpperCase() || ''
+}
+</script>
 <style scoped>
 :root {
     --bg: #f0f2f8;
@@ -153,8 +94,8 @@
 
 .panel {
     background: var(--card-bg);
-    border-radius: 20px; 
-    box-shadow: var(--shadow); 
+    border-radius: 20px;
+    box-shadow: var(--shadow);
     width: 100%;
 }
 
@@ -202,10 +143,9 @@
 }
 
 .card {
-    background: #fafbfd;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.2rem 1.3rem 1.4rem;
+    /* background: #fafbfd;  */
+    border-radius: 50px;
+    padding: 10px 15px;
     position: relative;
     overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
@@ -255,13 +195,13 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 1.2rem;
+    /* margin-bottom: 1.2rem; */
 }
 
 .logo-wrap {
     width: 42px;
     height: 42px;
-    border-radius: 12px;
+    border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
@@ -276,24 +216,8 @@
 
 /* Fallback gradient logos */
 .logo-booking {
-    background: linear-gradient(135deg, #003580 0%, #0057b8 100%);
-}
-
-.logo-expedia {
-    background: linear-gradient(135deg, #1a1a6e 0%, #ffcc00 100%);
-}
-
-.logo-airbnb {
-    background: linear-gradient(135deg, #ff5a5f 0%, #ff385c 100%);
-}
-
-.logo-agoda {
-    background: linear-gradient(135deg, #5392d9 0%, #1a4fa0 100%);
-}
-
-.logo-direct {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-}
+    background: linear-gradient(135deg, #818cf8, #6366f1); 
+} 
 
 .logo-icon {
     width: 100%;
@@ -315,7 +239,7 @@
 .source-name {
     font-family: inherit;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 12px;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
@@ -365,12 +289,12 @@
 
 .value {
     font-family: inherit;
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 800;
     color: var(--text-primary);
     letter-spacing: -0.04em;
     line-height: 1;
-    margin-bottom: 0.8rem;
+    /* margin-bottom: 0.8rem; */
 }
 
 .bar-track {
@@ -440,5 +364,5 @@
     .cards {
         grid-template-columns: repeat(2, 1fr);
     }
-}
+} 
 </style>

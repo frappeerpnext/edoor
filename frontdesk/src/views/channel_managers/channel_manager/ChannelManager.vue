@@ -16,13 +16,15 @@
             <div class="flex gap-2 w-full justify-content-between md:justify-content-end">
                 <Button class="w-full md:w-auto border-none" :label="$t('Retry Failed Sync')"
                     icon="pi pi-exclamation-circle" @click="onRetryFailedSync" />
+                <Button class="w-full md:w-auto border-none" :label="$t('Reupload Data')"
+                    icon="pi pi-exclamation-circle" @click="onReuploadData" />
             </div>
         </template>
     </ComHeader> 
 
-    <!-- <component :is="currentCMComponent" /> -->
-    <ChannelManagerDashboard />
-    <ComCMInit/>
+    <component :is="currentCMComponent" />
+    <!-- <ChannelManagerDashboard />
+    <ComCMInit/> -->
 </template>
 <script setup>
 import { onUnmounted, ref } from 'vue';

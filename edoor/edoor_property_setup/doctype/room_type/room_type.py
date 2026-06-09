@@ -4,10 +4,11 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.utils import get_room_type_list
+from edoor.channel_managers.utils import clear_cache as clear_cm_cached
 
 class RoomType(Document):
 	def after_insert(self):
-		pass
+		clear_cm_cached()
 		
 	def on_update(self):
 		get_room_type_list.clear_cache()
@@ -27,6 +28,10 @@ class RoomType(Document):
 		sql="delete from `tabChannel Manager Sync Data Log` where room_type=%(room_type)s and not occupancy_code in %(occupancy_codes)s"
 		frappe.db.sql(sql,{"room_type":self.name,"occupancy_codes":occupancy_codes})
 		
+		clear_cm_cached()
+
+	def on_trash(self):
+		clear_cm_cached()
 
 
 

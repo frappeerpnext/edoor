@@ -915,9 +915,61 @@ def get_room_rate_from_channel_manager(property="ESTC HOTEL 6"):
     if cm_info.prices_for_accommodation != "Deliver to PMS":
         frappe.throw("In order to get room rates from Channel Manager, please set the room rate sync mode to “Deliver to PMS” in your Channel Manager backend and PMS–Channel Manager integration settings.")
     
+    
 
     # check provider and get data relevant to cm provider
     if cm_info.provider == "Exely":
         from edoor.channel_managers.exely.price_manager import get_room_rate_from_channel_manager as get_room_rate_from_exely
         return get_room_rate_from_exely( property = property, cm_hotel_code = cm_info.property_code)
     return cm_info
+
+
+
+@frappe.whitelist()
+def get_restriction_codes(property,rate_type=None):
+    cm_info = get_channal_manager_info(property) 
+    if not cm_info:
+        return get_property_restriction_codes(property)
+    else:
+        if rate_type:
+            if [x for x in cm_info.rate_plans if x.get("edoor_rate_plan") == rate_type and x.get("rate_plan_code")]:
+                return get_cm_restriction(property)
+
+    return get_property_restriction_codes(property)
+
+def get_property_restriction_codes(property):
+    doc = frappe.get_cached_doc("Business Branch", property)
+    return {
+        "closed":doc.closed,
+            "minlos":doc.minlos,
+            "minlosarrival":doc.minlosarrival,
+            "fullpatternlos":doc.fullpatternlos,
+            "maxlos":doc.maxlos,
+            "maxlosarrival":doc.maxlosarrival,
+            "minadvbooking":doc.minadvbooking,
+            "maxadvbooking":doc.maxadvbooking,
+            "cta":doc.cta,
+            "ctd":doc.ctd
+    }
+
+@frappe.whitelist()
+def get_cm_restriction(property):
+    sql = """
+        select
+            closed,
+            minlos,
+            minlosarrival,
+            fullpatternlos,
+            maxlos,
+            maxlosarrival,
+            minadvbooking,
+            maxadvbooking,
+            cta,
+            ctd
+        FROM `tabChannel Manager Integration`
+        WHERE
+            name = %(property)s
+            AND restrictions in  ('Receive from PMS','Deliver to PMS')
+    """
+    data = frappe.db.sql(sql, {"property":property}, as_dict=1)
+    return data[0]

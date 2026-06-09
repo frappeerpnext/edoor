@@ -1,6 +1,6 @@
 <template>
         <ComRestrictionToolBar/>
-        <ComRoomRestrictionGridByRoomType :year="selectedYear"/>
+        <ComRoomRestrictionGridByRoomType :year="selectedYear"/> 
    
         <ComBottomAction 
         updateRestrictionText="Update Restriction"

@@ -23,6 +23,9 @@ const occupancyCodes = ref([])
 const hidePreviouseMonths = ref(false)
 const ratePlanMappedList = ref([])
 const prodiverName = ref('')
+const cmRestrictions = ref([])
+const restrictionTypesOption = ref([])
+const defaultFilterRestriction = ref([])
 
 const cm_info = ref()
 
@@ -44,92 +47,94 @@ const componentsMap = {
 
 const savedselectedRestrictionTypes = localStorage.getItem("selectedRestrictionTypes")
 
-const selectedRestrictionTypes = ref(
-  savedselectedRestrictionTypes ? JSON.parse(savedselectedRestrictionTypes) : ["Closed", "Cta", "Ctd"]
+const selectedRestrictionTypes = ref([]
+//   savedselectedRestrictionTypes ? JSON.parse(savedselectedRestrictionTypes) : defaultFilterRestriction.value
 )
 const restrictionTypes = [
-
-  {
-    restriction_type:"Closed",
-    default_value:1,
-    show_radio_input:true,
-    show_number_input:false,
-    show_reset_value:false,
-
-  },
-  {
-    restriction_type:"Cta",
-    default_value:1,
-    show_radio_input:true,
-    show_number_input:false,
-    show_reset_value:false,
-  },
-  {
-    restriction_type:"Ctd",
-    default_value:1,
-    show_radio_input:true,
-    show_number_input:false,
-    show_reset_value:false,
-  },
-  {
-    restriction_type:"MinLos",
-    default_value:0,
-    show_radio_input:false,
-    show_number_input:true,
-    show_reset_value:true,
-  },
-  {
-    restriction_type:"MaxLos",
-    default_value:0,
-    show_radio_input:false,
-    show_number_input:true,
-    show_reset_value:true,
-  }, 
-  {
-    restriction_type:"MinLosArrival",
-    default_value:0,
-    show_radio_input:false,
-    show_number_input:true,
-    show_reset_value:true,
-  },
-  {
-    restriction_type:"MaxLosArrival",
-    default_value:0,
-    show_radio_input:false,
-    show_number_input:true,
-    show_reset_value:true,
-  },
-  {
-    restriction_type:"MinAdvBooking",
-    default_value:0,
-    show_radio_input:false,
-    show_number_input:true,
-    show_reset_value:true,
-  },
-  {
-    restriction_type:"MaxAdvBooking",
-    default_value:0,
-    show_radio_input:false,
-    show_number_input:true,
-    show_reset_value:true,
-  },
-  {
-    restriction_type:"FullPatternLos",
-    default_value:0,
-    show_radio_input:false,
-    show_number_input:false,
-    show_reset_value:false,
-    show_date_selection:true
-  }
-
-
+    {
+    restriction_type: "Closed",
+    lower_char: "closed",
+    default_value: 1,
+    show_radio_input: true,
+    show_number_input: false,
+    show_reset_value: false,
+    },
+    {
+    restriction_type: "Cta",
+    lower_char: "cta",
+    default_value: 1,
+    show_radio_input: true,
+    show_number_input: false,
+    show_reset_value: false,
+    },
+    {
+    restriction_type: "Ctd",
+    lower_char: "ctd",
+    default_value: 1,
+    show_radio_input: true,
+    show_number_input: false,
+    show_reset_value: false,
+    },
+    {
+    restriction_type: "MinLos",
+    lower_char: "minlos",
+    default_value: 0,
+    show_radio_input: false,
+    show_number_input: true,
+    show_reset_value: true,
+    },
+    {
+    restriction_type: "MaxLos",
+    lower_char: "maxlos",
+    default_value: 0,
+    show_radio_input: false,
+    show_number_input: true,
+    show_reset_value: true,
+    },
+    {
+    restriction_type: "MinLosArrival",
+    lower_char: "minlosarrival",
+    default_value: 0,
+    show_radio_input: false,
+    show_number_input: true,
+    show_reset_value: true,
+    },
+    {
+    restriction_type: "MaxLosArrival",
+    lower_char: "maxlosarrival",
+    default_value: 0,
+    show_radio_input: false,
+    show_number_input: true,
+    show_reset_value: true,
+    },
+    {
+    restriction_type: "MinAdvBooking",
+    lower_char: "minadvbooking",
+    default_value: 0,
+    show_radio_input: false,
+    show_number_input: true,
+    show_reset_value: true,
+    },
+    {
+    restriction_type: "MaxAdvBooking",
+    lower_char: "maxadvbooking",
+    default_value: 0,
+    show_radio_input: false,
+    show_number_input: true,
+    show_reset_value: true,
+    },
+    {
+    restriction_type: "FullPatternLos",
+    lower_char: "fullpatternlos",
+    default_value: 0,
+    show_radio_input: false,
+    show_number_input: false,
+    show_reset_value: false,
+    show_date_selection: true,
+    }
 ]
 
-
 const selectedComponent = ref("ComRatePlanInfo")
-
-
-
 
 export function useRatePlan() {
 
@@ -184,6 +189,19 @@ export function useRatePlan() {
                 // xxx
     }
 
+    async function getCMRestrictions() {
+        alert(rateType.value)
+        const res = await app.getApi("rate_plan.get_restriction_codes", {property: property.name,rate_type:rateType.value})
+        if (res.data) {
+            cmRestrictions.value = Object.entries(res.data).filter(([key, value]) => value != 0).map(([key, value]) => ({key,value}))}
+            const keys = cmRestrictions.value.map(x => x.key)
+
+            restrictionTypesOption.value = restrictionTypes.filter(x => keys.includes(x.lower_char)) 
+
+            defaultFilterRestriction.value = restrictionTypesOption.value.slice(0, 3).map(x => x.restriction_type)
+    }
+
+
     async function getRatePlanInfo() {
         const res = await app.getApi("rate_plan.get_rate_plan_info", {
             property: property.name,
@@ -227,7 +245,7 @@ export function useRatePlan() {
 
     async function getRoomRateData(filters) {
 
-        console.log("filter=>", filters)
+        
         const res = await app.postApi("rate_plan.get_room_rate_data", {
             filters: filters
         }, "", false)
@@ -339,7 +357,7 @@ export function useRatePlan() {
 
         
         await getRatePlanInfo()
-        
+        await getCMRestrictions()
         // hide cm sync log if not have cm integration
         if(prodiverName.value && rateInfo.value?.cm_rate_plan_list?.cm_rate_plan){
             if (!components.value.find(x=>x.component == "ComCMSyncLog")){
@@ -350,6 +368,8 @@ export function useRatePlan() {
                 components.value.splice(3, 1);
             }
         }
+
+        selectedRestrictionTypes.value = savedselectedRestrictionTypes ? JSON.parse(savedselectedRestrictionTypes) : defaultFilterRestriction.value
 
        
 
@@ -372,6 +392,8 @@ export function useRatePlan() {
         selectedYear.value = new Date().getFullYear()
         selectedDates.value = new Set();
         occupancyCodes.value = []
+        cmRestrictions.value = []
+        restrictionTypesOption.value = []
         
         components.value.forEach(x=>x.is_loaded=false)
         selectedComponent.value = "ComRatePlanInfo"
@@ -402,11 +424,14 @@ export function useRatePlan() {
         prodiverName,
         restrictionTypes,
         selectedRestrictionTypes,
+        cmRestrictions,
+        restrictionTypesOption,
         onSelectRoomType,
         getRoomRateData,
         reloadRoomRatesData,
         resetData,
         onRefresh,
-        reloadRestrictionData
+        reloadRestrictionData,
+        getCMRestrictions
     }
 }

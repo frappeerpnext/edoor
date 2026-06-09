@@ -9,14 +9,16 @@
           {{ value || value == 0 ? value : '...' }}
         </span>
         <span v-else-if="isCurrency"><CurrencyFormat :value="value" /></span>
-        <span v-else >{{ $t(value ?? '') }} </span>
+        <Checkbox v-else-if="isCheckbox" v-model="checked" :binary="true" :trueValue="1" :falseValue="0" @change="checked = 1"/>
+        <span v-else >{{ $t(value ?? '') }} </span> 
         <slot></slot>
     </span>
   </div>
 </template>
 <script setup>
-const emit = defineEmits(['onClick'])
+import {ref} from 'vue'
 import {i18n} from '@/i18n';
+const emit = defineEmits(['onClick'])
 const { t: $t } = i18n.global;
 const props = defineProps({
   titleClass:{type: String , default: ''},
@@ -31,9 +33,11 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  valueMaxWidth: String
+  valueMaxWidth: String,
+  isCheckbox: {type: Boolean, default: false}
 })
  
+const checked = ref(1)
 const  onClick=(event)=>{
  
   emit("onClick",event)

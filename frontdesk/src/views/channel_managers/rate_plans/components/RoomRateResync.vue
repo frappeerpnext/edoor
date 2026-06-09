@@ -116,7 +116,6 @@ Use this only when needed, as full data upload should not be done frequently.
           placeholder="Select Occupancy"
         />
       </div>
-
     </Fieldset>
   </ComDialogContent>
 </template>
@@ -129,6 +128,7 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const dialogRef = inject("dialogRef")
 const moment = inject("$moment")
 const incomingRateType = dialogRef?.value?.data?.rate_type || []
+const MAX_SELECTED_DAYS = 366
 
 const { roomTypes } = useRatePlan()
 
@@ -253,8 +253,22 @@ function getMinStartDate(index) {
 }
 
 function getMaxEndDate(index) {
+  const firstStartDate = data.value.date_ranges?.[0]?.start_date
+  const globalMax = firstStartDate
+    ? moment(firstStartDate).add(360, 'days').toDate()
+    : null
+
   const next = data.value.date_ranges[index + 1]
-  return next ? moment(next.start_date).add(-1, "day").toDate() : null
+
+  if (next?.start_date) {
+    const nextMax = moment(next.start_date).subtract(1, 'day').toDate()
+
+    return globalMax && nextMax > globalMax
+      ? globalMax
+      : nextMax
+  }
+
+  return globalMax
 }
 
 /* ================= API ================= */

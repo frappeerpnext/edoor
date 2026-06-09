@@ -1,4 +1,5 @@
 <template>
+    <!-- {{ RestrictionsCM }} <br/> -->
     <div id="sticky_filter">
         <div class="flex justify-content-between">
 
@@ -8,7 +9,7 @@
                     :placeholder="$t('All Room Types')" :options="roomTypes" optionLabel="room_type_name"
                     optionValue="edoor_room_type" />
                 <ComSelect v-model="selectedRestrictionTypes" :clear="false" @onSelected="onSelectRestrictionType"
-                    :placeholder="$t('Restriction Types')" :options="restrictionTypes" optionLabel="restriction_type"
+                    :placeholder="$t('Restriction Types')" :options="restrictionTypesOption" optionLabel="restriction_type"
                     optionValue="restriction_type" isMultipleSelect />
             </div>
             <div>
@@ -42,7 +43,9 @@ const {
     reloadRestrictionData,
     restrictionTypes,
     selectedRestrictionTypes,
-    restrictionData
+    restrictionData,
+    cmRestrictions,
+    restrictionTypesOption
 } = useRatePlan()
 
 function onOpenRoomRateDialog() {
@@ -99,14 +102,9 @@ let lastValidSelection = [...selectedRestrictionTypes.value]
 
 function onSelectRestrictionType(value) {
     if (value.length == 0) {
-        selectedRestrictionTypes.value = ["Closed"]
-    }
-
-
-
+        selectedRestrictionTypes.value = [restrictionTypesOption.value[0].restriction_type]
+    } 
 }
-
-
 
 async function onChangeRoomType() {
     roomTypes.value.find(x => x.selected).selected = false
@@ -153,8 +151,22 @@ function onOpenRestrictionSyncDailog() {
     });
 }
 
+// const RestrictionsCM = computed(() => {
+//     return Object.entries(cmRestrictions.value)
+//     .filter(([key, value]) => value != 0)
+//     .map(([key, value]) => ({
+//         key,
+//         value
+//     }))
+// })
 
+// const restrictionTypesOption = computed(() => {
+//     const keys = RestrictionsCM.value.map(x => x.key)
 
+//     return restrictionTypes.filter(
+//         x => keys.includes(x.lower_char)
+//     )
+// })
 
 </script>
 <style scoped>

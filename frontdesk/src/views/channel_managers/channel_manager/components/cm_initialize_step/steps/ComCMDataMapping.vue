@@ -83,43 +83,6 @@
           </Column>
         </DataTable>
       </section>
-
-        <section id="sec-services" class="mb-5">
-        <h2 class="text-xl font-semibold mb-3 flex align-items-center gap-2">
-          <i class="pi pi-briefcase text-primary"></i> 
-
-      Package Rule Mapping
-        </h2>
-        
-   <DataTable 
-  :value="channelManagerData.package_rule_mapping" 
-  class="shadow-1 border-round overflow-hidden p-datatable-sm"
->
-  <!-- The Empty State Template -->
-  <template #empty>
-    <div class="p-3 text-center text-500">
-      No Data Found.
-    </div>
-  </template>
-
-  <Column field="service_type" header="Service Type" style="width: 40%"></Column>
-  
-  <Column field="edoor_posting_rule" header="eDoor Posting Rule">
-    <template #body="sp">
-      <span class="text-600 font-mono">{{ sp.data.services_code }}</span>
-    </template>
-  </Column>
-
-  <Column field="edoor_charge_rule" header="eDoor Charge Rule">
-    <template #body="sp">
-      <div class="flex align-items-center gap-2">
-        {{ sp.data.edoor_charge_rule }}
-      </div>
-    </template>
-  </Column>
-</DataTable>
-      </section>
-
       
         <section id="sec-services" class="mb-5">
         <h2 class="text-xl font-semibold mb-3 flex align-items-center gap-2">

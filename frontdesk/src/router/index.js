@@ -36,6 +36,7 @@ import Reports from "@/views/report/Reports.vue";
 import ServerReports from "@/views/report/ServerReports.vue";
  
 import BusinessSource from "@/views/business_source/BusinessSource.vue";
+import DoorLockDashBoard from "@/views/door_lock/DoorLockDashBoard.vue";
 import BusinessSourceType from "@/views/business_source/BusinessSourceType.vue";
 import NotFound from "@/components/NotFound.vue";
 import Activity from "@/views/activities/Activity.vue";
@@ -108,7 +109,7 @@ let routes = [
   { path: "/frontdesk/server-reports", name: "ServerReports", component:ServerReports, meta: { layout: 'main_layout', title:"eDoor Reports" } },
   { path: "/frontdesk/pos-reports", name: "ePOSReports", component:ServerReports, meta: { layout: 'main_layout', title:"POS Report" } },
   { path: "/frontdesk/guest-ledger-transaction", name: "GuestLedgerTransaction", component:GuestLedgerTransaction, meta: { layout: 'main_layout', title:"Guest Ledger Transaction" } },
-  { path: "/frontdesk/business-source", name: "BusinessSource", component:BusinessSource, meta: { layout: 'main_layout', title:"Business Source" } },
+  { path: "/frontdesk/door-lock-dashboard", name: "DoorLockDashBoard", component:DoorLockDashBoard, meta: { layout: 'main_layout', title:"Door Lock Dashboard" } },
   { path: "/frontdesk/business-source-type", name: "BusinessSourceType", component:BusinessSourceType, meta: { layout: 'main_layout', title:"Business Source Type" } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
   { path: "/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },

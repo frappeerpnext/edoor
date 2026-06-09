@@ -10,7 +10,7 @@
           <Tag class="border-round" :severity="statusSeverity" :value="log?.status" />
         </div>
         <div class="right">
-          {{ log?.title }} at {{ moment(log?.creation).format("DD-MM-YYYY hh:mm A") }}
+          {{ log?.request_type }} at {{ moment(log?.creation).format("DD-MM-YYYY hh:mm A") }}
         </div>
       </div>
 
@@ -68,6 +68,7 @@
 
                 <span class="font-medium">
                   <div v-for="d in slotProps.data.period">
+                    
                     {{ moment(d.start_date).format("DD-MM-YYYY") }} to {{ moment(d.end_date).format("DD-MM-YYYY") }}
                   </div>
 
@@ -160,7 +161,7 @@
 
     <template #footer-right>
 
-      <Button label="Retry Sync" v-if="log?.sync_action == 'Stop Sync' && log?.is_retry_sync == 0" icon="pi pi-sync"
+      <Button class="border-0" label="Retry Sync" v-if="log?.sync_action == 'Stop Sync' && log?.is_retry_sync == 0" icon="pi pi-sync"
         @click="onRetrySync" />
     </template>
   </ComDialogContent>

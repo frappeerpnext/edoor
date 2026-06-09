@@ -12,7 +12,6 @@ def re_sync_fail_job():
     properties =frappe.db.sql( "select distinct  property, provider,request_type from `tabChannel Manager Sync Data Log`",as_dict = 1)
 
     if properties:
-        
         for d in properties:
             # check from cached synch status is temporary stop 
             # we do this to prevent data from first upload
@@ -79,8 +78,11 @@ def restart_sync_data_to_channel_manager(property,request_type,provider=None):
     
     if status:
         if status.get("sync_action") == "Stop Sync":
-             
             frappe.db.set_value("Channel Manager Sync Log",status.get("name"),"is_retry_sync",1)
+            task_name =  frappe.db.exists("ToDo",{"reference_type":"Channel Manager Sync Log","reference_name":status.get("name")})
+            if task_name:
+                frappe.db.set_value("ToDo",task_name,"status","Closed")
+
             frappe.db.commit()
           
             # prices update sync room rate have 2 option 
@@ -90,14 +92,15 @@ def restart_sync_data_to_channel_manager(property,request_type,provider=None):
                     frappe.enqueue(
                         "edoor.channel_managers.exely.price_manager.sync_room_rate",
                         queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
-                            property=property
+                        property=property
                     )
                 elif cm_info.prices_for_accommodation =="Deliver to PMS":
                     frappe.enqueue(
                         "edoor.channel_managers.exely.price_manager.get_room_rate_from_channel_manager",
                         queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
                         property=property,
-                        cm_hotel_code = cm_info.property_code
+                        cm_hotel_code = cm_info.property_code,
+                        notify_user = True
                     )
                 # End restart sync room rate
 
@@ -126,6 +129,7 @@ def sync_room_rate_from_channel_manager():
                     queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
                         property=p.get("property"),
                         cm_hotel_code = p.get("property_code")
+                       
                 )
                 
             

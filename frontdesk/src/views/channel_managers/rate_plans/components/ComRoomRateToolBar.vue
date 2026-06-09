@@ -10,7 +10,7 @@
             </div>
             <div>
                 <Button class="border-0" label="Resync Room Rate" @click="RoomRateResyncDialog" 
-                  v-if="cm_info?.prices_for_accommodation == 'Receive from PMS'"
+                  v-if="cm_info?.prices_for_accommodation != 'Manage in CM'"
                 />
                 <Button class="border-0" label="Rate Summary" @click="onOpenRoomRateDialog" />
 
@@ -26,6 +26,7 @@ import ComSelectYear from "@/views/channel_managers/rate_plans/components/ComSel
 import { useRatePlan } from "../hooks/useRatePlan";
 import ComRateSummary from '@/views/channel_managers/rate_plans/components/ComRateSummary.vue';
 import RoomRateResync from '@/views/channel_managers/rate_plans/components/RoomRateResync.vue';
+import ComResyncRoomRateFromChannelManager from '@/views/channel_managers/rate_plans/components/ComResyncRoomRateFromChannelManager.vue';
 import { onMounted, ref } from 'vue';
 const route = useRoute();
 const selectedRoomType = ref()
@@ -52,12 +53,15 @@ function onOpenRoomRateDialog() {
 }
 
 function RoomRateResyncDialog() {
+    if (cm_info.value.prices_for_accommodation =="Receive from PMS"){
+
+    
     dialog.open(RoomRateResync, {
         data: {
             rate_type: route.params.name,
         },
         props: {
-            header: $t('Resync Room Rate'),
+            header: $t('Re Sync Room Rate'),
             style: {
                 width: '80vw',
             },
@@ -70,6 +74,24 @@ function RoomRateResyncDialog() {
             position: "top",
         },
     });
+}else if (cm_info.value.prices_for_accommodation =="Deliver to PMS"){
+    dialog.open(ComResyncRoomRateFromChannelManager, {
+ 
+        props: {
+            header: $t('Re Sync Room Rate from Channel Manager'),
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            closeOnEscape: true,
+            position: "top",
+        },
+    });
+}
 }
 
 async function onChangeRoomType() {
@@ -86,13 +108,15 @@ onMounted(() => {
 })
 
 const handleScroll = () => {
-    const sf = document.getElementById('sticky_filter')
+    const sf = document.getElementById('sticky_filter');
+
+    if (!sf) return; // 👈 prevent crash
+
     if (document.body.scrollTop > 50) {
         sf.classList.add("sicky_bar_top");
     } else {
         sf.classList.remove("sicky_bar_top");
     }
-
 };
 
 

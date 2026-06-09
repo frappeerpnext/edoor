@@ -76,9 +76,7 @@ async function onOk(){
     )
     l.close();
     if (resp.data){
-        
-
-        app.utils.onConfirm("Confirmation","Data sync to the channel manager is running in the background.<br/> You will be notified when it is complete, or you can check the status by clicking the  <strong>View Sync Status</strong> button.")
+        app.utils.onConfirmHeadless("Confirmation","Data sync to the channel manager is running in the background.<br/> You will be notified when it is complete, or you can check the status by clicking the  <strong>View Sync Status</strong> button.")
         dialogRef.value.close();
     }
 

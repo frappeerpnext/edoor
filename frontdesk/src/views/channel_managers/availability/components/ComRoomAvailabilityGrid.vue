@@ -10,10 +10,10 @@
             </thead>
             <tbody>
                 <template v-for="m in months">
-                    <tr>
-                        <th lass="sticky-left month-cell text-left" >{{ moment(m.start_date).format("MMM - YYYY") }}  </th>
+                    <tr class="sticky-row">
+                        <th class="sticky-left month-cell " >{{ moment(m.start_date).format("MMM - YYYY") }}  </th>
                         <td
-                            class="dc"
+                            class="dc sticky-top"
                          v-for="n in numDays" :class="moment.utc(moment.utc(m.start_date).format('YYYY-MM-' + n)).format('D dd')"
                          
                          >
@@ -22,10 +22,16 @@
                     </tr>
                     <tr v-for="rt in displayRoomTypes">
                         <th  lass="sticky-left month-cell text-left">
-                           <div><strong> {{ rt.room_type }} ({{ rt.total_rooms }})</strong></div>
-                           <div>Room Available</div>
-                           <div>Occupy</div>
-                           <div>Room Block</div>
+                       <div class="room-type-card" style="font-family: sans-serif; max-width: 300px;">
+    <div style="text-align: left;">
+        {{ rt.room_type }} <span style="color: #718096; font-weight: 400;">({{ rt.total_rooms }})</span>
+    </div>
+    <div style="padding-left:5px ;border-left: 2px solid #e2e8f0; display: flex; flex-direction: column; gap: 1px; text-align: left;">
+        <div>Room Available</div>
+        <div>Occupy</div>
+        <div>Room Block</div>
+    </div>
+</div>
 
                         </th>
                         <td class="dc" v-for="n in numDays" :class="moment.utc(moment.utc(m.start_date).format('YYYY-MM-' + n)).format('D dd')">
@@ -65,19 +71,24 @@
                         </td>
 
                     </tr>
-                    <tr style="border-top: solid 1px red;">
-                        <td colspan="32">Total</td>
+                    <tr >
+                        <td class="text-left ps-2 text-bold" style="border: 1px solid #e5e7eb;background-color: #f8f9fa !important;" >
+                           Total
+                            </td>
+                        <td style="border: 1px solid #e5e7eb;"  colspan="32">
+
+                            </td>
                     </tr>
-                    <tr>
+                    <tr >
                         <th>
-                           <div>{{ $t("Room Available") }}</div>
-                           <div>{{ $t("Occupy") }}</div>
-                           <div>{{ $t("Room Block") }}</div>
-                           <div>{{ $t("Occupancy (%)") }}</div>
+                           <div class="text-left">{{ $t("Room Available") }}</div>
+                           <div class="text-left">{{ $t("Occupy") }}</div>
+                           <div class="text-left">{{ $t("Room Block") }}</div>
+                           <div class="text-left">{{ $t("Occupancy (%)") }}</div>
 
                         
                         </th>
-                        <td v-for="n in numDays">
+                        <td v-for="n in numDays" style="border: 1px solid #e5e7eb;" class="text-center">
                             <!-- total room available -->
                             <div>
                                 {{
@@ -107,7 +118,14 @@
                             </div>
                         </td>
                     </tr>
+   <tr >
+                        <td style="border: 1px solid #e5e7eb;background-color: #f8f9fa !important;" >
+                           
+                            </td>
+                        <td style="border: 1px solid #e5e7eb;"  colspan="32">
 
+                            </td>
+                    </tr>
                 </template>
 
             </tbody>
@@ -159,6 +177,21 @@ function restrictionValue(month,n,room_type_id){
 </script>
 
 <style scoped>
+.sticky-row  {
+    position: -webkit-sticky;
+    position: sticky;
+    box-shadow: rgb(206, 205, 205) 0px 0px 0px 0.1px;
+    top: 63px !important;
+    z-index: 5;
+    background: #f8f9fa !important;
+}
+.sticky-row td {
+    font-weight: bold;
+   background: #f8f9fa !important; 
+}
+.sticky-row .Sa div , .sticky-row .Su div{
+    color: red !important;
+}
 .table-wrapper {
     user-select: none;
     position: relative;
@@ -204,15 +237,18 @@ function restrictionValue(month,n,room_type_id){
     border-right-width: 1px;
     padding-right: 3px;
     padding-left: 3px;
+    border-top: 1px solid #e5e7eb;
 }
 
 .dc:hover {
     background-color: rgba(64, 158, 255, 0.05);
 }
-
+th .sa{
+    color: red !important;
+}
 .Sa,
 .Su {
-    background: rgb(246, 253, 217);
+    background: #ff000014 ;/* light blue */
 }
 
 .closed .day-name {
@@ -242,9 +278,19 @@ function restrictionValue(month,n,room_type_id){
 
 .rate-table {
     width: 100%;
+        background: white;
 }
 .rate-table td {
-    vertical-align: top;
+ text-align: center;
+}
+.rate-table th {
+     border-width: 1px;
+    border-style: solid;
+    border-color: #e5e7eb;
+    padding: 10px;
+    background: #f8f9fa !important
+    
+    
 }
 
 .dc:not(.disable) .day-name {
@@ -285,12 +331,13 @@ function restrictionValue(month,n,room_type_id){
 
 .table-wrapper th {
     background: #e9e9ff;
+    
 }
 
 .rate-table>thead {
     position: -webkit-sticky;
     position: sticky;
-    top: 118px;
     z-index: 4;
+    
 }
 </style>

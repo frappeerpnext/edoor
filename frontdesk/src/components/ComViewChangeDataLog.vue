@@ -28,6 +28,7 @@
         </div>
      
     </div>
+    
   <DataTable v-if="data?.transaction_type =='Prices update'" :value="matrix.rows" class="p-datatable-sm">
   <!-- Room Type -->
   <Column field="room_type_name" header="Room Type" frozen />

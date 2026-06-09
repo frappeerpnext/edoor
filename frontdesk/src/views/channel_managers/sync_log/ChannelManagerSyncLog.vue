@@ -24,6 +24,11 @@
         <Tag class="border-round" severity="warning" v-else-if="item.status == 'Warning'" :value="item.status" />
         <Tag class="border-round" severity="error" v-else :value="item.status" />
       </template>
+      <template #response_text="{ item, index }">
+     <div v-tippy="item.response_text" class="white-space-nowrap overflow-hidden text-overflow-ellipsis" style="max-width: 250px;">
+    {{ item.response_text }}
+  </div>
+          </template>
      
   </ComDocumentList>
 </template>
@@ -36,7 +41,7 @@ import Tag from 'primevue/tag';
 
 import { i18n } from "@/i18n";
 import { useRoute } from "vue-router";
-const route = useRoute()
+ 
 const { t: $t } = i18n.global;
 const moment = inject("$moment")
 

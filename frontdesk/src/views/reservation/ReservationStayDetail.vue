@@ -199,6 +199,22 @@
                 <ComIcon icon="checkout" style="height: 18px;" class="me-2" />
                 {{ $t('Check Out') }}
             </Button>
+            
+            <Button
+                v-if="canIssueCard"
+                @click="onIssueGuestCard" class="border-none">
+                <ComIcon icon="pi-id-card" style="height: 18px;" class="me-2" />
+                {{ $t('Issue Guest Card') }}
+            </Button>
+
+            
+            <Button
+                v-if="canIssueCheckOutCard"
+                @click="onIssueCheckOutCard" class="border-none">
+                <ComIcon icon="pi-id-card" style="height: 18px;" class="me-2" />
+                {{ $t('Check Out Card') }}
+            </Button>
+
         </template>
     </ComDialogContent>
 </template>
@@ -251,6 +267,34 @@ const tabs = ["General Information","Room Rate","Package & Inclusion","Folio","D
 const onRefresh = debouncer(() => {
     loadData()
 }, 500);
+
+const canIssueCard = computed(()=>{
+    if(moment(working_day.date_working_day) < moment(rs.reservationStay.arrival_date)) return false;
+    if(moment(working_day.date_working_day).format("YYYY-MM-DD") == moment(rs.reservationStay.departure_date).format("YYYY-MM-DD")) return false;
+
+    if(rs.reservationStay.reservation_status == "Reserved") return true
+    if(rs.reservationStay.reservation_status == "In-house") return true    
+    return false;
+})
+const canIssueCheckOutCard = computed(()=>{
+
+    if(moment(working_day.date_working_day) == moment(rs.reservationStay.departure_date)) return true;
+    
+    if(rs.reservationStay.reservation_status == "Checked Out") return true    
+
+    return false;
+
+})
+
+
+function onIssueGuestCard(){
+    
+        app.dialog.viewComWriteGuestCard("Issue Guest Card",{data:rs.reservationStay});
+}
+function onIssueCheckOutCard(){
+        app.dialog.viewComCheckoutCard("Check Out Card",{data:rs.reservationStay});
+}
+
 
 function loadData(show_loading=true,delay_load_reservation_stay=0){
     

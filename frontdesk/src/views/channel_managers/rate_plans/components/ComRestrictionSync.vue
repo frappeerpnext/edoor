@@ -88,18 +88,24 @@
                 :key="'rt_selection' + rt.edoor_room_type" :class="rt.selected ? 'p-chip-selected' : ''" class="cursor-pointer select-none"/>
 
         </div>
-        
   </Fieldset>
 
-  <Fieldset class="cs-close-open-sale-fieldset">
+  <Fieldset v-for="(d, index) in data?.room_types_select.filter(rt => rt.selected)" class="cs-close-open-sale-fieldset">
     <template #legend>
         <div class="flex items-center pl-2">
-            <span class="font-bold p-2">Restriction Types</span>
+            <span class="font-bold p-2">{{ d?.room_type }}</span>
         </div>
     </template>
-    <ComSelect v-model="data.restriction_types" maxSelectedLabels="6" :clear="false" @onSelected="onSelectRestrictionType"
-                    :placeholder="$t('Restriction Types')" :options="restrictionManageByCM"   isMultipleSelect />
-        
+    
+  <ComSelect
+  v-model="data.room_type_restrictions[d.room_type_id]"
+  :clear="false"
+  @onSelected="onSelectRestrictionType"
+  :placeholder="$t('Restriction Types')"
+  :options="restrictionManageByCM"
+  isMultipleSelect
+  maxSelectedLabels="6"
+/>   
   </Fieldset>
   </ComDialogContent>
 </template>
@@ -181,6 +187,20 @@ const isRoomTypeSelectAll = computed(()=>{
 })
 const restrictionType = ref()
 
+function isRangeValid(range) {
+  if (!range.start_date || !range.end_date) return false
+
+  const start = moment(range.start_date)
+  const end = moment(range.end_date)
+
+  const diffDays = end.diff(start, 'days') + 1
+
+  return diffDays <= 366
+}
+
+const isValidAllRanges = computed(() => {
+  return data.value.date_ranges.every(r => isRangeValid(r))
+})
 /* ---------------- DATA ---------------- */
 const data = ref({
   date_ranges: [
@@ -192,7 +212,7 @@ const data = ref({
   room_types_select: [],
   room_types: [],
   rate_types:[],
-  restriction_types: []
+  room_type_restrictions: {}
 })
 
 const restrictionMenuItems = computed(() => {
@@ -248,52 +268,107 @@ function getMinStartDate(index) {
 
 // end
 function getMaxEndDate(index) {
+  const firstStartDate = data.value.date_ranges?.[0]?.start_date
+  const globalMax = firstStartDate
+    ? moment(firstStartDate).add(360, 'days').toDate()
+    : null
+
   const next = data.value.date_ranges[index + 1]
 
-  if (next) {
-    return moment(next.start_date).add(-1, 'day').toDate()
+  if (next?.start_date) {
+    const nextMax = moment(next.start_date).subtract(1, 'day').toDate()
+
+    return globalMax && nextMax > globalMax
+      ? globalMax
+      : nextMax
   }
 
-  return null
+  return globalMax
 }
-
 function onToggleRoomTypeToUpdate(room_type) {
-    room_type.selected = !room_type.selected
+  room_type.selected = !room_type.selected
+
+  // update selected room types list
   data.value.room_types = data.value.room_types_select
     .filter(rt => rt.selected)
     .map(rt => rt.room_type_id)
+
+  // ❌ when unselect → clear restrictions
+  if (!room_type.selected) {
+    data.value.room_type_restrictions = {
+      ...data.value.room_type_restrictions,
+      [room_type.room_type_id]: []
+    }
+  }
 }
 function onEnableUpdateAllRoomType() {
   const allSelected = data.value.room_types_select.every(rt => rt.selected)
+
   data.value.room_types_select.forEach(rt => {
     rt.selected = !allSelected
+
+    // 👇 handle restrictions sync
+    if (!allSelected) {
+      // selecting ALL → ensure key exists
+      if (!data.value.room_type_restrictions[rt.room_type_id]) {
+        data.value.room_type_restrictions[rt.room_type_id] = []
+      }
+    } else {
+      // unselect ALL → clear all restrictions
+      data.value.room_type_restrictions[rt.room_type_id] = []
+    }
   })
+
+  // update selected room types list
   data.value.room_types = data.value.room_types_select
     .filter(rt => rt.selected)
     .map(rt => rt.room_type_id)
-
 }
 
 
 async function onOk() {
-  // pls do validation
-  
+
+  // ❌ validate before saving
+  const invalid = data.value.date_ranges.some(r => !isRangeValid(r))
+
+  if (invalid) {
+    window.showError?.("Each date range must not exceed 366 days (1 year)")
+    return
+  }
+
   const saveData = JSON.parse(JSON.stringify(data.value))
-  
+
   saveData.date_ranges.forEach(x => {
-        x.start_date = moment(x.start_date).local().format("YYYY-MM-DD");
-        x.end_date = moment(x.end_date).local().format("YYYY-MM-DD");
-    })  
-  const l  =await window.showLoading("ReSync Restriction...")
-  const res = await app.postApi("room_restriction.resync_room_restriction",{
-    data:saveData
+    x.start_date = moment(x.start_date).local().format("YYYY-MM-DD")
+    x.end_date = moment(x.end_date).local().format("YYYY-MM-DD")
   })
-   if (res.data){
+
+  const roomTypesPayload = {}
+
+  saveData.room_types_select
+    .filter(rt => rt.selected)
+    .forEach(rt => {
+      roomTypesPayload[rt.room_type_id] =
+        saveData.room_type_restrictions[rt.room_type_id] || []
+    })
+
+  const payload = {
+    ...saveData,
+    room_types: roomTypesPayload
+  }
+
+  const l = await window.showLoading("ReSync Restriction...")
+
+  const res = await app.postApi(
+    "room_restriction.resync_room_restriction",
+    { data: payload }
+  )
+
+  if (res.data) {
     dialogRef.value.close(true)
   }
-  l.close();
 
-
+  l.close()
 }
 
 
@@ -311,6 +386,7 @@ roomTypes.value.forEach(rt => {
     room_type_id: rt.edoor_room_type,
     selected: rt.selected,
   })
+   data.value.room_type_restrictions[rt.edoor_room_type] = []
 })
 
 data.value.room_types = data.value.room_types_select

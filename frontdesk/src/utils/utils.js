@@ -191,6 +191,33 @@ export function onConfirm(
   })
 }
 
+export function onConfirmHeadless(
+  header = 'Confirmation',
+  message = "Are you sure you want to proceed?",
+  icon = "pi pi-exclamation-triangle"
+) {
+  return new Promise((resolve) => {
+
+    window.confirm.require({
+      group: "headless",
+      message,
+      header,
+      icon,
+
+      rejectClass: 'p-button-secondary p-button-outlined',
+      acceptLabel: 'Ok',
+      accept: () => {
+        resolve(true)
+      },
+
+      reject: () => {
+        resolve(false)
+      }
+    })
+
+  })
+}
+
 export function openDialog(component, title = "Dialog", options = null) {
   return new Promise((resolve) => {
     let _options = {
@@ -227,7 +254,7 @@ export function openDialog(component, title = "Dialog", options = null) {
         resolve(false)    // return false if closed without data
       }
     }
-
+    
     window.dialog.open(component, _options)
 
   })

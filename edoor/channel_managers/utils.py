@@ -146,11 +146,26 @@ def get_occupancy_codes():
 
 @frappe.whitelist(methods="POST")
 def get_sync_action_status(request_type,property,provider=None):
+    def get_last_status(_request_type):
+        sql = "select status from `tabChannel Manager Sync Log` where request_type = %(request_type)s order by creation desc limit 1"
+        data = frappe.db.sql(sql,{"request_type":_request_type},as_dict = 1)
+        
+        if data:
+            return data[0].get("status") or "dummy"
+        return "dummy"
+
     request_types = []
+    
     if isinstance(request_type, str):
-        request_types = [request_type]
+        if get_last_status(request_type) != "Success":
+            request_types = [request_type]
     else:
-        request_types = request_type
+        for rt in request_type:
+            if get_last_status(rt) !="Success":
+                request_types.append(rt)
+            else:
+                request_types.append("dummy")
+     
 
     cm_info = get_channal_manager_info(property)
     if not cm_info:
@@ -176,7 +191,7 @@ def get_sync_action_status(request_type,property,provider=None):
             return data
 
 
-    return None
+    return {"status":"Success"}
    
     
 
@@ -184,12 +199,16 @@ def get_sync_action_status(request_type,property,provider=None):
 def can_sync_data(title=None,property=None,provider=None,request_type=None):
     request_type = title or request_type
 
-    sql="select  sync_action, sync_until from `tabChannel Manager Sync Log` where request_type = %(request_type)s and provider=%(provider)s and property = %(property)s and is_retry_sync = 0 order by creation desc limit 1"
+    sql="select  sync_action, sync_until,is_retry_sync from `tabChannel Manager Sync Log` where request_type = %(request_type)s and provider=%(provider)s and property = %(property)s  order by creation desc limit 1"
 
     data = frappe.db.sql(sql,{"request_type":request_type,"property":property,"provider":provider},as_dict = 1)
     
+    
     if not data:
         return True
+    else:
+        if data[0].get("is_retry_sync") == 1:
+            return True
     
     data = data[0]
     if data.get("sync_action") =="Stop Sync":
@@ -223,6 +242,7 @@ def can_save_data(title,property,provider):
 @frappe.whitelist()
 def get_cm_sync_log_data(docname):
     doc = frappe.get_cached_doc("Channel Manager Sync Log",docname)
+    raw_data = json.loads(doc.data or "{}") if doc else {}
     return_data = {
         "title":doc.title,
         "request_type":doc.request_type,
@@ -234,10 +254,10 @@ def get_cm_sync_log_data(docname):
         "sync_until":doc.sync_until,
         "creation":doc.creation,
         "is_retry_sync":doc.is_retry_sync,
-        "raw_data": json.loads(doc.data)
+        "raw_data": raw_data
     }
     def get_price_data():
-        data =  json.loads(doc.data)
+        data =  json.loads(doc.data or "{}") if doc else {}
         _datas = []
         
         
@@ -287,7 +307,7 @@ def get_cm_sync_log_data(docname):
     return return_data
 
 @frappe.whitelist()  
-def get_all_cm_sync_status(property):
+def get_all_cm_sync_status(property = "ESTC HOTEL 6"):
     methods =["Get Reservation","Prices update","Restriction update","Availabilty update"]
     data = []
     for m in methods:
@@ -771,6 +791,17 @@ def get_date_range(start_date, end_date):
 @frappe.whitelist()
 @redis_cache(ttl=60*60)
 def get_occupancy_code_mapping():
-    sql = "select concat(occupancy_type,'_',occupancy,'_',min_age,'_',max_age) as `key`, name from `tabOccupancy Code`"
-    data = frappe.db.sql(sql,as_dict = 1)
-    return {item['key']: item['name'] for item in data}
+    sql = "select parent as room_type,occupancy_code from `tabRoom Type Occupancy Rate` "
+    room_type_occupancy_codes =  frappe.db.sql(sql,as_dict=1)
+    return_data = []
+    for rt in set([d.get("room_type") for d in room_type_occupancy_codes]):
+        sql = "select concat(occupancy_type,'_',occupancy,'_',min_age,'_',max_age) as `key`, name from `tabOccupancy Code` where name in %(occupancy_codes)s"
+
+        data = frappe.db.sql(sql,{"occupancy_codes":[x.get("occupancy_code") for x in room_type_occupancy_codes if x.get("room_type") == rt]},as_dict = 1)
+        
+        
+        return_data.append({
+            "room_type":rt,
+            "occupancy_codes": {item['key']: item['name'] for item in data}
+        })
+    return return_data

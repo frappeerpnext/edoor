@@ -8,9 +8,9 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "property",
-  "column_break_sagn",
   "disabled",
+  "column_break_sagn",
+  "property",
   "section_break_2",
   "naming_series",
   "room_number",
@@ -44,7 +44,11 @@
   "guest_name",
   "show_in_room_availability",
   "is_block",
-  "keyword"
+  "keyword",
+  "door_access_log_tab",
+  "door_lock_no",
+  "building_no",
+  "area_no"
  ],
  "fields": [
   {
@@ -282,11 +286,32 @@
    "fieldname": "amenities",
    "fieldtype": "Table",
    "options": "Room Amenities"
+  },
+  {
+   "description": "Door lock code for integration with door access log.",
+   "fieldname": "door_lock_no",
+   "fieldtype": "Data",
+   "label": "Door Lock No"
+  },
+  {
+   "fieldname": "door_access_log_tab",
+   "fieldtype": "Tab Break",
+   "label": "Door Access Log"
+  },
+  {
+   "fieldname": "building_no",
+   "fieldtype": "Data",
+   "label": "Building No"
+  },
+  {
+   "fieldname": "area_no",
+   "fieldtype": "Data",
+   "label": "Area No"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-20 13:51:23.222500",
+ "modified": "2026-06-06 11:24:35.214601",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

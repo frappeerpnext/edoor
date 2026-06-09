@@ -986,8 +986,9 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note="",arrival_
     #enqueue add comment
     frappe.enqueue("edoor.api.utils.add_audit_trail", data =comment_doc,  queue='long')
 
+    frappe.enqueue("edoor.integration.door_lock.chinese.integration.write_card",   card_type="06", queue='long')
 
- 
+
     
     return {
         "reservation":doc
@@ -1306,6 +1307,9 @@ def check_out(reservation,reservation_stays=None):
     #enqueu remove record from temp room occupy
     frappe.enqueue("edoor.api.utils.remove_temp_room_occupy", queue='long', reservation=reservation)
     frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
+
+    frappe.enqueue("edoor.integration.door_lock.chinese.integration.write_card",   card_type="07", queue='long')
+
     return {
         "reservation":doc
     }

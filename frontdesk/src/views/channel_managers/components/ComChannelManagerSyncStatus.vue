@@ -33,7 +33,7 @@
 
   <!-- EMPTY STATE -->
   <div v-else class="empty">
-    No sync data
+    {{ $t('No sync data') }}
   </div>
     </div>
 </template>

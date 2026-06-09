@@ -1,196 +1,244 @@
 <template>
-    <ComPanel title="Recent Sync Logs" :viewAll="true" class="sys-date h-17rem md:h-full mt-2">
+    <ComPanel :title="$t('Recent Sync Logs')" :viewAll="true" class="sys-date h-17rem md:h-full mt-3 p-5" style="border-radius: 30px !important;">
+        <template #viewAll>
+            <div class="panel-header justify-content-end">
+                <button class="view-all" @click="onViewSyncLog()">{{ $t('View Sync Log Details') }}</button>
+            </div>
+        </template> 
         <div class="logs"> 
-            <div class="filters">
-                <button class="active">All</button>
-                <button>Success</button>
-                <button>Failed</button>
-            </div>
+                <div class="log-item cursor-pointer" v-for="(d, index) in filteredLogs" :key="d.name" @click="onViewLogDetail(d.name)">
+                    <!-- LEFT -->
+                    <div class="log-left"> 
 
-            <div class="log-item">
-                <div>
-                    <div class="log-status success">SUCCESS</div>
-                    <div class="log-message">Availability synced successfully for 150 dates</div>
-                </div>
-                <div class="log-time">2026-03-19 07:15:00</div>
-            </div>
+                        <div class="log-status">
+                            {{ d.title }}
 
-            <div class="log-item">
-                <div>
-                    <div class="log-status failed">FAILED</div>
-                    <div class="log-message">Connection timeout while fetching property info</div>
-                </div>
-                <div class="log-time">2026-03-19 06:45:00</div>
-            </div>
+                            <Badge v-if="d.status" :severity="getStatusSeverity(d.status)">
+                                {{ d.status }}
+                            </Badge>
+                            <Badge>{{ d.provider || 'Unknown' }}</Badge>
+                        </div>
 
-            <div class="log-item">
-                <div>
-                    <div class="log-status success">SUCCESS</div>
-                    <div class="log-message">Service codes updated from Exely</div>
-                </div>
-                <div class="log-time">2026-03-19 05:30:00</div>
-            </div>
+                        <div v-if="d?.response_text" class="log-message">
+                            {{ d.response_text }}
+                        </div>
+                        <div class="log-message font-italic" v-else>
+                            {{ $t('No Message Available') }}
+                        </div>
+                    </div>
 
-            <div class="log-item">
-                <div>
-                    <div class="log-status pending">PENDING</div>
-                    <div class="log-message">Syncing room rates for April 2026</div>
-                </div>
-                <div class="log-time">2026-03-19 04:15:00</div>
-            </div>
+                    <!-- RIGHT -->
+                    <div class="log-right h-full">
+                        <div class="log-time"> 
+                            <comTimeAgo :date="d.creation"/>
+                        </div>
 
-            <div class="log-item">
-                <div>
-                    <div class="log-status success">SUCCESS</div>
-                    <div class="log-message">Initial property handshake complete</div>
-                </div>
-                <div class="log-time">2026-03-19 03:00:00</div>
-            </div>
+                        <Badge class="cursor-pointer">{{ $t('View Details') }}</Badge>
+                    </div>
+
+                </div> 
         </div>
     </ComPanel>
 </template>
+
+<script setup>
+import { onMounted, ref, computed, onUnmounted } from 'vue'
+import Tag from 'primevue/tag';
+import comTimeAgo from '@/views/channel_managers/channel_manager/components/comTimeAgo.vue'; 
+import { useCMDashboard } from '@/views/channel_managers/channel_manager/hooks/useCMDashboard.js'; 
+import ChannelManagerSyncLog from "@/views/channel_managers/channel_manager/components/ChannelManagerSyncLog.vue"
+const {
+    getLastSyncLogList
+} = useCMDashboard(); 
+ 
+const data = computed(() => {
+    return getLastSyncLogList.value
+})
+
+const filteredLogs = computed(() => {
+    return data.value.filter(item => item.status || item.creation || item.provider)
+})
+
+const statusClass = (status) => {
+    if (!status) return 'default'
+    return status.toLowerCase() // success / warning
+}
+
+function onViewLogDetail(docname) {
+    window.postMessage("view_channel_manager_sync_log|" + docname, "*")
+}
+
+const getStatusSeverity = (status) => {
+    const severityMap = {
+        Success: 'success',
+        Warning: 'warning',
+        Error: 'danger',
+    }
+
+    return severityMap[status] || 'info'
+}
+
+function socketEvent(arg) { 
+    if (arg.property = window.property.name && arg.action == "update_last_sync_log" ) {
+        getLastSyncLogList.value = arg.sync_log_list
+    }
+}
+
+async function onViewSyncLog(){
+     await app.utils.openDialog(ChannelManagerSyncLog,"Channel Manager Sync Log")
+
+}
+
+onMounted(async () => {
+    window.socket.on("ChannelManagerUpdate", socketEvent ) 
+})
+
+onUnmounted(() => {
+    window.socket.off("ChannelManagerUpdate",socketEvent)
+})
+</script>
+
+
 <style scoped>
-.container {
+.logs {
     display: flex;
-    gap: 40px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 4px;
 }
 
-/* Services Table */
-.services {
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    flex: 1;
-    min-width: 300px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.services input {
-    width: 100%;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    text-align: left;
-    padding: 12px 10px;
-}
-
-th {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #666;
-    border-bottom: 1px solid #eee;
-}
-
-td {
-    font-size: 0.9rem;
-    vertical-align: top;
-}
-
-.code {
-    background-color: #f0f2f5;
-    padding: 2px 6px;
-    border-radius: 6px;
-    font-family: monospace;
-    font-size: 0.85rem;
-}
-
-.category {
-    font-weight: 600;
-}
-
-.category.standard {
-    color: #22c55e;
-}
-
-.category.deluxe {
-    color: #6366f1;
-}
-
-.category.suite {
-    color: #f97316;
-}
-
-/* Recent Logs */
-.logs { 
-    border-radius: 12px;
-    padding: 20px;
-    flex: 1;
-    min-width: 300px; 
-}
-
+/* Each Log Card */
 .log-item {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
+    gap: 16px;
+
+    padding: 16px;
+    border-radius: 14px;
+
+    background: #ffffff;
+    border: 1px solid #edf0f5;
+
+    transition: all 0.2s ease;
 }
 
-.log-item:last-child {
-    border-bottom: none;
+.log-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    border-color: #dfe5ee;
 }
 
-.log-status {
+/* Left Section */
+.log-left {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Provider Tag */
+:deep(.p-tag) {
+    font-size: 11px;
     font-weight: 600;
-    margin-bottom: 4px;
+    border-radius: 999px;
+    padding: 4px 10px;
 }
 
-.log-message {
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.log-time {
-    font-size: 0.8rem;
-    color: #aaa;
-    white-space: nowrap;
-    margin-left: 10px;
-}
-
-.success {
-    color: #22c55e;
-}
-
-.failed {
-    color: #ef4444;
-}
-
-.pending {
-    color: #fbbf24;
-}
-
-/* Filter Buttons */
-.filters {
+/* Title */
+.log-status {
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 10px;
+
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
 }
 
-.filters button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    background-color: #f0f2f5;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: all 0.2s;
+/* Message */
+.log-message {
+    margin-top: 6px;
+
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6b7280;
+
+    max-width: 700px;
+    word-break: break-word;
 }
 
-.filters button.active,
-.filters button:hover {
-    background-color: #6366f1;
-    color: white;
+/* Right Side */
+.log-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+/* Time */
+.log-time {
+    font-size: 12px;
+    color: #9ca3af;
+    white-space: nowrap;
+}
+
+/* View Detail Button */
+.view-btn {
+    border: none !important;
+    border-radius: 999px !important;
+
+    padding: 6px 14px !important;
+
+    font-size: 12px !important;
+    font-weight: 600 !important;
+
+    background: #6366f1 !important;
+
+    transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+    opacity: 0.9;
+    transform: scale(1.03);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .log-item {
+        flex-direction: column;
+    }
+
+    .log-right {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .log-message {
+        max-width: 100%;
+    }
+}
+.view-all {
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: gap 0.2s ease;
+}
+
+.view-all:hover {
+    gap: 0.5rem;
+}
+
+.view-all::after {
+    content: '›';
+    font-size: 1rem;
+    line-height: 1;
 }
 </style>

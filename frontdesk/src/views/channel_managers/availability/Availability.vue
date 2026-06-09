@@ -25,7 +25,7 @@
         </ComHeader>
 
 
-        <ComFilter :hideSearchField="true" @onSearch="onFilter" :filters="filterOptions" v-model:filter="filters">
+        <ComFilter class="mb-3" :hideSearchField="true" @onSearch="onFilter" :filters="filterOptions" v-model:filter="filters">
             <template #dates v-if="filters?.dates">
 
                 {{ moment(filters?.dates[2][0]).format("DD-MM-YYYY") }} to

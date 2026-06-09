@@ -107,7 +107,7 @@
 
               </template>
             </Column>
-            <Column field="value" header="Total Room Available" headerClass="text-center" bodyClass="text-center"/>
+            <Column field="value" header="Total Room Available" headerClass="text-center" bodyClass=""/>
 
           </DataTable>
             

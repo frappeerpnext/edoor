@@ -135,6 +135,13 @@
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
 {{ $t('Check In') }}
             </Button>
+            
+            <Button   @click="onGroupWriteCard">
+                <ComIcon icon="pi-id-card" style="height: 18px;" class="me-2" />
+{{ $t('Group Issue/Check Out Card') }}
+
+            </Button>
+
         </template>
     </ComDialogContent>
 </template>
@@ -214,6 +221,9 @@ function debouncer(fn, delay) {
             fn.apply(that, args);
         }, delay);
     };
+}
+function onGroupWriteCard(){
+    app.dialog.viewComGroupWriteCard("Group Issue/Check Out Card",{data:{reservation: rs.reservation.name}})
 }
 function onRoute() {
     window.open('reservation-detail/' + name.value, '_blank')

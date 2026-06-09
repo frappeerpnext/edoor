@@ -6,6 +6,7 @@ import {
     getRecentReservation
 }  from  "@/views/channel_managers/channel_manager/hooks/helper.js"
 import { listenImage } from "ol/Image"
+import { data } from "jquery"
 
 // State list
 const initialized = ref(false)
@@ -16,7 +17,9 @@ const channelManagerData = ref({})
 const currentCMComponent = ref()
 const dataUploadStatus = ref(null)
 const activeStepIndex = ref(1)
-const cmDashboardData = ref({})
+const cmDashboardData = ref({}) 
+const cmLastSyncLog = ref({}) 
+const getLastSyncLogList = ref([])
 
 
 const dataUploadSteps = ref([
@@ -38,12 +41,13 @@ export function useCMDashboard() {
      
     async function getChannelManagerData() {
         const res = await app.getDoc('Channel Manager Integration', property.name)
+        await getCMDashboardData()
 
         if (res.data) {
             channelManagerData.value = res.data 
             isInitializedUpload.value = res.data.initialized_data_upload 
         }
-
+    
     }
 
     async function getBookingFromCM() { 
@@ -65,6 +69,23 @@ export function useCMDashboard() {
         }
     }
 
+    async function getCMLastSyncLog() {
+        const res = await app.getDocList("Channel Manager Sync Log", {
+            filters: {"property": property.name},
+            fields: ["request_type", "creation", "status", "response_text", "name"],
+            orderBy: {
+                field: 'creation',
+                order: 'desc'
+            },
+            limit: 1
+            
+        })
+
+        if (res.data) {
+            cmLastSyncLog.value = res.data[0]
+        }
+    }
+  
     async function getCMDashboardData() {
         const res = await app.getApi("edoor.channel_managers.channel_manager_dashboard.get_channel_manager_dashboard_data",{
             property: window.property_name,
@@ -73,10 +94,19 @@ export function useCMDashboard() {
         if (res.data) {
             cmDashboardData.value = res.data  
         }
-        await getBookingFromCM()
+        await getBookingFromCM() 
+        await getCMLastSyncLog()
     }
 
-    
+    async function getLastSyncListData() {
+        const res = await app.getApi("edoor.channel_managers.utils.get_all_cm_sync_status", {
+            property: property.name
+        })
+
+        if (res.data) {
+            getLastSyncLogList.value = res.data
+        }
+    }
 
     function getSetting(){
         // api call 
@@ -119,6 +149,7 @@ export function useCMDashboard() {
 
             l.close()     
         await getCMDashboardData()
+        await getLastSyncListData()
     })
 
      function resetData(){
@@ -135,6 +166,8 @@ export function useCMDashboard() {
         await getChannelManagerData() ;
         await getDataUploadStatus();
         await getBookingFromCM();
+        await getCMDashboardData(); 
+        await getLastSyncListData();
         if(is_reset){
             resetData();
             currentCMComponent.value = ChannelManagerDashboard;
@@ -152,10 +185,14 @@ export function useCMDashboard() {
         currentCMComponent,
         dataUploadSteps,
         activeStepIndex,
+        cmDashboardData,
+        cmLastSyncLog,
+        getLastSyncLogList,
         getChannelManagerData,
         getDataUploadStatus,
         resetData,
-        onChangeDataUploadStep,
+        onChangeDataUploadStep, 
+        getLastSyncListData,
         onRefresh
     }
 }

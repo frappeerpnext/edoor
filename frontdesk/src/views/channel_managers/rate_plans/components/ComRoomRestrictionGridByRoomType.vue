@@ -4,12 +4,12 @@
   <Message v-if="cm_info?.restrictions == 'Deliver to PMS'">
     Room restriction are managed by the Channel Manager.
 </Message>
-  <Message v-if="cm_info?.closed == 0 && cm_info?.restrictions != 'Deliver to PMS'">
+  <Message v-if="cm_info?.closed == 0 && cm_info?.restrictions != 'Deliver to PMS' && restrictionManageByCM.length>0">
    <strong
   class="m-2 border-white  border border-round px-2 py-1 inline-block"
   v-for="s in restrictionManageByCM"
 >
-  {{ s }}
+  {{cm_info.restrictions}}  {{rateInfo?.cm_rate_plan_list?.cm_rate_plan}}
 </strong>
     <p>Manage by the Channel Manager.</p>
     

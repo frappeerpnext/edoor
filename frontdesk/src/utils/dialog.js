@@ -4,6 +4,10 @@ import ComViewSyncData from "@/views/channel_managers/components/ComViewSyncData
 import ComViewChangeDataLog from "@/components/ComViewChangeDataLog.vue"
 import ComViewAvailabilityDataDialog from "@/components/availability/ComViewAvailabilityData.vue"
 import ComReportServerModal  from "@/components/ComReportServerModal.vue";
+import ComWriteGuestCard from "@/views/door_lock/components/ComWriteGuestCard.vue"
+import ComCheckoutCard from "@/views/door_lock/components/ComCheckoutCard.vue"
+import ComGroupWriteCard from "@/views/door_lock/components/ComGroupWriteCard.vue"
+
 
 export async function viewChannelManagerTaskDetail(title,docname){
     const result = await app.utils.openDialog(ComTaskDetail,title,{
@@ -18,6 +22,7 @@ export async function viewChannelManagerTaskList(title){
     const result = await app.utils.openDialog(ComTaskLisk,title)
     return result
 }
+
 
 export async function viewChannelManagerSyncLogData(title,docname){
     const result = await app.utils.openDialog(ComViewSyncData,title,{
@@ -74,3 +79,25 @@ export async function viewReport(report_path,report_title,params){
 
     ) 
 }
+
+// door access dialog box
+export async function viewComWriteGuestCard(title,data={}){
+     
+    const result = await app.utils.openDialog(ComWriteGuestCard,title,data)
+    return result
+}
+
+export async function viewComCheckoutCard(title,data={}){
+     
+    const result = await app.utils.openDialog(ComCheckoutCard,title,data)
+    return result
+}
+
+
+export async function viewComGroupWriteCard(title,data={}){
+     
+    const result = await app.utils.openDialog(ComGroupWriteCard,title,data)
+    return result
+}
+
+

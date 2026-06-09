@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-white p-2 border-round-xl" :class="class">
-        <div :class="viewAll ? 'flex align-items-center justify-content-between' : ''">
+    <div :class="[customClass, borderRounded, 'bg-white p-2']">
+        <div v-if="title || viewAll" :class="viewAll ? 'flex align-items-center justify-content-between' : ''">
             <div v-if="title" class="font-semibold text-lg px-1" :class="titleClass">
                 {{ $t(title) }}
             </div>
@@ -8,9 +8,9 @@
                 <slot name="viewAll"></slot>
             </template>
         </div>
-        <div>
+        <di class="h-full">
             <slot></slot>
-        </div>
+        </di>
     </div>
 </template>
 <script setup>
@@ -18,7 +18,11 @@ import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const props = defineProps({
     title: String,
-    class: String,
+    customClass: String,
+    borderRounded: {
+        type: [String, Number, Object],
+        default: "border-round-xl"
+    },
     titleClass: String,
     viewAll: Boolean
 })

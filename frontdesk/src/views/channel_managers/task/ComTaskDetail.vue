@@ -6,68 +6,70 @@
     </div> -->
 
 
-<div class="flex gap-2 align-items-center">       
-            <div>
-                <Avatar :label="avatar_letter" size="large" style="background-color: #ece9fc; color: #2a1261;border-radius: 50% !important;" shape="circle" />
-            </div> 
-            <div>
-                <div><strong>{{ doc?.modified_by }}</strong></div>
-                <i><ComTimeago :date='doc?.modified' /></i>
-            </div>
+    <div class="flex gap-2 align-items-center">
+        <div>
+            <Avatar :label="avatar_letter" size="large"
+                style="background-color: #ece9fc; color: #2a1261;border-radius: 50% !important;" shape="circle" />
         </div>
-        <br/>
-        <hr/>
-    <div class="task-card">  
-        <div class="card-body"> 
-            <div class="info-grid">  
+        <div>
+            <div><strong>{{ doc?.modified_by }}</strong></div>
+            <i>
+                <ComTimeago :date='doc?.modified' />
+            </i>
+        </div>
+    </div>
+    <br />
+    <hr />
+    <div class="task-card">
+        <div class="card-body">
+            <div class="info-grid">
                 <div class="info-item">
-                <div class="info-label">{{$t('Due Date')}}</div>
-                    <div class="info-value">{{moment(doc?.date).format('DD-MM-yyyy') || '—'}}</div>
+                    <div class="info-label">{{ $t('Due Date') }}</div>
+                    <div class="info-value">{{ moment(doc?.date).format('DD-MM-yyyy') || '—' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">{{$t('Allocated to')}}</div>
+                    <div class="info-label">{{ $t('Allocated to') }}</div>
                     <div class="info-value allocated-placeholder">
-                        {{doc?.allocated_to || 'Not Assigned'}}
+                        {{ doc?.allocated_to || 'Not Assigned' }}
                     </div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">{{$t('Subject')}}</div>
-                    <div class="info-value light-meta">{{doc?.custom_subject || '—'}}</div>
+                    <div class="info-label">{{ $t('Subject') }}</div>
+                    <div class="info-value light-meta">{{ doc?.custom_subject || '—' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">{{$t('Priority')}}</div>
-                    <div class="info-value">{{doc?.priority}}</div>
+                    <div class="info-label">{{ $t('Priority') }}</div>
+                    <div class="info-value">{{ doc?.priority }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">{{$t('Status')}}</div>
+                    <div class="info-label">{{ $t('Status') }}</div>
                     <div class="info-value">
                         <Tag class="border-round" severity="success" :value="doc?.status"></Tag>
                     </div>
                 </div>
             </div>
- 
+
             <div class="description-section">
                 <div class="description-header">
                     <i class="pi pi-list"></i>
                     <h3>Todo</h3>
                 </div>
-                <div class="description-text"> 
-                    {{getPlainText(doc?.description)}}
-                </div> 
-            </div>  
-            <div class="action-area">
-                <Button class="border-0" label="Make as Complete" @click="onComplete" :disabled="doc?.status != 'Open'" />
+                <div class="description-text" v-html="doc?.description"></div>
             </div>
- 
+            <div class="action-area">
+                <Button class="border-0" label="Make as Complete" @click="onComplete"
+                    :disabled="doc?.status != 'Open'" />
+            </div>
+
         </div>
     </div>
 </template>
-<script setup> 
+<script setup>
 import Tag from 'primevue/tag';
 import { inject, onMounted, ref } from "vue"
 const dialogRef = inject("dialogRef");
 const doc = ref()
-const moment= inject("$moment")
+const moment = inject("$moment")
 const avatar_letter = ref('')
 async function onComplete() {
     const l = await window.showLoading()
@@ -95,12 +97,12 @@ const getPlainText = (html) => {
 }
 </script>
 <style scoped>
-.task-card { 
+.task-card {
     width: 100%;
     background: #ffffff;
-    border-radius: 28px; 
+    border-radius: 28px;
     overflow: hidden;
-    transition: all 0.2s ease; 
+    transition: all 0.2s ease;
 }
 
 /* header area */
@@ -109,7 +111,7 @@ const getPlainText = (html) => {
     border-bottom: 1px solid #eef2f6;
     display: flex;
     align-items: center;
-    gap:10px 
+    gap: 10px
 }
 
 .header-title-section {
@@ -124,7 +126,8 @@ const getPlainText = (html) => {
     gap: 8px;
 }
 
-.cm-badge i, .icon-desc {
+.cm-badge i,
+.icon-desc {
     color: #4f46e5;
     font-size: 18px;
     background: #eef2ff;
@@ -182,7 +185,7 @@ const getPlainText = (html) => {
     padding: 6px 14px;
     border-radius: 40px;
     display: flex;
-    align-items: center; 
+    align-items: center;
     border: 1px solid #bbf7d0;
 }
 

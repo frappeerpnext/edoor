@@ -139,6 +139,7 @@ function startDrag(e, monthIdx, day, monthKey) {
  
   if (cm_info.value.prices_for_accommodation=="Deliver to PMS" && rateInfo.value?.cm_rate_plan_list?.cm_rate_plan) return
 
+
   e.preventDefault()
   e.stopPropagation()
 

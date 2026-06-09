@@ -25,6 +25,12 @@
         <Tag class="border-round" severity="warning" v-else-if="item.status == 'Warning'" :value="item.status" />
         <Tag class="border-round" severity="error" v-else :value="item.status" />
       </template>
+           <template #response_text="{ item, index }">
+     <div v-tippy="item.response_text" class="white-space-nowrap overflow-hidden text-overflow-ellipsis" style="max-width: 250px;">
+    {{ item.response_text }}
+  </div>
+          </template>
+     
      
   </ComDocumentList>
 </template>
@@ -61,7 +67,8 @@ const options = {
 };
 
 function onViewLog(data){
-    app.dialog.viewChannelManagerSyncLogData(data.title, data.name)
+  
+    app.dialog.viewChannelManagerSyncLogData(data.request_type, data.name)
 }
 
  

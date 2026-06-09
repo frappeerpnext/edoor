@@ -9,6 +9,19 @@ from edoor.channel_managers.utils import clear_cache as clear_cm_info_cached
 
 
 class ChannelManagerIntegration(Document):
+	def validate(self):
+		if self.restrictions == "Deliver to PMS" or self.restrictions == "Manage in CM":
+			self.closed = 1
+			self.minlos = 1
+			self.maxlos = 1
+			self.minlosarrival = 1
+			self.maxlosarrival = 1
+			self.cta = 1
+			self.ctd = 1
+			self.fullpatternlos = 1
+			self.minadvbooking = 1
+			self.maxadvbooking = 1
+
 
 	def on_update(self):
 		clear_cm_info_cached()
