@@ -58,7 +58,7 @@
       </div>
     </div>
     <template #footer-right>
-      <Button severity="warning" label="Check Card" @click="onCheckCard"></Button>
+      <ComCheckCardButton />
     </template>
  </ComDialogContent>
 </template>
@@ -67,7 +67,8 @@
 import { ref,inject } from "vue"
 const moment = inject("$moment")
 const dialogRef = inject("dialogRef");
-import ComCheckCard from "@/views/door_lock/components/ComCheckCard.vue"
+import ComCheckCardButton from "@/views/door_lock/components/ComCheckCardButton.vue"
+
 /* ================= STATE ================= */
 
 const note = ref("")
@@ -101,11 +102,7 @@ async function submit() {
 
   
 }
-function onCheckCard(){
-  app.utils.openDialog(ComCheckCard,"Check Card");
-  dialogRef.value.close();
-  
-}
+ 
 </script>
 
 <style scoped>

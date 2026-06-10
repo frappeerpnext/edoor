@@ -6,7 +6,9 @@
                 <div  @click="onNavigate(m.router_name)" class="relative" v-for="(m, index) in sidebarItems" :key="index">
                     <tippy :content="$t(m.title)" placement="right">
                         <Button  :class="['relative p-2 side-bar-today-info', route.name == m.router_name?'menu_active_bar':'']"    severity="info">
-                            <ComIcon :icon="m.icon" height="30px"/>
+                            <i v-if="m.icon.startsWith('pi')" :class="m.icon" style="font-size: 2.5rem"></i>
+                            <ComIcon :icon="m.icon" height="30px" v-else/>
+
                         </Button>
                         <div class="absolute badge-today-info" v-if="m.badge_field">
                             <Badge  class="flex justify-content-center" :value="data?.[m.badge_field] || 0" severity="info"></Badge>
@@ -64,6 +66,15 @@ const sidebarItems = [
 
         
     },
+    
+    {
+        title:"Issue Kye Card",
+        icon:"pi pi-id-card",
+        router_name:"DoorLockDashBoard",
+
+        
+    },
+
 ]
 
 function onNavigate(route_name){

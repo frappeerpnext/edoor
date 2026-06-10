@@ -43,7 +43,12 @@
         </div>
         <template #footer-right>
 
-            <Button :disabled="!isConfirm" @click="onOk" class="bg-green-500 border-none">
+            <Button :disabled="!isConfirm" @click="onOk(true)" class="bg-primary border-none">
+                <i class="pi pi-id-card" style="font-size: 1.5rem;margin-right: 4px;"></i>
+                {{ $t('Check In & Issue Key Card') }}
+               
+            </Button>
+            <Button :disabled="!isConfirm" @click="onOk(false)" class="bg-green-500 border-none">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
                 {{ $t('Check In') }}
                
@@ -73,20 +78,24 @@ function onchangetime() {
 
     
  }
-function onOk() {
+async function onOk(issue_card =false) {
 
     if(reservationStays?.length==0 && rs.room_rates[0].total_rate==0){
         confirm.require({
         message: 'Are you sure you want to proceed Check In with rate 0?',
         header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-            dialogRef.value.close({"note":note.value,"checked_in_date":CheckInTimeOnly.value});
+        accept: async () => {
+           
+            dialogRef.value.close({"note":note.value,"checked_in_date":CheckInTimeOnly.value,"issue_card":issue_card});
         },
          
     });
     }else {
-        dialogRef.value.close({"note":note.value,"checked_in_date":CheckInTimeOnly.value});
+      
+       
+
+        dialogRef.value.close({"note":note.value,"checked_in_date":CheckInTimeOnly.value,"issue_card":issue_card});
     }
     
 }

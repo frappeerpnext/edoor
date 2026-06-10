@@ -106,7 +106,9 @@
       <div class="col-12 lg:col-5">
         <div class="instruction-panel surface-card border-1 surface-border border-round shadow-1">
           <div class="image-wrap">
-            <img src="@/assets/images/key_card.jpg" alt="Guest key card" />
+            <video autoplay muted loop playsinline aria-label="Reset key card instruction">
+            <source src="@/assets/video/card.mp4" type="video/mp4" />
+          </video>
           </div>
 
           <div class="instruction-content">
@@ -123,11 +125,15 @@
         </div>
       </div>
     </div>
+      <template #footer-right>
+      <ComCheckCardButton />
+    </template>
   </ComDialogContent>
 </template>
 
 <script setup>
 import { ref,inject,onMounted  } from "vue"
+import ComCheckCardButton from "@/views/door_lock/components/ComCheckCardButton.vue"
 const moment = inject("$moment")
 const dialogRef = inject("dialogRef");
 /* ================= STATE ================= */

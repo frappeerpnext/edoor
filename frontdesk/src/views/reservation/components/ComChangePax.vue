@@ -1,25 +1,17 @@
 <template>
     <ComOverlayPanelContent title="Change Pax" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
         <Message v-if="stay.reservation_status=='In-house'">{{ $t("Change pax is affect to future stay only") }}</Message>
-        <div class="wp-number-cus my-2">
-        <div class="flex flex-col">
-        <label>{{$t('Adults')}}</label>
-        <InputNumber v-model="stay.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
-            class="child-adults-txt" />
-        </div>
-        <div class="">
-        <h2> {{$t('Children')}} </h2>
-        <div class="grid">
-                <div class="col-6 flex flex-column" v-for="v in list_occupancy_code">
-                    <label>{{ $t(v.title) }}</label>
-                    <InputNumber v-model="stay.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
-                        class="child-adults-txt" />
-                </div>
-        </div>
-        {{ list_occupancy_code }}
-        </div>
-        
-       
+        <div class="wp-number-cus my-2 grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+                <label>{{ $t('Adults') }}</label>
+                <InputNumber v-model="stay.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
+                    class="child-adults-txt w-full" />
+            </div>
+            <div class="flex flex-col gap-1">
+                <label>{{ $t('Childs') }}</label>
+                <InputNumber v-model="stay.child" inputId="stacked-buttons" showButtons :min="1" :max="100"
+                    class="child-adults-txt w-full" />
+            </div>
         </div>
     </ComOverlayPanelContent>
 </template>     

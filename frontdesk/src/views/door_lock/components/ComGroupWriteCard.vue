@@ -190,12 +190,15 @@
         </div>
       </div>
     </div>
+     <template #footer-right>
+      <ComCheckCardButton />
+    </template>
   </ComDialogContent>
 </template>
 
 <script setup>
 import { ref, inject, onMounted } from "vue"
-
+import ComCheckCardButton from "@/views/door_lock/components/ComCheckCardButton.vue"
 const moment = inject("$moment")
 const dialogRef = inject("dialogRef");
 

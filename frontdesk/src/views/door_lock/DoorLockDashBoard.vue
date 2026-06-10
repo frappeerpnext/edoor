@@ -1,6 +1,7 @@
 <template>
    <ComHeader :isRefresh="true" @onRefresh="onRefresh" :isSetting="true" >
-            <template #start>
+ 
+    <template #start>
                 <div class="flex">
                     <div class="flex align-items-center gap-2 w-full">
                         <div class="text-xl md:text-2xl white-space-nowrap">
@@ -50,32 +51,44 @@
     subtitleClass="text-teal-500 font-medium"
   />
 </div>
-
+<!-- 
 <div class="col-12 sm:col-6 md:col-3 lg:col">
   <StatCard
     title="Cards Issued"
     :value="3"
-    subtitle="Active Encoding Runs"
+    subtitle="Active Guest Card Holding"
     icon="pi pi-credit-card"
     borderClass="border-purple-500"
     iconClass="text-purple-500"
     subtitleClass="text-purple-500 font-medium"
   />
-</div>
-
+</div> -->
 <div class="col-12 sm:col-6 md:col-3 lg:col">
-  <StatCard
-    title="Failed Ops"
-    :value="2"
-    subtitle="Requires Verification"
-    icon="pi pi-exclamation-circle"
-    borderClass="border-red-500"
-    iconClass="text-red-500"
-    titleClass="text-red-500"
-    valueClass="text-red-600"
-    subtitleClass="text-red-400"
-  />
+  <div
+    class="surface-card p-3 border-round shadow-1 border-left-3"
+    :class="doorLockConnection.isConnected ? 'border-green-500' : 'border-red-500'"
+  >
+    <div class="flex justify-content-between align-items-center mb-2">
+      <span class="text-xs font-bold uppercase text-500">Door Lock Device</span>
+      <i
+        class="pi pi-wifi text-lg"
+        :class="doorLockConnection.isConnected ? 'text-green-500' : 'text-red-500'"
+      />
+    </div>
+
+    <div
+      class="text-2xl font-bold"
+      :class="doorLockConnection.isConnected ? 'text-green-500' : 'text-red-500'"
+    >
+      {{ doorLockConnection.statusLabel }}
+    </div>
+
+    <span class="text-xs text-400">
+      IP Address: {{ doorLockConnection.ipAddress }}
+    </span>
+  </div>
 </div>
+ 
       </div>
     </section>
 
@@ -101,55 +114,59 @@
 
 <script setup>
 import { inject, ref, onUnmounted, onMounted, computed } from '@/plugin'
-import { useToast } from "primevue/usetoast";
+ 
 import StatCard from '@/views/door_lock/components/StatCard.vue'
 import ComCheckCard from "@/views/door_lock/components/ComCheckCard.vue"
 import ComRecentLog from "@/views/door_lock/components/ComRecentLog.vue"
 import ComResetCard from "@/views/door_lock/components/ComResetCard.vue"
+import ComWriteStaffCard from "@/views/door_lock/components/ComWriteStaffCard.vue"
 
 
 const selected_date = ref(null)
-const toast = useToast();
+ 
 const data = ref({})
 const recentLogRef = ref(null)
-const api = inject('$frappe')
-function getData(loading = true) {
-    const call = api.call();
+const deviceInfo = ref({})
+const doorLockConnection = computed(() => {
+  const status = deviceInfo.value?.status || 'Checking Connection...'
+  const normalizedStatus = status.toLowerCase()
+  const isConnected = normalizedStatus === 'connected'
+
+  return {
+    isConnected,
+    statusLabel: isConnected ? 'Connected' : 'Disconnected',
+    ipAddress: deviceInfo.value?.ip || '-'
+  }
+})
+ 
+async function getData() {
     const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))?.date_working_day
     selected_date.value = moment(edoor_working_day).format("YYYY-MM-DD")
-    call.get('edoor.api.frontdesk.get_dashboard_data', {
+    const res = await app.getApi("edoor.api.frontdesk.get_dashboard_data",
+      {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
         date: selected_date.value
-    })
-        .then((result) => {
-            data.value = result.message
-        })
-        .catch((error) => {
-            toast.add({ severity: 'error', summary: 'Waring', detail: error.exception ? error.exception.split(":")[1] : '', life: 3000 })
-            gv.loading = false;
-
-        });
+    }
+    )
+    if (res.data){
+      data.value = res.data;
+    }
+    
 }
-onMounted(() => {
-    getData()
+async function getDoorLockConnection(){
+  const res =await app.getApi("edoor.integration.door_lock.utils.check_door_lock_connection",{
+    property:window.property_name
+  })
+  if (res.data){
+    deviceInfo.value = res.data
+  }
+}
+onMounted(async () => {
+  getDoorLockConnection(); 
+  await getData()
+
 })
-
-// Filters State
-const filters = ref({
-  search: '',
-  action: null,
-  status: null,
-  date: null
-});
-
-const actionOptions = ref(['Card Verification', 'Renew Guest Card', 'Write Guest Card']);
-const statusOptions = ref(['Success', 'Failed']);
-
-// Define your specific action functions
-function onWriteGuestCard() {
-  console.log('Writing Guest Card...');
-}
-
+ 
 
 
 // Your updated operations array
@@ -158,8 +175,8 @@ const operations = ref([
   { label: 'Check Out Card', subtext: 'Change key card type to Check Out', icon: 'pi pi-sign-out', color: 'text-gray-500', action: onCheckOutCard },
   { label: 'Check Card', subtext: 'Verify RFID Sector', icon: 'pi pi-check-square', color: 'text-green-500', action: onVerifyCard },
   { label: 'Reset Card', subtext: 'Clear Access Sectors', icon: 'pi pi-refresh', color: 'text-red-500', action: onResetCard },
-  { label: 'Master Card', subtext: 'Hotel-wide Privilege', icon: 'pi pi-shield', color: 'text-purple-500', action: null },
-  { label: 'Staff Card', subtext: 'Housekeeping Pass', icon: 'pi pi-users', color: 'text-orange-500', action: null },
+  // { label: 'Staff Card', subtext: 'Housekeeping Pass', icon: 'pi pi-users', color: 'text-orange-500', action: onWriteStaffCard },
+
 ]);
 
 // The master click handler
@@ -184,8 +201,14 @@ async function onVerifyCard() {
    const result = await app.utils.openDialog(ComCheckCard,"Check Card");
 
 }
+
 async function onResetCard() {
    const result = await app.utils.openDialog(ComResetCard,"Reset Card");
+
+}
+
+async function onWriteStaffCard() {
+   const result = await app.utils.openDialog(ComWriteStaffCard,"Issue Staff Card");
 
 }
  
@@ -193,6 +216,7 @@ async function onResetCard() {
 async function onRefresh(){
   const l = await window.showLoading();
 
+  await getDoorLockConnection()
   await getData()
   await recentLogRef.value?.getData()
   

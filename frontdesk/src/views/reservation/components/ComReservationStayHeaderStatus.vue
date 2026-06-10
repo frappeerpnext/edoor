@@ -1,23 +1,25 @@
-
 <template>
     <div class="flex items-center">
-       
+
         <div class="flex">
 
             <span @click="OnViewReservation">
-                <ComTagReservation :title="$t('RES #') + ':' " :value="rs?.reservation?.name" class="link_line_action w-auto hidden lg:inline-block">
+                <ComTagReservation :title="$t('RES #') + ':'" :value="rs?.reservation?.name"
+                    class="link_line_action w-auto hidden lg:inline-block">
                     <span class="number_action_line inline-block">
                         {{ rs?.reservationStayNames.length }} </span>
                 </ComTagReservation>
             </span>
-            <ComTagReservation :title="$t('RES STAY #') + ':'" :value="rs.reservationStay?.name" class="bg-card-info p-1px hidden lg:inline-block">
+            <ComTagReservation :title="$t('RES STAY #') + ':'" :value="rs.reservationStay?.name"
+                class="bg-card-info p-1px hidden lg:inline-block">
             </ComTagReservation>
-            <ComTagReservation :title="$t('ROOMS#') + ':'" class="bg-card-info p-1px hidden lg:inline-block" v-if="rs.reservationStay">
+            <ComTagReservation :title="$t('ROOMS#') + ':'" class="bg-card-info p-1px hidden lg:inline-block"
+                v-if="rs.reservationStay">
                 <div class="inline" v-if="rs.reservationStay?.stays">
-                    
-                    <div class="inline" v-for="(i, index)  in rs.reservationStay?.stays?.slice(0, 3)" :key="index">
+
+                    <div class="inline" v-for="(i, index) in rs.reservationStay?.stays?.slice(0, 3)" :key="index">
                         <span v-if="index != 0"> , </span>
-                        <span v-tippy ="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' +
+                        <span v-tippy="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' +
                             i.room_number : '' }}
                     </div>
                     <div v-if="rs.reservationStay?.stays.length > 3"
@@ -28,89 +30,132 @@
                     </div>
                 </div>
             </ComTagReservation>
-            <div  v-tippy="$t('Allow Post To City Ledger')" v-if="rs.reservationStay && rs.reservationStay?.allow_post_to_city_ledger"
+            <div v-tippy="$t('Allow Post To City Ledger')"
+                v-if="rs.reservationStay && rs.reservationStay?.allow_post_to_city_ledger"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px">
-                <ComIcon  icon="IconBillToCompany" style="height:15px;width:15px;" ></ComIcon>
+                <ComIcon icon="IconBillToCompany" style="height:15px;width:15px;"></ComIcon>
             </div>
-            <div  v-tippy="$t('Paid By Master Room')" v-if="!(rs?.reservationStay?.is_master) && rs?.reservationStay?.paid_by_master_room"
+            <div v-tippy="$t('Paid By Master Room')"
+                v-if="!(rs?.reservationStay?.is_master) && rs?.reservationStay?.paid_by_master_room"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px">
-                <ComIcon  icon="BilltoMasterRoom" style="height:15px;" ></ComIcon>
+                <ComIcon icon="BilltoMasterRoom" style="height:15px;"></ComIcon>
             </div>
-            <div  v-tippy="$t('Split Room')" class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px" v-if="rs.reservationStay?.stays?.length >= 2" >
-                <ComIcon  icon="iconSplit" style="height:15px;" ></ComIcon>
-                
+            <div v-tippy="$t('Split Room')"
+                class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px"
+                v-if="rs.reservationStay?.stays?.length >= 2">
+                <ComIcon icon="iconSplit" style="height:15px;"></ComIcon>
+
             </div>
-            <div  v-tippy="$t('Master Room')" v-if="rs.reservationStay && rs.reservationStay.is_master"
+            <div v-tippy="$t('Master Room')" v-if="rs.reservationStay && rs.reservationStay.is_master"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-purple-100 p-1px">
                 <ComIcon style="height: 14px;" icon="iconCrown" />
             </div>
-        <div v-if="rs.reservationStay?.reservation_type == 'FIT'" v-tippy="rs.reservationStay?.reservation_type !== 'FIT' ? $t('Free Independent Traveler') : $t('Free Independent Traveler')"
-            class="px-2 rounded-lg me-2 text-white p-1px bg-teal-500 flex items-center justify-center">
-            <span>
-            <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
+            <div v-if="rs.reservationStay?.reservation_type == 'FIT'"
+                v-tippy="rs.reservationStay?.reservation_type !== 'FIT' ? $t('Free Independent Traveler') : $t('Free Independent Traveler')"
+                class="px-2 rounded-lg me-2 text-white p-1px bg-teal-500 flex items-center justify-center">
+                <span>
+                    <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
+                </span>
+            </div>
+            <div v-else="rs.reservationStay?.reservation_type == 'GIT'"
+                v-tippy="rs.reservationStay?.reservation_type !== 'GIT' ? $t('Group Inclusive Tour') : $t('Group Inclusive Tour')"
+                class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center">
+                <span>
+                    <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
+                </span>
+            </div>
+            <span class="px-2 rounded-lg me-2 text-white p-1px"
+                :style="{ background: rs.reservationStay?.status_color }"
+                v-if="rs.reservationStay && rs.reservationStay?.reservation_status">
+                {{ $t(rs.reservationStay?.reservation_status) }}
+
             </span>
-        </div>
-        <div v-else="rs.reservationStay?.reservation_type == 'GIT'" v-tippy="rs.reservationStay?.reservation_type !== 'GIT' ? $t('Group Inclusive Tour') : $t('Group Inclusive Tour')"
-        class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center">
-            <span>
-            <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
-            </span>
-        </div>
-            <span class="px-2 rounded-lg me-2 text-white p-1px" :style="{ background: rs.reservationStay?.status_color }" v-if="rs.reservationStay && rs.reservationStay?.reservation_status">
-                {{$t(rs.reservationStay?.reservation_status)  }}
+            <div class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center"
+                v-tippy="'Channel Manager Connection'" v-if="rs.reservation.channel_manager_booking_id">
+                <i class="pi pi-check"></i>
+            </div>
+            
+            <div v-if="totalKeyCardIssue>=0" class="px-2 rounded-lg me-2 text-white p-1px bg-primary flex items-center justify-center"
+                v-tippy="'Key Card Issued'" >
                 
-            </span>
-        <div class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center" v-tippy="'Channel Manager Connection'" v-if="rs.reservation.channel_manager_booking_id"> 
-        <i class="pi pi-check"></i>    
-        </div>
+                
+                <i  v-if="totalKeyCardIssue==0"  class="pi pi-id-card" />
+                <i v-else v-badge.warning="totalKeyCardIssue"  class="pi pi-id-card" />
+            </div>
+            
+            
+
+
         </div>
     </div>
-  
+
 </template>
 <script setup>
-import { inject, useRouter,useDialog } from '@/plugin'
+import { inject, useRouter, useDialog,ref } from '@/plugin'
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 const rs = inject('$reservation_stay');
 const dialogRef = inject("dialogRef");
 const router = useRouter()
 const dialog = useDialog()
-import {i18n} from '@/i18n';
+import { i18n } from '@/i18n';
+import { onMounted } from 'vue';
 const { t: $t } = i18n.global;
+const totalKeyCardIssue = ref(-1)
 const OnViewReservation = () => {
     if (rs.is_page) {
         router.push({ name: 'ReservationDetail', params: { name: rs.reservation.name } })
     } else {
-    
+
         showReservationDetail(rs.reservation.name)
     }
 }
 function showReservationDetail(name) {
-    if (!window.has_reservation_detail_opened){ 
-    
-    const open = dialog.open(ReservationDetail, {
-        data: {
-            name: name
-        },
-        props: {
-            header: $t('Reservation Detail'),
-            contentClass: 'ex-pedd',
-            style: {
-                width: '80vw',
+    if (!window.has_reservation_detail_opened) {
+
+        const open = dialog.open(ReservationDetail, {
+            data: {
+                name: name
             },
-            maximizable: true,
-            modal: true,
-            closeOnEscape: false,
-            position:"top",
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
-        }
-    });
+            props: {
+                header: $t('Reservation Detail'),
+                contentClass: 'ex-pedd',
+                style: {
+                    width: '80vw',
+                },
+                maximizable: true,
+                modal: true,
+                closeOnEscape: false,
+                position: "top",
+                breakpoints: {
+                    '960px': '80vw',
+                    '640px': '100vw'
+                },
+            }
+        });
     }
     dialogRef.value.close()
 }
+async function getKeyCardIssue(){
+    const res = await app.getApi("edoor.integration.door_lock.utils.get_reservation_stay_card_issue",{
+        property:window.property_name,
+        "reservation_stay":rs.reservationStay.name
+    })
+    if (res){
+        
+        totalKeyCardIssue.value = res.data.total
+    }
+}
+onMounted(()=>{
+    setTimeout(() => {
+    getKeyCardIssue();    
+    }, 2000);
+    
+})
 </script>
-
-  
+<style scoped>
+.p-badge{
+    right:-10px !important;
+    top:-5px !important;
+}
+</style>

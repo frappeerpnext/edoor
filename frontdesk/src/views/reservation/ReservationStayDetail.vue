@@ -27,6 +27,7 @@
                                     class="border-noround-left border-y-none border-right-none"
                                     icon="pi pi-angle-double-right"></Button>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -214,6 +215,8 @@
                 <ComIcon icon="pi-id-card" style="height: 18px;" class="me-2" />
                 {{ $t('Check Out Card') }}
             </Button>
+
+            
 
         </template>
     </ComDialogContent>
@@ -454,6 +457,7 @@ const onCheckIn = () => {
         },
         onClose: (options) => {
             const result = options.data;
+
             if (result) {
                 rs.loading = true
                 
@@ -462,7 +466,7 @@ const onCheckIn = () => {
                     reservation_stays: [rs.reservationStay.name],
                     note: result.note,
                     arrival_time:result.checked_in_date
-                }).then((result) => {
+                }).then(async (result) => {
                     rs.loading = false
                     window.postMessage({"action":"ComHousekeepingStatus"},"*");
                     window.postMessage({"action":"Dashboard"},"*")
@@ -476,6 +480,10 @@ const onCheckIn = () => {
         	        window.postMessage({action:"FolioTransactionList"},"*")
 
                     onRefresh(false)
+                      
+                    if (options.data.issue_card){
+                    await app.dialog.viewComWriteGuestCard("Write Guest Card",{data:rs.reservationStay});
+                    }
                 })
                     .catch((err) => {
                         rs.loading = false

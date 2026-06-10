@@ -13,7 +13,11 @@
   "reservation_stay",
   "room",
   "expire",
-  "status"
+  "status",
+  "column_break_mxnz",
+  "area",
+  "building",
+  "floor"
  ],
  "fields": [
   {
@@ -64,11 +68,30 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Issue\nRelease"
+  },
+  {
+   "fieldname": "column_break_mxnz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Data",
+   "label": "Area"
+  },
+  {
+   "fieldname": "building",
+   "fieldtype": "Data",
+   "label": "Building"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-09 12:34:31.940646",
+ "modified": "2026-06-09 17:19:51.071779",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Door Lock Issue Card",

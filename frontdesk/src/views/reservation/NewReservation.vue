@@ -429,14 +429,16 @@
                             </td>
                             <td class="p-2 w-4rem">
                                    <div class="box-input-detail">
-                                    <div class="link_line_action" :class="!d.room_type_id ? 'pointer-events-none opacity-90' : ''"  @click="onOpenChangeChild($event, d)">
+                                    <!-- <div class="link_line_action" :class="!d.room_type_id ? 'pointer-events-none opacity-90' : ''"  @click="onOpenChangeChild($event, d)">
                                         {{ d.child }}
-                                    </div>
+                                    </div> -->
+                                     <InputNumber   inputClass="w-4rem" v-model="d.child" inputId="stacked-buttons" showButtons
+                                    :min="0" :max="100" class="child-adults-txt"
+                                    @update:modelValue="get_room_rate_breakdown(d)" />
+                               
 
                                 </div>
-                                <!-- <InputNumber @click="onOpenChangeChild($event, d)" inputClass="w-4rem" v-model="d.child" inputId="stacked-buttons" showButtons
-                                    :min="0" :max="100" class="child-adults-txt"
-                                    @update:modelValue="get_room_rate_breakdown(d)" /> -->
+                             
                                
                             </td>
 

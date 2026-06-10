@@ -12,7 +12,9 @@
   "guest",
   "lock_no",
   "room",
+  "area",
   "building",
+  "floor",
   "note",
   "column_break_fijg",
   "expire",
@@ -112,11 +114,21 @@
    "fieldname": "card_id",
    "fieldtype": "Data",
    "label": "Card ID"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Data",
+   "label": "Area"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-08 14:57:21.566993",
+ "modified": "2026-06-09 17:18:58.480508",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Door Lock Log",

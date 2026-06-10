@@ -37,7 +37,13 @@
 
       <Column header="Reservation">
         <template #body="{ data: item }">
-          <div class="table-main-text">{{ item.reservation_stay || "-" }}</div>
+          <div class="table-main-text">
+            <Button class="link_line_action1" @click="onOpenLink('view_reservation_stay_detail', item.reservation_stay)" link>
+            {{ item.reservation_stay || "-" }}
+
+            </Button>
+
+            </div>
           <div class="table-sub-text">Guest {{ item.guest || "-" }}</div>
         </template>
       </Column>
@@ -121,6 +127,11 @@ const data = ref([])
 function onViewAllLog() {
   window.open(serverUrl + "/app/door-lock-log")
 }
+
+function onOpenLink(action, name) {
+    window.postMessage(action + '|' + name, '*')
+}
+
 defineExpose({
   getData
 })

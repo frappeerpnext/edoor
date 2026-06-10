@@ -10,8 +10,14 @@ def get_setting(property):
     if not setting.get("ip") or not setting.get("port"):
         frappe.throw("Please setup door access log setting in property setting.") 
     
-    # test connection
+    # # test connection
+    # resp = test_connection(setting.get("ip"), int(setting.get("port") or 10086))
     
+    # if resp.get("success") == False:
+    #     frappe.throw(
+    #         "Unable to connect to the key card reader device. Please ensure the device is connected, the door lock app server is running, and the door lock integration is configured correctly."
+    #     )
+
     return setting
 
 def send_command(command, setting):
@@ -59,6 +65,12 @@ def parse_response(response):
         "MS": "CardEraseOK"
     }
     """
+    
+    if  isinstance(response, dict):
+        frappe.throw(
+            "Unable to connect to the key card reader device. Please ensure the device is connected, the door lock app server is running, and the door lock integration is configured correctly."
+        )
+
     result = {
         "raw_response": response
     }
@@ -71,7 +83,7 @@ def parse_response(response):
 
 
 @frappe.whitelist()
-def test_connection():
+def test_connection(IP,PORT):
     """
     Test TCP connection to encoder.
     """
@@ -80,7 +92,7 @@ def test_connection():
 
     try:
         sock.connect((IP, PORT))
-
+     
         return {
             "success": True,
             "message": "Connected successfully"
@@ -106,6 +118,11 @@ def write_guest_card(
     setting = get_setting(property)
     # check card_info
     card_info = read_card(property)
+    
+    if card_info.get("card_type"):
+        if not card_info.get("card_type") in ["Guest Card","Check-Out Card","UNKNOWN"]:
+            frappe.throw("You cannot write check in card on a {0}".format(card_info.get("card_type")))
+
  
 
     # guest card
@@ -182,7 +199,7 @@ def write_guest_card(
 
     # check if card info if have in card issue list then release it
     if card_info.get("ID"):
-        frappe.msgprint(card_info.get("ID"))
+
         frappe.db.sql("update `tabDoor Lock Issue Card` set status = 'Release' where card_id = %(card_id)s and property=%(property)s",{
             "property":property,
             "card_id":card_info.get("ID")
@@ -219,11 +236,16 @@ def write_check_out_card(
     setting = get_setting(property)
     card_info = read_card(property)
     
+    if card_info.get("card_type"):
+        if not card_info.get("card_type") in ["Guest Card","Check-Out Card","UNKNOWN"]:
+            frappe.throw("This card is not a guest card or blank card")
+
+    
     # guest card
     if not stay_data or not stay_data.get("reservation_stay"):
         frappe.throw("Please select reservation for check out guest card")
     if not stay_data.get("room_id"):
-        frappe.throw("Please select room number for check out guest card")
+        frappe.throw("You cannot write check out card on a {0}".format(card_info.get("card_type")))
     
     room_doc  = frappe.get_cached_doc("Room",stay_data.get("room_id"))
     
@@ -302,6 +324,158 @@ def write_check_out_card(
     return  resp
 
  
+
+
+@frappe.whitelist(methods=["POST"])
+def write_employee_card(
+    property,
+    data
+):
+    if not data.get("employee"):
+        frappe.thow("Please select employee for issue staff card")
+
+    setting = get_setting(property)
+    # check card_info
+    card_info = read_card(property)
+    
+
+    # guest card
+    card_type = data.get("card_type")
+    
+    if card_type=="08"  and not data.get("area"):
+        frappe.throw("Please select area for area card")
+    
+    if card_type=="C"  and not data.get("building"):
+        frappe.throw("Please select building for buiding card")
+    
+    
+    if card_type=="D"  and not data.get("floor"):
+        frappe.throw("Please select floor for floor card")
+        
+    
+    
+    expire_date_time = data.get("expire")
+    dt = get_datetime(expire_date_time)
+    expire_date_time = dt.strftime("%y%m%d%H%M")
+    
+
+
+
+    # 9:55:56.301794
+   
+
+    
+
+    doc ={
+        "building": data.get("building") or "",
+        "area": data.get("area") or "",
+        "floor": data.get("floor") or "",
+        "card_type":data.get("card_type"),
+        "note":data.get("note"),
+        "expire": dt,
+        "property":property,
+        "employee":data.get("employee")
+    }
+    log = create_log(data=doc)
+
+    command = None
+    if card_type in ["A","B"]:
+        command = (
+            f"KR"
+            f"|RN01010D"
+            f"|CT{card_type}"
+            f"|CO{expire_date_time}"
+            f"|LS00"
+        )
+    elif card_type =="8" or card_type=="08":
+        area = data.get("area") or 1
+        area =  f"{area:02d}"
+        command = (
+            f"KR"
+            f"|CT08"
+            f"|AN{area}"
+            f"|CO{expire_date_time}"
+            f"|LS00"
+        )
+    elif card_type =="C":
+        area = data.get("area") or 1
+        area =  f"{area:02d}"
+        
+        buiding = data.get("building") or 1
+        buiding =  f"{buiding:02d}"
+
+        command = (
+            f"KR"
+            f"|CTC"
+            f"|AN{area}"
+            f"|BN{buiding}"
+            f"|CO{expire_date_time}"
+            f"|LS00"
+        )
+    elif card_type =="D":
+        area = data.get("area") or 1
+        area =  f"{area:02d}"
+        
+        building = data.get("building") or 1
+        building =  f"{building:02d}"
+        
+        floor = data.get("floor") or 1
+        floor =  f"{floor:02d}"
+
+
+        command = (
+            f"KR"
+            f"|CTC"
+            f"|AN{area}"
+            f"|BN{building}"
+            f"|FN{floor}"
+            f"|CO{expire_date_time}"
+            f"|LS00"
+        )
+
+ 
+ 
+    
+    resp = write_card(command = command, setting =setting)
+
+
+    log.card_id = resp.get("id")
+    log.status = "Success" if resp.get("success") else "Fail"
+    log.fail_note  = ""  if resp.get("success") else resp.get("message")
+    log.save()
+    
+    # check if card info if have in card issue list then release it
+    if card_info.get("ID"):
+        frappe.db.sql("update `tabDoor Lock Issue Card` set status = 'Release' where card_id = %(card_id)s and property=%(property)s",{
+            "property":property,
+            "card_id":card_info.get("ID")
+        } )
+
+        # create issue card record
+        issue_card_data = {
+            "property":property,
+            "employee":data.get("employee"),
+            "building":data.get("building") or "01",
+            "area":data.get("area") or "01",
+            "floor":data.get("floor") or "01",
+            "card_id":log.card_id,
+            "card_type":card_type,
+            "expire":log.expire,
+            "posting_date":frappe.utils.nowdate()
+        }
+        add_issue_card(issue_card_data)
+    frappe.db.commit()
+
+    if resp.get("success"):
+        frappe.msgprint("Issue {0} card successfully".format(data.get("card_type_name")))
+    else:
+        
+        frappe.throw(
+            "Unable to write to the {0} card. Please make sure the card is placed correctly on the card reader and try again.".format(data.get("card_type_name"))
+        )
+
+    return  resp
+
 
 
 @frappe.whitelist(methods=["POST"])
@@ -407,7 +581,12 @@ def erase_card(property=None,note=None):
     """
     setting = get_setting(property)
 
-    card_info = read_card(property)
+    card_info = read_card(property)    
+    if card_info.get("card_type"):
+        if not card_info.get("card_type") in ["Guest Card","Check-Out Card","UNKNOWN"]:
+            frappe.throw("You cannot erase {0}".format(card_info.get("card_type")))
+
+
     doc ={
         "card_type":"00",
         "property":property
