@@ -1,5 +1,5 @@
 <template>
-    {{serverUrl}}
+    
     <div class="grid wrapper-report">
         <div class="col flex gap-2 mt-2">
             <div class="mt-2" v-if="isMobile">
