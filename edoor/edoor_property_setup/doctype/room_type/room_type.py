@@ -24,10 +24,10 @@ class RoomType(Document):
 		if occupancy_codes:
 			sql = "delete from `tabRoom Rates` where room_type_id = %(room_type)s and not occupancy_code in %(occupancy_codes)s"
 			frappe.db.sql(sql,{"room_type":self.name,"occupancy_codes":occupancy_codes})
-		
-		# remove sync data log
-		sql="delete from `tabChannel Manager Sync Data Log` where room_type=%(room_type)s and not occupancy_code in %(occupancy_codes)s"
-		frappe.db.sql(sql,{"room_type":self.name,"occupancy_codes":occupancy_codes})
+			
+			# remove sync data log
+			sql="delete from `tabChannel Manager Sync Data Log` where room_type=%(room_type)s and not occupancy_code in %(occupancy_codes)s"
+			frappe.db.sql(sql,{"room_type":self.name,"occupancy_codes":occupancy_codes})
 		
 		clear_cm_cached()
 

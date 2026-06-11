@@ -1,5 +1,5 @@
 <template>
-    <div v-if="cmInfo" style="padding: 0.6rem 0.65rem;margin-top: 3px;" v-tippy="'Channel Manager Sync Status'">
+    <div v-if="cmInfo?.provider" style="padding: 0.6rem 0.65rem;margin-top: 3px;" v-tippy="'Channel Manager Sync Status'">
         <ProgressSpinner v-if="isLoading" style="width: 25px; height: 25p8" strokeWidth="8" animationDuration="2.5s"
             aria-label="Custom ProgressSpinner" />
 

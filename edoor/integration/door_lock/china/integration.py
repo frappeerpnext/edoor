@@ -306,7 +306,7 @@ def write_check_out_card(
     if card_info.get("ID"):
         frappe.db.sql("update `tabDoor Lock Issue Card` set status = 'Release' where card_id = %(card_id)s and property=%(property)s",{
             "property":property,
-            "cart_id":card_info.get("ID")
+            "card_id":card_info.get("ID")
         } )
         
 
