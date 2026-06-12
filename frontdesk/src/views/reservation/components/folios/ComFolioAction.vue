@@ -259,7 +259,7 @@ function viewfoliotaxinvoicedetail() {
             getApi("utils.get_tax_invoice_data",{folio_number:selectedFolio.value.name, document_type:"Reservation Folio",generate_temp_tax_data:1}).then(result=>{
                 dialog.open(ComReportServerModal, {
                 data: {
-                    report_path: "/Front Desk/rptTaxInvoice",
+                    report_path:  selectedFolio.value.tax_invoice_type == 'Tax Invoice'?"/Front Desk/rptTaxInvoice":"/Front Desk/rptCommercialInvoice",
                     params:[
                               {name: 'reservation_folio', values: [selectedFolio.value.name] },
                     ]
