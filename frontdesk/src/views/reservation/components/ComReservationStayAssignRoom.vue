@@ -236,12 +236,11 @@
 
     }
     
-    function onSave(){ 
-        console.log(selectedStay.value)
-        //if(!selectedStay.value.room_id){
-       //     gv.toast('warn','Please select  room number.')
-       //     return
-       // }
+    function onSave(){  
+        if(!selectedStay.value.room_id){
+            gv.toast('warn','Please select  room number.')
+            return
+        }
         loading.value = true    
         selectedStay.value.property = window.property_name
          postApi("reservation.assign_room",{data: selectedStay.value})

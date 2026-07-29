@@ -26,6 +26,7 @@
   "vattin_number",
   "photo",
   "position",
+  "color",
   "credit_card_information_section",
   "bank_name",
   "credit_card_number",
@@ -180,12 +181,17 @@
    "fieldname": "hidden",
    "fieldtype": "Check",
    "label": "Hidden"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Color",
+   "label": "Color"
   }
  ],
  "image_field": "photo",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-06 15:44:51.543367",
+ "modified": "2026-06-20 09:30:30.859542",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

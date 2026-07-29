@@ -257,13 +257,11 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
     reservation_status  =  frappe.db.get_list('Reservation Status', pluck='name')
     if start_date ==end_date:
         reservation_status = ["In-house"]
-      
-    if start_date!=end_date:
-        end_date = add_to_date(end_date,days=-1)
+ 
     if start_date ==end_date:
         start_date = add_to_date(start_date,days=-1)
 
-    
+ 
 
     sql_except = ''
     if not room_type_id:
@@ -272,7 +270,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
         exception = json.loads(exception)
         sql_except = "and {0} != '{1}'".format(exception['field'], exception['value'])
  
-    
+
 
     sql = """
         select 
@@ -297,7 +295,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
                 where
                     st.reservation_status in %(reservation_status)s and 
                     is_departure = 0 and
-                    date between '{0}' and '{1}' {2} 
+                    date between %(start_date)s and %(end_date)s {0} 
             )   
     """
     #check if arrival date is equal to current system date then check room availabityy is check with house keeping status
@@ -305,17 +303,15 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
     if str(start_date) == str(working_day["date_working_day"]):
         sql = "{} and coalesce(show_in_room_availability,0)  = 1".format(sql)
    
-    sql = sql.format(start_date, end_date,sql_except)
-   
-    data = frappe.db.sql(sql,{"property":property,"room_type_id":room_type_id,"reservation_status":reservation_status},as_dict=1)
+    sql = sql.format(sql_except)
     
+    data = frappe.db.sql(sql,{"property":property,"room_type_id":room_type_id,"reservation_status":reservation_status,"start_date":start_date,"end_date": add_to_date(end_date,days=-1)},as_dict=1)
     # get room amentity
     for d in data:
         room_doc = frappe.get_cached_doc("Room",d["name"])
         if room_doc.amenities:
             d["amenities"] = [{"amenity":x.room_amenity,"icon":x.icon}  for x in room_doc.amenities if x.show_in_room_chart ==1]
             
-    
     return data
 
 @frappe.whitelist()
@@ -548,7 +544,8 @@ def add_new_reservation(doc,sync_room_available_to_channel_manager = True):
                     "start_time":reservation.arrival_time,
                     "end_time":reservation.departure_time,
                     "is_master":d["is_master"] ,
-                    "is_manual_rate":d["is_manual_rate"]
+                    "is_manual_rate":d["is_manual_rate"],
+                    "note": reservation.note
                 }
             ],
             "inclusion_items":d.get("package_items") or [],
