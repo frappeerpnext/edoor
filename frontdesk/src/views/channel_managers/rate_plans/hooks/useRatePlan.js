@@ -190,7 +190,7 @@ export function useRatePlan() {
     }
 
     async function getCMRestrictions() {
-        alert(rateType.value)
+      
         const res = await app.getApi("rate_plan.get_restriction_codes", {property: property.name,rate_type:rateType.value})
         if (res.data) {
             cmRestrictions.value = Object.entries(res.data).filter(([key, value]) => value != 0).map(([key, value]) => ({key,value}))}

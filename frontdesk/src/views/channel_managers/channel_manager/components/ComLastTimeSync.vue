@@ -1,8 +1,9 @@
 <template>    
-    <div class="card h-full cursor-pointer" @click="onViewLogDetail(data?.name)">
+    <div class="card h-full cursor-pointer"  @click="onViewLogDetail(data?.name)">
         <div class="left">
             <div class="main-number mb-2">
-                <comTimeAgo :date="data.creation"/>
+                <comTimeAgo :date="data?.creation" v-if="data?.creation"/>
+                
             </div>
 
             <div class="title">
@@ -58,7 +59,10 @@ onUnmounted(() => {
 })
 
 function onViewLogDetail(docname) {
-    window.postMessage("view_channel_manager_sync_log|" + docname, "*")
+    if (docname){
+        window.postMessage("view_channel_manager_sync_log|" + docname, "*")
+    }
+    
 }
 
 </script>
