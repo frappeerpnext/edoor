@@ -48,6 +48,33 @@ def re_sync_fail_job():
     frappe.db.commit()
 
 
+  # enqueue get data from channel manager
+
+@frappe.whitelist()
+def get_new_booking_from_channel_manager():
+    providers = get_cm_provider_list()
+ 
+    if len(providers)>0:
+        for p in providers:
+            if (p.get("provider") == "Exely"  and 
+                p.get("initialized_data_upload") == 1 and 
+                p.get("initialized_availability_upload") == 1 and 
+                p.get("initialized_prices_upload") == 1   and 
+                p.get("initialized_restrictions_upload") == 1 and 
+                p.get("initialized_service_upload") == 1 
+            ):
+                 
+                frappe.enqueue(
+                    "edoor.channel_managers.exely.reservation.add_new_exely_bookings",
+                    queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
+                )
+
+
+
+
+
+
+
 def clean_sync_data_log(propety,run_commit = True):
     sql="delete from `tabChannel Manager Sync Data Log` where property = %(property)s"
     frappe.db.sql(sql,{"property":property})
@@ -136,7 +163,8 @@ def sync_room_rate_from_channel_manager():
                     "edoor.channel_managers.exely.price_manager.get_room_rate_from_channel_manager",
                     queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
                         property=p.get("property"),
-                        cm_hotel_code = p.get("property_code")
+                        cm_hotel_code = p.get("property_code"),
+                        add_cm_sync_log_when_no_data = False
                        
                 )
                 

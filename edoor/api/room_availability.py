@@ -369,8 +369,7 @@ def resync_availability(data=None,recalculate_occupy_data=False,show_message = T
         frappe.throw("No Channel Manager Integration")
     if cm_info.enable == 0:
         frappe.throw("Channel manager integration is disabled")
-    if cm_info.prices_for_accommodation !="Receive from PMS":
-        frappe.throw("Availability is not allow to manager in PMS")
+   
      
     conditions = []
     filters = {}
@@ -431,7 +430,7 @@ def resync_availability(data=None,recalculate_occupy_data=False,show_message = T
     if cm_info.get("provider") == "Exely": 
         frappe.enqueue(
             "edoor.channel_managers.exely.availability.sync_room_availability",
-            queue="short" if frappe.conf.get("developer_mode") else "channel_manager",
+            queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
             property=data.get("property")
         )
 

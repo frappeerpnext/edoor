@@ -138,7 +138,7 @@
         </template>
 <template v-if="log?.request_type == 'Availability update'">
 <DataTable  :value="log?.raw_data">
-  <Column field="room_type" header="Room Type"></Column>
+  <Column field="room_type_name" header="Room Type"></Column>
   
       <Column header="Periods">
               <template #body="slotProps">

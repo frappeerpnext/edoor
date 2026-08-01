@@ -320,10 +320,10 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
     if start_date ==end_date:
         reservation_status = ["In-house"]
       
+    if start_date==end_date:
+        start_date = add_to_date(start_date,days=-1)
     if start_date!=end_date:
         end_date = add_to_date(end_date,days=-1)
-    if start_date ==end_date:
-        start_date = add_to_date(start_date,days=-1)
     else:
         #check if start date < current working date then set start date to crrent working date because we check date only for future date
         working_day = get_working_day(property=property)

@@ -30,7 +30,7 @@
       class="inline-flex align-items-center gap-2 bg-white  border-round-lg flex-wrap"
     >
       <span class="font-semibold text-blue-600">
-        Integration
+       PMS Integration
       </span>
 
       <i class="pi pi-angle-right text-500"></i>
@@ -66,9 +66,9 @@ import { inject } from 'vue';
             property:window.property_name
         },"",false)
         if (res.data){
-            // 
-            alert("show confirm for waiting to finish data from cm manager")
+            app.utils.showInfo("Resync Room Rate","The room rate resynchronization with the channel manager has started and is running in the background. Please refresh the rates later to view the latest updates.",1000*10); 
             dialogRef.value.close()
+            
         }
         l.close()
         

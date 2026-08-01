@@ -152,14 +152,14 @@ def sync_room_availability(property=None,retry_sync =True):
 
                 # return soap_body
                 delete_synced_data_log(session_id=session_id,provider="Exely",request_type=REQUEST_TYPE, run_commit=False)
-                # emit_event("ChannelManagerUpdate",{
-                #     "action":"alert_cm_sync_message",
-                #     "property": p.get("name"),
-                #     "status":response.get("status"),
-                #     "title":"Sync Availabilty Successfully",
-                #     "message": response.get("response_text"),
-                #     "docname": sync_log_doc.name
-                # })
+                emit_event("ChannelManagerUpdate",{
+                    "action":"alert_cm_sync_message",
+                    "property": p.get("name"),
+                    "status":response.get("status"),
+                    "title":"Sync Availabilty Successfully",
+                    "message": "Room availability has been successfully synced with the channel manager.",
+                    "docname": sync_log_doc.name
+                })
             else:
                 
                 emit_event("ChannelManagerUpdate",{

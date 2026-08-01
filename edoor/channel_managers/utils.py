@@ -17,7 +17,19 @@ def clear_cache():
 
 @redis_cache(ttl=60*60)
 def get_cm_provider_list():
-    sql="select property,property_code,provider,prices_for_accommodation,initialized_prices_upload from `tabChannel Manager Integration` where enable=1"
+    sql="""
+        select 
+            property,
+            property_code,
+            provider,
+            prices_for_accommodation,
+            initialized_data_upload, 
+            initialized_availability_upload, 
+            initialized_prices_upload, 
+            initialized_restrictions_upload, 
+            initialized_service_upload 
+        from `tabChannel Manager Integration` where enable=1
+    """
     return frappe.db.sql(sql,as_dict = 1)
 
 
@@ -299,9 +311,12 @@ def get_cm_sync_log_data(docname):
 
     if doc.request_type == "Prices update":
         return_data["data"] = get_price_data()
-    if doc.request_type == "Restriction update":
+    elif doc.request_type == "Restriction update":
         return_data["data"] = get_restriction_data()
-
+    elif doc.request_type == "Availability update":
+        for d in raw_data:
+            d["room_type_name"] = frappe.get_cached_value("Room Type", d.get("room_type"),"room_type")
+        
     
     
     return return_data

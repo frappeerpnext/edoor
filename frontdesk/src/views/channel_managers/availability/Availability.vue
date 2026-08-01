@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ComHeader :isRefresh="true" @onRefresh="onRefresh">
+        <ComHeader :isRefresh="true" @onRefresh="onRefresh" :settingMenus="settingMenus" isSetting>
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center justify-content-between w-full">
@@ -18,7 +18,7 @@
                 @click="onResyncAvailability"
                 />
 
-                    <SplitButton icon="pi pi-eye"  label="View" @click="save" :model="actionMenus" />
+                    <SplitButton icon="pi pi-chart-line"  label="Report" @click="onReportClick" :model="actionMenus" />
                   
                 </div>
             </template>
@@ -54,11 +54,25 @@ import { inject, onMounted, onUnmounted, ref } from "vue";
 import { i18n } from '@/i18n';
 import { useAvailability } from "@/views/channel_managers/availability/hooks/useAvailability.js";
 const { t: $t } = i18n.global;
-import { useConfirm } from "primevue/useconfirm";
+
 import { useApp } from "@/hooks/useApp.js";
 const moment = inject("$moment")
-const confirm = useConfirm();
-
+const settingMenus = [
+    {
+            label: $t('Verital Calendar View'),
+            icon: 'pi pi-calendar',
+            command: () => {
+                alert(123)
+            }
+        },
+    {
+            label: $t('Horizontal Calendar View'),
+            icon: 'pi pi-list',
+            command: () => {
+                alert(123)
+            }
+        },
+] 
 
 const {cmInfo} = useApp()
  
@@ -112,6 +126,18 @@ async function onFilter(f) {
 
 function onResyncAvailability(){
     const result = app.utils.openDialog(ComReSyncAvailability,"Resync Room Availability")
+}
+
+function onReportClick(){
+    app.dialog.viewReport("/Reservation/rptRoomInventory",$t("Room Inventory"),
+             [
+                        {name: 'start_date', values: [moment.utc(filters.value.dates[2][0]).format("YYYY-MM-DD")] },
+                        {name: 'end_date', values: [moment.utc(filters.value.dates[2][1]).format("YYYY-MM-DD")] },
+                        {name: 'property', values: [window.propert_name] },
+                        
+                        
+                ]
+)
 }
 const actionMenus = [
     {

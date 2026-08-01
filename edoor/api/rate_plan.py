@@ -908,9 +908,6 @@ def get_room_rate_from_channel_manager(property="ESTC HOTEL 6"):
         frappe.throw("No channel manager integration")
     if cm_info.initialized_prices_upload == 0:
         frappe.throw("Room rate first update to Channel Manager not run yet. Please do it first before sync rate.")
-        
-    if cm_info.initialized_prices_upload == 0:
-        frappe.throw("Room rate first update to Channel Manager not run yet. Please do it first before sync rate.")
 
     if cm_info.prices_for_accommodation != "Deliver to PMS":
         frappe.throw("In order to get room rates from Channel Manager, please set the room rate sync mode to “Deliver to PMS” in your Channel Manager backend and PMS–Channel Manager integration settings.")

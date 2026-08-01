@@ -45,6 +45,11 @@ OTA_REQUEST = {
         "SOAPAction":"https://www.hopenapi.com/Api/PMSConnect/HotelRatePlanRQRequest",
         "response_key":"OTA_HotelRatePlanRS"
         # The Confirmation Message
+    },
+    "OTA_HotelAvailGetRQ":{
+        "SOAPAction":"https://www.hopenapi.com/Api/PMSConnect/HotelAvailGetRQRequest",
+        "response_key":"OTA_HotelAvailGetRS"
+        # The Confirmation Message
     }
 
 

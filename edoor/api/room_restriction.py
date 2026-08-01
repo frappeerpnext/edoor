@@ -402,9 +402,11 @@ def resync_room_restriction(data=None,auto_sync_to_cm = True):
             frappe.throw("No rate plan mapping found for the rate plan '{0}'.".format(rp))
 
     # validate restriction code allow manage from pms
-    for rs in data.get("restriction_types"):
-        # frappe.throw(rs.lower())
-       
+    restriction_types =  [values[0] for values in data.get("room_types").values()]
+    if not restriction_types:
+        frappe.throw("Please select restriction type")
+
+    for rs in restriction_types:
         if str(cm_info.get(rs.lower())) == "0":
             frappe.throw("Restriction type {0} is not allow to manage from PMS".format(rs))
 
@@ -450,7 +452,7 @@ def resync_room_restriction(data=None,auto_sync_to_cm = True):
             ({date_filters})
             AND rr.property = %(property)s
             AND rr.rate_type IN %(rate_types)s
-            AND rr.room_type_id IN %(room_types)s 
+            AND rr.room_type_id = %(room_type)s 
             AND rr.restriction_type IN %(restriction_types)s 
         ON DUPLICATE KEY UPDATE
             sync_session_id = '',
@@ -460,12 +462,20 @@ def resync_room_restriction(data=None,auto_sync_to_cm = True):
 
     filters.update({
         "property": data.get("property"),
-        "rate_types": tuple(data.get("rate_types")),
-        "room_types": tuple(data.get("room_types")),
-        "restriction_types": tuple(data.get("restriction_types"))
+        "rate_types": tuple(data.get("rate_types"))
+        
     })
 
-    frappe.db.sql(sql, filters, as_dict=1)
+    # we loop each room type with its own restriction type
+    for rt in data.get("room_types"):
+        if rt[0]:
+            filters.update( { 
+                "room_type": rt,
+                "restriction_types": tuple(data.get("room_types")[rt])
+                }
+            )
+
+        frappe.db.sql(sql, filters, as_dict=1)
 
     # some restrinction data are dont have in room restriction record 
     # so we find missing record in room restrinction then send direct to cm sync data log
@@ -481,7 +491,16 @@ def resync_room_restriction(data=None,auto_sync_to_cm = True):
     # MaxAdvBooking set "" mean remove value
     # FullPaternLos set "" mean remove value
 
-    get_missing_room_restriction_data(data)
+    for rt in data.get("room_types"):
+        
+        get_missing_room_restriction_data(
+            property=data.get("property"),
+            rate_types = data.get("rate_types"),
+            date_ranges=data.get("date_ranges"),
+            room_types=[rt],
+            restriction_types = data.get("room_types")[rt]
+        )
+
     frappe.db.commit()
     if auto_sync_to_cm:
         if cm_info.get("provider") == "Exely": 
@@ -491,6 +510,7 @@ def resync_room_restriction(data=None,auto_sync_to_cm = True):
                     property=data.get("property")
             )
             
+            
 
 
 
@@ -499,12 +519,13 @@ def resync_room_restriction(data=None,auto_sync_to_cm = True):
     return "Success"
 
 
-def get_missing_room_restriction_data(data):
-    cm_info = get_channal_manager_info(data.get("property"))
+def get_missing_room_restriction_data(property,rate_types,date_ranges, room_types, restriction_types):
+    
+    cm_info = get_channal_manager_info(property)
     # find missing date from date date range and restriction type
     conditions = []
     filters = {}
-    for i, r in enumerate(data.get("date_ranges")):
+    for i, r in enumerate(date_ranges):
         conditions.append(
             f"(d.date between %(start_{i})s and %(end_{i})s)"
         )
@@ -515,9 +536,9 @@ def get_missing_room_restriction_data(data):
 
     
     filters.update({
-                "property": data.get("property"),
-                "rate_types": tuple(data.get("rate_types")),
-                "room_types": tuple(data.get("room_types"))
+                "property": property,
+                "rate_types": tuple(rate_types),
+                "room_type": tuple(room_types)
             })
 
     def get_missing_date(filter):
@@ -553,7 +574,7 @@ def get_missing_room_restriction_data(data):
     # bulk insert row to sync data log
     def bulk_insert_to_cm_data_log(raw_data):
         values_sql = ",".join(
-        f"('{d.get('name')}','{data.get('property')}','{cm_info.get('provider')}','Restriction update','{d.get('restriction_type')}','{d.get('date')}','{d.get('rate_type')}','{d.get('room_type_id')}','{d.get('value')}')"
+        f"('{d.get('name')}','{property}','{cm_info.get('provider')}','Restriction update','{d.get('restriction_type')}','{d.get('date')}','{d.get('rate_type')}','{d.get('room_type_id')}','{d.get('value')}')"
         for d in raw_data
         )
         sql = f"""
@@ -576,7 +597,7 @@ def get_missing_room_restriction_data(data):
                 "restriction_type":restriction_type
 
             }
-            for rate_type, room_type,restriction_type in product(data.get("rate_types"), data.get("room_types"),data.get("restriction_types") )
+            for rate_type, room_type,restriction_type in product(rate_types, room_types,restriction_types)
     ]
     
     for d in  rate_types_room_types_restriction_types:
@@ -809,4 +830,35 @@ def update_sync_status_to_cached(property=None,room_types=None,status=None):
     })
 
 
+@frappe.whitelist()
+def runme():
+    return get_room_restriction_from_channel_manager()
+
+@frappe.whitelist(methods="POST")
+def get_room_restriction_from_channel_manager():
+    # validate
+    # check provider
+    # send soap request base on provider
+    # get xml data conver to dict
+    # extract restring data
+    # bulk update data to room restriction
+    cm_info = get_channal_manager_info(property)
+    
+    if not cm_info:
+        frappe.throw("No channel manager integration")
+    if cm_info.initialized_restrictions_upload == 0:
+        frappe.throw("Room  restriction first update to Channel Manager not run yet. Please do it first before sync room restriction.")
+        
+    
+    if cm_info.restrictions != "Deliver to PMS":
+        frappe.throw("In order to get room restrictions from Channel Manager, please set the room restriction sync mode to “Deliver to PMS” in your Channel Manager backend and PMS–Channel Manager integration settings.")
+    
+    
+    # check provider and get data relevant to cm provider
+    if cm_info.provider == "Exely":
+        from edoor.channel_managers.exely.room_restriction import get_room_restriction_from_channel_manager as get_room_restriction_from_exely
+        return get_room_restriction_from_exely( property = property, cm_hotel_code = cm_info.property_code)
+
+        
+    return cm_info
 

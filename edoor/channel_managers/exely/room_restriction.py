@@ -7,6 +7,7 @@ from edoor.channel_managers.exely.rate_limit import get_rate_limit,update_rate_l
 from frappe.utils import now_datetime, add_to_date,getdate,today,add_days
 from epos_restaurant_2023.custom_socket_client import emit_event
 from itertools import groupby
+from frappe.rate_limiter import rate_limit
 
 
     
@@ -293,7 +294,7 @@ def get_group_peroid_data(data):
 
 
 def get_unique_restriction_values_by_restriction_types(session_id,restriction_types,rate_type):
-    xxx
+    pass
 
 
 
@@ -480,3 +481,246 @@ def normalize_amount(value):
     # otherwise return float without trailing zeros
     return float(d.normalize())
     
+
+
+@rate_limit(limit=10, seconds=60)
+def get_room_restriction_from_channel_manager( 
+        property , 
+        cm_hotel_code,
+        add_cm_sync_log_when_no_data = True,
+        notify_user=False
+    ):
+    
+
+    # validate if can sync data or not 
+    if not can_sync_data( request_type =  "Restriction update", property = property, provider="Exely"):
+        frappe.throw("The room restriction sync from the channel manager has been blocked. Please check the sync status.") 
+
+    # emit channel manager loading notification
+    emit_event("ChannelManagerUpdate",{
+        "action":"update_cm_notification_status",
+        "property":property,
+        "status":True
+    })
+    
+    root = etree.Element(
+        "OTA_HotelAvailGetRQ",
+        xmlns="http://www.opentravel.org/OTA/2003/05",
+        Version="1.17"
+    )
+    
+
+    HotelAvailRequests = etree.SubElement(root, "HotelAvailRequests")
+    HotelAvailRequest = etree.SubElement(HotelAvailRequests, "HotelAvailRequest")
+    etree.SubElement(HotelAvailRequest, "HotelRef" ,HotelCode = cm_hotel_code)
+    
+    soap_body = etree.tostring(root, pretty_print=True).decode()
+    
+    
+    response =  send_soap_request(property,"OTA_HotelAvailGetRQ",soap_body)
+
+    # prepare data for cm sync log doc
+    cm_sync_doc = {
+            "property": property,
+            "doctype":"Channel Manager Sync Log",
+            "provider":"Exely",
+            "request_type":REQUEST_TYPE,
+            "status" : response.get("status"),
+            "response_text": response.get("response_text")
+    }
+    
+    
+    if response.get("status") == "Success":
+        OTA_HotelAvailGetRS= response.get("data").get("s:Envelope").get("s:Body").get("OTA_HotelAvailGetRS")
+
+
+        # no room rate data 
+        if not OTA_HotelAvailGetRS.get("RatePlans"):
+            if add_cm_sync_log_when_no_data:
+                frappe.db.sql("delete from `tabChannel Manager Sync Log` where request_type = %(request_type)s and coalesce(rate_type,'')='' and coalesce(data,'')='' and coalesce(response_text,'') = '' ",{"request_type":REQUEST_TYPE})
+
+                frappe.get_doc(cm_sync_doc).insert(ignore_permissions=True)
+                frappe.db.commit()
+            # emit socket event to disable loading in cm notification
+            
+            emit_event("ChannelManagerUpdate",{
+                "action":"update_cm_notification_status",
+                "property":property,
+                "status":False
+            })
+
+            if notify_user:
+                emit_event("ChannelManagerUpdate",{
+                    "action":"update_sync_rate_plan_status",
+                    "property":property,
+                    "status":"Success",
+                    "title":"Sync Room Restriction",
+                    "message":"Sync room restriction from channel manager successfully"
+                })
+                
+            return "Complete, No more restriction to sync"
+
+
+        room_restriction_data =  get_room_restriction_group_data_from_cm(OTA_HotelAvailGetRS)
+        # i am here
+        # update rate data to cm sync log doc
+       
+        cm_sync_doc["data"] = frappe.as_json(get_cm_convert_room_rate_data_rate_by_occupancy_code(room_rate_data))
+       
+        # update rate type to cm sync data log get rate type from first record of room_rate_data
+        cm_sync_doc["rate_type"] = get_edoor_rate_type(room_rate_data[0].get("cm_rate_plan_code"))
+
+
+
+       
+        price_update_result =  bulk_update_room_rate(property = property, room_rate_data = room_rate_data)
+       
+        # check price update result if have warning then log to do and cm sync log
+
+        # notif back to cm that we update success 
+        if not price_update_result.get("warnings"):
+            RateAmountMessageId = response.get("data").get("s:Envelope").get("s:Body").get("OTA_HotelRatePlanRS").get("RatePlans").get("RatePlan").get("RateAmountMessageId")
+            
+            confirm_request_response =  send_notify_sync_room_rate_request(property = property, hotel_code = cm_hotel_code, message_id =  RateAmountMessageId)
+           
+            
+        else:
+            # append warning text to reponse text in cm sync data log
+            # change sync status to warning
+            cm_sync_doc["status"] = "Warning"
+            warning_message = "\n".join(price_update_result.get("warnings"))
+            cm_sync_doc["response_text"] =  cm_sync_doc["response_text"] +"\n"+ warning_message
+
+            # add to do stop sync prices update
+            cm_sync_doc["sync_action"] = "Stop Sync"
+            
+
+        
+
+
+    # save data to cm sync log
+    sync_log_doc = frappe.get_doc(cm_sync_doc).insert(ignore_permissions=True)
+
+    if (cm_sync_doc.get("sync_action") or "") == "Stop Sync":
+        task_doc = {
+            "property":property,
+            "subject": "Sync {0} has been stoped.".format(cm_sync_doc.get("request_type")),
+            "description": (cm_sync_doc.get("response_text") or "").strip() ,
+            "reference_type": "Channel Manager Sync Log",
+            "reference_name": sync_log_doc.name,
+            "priority":"High",
+        }
+
+        add_cm_task(task_doc,run_commit=False)
+
+    frappe.db.commit()
+ 
+
+    # emit socket event  to notify client
+
+
+    # check cm_sync_doc if status success start send sync request until all room rate are
+    # fetch from cm 
+
+    if (cm_sync_doc.get("sync_action") or "") != "Stop Sync":
+        time.sleep(10)
+        frappe.enqueue(
+            "edoor.channel_managers.exely.price_manager.get_room_rate_from_channel_manager",
+            queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
+                property=property,
+                cm_hotel_code = cm_hotel_code,
+                add_cm_sync_log_when_no_data = False,
+                notify_user = notify_user
+        )
+    
+
+
+
+    
+
+
+
+    return "Complete"
+
+
+
+def get_room_restriction_group_data_from_cm(data):
+    result = []
+    # get rate plan  if dict convert to array dict
+    def get_rate_plans(data):
+        if isinstance(data.get("RatePlans").get("RatePlan"), dict):
+            return [data.get("RatePlans").get("RatePlan")]
+            
+        return data.get("RatePlans").get("RatePlan")
+
+    # get rate if dict convert to array dict
+    def get_rates(data):
+        if isinstance(data.get("Rates").get("Rate"), dict):
+            return [data.get("Rates").get("Rate")]
+        return data.get("Rates").get("Rate")
+    
+    # get BaseByGuestAmt if dict convert to array dict
+    def get_base_guest_amount(data):
+        if isinstance(data.get("BaseByGuestAmts").get("BaseByGuestAmt"), dict):
+            return [data.get("BaseByGuestAmts").get("BaseByGuestAmt")]
+        return data.get("BaseByGuestAmts").get("BaseByGuestAmt")
+    
+
+    # get AdditionalGuestAmounts if dict convert to array dict
+    def get_additional_guest_amount(data):
+        if isinstance(data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount"), dict):
+            return [data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount")]
+        return data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount") or []
+
+ 
+
+    for rp in get_rate_plans(data):
+        # return get_rates(rp)
+        for rate in get_rates(rp):
+            _row = {
+                "cm_rate_plan_code": rp.get("@RatePlanCode"),
+                "start_date": rate.get("@Start"),
+                "end_date": rate.get("@End"),
+                "cm_room_type_code": rate.get("@InvTypeCode"),
+                "rates":[]
+            }
+            # get base rate adult and child
+            for base_rate in  get_base_guest_amount(rate):
+                _occupancy_type =  "ChildBandBed" if base_rate.get("@MinAge") and base_rate.get("@MaxAge") else "AdultBed" 
+                _base_rate_row = {
+                    "occupancy_type":_occupancy_type,
+                    "occupancy":base_rate.get("@NumberOfGuests"),
+                    "min_age": base_rate.get("@MinAge"),
+                    "max_age": base_rate.get("@MaxAge"),
+                    "rate": base_rate.get("@AmountAfterTax")
+                }
+                _row["rates"].append(_base_rate_row)
+            
+            # get base rate adult and child
+            # return get_additional_guest_amount(rate)
+            for additional_rate in  get_additional_guest_amount(rate):
+
+                _occupancy_type =  "AdultExtraBed"
+                if additional_rate.get("@MinAge") and additional_rate.get("@MaxAge"):
+                    if "@BedRequired" in additional_rate:
+                        _occupancy_type = "ChildBandWithoutBed"
+                    else:
+                        _occupancy_type = "ChildBandExtraBed"
+
+                
+
+                _additional_rate_row = {
+                    "occupancy_type":_occupancy_type,
+                    "occupancy":additional_rate.get("@NumberOfGuests"),
+                    "min_age": additional_rate.get("@MinAge"),
+                    "max_age": additional_rate.get("@MaxAge"),
+                    "rate": additional_rate.get("@AmountAfterTax")
+                }
+
+                _row["rates"].append(_additional_rate_row)
+            
+            result.append(_row)
+
+
+    return result
+

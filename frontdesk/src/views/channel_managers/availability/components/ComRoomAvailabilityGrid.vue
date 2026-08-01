@@ -169,10 +169,9 @@ function canShowValue(month,n){
 
 }
 function restrictionValue(month,n,room_type_id){
-    return (closeRestrictionData.value?.Closed[moment(month.start_date).format(`YYMM${String(n).padStart(2,'0')}${room_type_id}`)] || 0)
+const key = moment(month.start_date).format(`YYMM${String(n).padStart(2, '0')}${room_type_id}`)
 
-
-
+return closeRestrictionData.value?.Closed?.[key] ?? 0
 }
 </script>
 

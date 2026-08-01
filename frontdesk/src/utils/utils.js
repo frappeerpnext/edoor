@@ -104,10 +104,21 @@ window.toast.add({ severity: 'success', summary: title, detail: message, life: l
 
 
 export function showInfo(title, message = "", life = 3000, group = "tc", data = {}) {
+ 
   if (life == 0) {
-    window.toast.add({ group: group, severity: 'info', summary: title, detail: message, ...data, left: 1000 * 60 })
+    if(group=="tc"){
+      window.toast.add({   severity: 'info', summary: title, detail: message, ...data, left: 1000 * 60 })
+    }else {
+      window.toast.add({ group: group, severity: 'info', summary: title, detail: message, ...data, left: 1000 * 60 })
+    }
+    
+
   } else {
-    window.toast.add({ group: group, severity: 'info', summary: title, detail: message, life: life, ...data })
+     if(group == "tc"){
+      window.toast.add({  severity: 'info', summary: title, detail: message, "life": life, ...data })
+     }else {
+      window.toast.add({ group: group, severity: 'info', summary: title, detail: message, "life": life, ...data })
+     }
   }
 
 

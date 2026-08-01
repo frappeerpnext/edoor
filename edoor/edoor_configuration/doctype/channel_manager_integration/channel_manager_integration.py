@@ -26,7 +26,8 @@ class ChannelManagerIntegration(Document):
 	def on_update(self):
 		clear_cm_info_cached()
 		frappe.cache.delete_value(f"{self.name}_channel_manager_info") 
-	 
+		
+
 		frappe.clear_document_cache(self.doctype, self.name)
 		for rt in self.room_types:
 			# fist sync room availabilityh
@@ -41,7 +42,31 @@ class ChannelManagerIntegration(Document):
 
 
 
+		# update stop in schedue job type get room rate from channel manager
+		job_name = frappe.db.exists("Scheduled Job Type","resync_data.sync_room_rate_from_channel_manager")
+		if job_name:
+			job_doc = frappe.get_doc("Scheduled Job Type",job_name)
+			job_doc.stop = 1 if self.enable == 0 or self.prices_for_accommodation != 'Receive from PMS' else 0
+			job_doc.save()
+
+		# resync fail job check only enable is check
+		job_name = frappe.db.exists("Scheduled Job Type","resync_data.re_sync_fail_job")
+		if job_name:
+			job_doc = frappe.get_doc("Scheduled Job Type",job_name)
+			job_doc.stop = 1 if self.enable == 0 else 0
+			job_doc.save()
 		
+		# enable or disable get new booking from channel manager
+		job_name = frappe.db.exists("Scheduled Job Type","resync_data.get_new_booking_from_channel_manager")
+		if job_name:
+			job_doc = frappe.get_doc("Scheduled Job Type",job_name)
+			job_doc.stop = 1 if self.enable == 0 or self.initialized_data_upload == 0 or self.initialized_availability_upload ==0 and self.initialized_prices_upload == 0 or self.initialized_restrictions_upload == 0 or self.initialized_service_upload == 0 else 0
+			job_doc.save()
+
+		
+
+
+
 
 		
 
