@@ -1492,3 +1492,529 @@ room_rate_data = {
     },
     "Success": None
   }
+
+
+room_restriction_data = {
+          "@Version": "1.17",
+          "@xmlns": "http://www.opentravel.org/OTA/2003/05",
+          "RatePlans": {
+            "RatePlan": {
+              "@RatePlanCode": "10003870",
+              "AvailStatusMessageId": "44",
+              "AvailStatusMessages": {
+                "AvailStatusMessage": [
+                   
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-01",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-01",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-08",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "LengthsOfStay": {
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@Time": "5",
+                          "@MinMaxMessageType": "SetMaxLOS"
+                        },
+                        {
+                          "LOS_Pattern": {
+                            "@FullPatternLOS": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOC"
+                          }
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Status": "Close",
+                      "@MaxAdvancedBookingOffset": "22"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-08",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Close"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-08",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-09",
+                      "@End": "2026-08-18",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "LengthsOfStay": {
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@Time": "5",
+                          "@MinMaxMessageType": "SetMaxLOS"
+                        },
+                        {
+                          "LOS_Pattern": {
+                            "@FullPatternLOS": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOC"
+                          }
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Status": "Close",
+                      "@MaxAdvancedBookingOffset": "22"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-09",
+                      "@End": "2026-08-18",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-09",
+                      "@End": "2026-08-18",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-19",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "LengthsOfStay": {
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@Time": "5",
+                          "@MinMaxMessageType": "SetMaxLOS"
+                        },
+                        {
+                          "LOS_Pattern": {
+                            "@FullPatternLOS": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOC"
+                          }
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Status": "Close",
+                      "@MaxAdvancedBookingOffset": "22"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-19",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Close"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-19",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001574"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-01",
+                      "@InvTypeCode": "5001575"
+                    },
+                    "LengthsOfStay": {
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        },
+                        {
+                          "LOS_Pattern": {
+                            "@FullPatternLOS": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                          }
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Status": "Close"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-01",
+                      "@InvTypeCode": "5001575"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-01",
+                      "@InvTypeCode": "5001575"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001575"
+                    },
+                    "LengthsOfStay": {
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@Time": "5",
+                          "@MinMaxMessageType": "SetMaxLOS"
+                        },
+                        {
+                          "LOS_Pattern": {
+                            "@FullPatternLOS": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                          }
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Status": "Close",
+                      "@MaxAdvancedBookingOffset": "22"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001575"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001575"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001576"
+                    },
+                    "LengthsOfStay": {
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        },
+                        {
+                          "LOS_Pattern": {
+                            "@FullPatternLOS": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                          }
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Status": "Close"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001576"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5001576"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-01",
+                      "@InvTypeCode": "5003276"
+                    },
+                    "LengthsOfStay": {
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        },
+                        {
+                          "LOS_Pattern": {
+                            "@FullPatternLOS": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                          }
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Status": "Close"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-01",
+                      "@InvTypeCode": "5003276"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-07-31",
+                      "@End": "2026-08-01",
+                      "@InvTypeCode": "5003276"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5003276"
+                    },
+                    "LengthsOfStay": {
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@Time": "5",
+                          "@MinMaxMessageType": "SetMaxLOS"
+                        },
+                        {
+                          "LOS_Pattern": {
+                            "@FullPatternLOS": "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                          }
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Status": "Close",
+                      "@MaxAdvancedBookingOffset": "22"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5003276"
+                    },
+                    "LengthsOfStay": {
+                      "@ArrivalDateBased": "true",
+                      "LengthOfStay": [
+                        {
+                          "@MinMaxMessageType": "RemoveMinLOS"
+                        },
+                        {
+                          "@MinMaxMessageType": "RemoveMaxLOS"
+                        }
+                      ]
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Arrival",
+                      "@Status": "Open"
+                    }
+                  },
+                  {
+                    "StatusApplicationControl": {
+                      "@Start": "2026-08-02",
+                      "@End": "2026-08-31",
+                      "@InvTypeCode": "5003276"
+                    },
+                    "RestrictionStatus": {
+                      "@Restriction": "Departure",
+                      "@Status": "Open"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "Success": None
+        }
+      

@@ -16,7 +16,7 @@ REQUEST_TYPE = "Restriction update"
 # we use this prefix to combine unique key of restriction for upsert statemnt bulk insert
 
 RESTRICTION_TYPE_PREFIX = {
-        "Stop Sale": 'ss',
+        "Closed": 'ss',
         "Cta": 'cta',
         "Ctd": 'ctd',
         "MinLos":"ml",

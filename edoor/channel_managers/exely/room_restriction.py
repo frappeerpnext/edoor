@@ -1,6 +1,6 @@
 import frappe
-from edoor.channel_managers.utils import group_date_ranges,get_channal_manager_info,get_occupancy_codes,can_sync_data
-from edoor.channel_managers.exely.utils import get_exely_property_code,get_exely_room_type_code
+from edoor.channel_managers.utils import group_date_ranges,get_channal_manager_info,get_occupancy_codes,can_sync_data,get_date_range
+from edoor.channel_managers.exely.utils import get_exely_property_code,get_exely_room_type_code,get_edoor_rate_type, get_edoor_room_type_id
 from edoor.channel_managers.utils import get_sync_session_id,add_cm_task,delete_synced_data_log
 from edoor.channel_managers.exely.soap_request import send_soap_request
 from edoor.channel_managers.exely.rate_limit import get_rate_limit,update_rate_limit_balance
@@ -8,6 +8,10 @@ from frappe.utils import now_datetime, add_to_date,getdate,today,add_days
 from epos_restaurant_2023.custom_socket_client import emit_event
 from itertools import groupby
 from frappe.rate_limiter import rate_limit
+from edoor.api.room_restriction import RESTRICTION_TYPE_PREFIX
+from edoor.api.utils import make_hash,generate_unique_dates
+
+
 
 
     
@@ -482,6 +486,14 @@ def normalize_amount(value):
     return float(d.normalize())
     
 
+@frappe.whitelist()
+def testme():
+    return get_room_restriction_from_channel_manager(
+        property="ESTC HOTEL 6",
+        cm_hotel_code="501674",
+        add_cm_sync_log_when_no_data=False
+
+    )
 
 @rate_limit(limit=10, seconds=60)
 def get_room_restriction_from_channel_manager( 
@@ -513,11 +525,14 @@ def get_room_restriction_from_channel_manager(
     HotelAvailRequests = etree.SubElement(root, "HotelAvailRequests")
     HotelAvailRequest = etree.SubElement(HotelAvailRequests, "HotelAvailRequest")
     etree.SubElement(HotelAvailRequest, "HotelRef" ,HotelCode = cm_hotel_code)
+ 
     
     soap_body = etree.tostring(root, pretty_print=True).decode()
-    
+
+   
     
     response =  send_soap_request(property,"OTA_HotelAvailGetRQ",soap_body)
+ 
 
     # prepare data for cm sync log doc
     cm_sync_doc = {
@@ -562,26 +577,25 @@ def get_room_restriction_from_channel_manager(
 
 
         room_restriction_data =  get_room_restriction_group_data_from_cm(OTA_HotelAvailGetRS)
-        # i am here
-        # update rate data to cm sync log doc
-       
-        cm_sync_doc["data"] = frappe.as_json(get_cm_convert_room_rate_data_rate_by_occupancy_code(room_rate_data))
-       
-        # update rate type to cm sync data log get rate type from first record of room_rate_data
-        cm_sync_doc["rate_type"] = get_edoor_rate_type(room_rate_data[0].get("cm_rate_plan_code"))
 
-
+        
+        # update room restriction data to cm sync log doc
+        cm_sync_doc["data"] = frappe.as_json(room_restriction_data)
 
        
-        price_update_result =  bulk_update_room_rate(property = property, room_rate_data = room_rate_data)
-       
-        # check price update result if have warning then log to do and cm sync log
+        # update rate type to cm sync data log get rate type from first record of room_restriction_data
+        cm_sync_doc["rate_type"] = get_edoor_rate_type(room_restriction_data[0].get("cm_rate_plan_code"))
 
-        # notif back to cm that we update success 
-        if not price_update_result.get("warnings"):
-            RateAmountMessageId = response.get("data").get("s:Envelope").get("s:Body").get("OTA_HotelRatePlanRS").get("RatePlans").get("RatePlan").get("RateAmountMessageId")
+        room_restriction_update_result =  bulk_update_room_restriction(property = property, room_restriction_data = room_restriction_data)
+       
+        # check room restriction result if have warning then log to do and cm sync log
+
+        # notify back to cm that we update success 
+        if not room_restriction_update_result.get("warnings"):
+            RateAmountMessageId = response.get("data").get("s:Envelope").get("s:Body").get("OTA_HotelAvailGetRS").get("RatePlans").get("RatePlan").get("AvailStatusMessageId")
+            confirm_request_response =  send_notify_sync_room_restriction_request(property = property, hotel_code = cm_hotel_code, message_id =  RateAmountMessageId)
             
-            confirm_request_response =  send_notify_sync_room_rate_request(property = property, hotel_code = cm_hotel_code, message_id =  RateAmountMessageId)
+
            
             
         else:
@@ -625,7 +639,7 @@ def get_room_restriction_from_channel_manager(
     if (cm_sync_doc.get("sync_action") or "") != "Stop Sync":
         time.sleep(10)
         frappe.enqueue(
-            "edoor.channel_managers.exely.price_manager.get_room_rate_from_channel_manager",
+            "edoor.channel_managers.exely.room_restriction.get_room_restriction_from_channel_manager",
             queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
                 property=property,
                 cm_hotel_code = cm_hotel_code,
@@ -644,83 +658,220 @@ def get_room_restriction_from_channel_manager(
 
 
 
-def get_room_restriction_group_data_from_cm(data):
+@frappe.whitelist()
+def get_room_restriction_group_data_from_cm(data = None):
+    from edoor.channel_managers.exely.dummy_data import room_restriction_data
+    if not data:
+        data = room_restriction_data
     result = []
+    # return data expect
+    # {
+    #     "cm_rate_plan_code":111,
+    #     "start_date":,
+    #     "end_date",
+    #     "restriction_type":
+    #     "value":
+    # } 
+
     # get rate plan  if dict convert to array dict
     def get_rate_plans(data):
         if isinstance(data.get("RatePlans").get("RatePlan"), dict):
             return [data.get("RatePlans").get("RatePlan")]
             
         return data.get("RatePlans").get("RatePlan")
+        
+    def get_restriction(data):
+        if isinstance(data.get("AvailStatusMessages").get("AvailStatusMessage"), dict):
+            return [data.get("AvailStatusMessages").get("AvailStatusMessage")]
+        return data.get("AvailStatusMessages").get("AvailStatusMessage")
 
-    # get rate if dict convert to array dict
-    def get_rates(data):
-        if isinstance(data.get("Rates").get("Rate"), dict):
-            return [data.get("Rates").get("Rate")]
-        return data.get("Rates").get("Rate")
-    
-    # get BaseByGuestAmt if dict convert to array dict
-    def get_base_guest_amount(data):
-        if isinstance(data.get("BaseByGuestAmts").get("BaseByGuestAmt"), dict):
-            return [data.get("BaseByGuestAmts").get("BaseByGuestAmt")]
-        return data.get("BaseByGuestAmts").get("BaseByGuestAmt")
-    
+    def get_LengthsOfStay(data):
+        if isinstance(data.get("LengthsOfStay"), dict):
+            return [data.get("LengthsOfStay")]
+        return data.get("LengthsOfStay")
+        
+    def get_LengthOfStay(data):
+        if isinstance(data.get("LengthOfStay"), dict):
+            return [data.get("LengthOfStay")]
+        return data.get("LengthOfStay")
 
-    # get AdditionalGuestAmounts if dict convert to array dict
-    def get_additional_guest_amount(data):
-        if isinstance(data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount"), dict):
-            return [data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount")]
-        return data.get("AdditionalGuestAmounts",{}).get("AdditionalGuestAmount") or []
+    def get_LOS_Pattern(data):
+        if isinstance(data.get("LOS_Pattern"), dict):
+            return [data.get("LOS_Pattern")]
+        return data.get("LOS_Pattern") 
+
+    def get_RestrictionStatus(data):
+        if isinstance(data.get("RestrictionStatus"), dict):
+            return [data.get("RestrictionStatus")]
+        return data.get("RestrictionStatus") 
+
+
+
+ 
+ 
+    
+    for rp in get_rate_plans(data):
+        # return get_rates(rp)
+        for rs in get_restriction(rp):
+            _base_row = {
+                "cm_rate_plan_code": rp.get("@RatePlanCode"),
+                "start_date": rs.get("StatusApplicationControl").get("@Start"),
+                "end_date": rs.get("StatusApplicationControl").get("@End"),
+                "cm_room_type_code": rs.get("StatusApplicationControl").get("@InvTypeCode"),
+                
+            }
+            
+            LengthsOfStay = get_LengthsOfStay(rs) or []
+            for a in LengthsOfStay:
+                LengthOfStay = get_LengthOfStay(a) or []
+                
+                
+                # leng of stay rule
+                for b in LengthOfStay:
+                    _row = {**_base_row}
+                   
+                    if  "@ArrivalDateBased" in a:
+                        if "@MinMaxMessageType" in b:
+                            if b.get("@MinMaxMessageType") == "RemoveMinLOS" :
+                                _row["restriction_type"] = "MinLosArrival"
+                                _row["value"] = ""
+                            elif b.get("@MinMaxMessageType") == "RemoveMaxLOS" :
+                                _row["restriction_type"] = "MaxLosArrival"
+                                _row["value"] = ""
+                        # append row to result
+                        result.append(_row)
+                    else:
+                        # remove MinLOS set MinLOS = ""
+                        if "@MinMaxMessageType" in b:
+                            if b.get("@MinMaxMessageType") == "RemoveMinLOS" :
+                                _row["restriction_type"] = "MinLos"
+                                _row["value"] = ""
+                            elif b.get("@MinMaxMessageType") == "RemoveMaxLOS" :
+                                _row["restriction_type"] = "MaxLos"
+                                _row["value"] = ""
+                                
+                            elif b.get("@MinMaxMessageType") == "SetMaxLOS" :
+                                # SET MaxLos
+                                _row["restriction_type"] = "MaxLos"
+                                _row["value"] = b.get("@Time")
+
+                            # append row to result
+                            result.append(_row)
+                
+                    # full patern lost
+                    LOS_Pattern = get_LOS_Pattern(b) or []
+
+                    for p in LOS_Pattern:
+                        if "@FullPatternLOS" in p:
+                            _row = {**_base_row,
+                                "restriction_type": "FullPatternLos",
+                                "value": p.get("@FullPatternLOS")
+                            }
+                            result.append(_row)
+            
+            # restriction status
+            
+            RestrictionStatus = get_RestrictionStatus(rs) or []
+            for _rs in RestrictionStatus:
+                if "@Status" in _rs:
+                    restriction_type = "Closed"
+                    if "@Restriction" in _rs :
+                        if  _rs.get("@Restriction") == "Arrival":
+                            restriction_type = "Cta"
+                        elif  _rs.get("@Restriction") == "Departure":
+                            restriction_type = "Ctd"
+
+
+                    _row = {**_base_row,
+                            "restriction_type": restriction_type,
+                            "value": 1 if _rs.get("@Status") =="Close" else 0
+                        }
+                    result.append(_row)
+                
+                # MinAdvBooking and MaxAdvBooking 
+                
+                if "@MaxAdvancedBookingOffset" in _rs:
+                    _row = {
+                        **_base_row,
+                        "restriction_type":"MaxAdvBooking",
+                        "value": _rs.get("@MaxAdvancedBookingOffset") 
+                    } 
+                    result.append(_row)
 
  
 
-    for rp in get_rate_plans(data):
-        # return get_rates(rp)
-        for rate in get_rates(rp):
-            _row = {
-                "cm_rate_plan_code": rp.get("@RatePlanCode"),
-                "start_date": rate.get("@Start"),
-                "end_date": rate.get("@End"),
-                "cm_room_type_code": rate.get("@InvTypeCode"),
-                "rates":[]
-            }
-            # get base rate adult and child
-            for base_rate in  get_base_guest_amount(rate):
-                _occupancy_type =  "ChildBandBed" if base_rate.get("@MinAge") and base_rate.get("@MaxAge") else "AdultBed" 
-                _base_rate_row = {
-                    "occupancy_type":_occupancy_type,
-                    "occupancy":base_rate.get("@NumberOfGuests"),
-                    "min_age": base_rate.get("@MinAge"),
-                    "max_age": base_rate.get("@MaxAge"),
-                    "rate": base_rate.get("@AmountAfterTax")
-                }
-                _row["rates"].append(_base_rate_row)
-            
-            # get base rate adult and child
-            # return get_additional_guest_amount(rate)
-            for additional_rate in  get_additional_guest_amount(rate):
-
-                _occupancy_type =  "AdultExtraBed"
-                if additional_rate.get("@MinAge") and additional_rate.get("@MaxAge"):
-                    if "@BedRequired" in additional_rate:
-                        _occupancy_type = "ChildBandWithoutBed"
-                    else:
-                        _occupancy_type = "ChildBandExtraBed"
-
-                
-
-                _additional_rate_row = {
-                    "occupancy_type":_occupancy_type,
-                    "occupancy":additional_rate.get("@NumberOfGuests"),
-                    "min_age": additional_rate.get("@MinAge"),
-                    "max_age": additional_rate.get("@MaxAge"),
-                    "rate": additional_rate.get("@AmountAfterTax")
-                }
-
-                _row["rates"].append(_additional_rate_row)
-            
-            result.append(_row)
-
-
     return result
 
+ 
+
+def bulk_update_room_restriction(property , room_restriction_data):
+  
+    values = []
+    warnings = set()
+    for rs in room_restriction_data:
+        rate_type = get_edoor_rate_type(rs.get("cm_rate_plan_code"))
+        # check if rate plan not valid stop sync add to do log and notify to user and stop sync imediately
+        if not rate_type:
+            warnings.add(_("No edoor rate plan mapping for exely rate plan code {0}. Please check in channel manager integration".format(rs.get("cm_rate_plan_code"))))
+            break
+
+
+        room_type_id = get_edoor_room_type_id(rs.get("cm_room_type_code"))
+        room_type_name = frappe.get_cached_value("Room Type", room_type_id,"room_type")
+        dates = get_date_range(rs.get("start_date"), rs.get("end_date"))
+        for dt in dates:
+            
+            
+            has_text = f"rs{RESTRICTION_TYPE_PREFIX.get(rs.get('restriction_type'))}{rate_type}{room_type_id}{dt}"
+            row_name = make_hash(has_text)
+
+            _value = (
+                f"('{row_name}', '{property}', '{rs.get('restriction_type')}', "
+                f"'{dt}', '{rate_type}', '{room_type_id}', '{rs.get('value')}','{rs.get('value')}')"
+            )
+
+            values.append(_value)
+   
+
+    if values and not warnings:
+        value_str = ", ".join(values)
+        
+        sql = f"""
+            INSERT INTO `tabRoom Restriction`
+            (`name`,`property`,`restriction_type`, `date`,`rate_type`, `room_type_id`, `value`,`old_value`)
+            VALUES {value_str}
+            ON DUPLICATE KEY UPDATE
+            value = VALUES(value),
+            old_value = VALUES(old_value)
+
+        """
+
+ 
+
+        frappe.db.sql(sql)
+
+        frappe.db.commit()
+
+ 
+    return {
+        "room_restriction_value_count":len(values),
+        "warnings":list(warnings)
+    }
+
+def send_notify_sync_room_restriction_request(property,hotel_code,message_id):
+    root = etree.Element(
+        "OTA_NotifReportRQ",
+        xmlns="http://www.opentravel.org/OTA/2003/05",
+        Version="1.17"
+    )
+    Success = etree.SubElement(root, "Success")
+    NotifDetails = etree.SubElement(root, "NotifDetails",HotelCode=hotel_code)
+    HotelNotifReport = etree.SubElement(NotifDetails, "HotelNotifReport")
+    RatePlanMessages = etree.SubElement(HotelNotifReport, "RatePlanMessages")
+    RatePlanMessage = etree.SubElement(RatePlanMessages, "RatePlanMessage",AvailStatusMessageId=str(message_id))
+    etree.SubElement(RatePlanMessage, "Success")
+
+    soap_body = etree.tostring(root, pretty_print=True).decode()
+    response =  send_soap_request(property = property,ota_request = "OTA_NotifReportRQ",body_content =  soap_body,emit_socket_event = False)
+
+    return response

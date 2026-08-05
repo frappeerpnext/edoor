@@ -521,6 +521,12 @@ def normalize_amount(value):
     # otherwise return float without trailing zeros
     return float(d.normalize())
     
+@frappe.whitelist()
+def dome():
+    return get_room_rate_from_channel_manager(
+        property="ESTC HOTEL 6",
+        cm_hotel_code = "501674"
+    ) 
 # in production mode we should enable rate limit to prevent user click multiple request
 @rate_limit(limit=10, seconds=60)
 def get_room_rate_from_channel_manager( property , cm_hotel_code,add_cm_sync_log_when_no_data = True,notify_user=False):
@@ -552,7 +558,7 @@ def get_room_rate_from_channel_manager( property , cm_hotel_code,add_cm_sync_log
     etree.SubElement(RatePlan, "HotelRef" ,HotelCode = cm_hotel_code)
     
     soap_body = etree.tostring(root, pretty_print=True).decode()
-    
+ 
     response =  send_soap_request(property,"OTA_HotelRatePlanRQ",soap_body)
 
     # prepare data for cm sync log doc

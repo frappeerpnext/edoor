@@ -168,4 +168,24 @@ def sync_room_rate_from_channel_manager():
                        
                 )
                 
+
+
+@frappe.whitelist()
+def sync_room_restriction_from_channel_manager():
+    providers = get_cm_provider_list()
+
+    if len(providers)>0:
+        for p in providers:
+            
+            if p.get("provider") == "Exely" and p.get("restrictions") =="Deliver to PMS" and p.get("initialized_restrictions_upload") == 1:
+                
+                frappe.enqueue(
+                    "edoor.channel_managers.exely.room_restriction.get_room_restriction_from_channel_manager",
+                    queue="long" if frappe.conf.get("developer_mode") else "channel_manager",
+                        property=p.get("property"),
+                        cm_hotel_code = p.get("property_code"),
+                        add_cm_sync_log_when_no_data = False
+                )
+                
+                
             
