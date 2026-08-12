@@ -27,7 +27,8 @@ def get_cm_provider_list():
             initialized_availability_upload, 
             initialized_prices_upload, 
             initialized_restrictions_upload, 
-            initialized_service_upload 
+            initialized_service_upload,
+            restrictions 
         from `tabChannel Manager Integration` where enable=1
     """
     return frappe.db.sql(sql,as_dict = 1)
@@ -820,3 +821,34 @@ def get_occupancy_code_mapping():
             "occupancy_codes": {item['key']: item['name'] for item in data}
         })
     return return_data
+
+
+@frappe.whitelist()
+def get_cm_background_job_status(property ="ESTC HOTEL 6"):
+    cm_info = get_channal_manager_info(property)
+    job_names = []
+    
+    job_names.append( 
+        {
+            "title":"Sync Room Restriction",
+            "job_name": "resync_data.sync_room_restriction_from_channel_manager"
+        }
+    )
+    if cm_info.get("restrictions") == "Deliver to PMS":
+        job_names.append( 
+            {
+                "title":"Sync Room Restrictions",
+                "job_name": "resync_data.sync_room_restriction_from_channel_manager"
+            }
+        )
+    
+    if cm_info.get("prices_for_accommodation") == "Deliver to PMS":
+        job_names.append( 
+            {
+                "title":"Sync Room Rates",
+                "job_name": "resync_data.sync_room_rate_from_channel_manager"
+            }
+        )
+    
+
+

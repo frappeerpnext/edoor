@@ -28,18 +28,16 @@
                     <div class="info-value">{{ moment(doc?.date).format('DD-MM-yyyy') || '—' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">{{ $t('Allocated to') }}</div>
-                    <div class="info-value allocated-placeholder">
-                        {{ doc?.allocated_to || 'Not Assigned' }}
-                    </div>
+                    
+                    <div class="info-label">{{ $t('Priority') }}</div>
+                    <div class="info-value">{{ doc?.priority }}</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">{{ $t('Subject') }}</div>
                     <div class="info-value light-meta">{{ doc?.custom_subject || '—' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">{{ $t('Priority') }}</div>
-                    <div class="info-value">{{ doc?.priority }}</div>
+                  
                 </div>
                 <div class="info-item">
                     <div class="info-label">{{ $t('Status') }}</div>

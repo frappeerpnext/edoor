@@ -1,13 +1,15 @@
 <template>
     <div v-if="data?.request_type">
+      {{ data }}
+
         <Message severity="warn">
             <h1 class="text-xl">{{ title }}</h1>
-            <div v-html="data?.response_text"></div>
+            <div v-html="data?.response_text" style="white-space: pre-line;"></div>
             <div>
                 {{ data?.sync_action }} at: {{ moment(data?.creation).format("DD-MM-YYYY hh:mm A") }}
             </div>
             <div class="flex gap-2 mt-4">
-                <Button severity="secondary" @click="onViewSyncData">View Sync Data</Button>
+                <Button severity="secondary" @click="onViewSyncData" v-if="canViewSyncData">View Sync Data</Button>
                 <Button severity="secondary" @click="onViewSyncStatus">View Sync Status</Button>
                 <Button @click="onRestartResync">Resync Data</Button>
             </div>
@@ -22,6 +24,8 @@ import ComRestartSyncDataConfirmation from "@/views/channel_managers/rate_plans/
 import ComChannelManagerSyncStatus from "@/views/channel_managers/components/ComChannelManagerSyncStatus.vue"
 import ComViewSyncData from "@/views/channel_managers/components/ComViewSyncData.vue"
 import { i18n } from '@/i18n';
+import { useRatePlan } from "../hooks/useRatePlan";
+const {cm_info} = useRatePlan()
 
 const props = defineProps({
     method: String
@@ -33,6 +37,14 @@ const { t: $t } = i18n.global;
 
 const data = ref({})
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+
+const canViewSyncData = computed(()=>{
+    if(data.value.request_type=="Restriction update"){
+        return cm_info.value?.restrictions == "Receive from PMS"
+    }
+    return true
+
+})
 
 
 const title = computed(() => {

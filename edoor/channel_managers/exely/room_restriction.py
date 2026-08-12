@@ -541,10 +541,11 @@ def get_room_restriction_from_channel_manager(
             "provider":"Exely",
             "request_type":REQUEST_TYPE,
             "status" : response.get("status"),
-            "response_text": response.get("response_text")
+            "response_text": f"{(response.get('response_text') or '').strip() }.\nPlease verify the room restriction synchronization settings in the Exely Channel Manager and ensure that the settings in the Channel Manager and PMS are consistent and correctly matched."
+            
     }
     
-    
+     
     if response.get("status") == "Success":
         OTA_HotelAvailGetRS= response.get("data").get("s:Envelope").get("s:Body").get("OTA_HotelAvailGetRS")
 
@@ -577,6 +578,7 @@ def get_room_restriction_from_channel_manager(
 
 
         room_restriction_data =  get_room_restriction_group_data_from_cm(OTA_HotelAvailGetRS)
+        
 
         
         # update room restriction data to cm sync log doc
@@ -607,7 +609,11 @@ def get_room_restriction_from_channel_manager(
 
             # add to do stop sync prices update
             cm_sync_doc["sync_action"] = "Stop Sync"
-            
+    else:
+        # when reponse fail 
+        if "error_code" in response:
+            cm_sync_doc["sync_action"] = response.get("error_code").get("action")
+ 
 
         
 
@@ -616,16 +622,23 @@ def get_room_restriction_from_channel_manager(
     sync_log_doc = frappe.get_doc(cm_sync_doc).insert(ignore_permissions=True)
 
     if (cm_sync_doc.get("sync_action") or "") == "Stop Sync":
+        description = f"{(cm_sync_doc.get('response_text') or '').strip() }.\nPlease verify the room restriction synchronization settings in the Exely Channel Manager and ensure that the settings in the Channel Manager and PMS are consistent and correctly matched."
+
         task_doc = {
             "property":property,
             "subject": "Sync {0} has been stoped.".format(cm_sync_doc.get("request_type")),
-            "description": (cm_sync_doc.get("response_text") or "").strip() ,
+            "description": description ,
             "reference_type": "Channel Manager Sync Log",
             "reference_name": sync_log_doc.name,
             "priority":"High",
+            "custom_job_name":"resync_data.sync_room_restriction_from_channel_manager"
         }
 
         add_cm_task(task_doc,run_commit=False)
+
+        # Stop schedule task
+        frappe.db.sql("update `tabScheduled Job Type` set stopped =1 where name = 'resync_data.sync_room_restriction_from_channel_manager'")
+
 
     frappe.db.commit()
  
@@ -738,6 +751,15 @@ def get_room_restriction_group_data_from_cm(data = None):
                             elif b.get("@MinMaxMessageType") == "RemoveMaxLOS" :
                                 _row["restriction_type"] = "MaxLosArrival"
                                 _row["value"] = ""
+                            elif b.get("@MinMaxMessageType") == "SetMinLOS" :
+                                # SET MinLos
+                                _row["restriction_type"] = "MinLosArrival"
+                                _row["value"] = b.get("@Time")
+                            elif b.get("@MinMaxMessageType") == "SetMaxLOS" :
+                                # SET MaxLos
+                                _row["restriction_type"] = "MaxLosArrival"
+                                _row["value"] = b.get("@Time")
+                            
                         # append row to result
                         result.append(_row)
                     else:
@@ -750,6 +772,10 @@ def get_room_restriction_group_data_from_cm(data = None):
                                 _row["restriction_type"] = "MaxLos"
                                 _row["value"] = ""
                                 
+                            elif b.get("@MinMaxMessageType") == "SetMinLOS" :
+                                # SET MinLos
+                                _row["restriction_type"] = "MinLos"
+                                _row["value"] = b.get("@Time")
                             elif b.get("@MinMaxMessageType") == "SetMaxLOS" :
                                 # SET MaxLos
                                 _row["restriction_type"] = "MaxLos"
@@ -790,6 +816,13 @@ def get_room_restriction_group_data_from_cm(data = None):
                 
                 # MinAdvBooking and MaxAdvBooking 
                 
+                if "@MinAdvancedBookingOffset" in _rs:
+                    _row = {
+                        **_base_row,
+                        "restriction_type":"MinAdvBooking",
+                        "value": _rs.get("@MinAdvancedBookingOffset") 
+                    } 
+                    result.append(_row)
                 if "@MaxAdvancedBookingOffset" in _rs:
                     _row = {
                         **_base_row,

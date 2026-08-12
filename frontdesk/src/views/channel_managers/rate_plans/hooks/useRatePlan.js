@@ -321,7 +321,16 @@ export function useRatePlan() {
 
 
     async function onRefresh() {
-        if (selectedComponent.value =="ComRoomRate"){
+        
+        if (selectedComponent.value =="ComRatePlanInfo"){
+            const l = await window.showLoading()
+            await getRatePlanInfo();
+            await getCMRestrictions();
+            l.close()
+
+          
+        }
+        else if (selectedComponent.value =="ComRoomRate"){
              
             await reloadRoomRatesData()
             
