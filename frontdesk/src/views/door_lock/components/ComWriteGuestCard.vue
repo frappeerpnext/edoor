@@ -1,5 +1,6 @@
 <template>
   <ComDialogContent hideButtonClose titleButtonOK="Write Guest Card Now" :hideIcon="false" @onOK="submit">
+   
     <div class="write-guest-card grid">
       <div class="col-12 lg:col-7">
         <div class="write-panel surface-card border-1 surface-border border-round shadow-1">
@@ -23,6 +24,15 @@
                 @onSelected="onReservationSelected"
               />
             </div>
+            <div class="col-12" v-if="!dialogRef?.data?.name && !doc?.reservation">
+              <label class="field-label">Room</label>
+              <ComAutoComplete
+                v-model="selectedRoom"
+                placeholder="Select Room"
+                doctype="Room"
+                class="w-full mb-4"
+              />
+            </div>
             <div class="col-12">
               <div class="reason-box surface-50 border-1 surface-border border-round">
                 <label class="field-label">Write Card Reason</label>
@@ -39,7 +49,7 @@
               </div>
             </div>
 
-            <div class="col-12">
+            <div class="col-12" v-if="doc?.reservation">
               <div class="guest-summary surface-50 border-1 surface-border border-round">
                 <div class="summary-item">
                   <span>Guest</span>
@@ -82,10 +92,16 @@
                 </div>
               </div>
 
-              <div class="field">
+              <div class="field" v-if="doc?.reservation">
                 <label class="field-label">Departure Time</label>
                 <Calendar selectOtherMonths class="w-full" v-model="doc.departure_time" timeOnly />
               </div>
+              
+              <div class="field" v-if="!doc?.reservation">
+                <label class="field-label">Departure Time</label>
+                <Calendar selectOtherMonths class="w-full" v-model="doc.departure_time" showTime />
+              </div>
+
 
               <div class="field mb-0">
                 <label for="note-text" class="field-label">Reason</label>
@@ -127,6 +143,8 @@
     </div>
       <template #footer-right>
       <ComCheckCardButton />
+      
+      <Button v-if="doc?.name" severity="secondary" label="Link to Existing Card" @click="onLinkToExistingCard"></Button>
     </template>
   </ComDialogContent>
 </template>
@@ -193,6 +211,10 @@ async function submit() {
      
 
   
+}
+
+function onLinkToExistingCard(){
+   app.dialog.viewComExistingCard("ExistingCard",{data:doc.value});
 }
 onMounted(()=>{
     if(dialogRef.value.data){

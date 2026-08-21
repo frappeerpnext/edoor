@@ -5,6 +5,7 @@ import ComViewChangeDataLog from "@/components/ComViewChangeDataLog.vue"
 import ComViewAvailabilityDataDialog from "@/components/availability/ComViewAvailabilityData.vue"
 import ComReportServerModal  from "@/components/ComReportServerModal.vue";
 import ComWriteGuestCard from "@/views/door_lock/components/ComWriteGuestCard.vue"
+import ComExistingCard from "@/views/door_lock/components/ComExistingCard.vue"
 import ComCheckoutCard from "@/views/door_lock/components/ComCheckoutCard.vue"
 import ComGroupWriteCard from "@/views/door_lock/components/ComGroupWriteCard.vue"
 
@@ -84,6 +85,11 @@ export async function viewReport(report_path,report_title,params){
 export async function viewComWriteGuestCard(title,data={}){
      
     const result = await app.utils.openDialog(ComWriteGuestCard,title,data)
+    return result
+}
+export async function viewComExistingCard(title,data={}){
+     
+    const result = await app.utils.openDialog(ComExistingCard,title,data)
     return result
 }
 

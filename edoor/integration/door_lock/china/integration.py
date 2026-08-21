@@ -115,6 +115,12 @@ def write_guest_card(
     property,
     stay_data
 ):
+    if not stay_data.get("reservation_stay") and stay_data.get("room_id"):
+        return issue_temp_guest_card(
+            property= property,
+            stay_data=stay_data
+        )
+
     setting = get_setting(property)
     # check card_info
     card_info = read_card(property)
@@ -209,6 +215,118 @@ def write_guest_card(
         issue_card_data = {
             "property":property,
             "reservation_stay":log.reservation_stay,
+            "room":log.room,
+            "card_id":log.card_id,
+            "card_type":"06",
+            "expire":log.expire,
+            "posting_date":frappe.utils.nowdate()
+        }
+        add_issue_card(issue_card_data)
+    frappe.db.commit()
+
+    if resp.get("success"):
+        frappe.msgprint("Write guest card successfully")
+    else:
+        
+        frappe.throw(
+            "Unable to write to the guest card. Please make sure the card is placed correctly on the card reader and try again."
+        )
+
+    return  resp
+
+
+
+@frappe.whitelist(methods=["POST"])
+def issue_temp_guest_card(
+    property,
+    stay_data
+):
+    if not stay_data.get("departure_time"):
+        frappe.throw("Please enter departure date and time")
+
+    setting = get_setting(property)
+    # check card_info
+    card_info = read_card(property)
+    
+    if card_info.get("card_type"):
+        if not card_info.get("card_type") in ["Guest Card","Check-Out Card","UNKNOWN"]:
+            frappe.throw("You cannot write check in card on a {0}".format(card_info.get("card_type")))
+
+ 
+
+    # guest card
+    if not stay_data.get("room_id"):
+        frappe.throw("Please select room number for guest card")
+    
+    room_doc  = frappe.get_cached_doc("Room",stay_data.get("room_id"))
+    
+
+    if not room_doc.door_lock_no:
+        frappe.throw("Rooom number {0} has no mapping with door access lock number. Please update door lock number in room management.".format(room_doc.room_number))
+    
+
+
+    
+
+  
+    departure_time = stay_data.get("departure_time") 
+    
+    dt = get_datetime(departure_time)
+
+    checked_out_time = dt.strftime("%y%m%d%H%M")
+    reservation_departure_time =  dt.strftime("%H:%M:%S.%f")
+
+
+    # 9:55:56.301794
+   
+
+    building_no = room_doc.building_no or "01"
+
+    doc ={
+        
+        "room":room_doc.name,
+        "building": building_no,
+        "lock_no": room_doc.door_lock_no,
+        "card_type":"06",
+        "note":stay_data.get("note"),
+        "expire": dt,
+        "property":property,
+    }
+    log = create_log(data=doc)
+
+
+    command = (
+        f"KR"
+        f"|BN{building_no}"
+        f"|CN9999"
+        f"|RN{room_doc.door_lock_no}"
+        f"|CT06"
+        f"|CO{checked_out_time}"
+        f"|LS00"
+    )
+ 
+ 
+    
+    resp = write_card(command = command, setting =setting)
+
+
+    log.card_id = resp.get("id")
+    log.status = "Success" if resp.get("success") else "Fail"
+    log.fail_note  = ""  if resp.get("success") else resp.get("message")
+    log.save()
+    
+
+    # check if card info if have in card issue list then release it
+    if card_info.get("ID"):
+
+        frappe.db.sql("update `tabDoor Lock Issue Card` set status = 'Release' where card_id = %(card_id)s and property=%(property)s",{
+            "property":property,
+            "card_id":card_info.get("ID")
+        } )
+
+        # create issue card record
+        issue_card_data = {
+            "property":property,
             "room":log.room,
             "card_id":log.card_id,
             "card_type":"06",
@@ -553,6 +671,7 @@ def get_reservation_data(card_id):
     sql="select * from `tabDoor Lock Log` where card_id=%(card_id)s order by creation desc limit 1"
     data = frappe.db.sql(sql,{"card_id":card_id},as_dict = 1)
     
+    
     if data:
         data = data[0]
     else:
@@ -572,6 +691,15 @@ def get_reservation_data(card_id):
             "room_number":frappe.get_cached_value("Room",data.get("room"),"room_number"),
             "business_source": doc.business_source
         }
+    else:
+        return {
+            "arrival_date":data.get("creation"),
+            "departure_date":data.get("expire"),
+            "departure_time": data.get("expire"),
+            "note": data.get("note"),
+            "room_id":data.get("room"),
+            "room_number": frappe.get_cached_value("Room",data.get("room"),"room_number") if data.get("room") else "", 
+        }
     return {}
      
 @frappe.whitelist()
@@ -581,11 +709,12 @@ def erase_card(property=None,note=None):
     """
     setting = get_setting(property)
 
-    card_info = read_card(property)    
+    card_info = read_card(property)
     if card_info.get("card_type"):
         if not card_info.get("card_type") in ["Guest Card","Check-Out Card","UNKNOWN"]:
             frappe.throw("You cannot erase {0}".format(card_info.get("card_type")))
 
+   
 
     doc ={
         "card_type":"00",

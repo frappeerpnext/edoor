@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading">
+    <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading"> 
         <TabView>
             <TabPanel :header="$t('Desk Folio Information')">
                 <div v-if="doc" class="mt-2">
@@ -16,6 +16,14 @@
                                 </tr>
                                 <ComStayInfoNoBox label="Posting Date">
                                     {{ moment(doc.posting_date).format("DD-MM-YYYY") }}
+                                </ComStayInfoNoBox>
+                                <ComStayInfoNoBox label="Start Date">
+                                    <span v-if="doc.start_date" class="text-right link_line_action1 -ml-2" @click="opshow" >{{ moment(doc.start_date).format("DD-MM-YYYY") }}</span>
+                                    <span v-else class="text-right link_line_action1 -ml-2"> <i class="pi pi-pencil" @click="opshow" /></span>
+                                </ComStayInfoNoBox>
+                                <ComStayInfoNoBox label="End Date">
+                                    <span v-if="doc.end_date" class="text-right link_line_action1 -ml-2" @click="opshow" >{{ moment(doc.end_date).format("DD-MM-YYYY") }}</span>
+                                    <span v-else class="text-right link_line_action1 -ml-2"> <i class="pi pi-pencil" @click="opshow" /></span>
                                 </ComStayInfoNoBox>
                                 <ComStayInfoNoBox  label="Reference Number">
                                    <span v-if="doc.reference_number" class="text-right link_line_action1 -ml-2" @click="opshow" >{{ doc.reference_number }}
@@ -143,6 +151,12 @@
                     {{$t('Reference Number')}}
                     <InputText type="text" class="p-inputtext-sm w-full" v-model="newReferenceNumber" :maxlength="100" />
                 </div>
+                <div class="col-6">
+                    <Calendar selectOtherMonths class="w-full" showIcon v-model="doc.start_date" @date-select="onDateSelect" :manualInput="false" :disabled="false" dateFormat="dd-mm-yy" :minDate="minDate"/>
+                </div>
+                <div class="col-6">
+                    <Calendar selectOtherMonths class="w-full" showIcon v-model="doc.end_date" @date-select="onDateSelect" :manualInput="false" :disabled="false" dateFormat="dd-mm-yy" :minDate="endDate"/>
+                </div>
                 <div class="col-12">
                     <label>{{ $t('Note') }}</label>
                     <div class="card w-full flex justify-content-left">
@@ -165,6 +179,7 @@ import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const dialog = useDialog()
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const moment = inject("$moment")
 const name = ref()
 const doc = ref()
@@ -175,17 +190,43 @@ const totalDocument = ref(0)
 const gv = inject('$gv');
 const op = ref();
 const dialogRef = inject("dialogRef");
+const minDate = ref(moment(working_day.date_working_day).toDate())
 const opshow = (event) => {
   if (event == false) {
-      op.value.hide()
+        op.value.hide()
+        doc.value.start_date = moment(doc.value.start_date).format("DD-MM-YYYY")
+        doc.value.end_date = moment(doc.value.end_date).format("DD-MM-YYYY")
   }
   else {
       op.value.toggle(event);
   }
 }
+
+
+
+const onDateSelect = (e) => {
+    let start_date = moment(doc.value.start_date).format("YYYY-MM-DD")
+
+    let startDate = moment(start_date).toDate()
+
+    let end_date = moment(doc.value.end_date).format("YYYY-MM-DD")
+    let endDate = moment(end_date).toDate()
+
+
+    if (startDate >= endDate) {
+        doc.value.end_date = moment(doc.value.start_date).add(1, 'days').toDate()
+    }
+}
+
+const endDate = computed(() => {
+    return moment(doc.value.start_date).add(1, "days").toDate();
+})
+
 function onSaveEdit(){
     updateDoc('Desk Folio', doc.value.name, {
         reference_number: newReferenceNumber.value,
+        start_date: gv.dateApiFormat(doc.value.start_date),
+        end_date: gv.dateApiFormat(doc.value.end_date),
         note: newNoted.value
     }).then((r) => {
         getData()
@@ -285,6 +326,8 @@ onMounted(() => {
     getData() 
     window.addEventListener('message', actionRefreshData, false);
     window.deskFolioDetailDialogBox = dialogRef
+
+    
 
 })
 onUnmounted(() => {

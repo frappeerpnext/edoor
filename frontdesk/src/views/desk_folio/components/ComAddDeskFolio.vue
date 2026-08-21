@@ -15,6 +15,19 @@
             </div>
         </div>
         <div class="col-6">
+            <label>{{$t('Start Date')}}</label>
+            <div>
+                <Calendar selectOtherMonths class="w-full" showIcon v-model="data.start_date" @date-select="onDateSelect" :manualInput="false" :disabled="false" dateFormat="dd-mm-yy" :minDate="minDate"/>
+            </div>
+        </div> 
+        <div class="col-6">
+            <label>{{$t('End Date')}}</label>
+            <div>
+                <Calendar selectOtherMonths class="w-full" showIcon v-model="data.end_date" @date-select="onDateSelect" :manualInput="false" :disabled="false" dateFormat="dd-mm-yy" :minDate="endDate"/>
+            </div>
+        </div> 
+        
+        <div class="col-6">
             {{$t('Reference Number')}}
             <InputText type="text" class="p-inputtext-sm w-full" v-model="data.reference_number" :maxlength="100" />
         </div>
@@ -38,7 +51,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, onMounted, getDoc, createUpdateDoc,useToast,useDialog } from '@/plugin'
+import { ref, inject, onMounted, getDoc, createUpdateDoc,useToast,useDialog,computed } from '@/plugin'
 import ComAddGuest from "@/views/guest/components/ComAddGuest.vue"
 const dialogRef = inject('dialogRef')
 const loading=ref(false)
@@ -50,6 +63,28 @@ const toast = useToast();
 const dialog = useDialog()
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
+
+
+const minDate = ref(working_day)
+const onDateSelect = (e) => {
+    let start_date = moment(data.value.start_date).format("YYYY-MM-DD")
+
+    let startDate = moment(start_date).toDate()
+
+    let end_date = moment(data.value.end_date).format("YYYY-MM-DD")
+    let endDate = moment(end_date).toDate()
+
+
+    if (startDate >= endDate) {
+        data.value.end_date = moment(data.value.start_date).add(1, 'days').toDate()
+    }
+}
+
+const endDate = computed(() => {
+    return moment(data.value.start_date).add(1, "days").toDate();
+})
+
+
 function onOK() {
     if(!data.value.guest){
         toast.add({ severity: 'warn', summary: "Add Desk Folio", detail: "Please select guest for add desk folio.", life: 5000 })
@@ -61,6 +96,8 @@ function onOK() {
         name: data.value.name,
         reference_number: data.value.reference_number,
         posting_date: gv.dateApiFormat(data.value.posting_date),
+        start_date: gv.dateApiFormat(data.value.start_date),
+        end_date: gv.dateApiFormat(data.value.end_date),
         room_id: data.value.room_id,
         note: data.value.note,
         business_source:data.value.business_source,
@@ -119,10 +156,14 @@ onMounted(()=> {
         getDoc("Desk Folio", dialogRef.value.data.name).then(d=>{
             data.value = d
             data.value.posting_date = moment(d.posting_date).toDate()
+            data.value.start_date = moment(d.start_date).toDate()
+            data.value.end_date = moment(d.end_date).toDate()
         })
 
     }else {
         data.value.posting_date = moment(window.current_working_date).toDate()
+        data.value.start_date = moment(window.current_working_date).toDate()
+        data.value.end_date = moment(window.current_working_date).toDate()
     }
     if(window.isMobile){
     const elem = document.querySelector(".p-dialog");

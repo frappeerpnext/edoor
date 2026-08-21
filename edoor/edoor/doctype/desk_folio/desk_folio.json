@@ -28,6 +28,8 @@
   "total_credit",
   "balance",
   "status",
+  "start_date",
+  "end_date",
   "section_break_bgad",
   "item_list",
   "section_break_tkzs",
@@ -226,11 +228,21 @@
    "fieldtype": "Link",
    "label": "Business Source",
    "options": "Business Source"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-26 09:48:32.455127",
+ "modified": "2026-08-18 14:11:41.314022",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Desk Folio",

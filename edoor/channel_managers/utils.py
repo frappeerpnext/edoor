@@ -830,8 +830,8 @@ def get_cm_background_job_status(property ="ESTC HOTEL 6"):
     
     job_names.append( 
         {
-            "title":"Sync Room Restriction",
-            "job_name": "resync_data.sync_room_restriction_from_channel_manager"
+            "title":"Get Booking",
+            "job_name": "resync_data.get_new_booking_from_channel_manager"
         }
     )
     if cm_info.get("restrictions") == "Deliver to PMS":
@@ -850,5 +850,6 @@ def get_cm_background_job_status(property ="ESTC HOTEL 6"):
             }
         )
     
+    return job_names
 
 
